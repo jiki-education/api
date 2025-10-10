@@ -18,11 +18,12 @@ Context files help AI assistants:
 - **[commands.md](./commands.md)** - Development commands, testing, linting, and Docker operations
 - **[architecture.md](./architecture.md)** - Rails API structure, components, and design patterns
 - **[controllers.md](./controllers.md)** - Controller patterns, helper methods, and conventions
-- **[configuration.md](./configuration.md)** - Environment variables, CORS, storage, and deployment config
+- **[configuration.md](./configuration.md)** - Jiki config gem pattern, CORS, storage, and deployment config
 - **[testing.md](./testing.md)** - Testing framework, FactoryBot setup, and testing patterns
 - **[serializers.md](./serializers.md)** - Serializer patterns using Mandate and JSON transformation
 - **[mailers.md](./mailers.md)** - Email system with MJML, HAML, and i18n patterns
 - **[jobs.md](./jobs.md)** - Background jobs with Sidekiq, Mandate integration, and queue management
+- **[llm.md](./llm.md)** - LLM integration for AI-powered translations via Gemini API
 
 ## How to Use These Files
 
@@ -37,6 +38,7 @@ Context files help AI assistants:
 7. **Serializers** - Reference `serializers.md` for JSON serialization patterns using Mandate
 8. **Mailers** - Reference `mailers.md` for email templates, MJML/HAML patterns, and i18n
 9. **Jobs** - Reference `jobs.md` for background job patterns, Sidekiq configuration, and queue management
+10. **LLM** - Reference `llm.md` for AI-powered translation integration with Gemini API
 
 ### When to Update
 

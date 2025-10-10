@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/jiki-education/config.git
-  revision: ddb9540218bf6a3321d8a448501afa23717d0159
+  revision: 5396b20157255cffffa471f38deb192605a7cd00
   branch: main
   specs:
     jiki-config (0.1.0)
@@ -122,6 +122,7 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
+    csv (3.3.5)
     date (3.4.1)
     debug (1.11.0)
       irb (~> 1.10)
@@ -188,6 +189,10 @@ GEM
       haml (>= 4.0.6)
       railties (>= 5.1)
     hashdiff (1.2.1)
+    httparty (0.23.2)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.1)
@@ -236,6 +241,8 @@ GEM
     mrml (1.8.1-x86_64-linux)
     mrml (1.8.1-x86_64-linux-musl)
     msgpack (1.8.0)
+    multi_xml (0.7.2)
+      bigdecimal (~> 3.1)
     net-imap (0.5.12)
       date
       net-protocol
@@ -447,6 +454,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   haml-rails
+  httparty
   jiki-config!
   letter_opener
   liquid

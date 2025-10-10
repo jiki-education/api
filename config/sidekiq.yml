@@ -9,6 +9,9 @@
   # Email sending
   - mailers
 
+  # LLM translation jobs
+  - translations
+
   # Background processing - lower priority, bulk operations
   - background
 

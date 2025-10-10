@@ -97,10 +97,17 @@ Based on business requirements:
 - JSON API specification
 - WebSocket connections via Action Cable
 
+### LLM Integration
+- **LLM Proxy Service**: Node.js service (port 3064) for AI-powered translations
+- **Gemini API**: Google's Gemini for translation tasks
+- **Async Callback Pattern**: Fire-and-forget with callbacks to SPI endpoints
+- **Redis Streaming**: Future support for real-time translation updates
+
 ### External Services
 - Stripe for payments
 - VPN detection API for PPP
 - AWS services (S3, SES)
+- Google Gemini API for translations
 - Potential CDN integration
 
 ### Infrastructure

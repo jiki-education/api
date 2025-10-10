@@ -29,3 +29,9 @@
 
 en:
   hello: "Hello world"
+
+  # Locale display names for translation system
+  locales:
+    en: "English"
+    hu: "Hungarian"
+    fr: "French"
