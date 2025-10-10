@@ -14,6 +14,16 @@ class V1::Admin::EmailTemplatesController < V1::Admin::BaseController
     }
   end
 
+  def summary
+    render json: {
+      email_templates: EmailTemplate::GenerateSummary.(),
+      locales: {
+        supported: I18n::SUPPORTED_LOCALES,
+        wip: I18n::WIP_LOCALES
+      }
+    }
+  end
+
   def create
     email_template = EmailTemplate::Create.(email_template_params)
     render json: {

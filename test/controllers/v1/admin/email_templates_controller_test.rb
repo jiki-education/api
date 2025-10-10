@@ -10,6 +10,7 @@ class V1::Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   guard_admin! :v1_admin_email_templates_path, method: :get
   guard_admin! :v1_admin_email_templates_path, method: :post
   guard_admin! :types_v1_admin_email_templates_path, method: :get
+  guard_admin! :summary_v1_admin_email_templates_path, method: :get
   guard_admin! :v1_admin_email_template_path, args: [1], method: :get
   guard_admin! :v1_admin_email_template_path, args: [1], method: :patch
   guard_admin! :v1_admin_email_template_path, args: [1], method: :delete
@@ -50,6 +51,61 @@ class V1::Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     assert_json_response({
       types: ["level_completion"]
     })
+  end
+
+  # SUMMARY tests
+  test "GET summary returns empty array when no templates exist" do
+    get summary_v1_admin_email_templates_path, headers: @headers, as: :json
+
+    assert_response :success
+    assert_json_response({
+      email_templates: [],
+      locales: {
+        supported: %w[en hu],
+        wip: ["fr"]
+      }
+    })
+  end
+
+  test "GET summary returns grouped templates with locales" do
+    Prosopite.finish # Stop scan before creating test data
+    create(:email_template, type: :level_completion, slug: "level-1", locale: "en")
+    create(:email_template, type: :level_completion, slug: "level-1", locale: "hu")
+    create(:email_template, type: :level_completion, slug: "level-2", locale: "en")
+
+    Prosopite.scan # Resume scan for the actual request
+    get summary_v1_admin_email_templates_path, headers: @headers, as: :json
+
+    assert_response :success
+    assert_json_response({
+      email_templates: [
+        {
+          type: "level_completion",
+          slug: "level-1",
+          locales: %w[en hu]
+        },
+        {
+          type: "level_completion",
+          slug: "level-2",
+          locales: ["en"]
+        }
+      ],
+      locales: {
+        supported: %w[en hu],
+        wip: ["fr"]
+      }
+    })
+  end
+
+  test "GET summary calls EmailTemplate::GenerateSummary" do
+    expected_summary = [
+      { type: "level_completion", slug: "level-1", locales: %w[en hu] }
+    ]
+    EmailTemplate::GenerateSummary.expects(:call).returns(expected_summary)
+
+    get summary_v1_admin_email_templates_path, headers: @headers, as: :json
+
+    assert_response :success
   end
 
   # CREATE tests

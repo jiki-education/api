@@ -51,6 +51,7 @@ Rails.application.routes.draw do
       resources :email_templates, only: %i[index show create update destroy] do
         collection do
           get :types
+          get :summary
         end
       end
     end

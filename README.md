@@ -137,6 +137,29 @@ All admin endpoints require authentication and admin privileges (403 Forbidden f
     }
     ```
 
+- **GET** `/v1/admin/email_templates/summary` - Get summary of all templates grouped by type and slug
+  - **Response:**
+    ```json
+    {
+      "email_templates": [
+        {
+          "type": "level_completion",
+          "slug": "level-1",
+          "locales": ["en", "hu"]
+        },
+        {
+          "type": "level_completion",
+          "slug": "level-2",
+          "locales": ["en"]
+        }
+      ],
+      "locales": {
+        "supported": ["en", "hu"],
+        "wip": ["fr"]
+      }
+    }
+    ```
+
 - **GET** `/v1/admin/email_templates/:id` - Get a single email template with full data
   - **Params (required):** `id` (in URL)
   - **Response:**
