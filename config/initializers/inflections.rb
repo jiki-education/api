@@ -15,4 +15,5 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "API"
   inflect.acronym "APIs"
   inflect.acronym "HMAC"
+  inflect.irregular "me", "me"
 end

@@ -8,7 +8,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "newuser@example.com",
           password: "password123",
           password_confirmation: "password123",
-          name: "New User"
+          name: "New User",
+          handle: "newuser"
         }
       }, as: :json
     end
@@ -18,8 +19,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal "newuser@example.com", json["user"]["email"]
     assert_equal "New User", json["user"]["name"]
-    assert json["user"]["id"].present?
-    assert json["user"]["created_at"].present?
+    assert_equal "newuser", json["user"]["handle"]
+    assert_equal "standard", json["user"]["membership_type"]
 
     # Check JWT token in response header
     token = response.headers["Authorization"]
@@ -38,7 +39,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "bootstrap@example.com",
           password: "password123",
           password_confirmation: "password123",
-          name: "Bootstrap User"
+          name: "Bootstrap User",
+          handle: "bootstrapuser"
         }
       }, as: :json
     end
@@ -53,7 +55,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "invalid-email",
           password: "password123",
           password_confirmation: "password123",
-          name: "Invalid User"
+          name: "Invalid User",
+          handle: "invaliduser"
         }
       }, as: :json
     end
@@ -68,7 +71,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "invalid-email",
           password: "password123",
           password_confirmation: "password123",
-          name: "New User"
+          name: "New User",
+          handle: "newuser"
         }
       }, as: :json
     end
@@ -88,7 +92,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "newuser@example.com",
           password: "password123",
           password_confirmation: "different123",
-          name: "New User"
+          name: "New User",
+          handle: "newuser"
         }
       }, as: :json
     end
@@ -109,7 +114,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "existing@example.com",
           password: "password123",
           password_confirmation: "password123",
-          name: "New User"
+          name: "New User",
+          handle: "newuser"
         }
       }, as: :json
     end
@@ -128,7 +134,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           email: "newuser@example.com",
           password: "short",
           password_confirmation: "short",
-          name: "New User"
+          name: "New User",
+          handle: "newuser"
         }
       }, as: :json
     end

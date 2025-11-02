@@ -154,9 +154,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
 
   create_table "user_data", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "membership_type", default: "standard", null: false
     t.bigint "unlocked_concept_ids", default: [], null: false, array: true
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["membership_type"], name: "index_user_data_on_membership_type"
     t.index ["unlocked_concept_ids"], name: "index_user_data_on_unlocked_concept_ids", using: :gin
     t.index ["user_id"], name: "index_user_data_on_user_id", unique: true
   end
@@ -205,6 +207,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.bigint "current_user_level_id"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
+    t.string "handle", null: false
     t.string "jti", null: false
     t.string "locale", default: "en", null: false
     t.string "name"
@@ -214,6 +217,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.datetime "updated_at", null: false
     t.index ["current_user_level_id"], name: "index_users_on_current_user_level_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["handle"], name: "index_users_on_handle", unique: true
     t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

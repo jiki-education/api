@@ -5,6 +5,8 @@
 # Create an admin user
 User.find_or_create_by!(email: "ihid@jiki.io") do |u|
   u.admin = true
+  u.handle = "iHiD"
+  u.name = "Jeremy Walker"
   u.password = "password"
   u.password_confirmation = "password"
 end
@@ -12,6 +14,8 @@ puts "Created admin user"
 
 # Create a test user
 user = User.find_or_create_by!(email: "test@example.com") do |u|
+  u.handle = "testuser"
+  u.name = "Test User"
   u.password = "password123"
   u.password_confirmation = "password123"
 end

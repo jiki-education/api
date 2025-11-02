@@ -23,10 +23,16 @@ class User < ApplicationRecord
   end
 
   validates :locale, presence: true, inclusion: { in: %w[en hu] }
+  validates :handle, presence: true, uniqueness: true
 
   before_create do
     # Generate a unique JTI (JWT ID) for each user on creation
     self.jti = SecureRandom.uuid
+  end
+
+  # Override devise-jwt to add custom claims to JWT payload
+  def jwt_payload
+    super.merge('membershipType' => data.membership_type)
   end
 
   # Placeholder for email preferences - always allow emails for now

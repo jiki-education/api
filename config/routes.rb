@@ -35,6 +35,8 @@ Rails.application.routes.draw do
 
   # Internal (authenticated user) endpoints
   namespace :internal do
+    resource :me, only: [:show]
+
     resources :levels, only: [:index]
     resources :user_levels, only: [:index]
 

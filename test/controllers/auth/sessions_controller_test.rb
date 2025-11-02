@@ -16,10 +16,10 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_response :ok
 
     json = response.parsed_body
-    assert_equal @user.id, json["user"]["id"]
+    assert_equal @user.handle, json["user"]["handle"]
     assert_equal "test@example.com", json["user"]["email"]
-    assert json["user"]["name"].present? || json["user"]["name"].nil?
-    assert json["user"]["created_at"].present?
+    assert_equal @user.name, json["user"]["name"]
+    assert_equal "standard", json["user"]["membership_type"]
 
     # Check JWT token in response header
     token = response.headers["Authorization"]
