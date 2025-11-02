@@ -13,8 +13,6 @@ class AssistantConversation::AddAssistantMessageTest < ActiveSupport::TestCase
 
     AssistantConversation::VerifyHMAC.expects(:call).with(
       user.id,
-      context_type,
-      context_identifier,
       content,
       timestamp,
       signature

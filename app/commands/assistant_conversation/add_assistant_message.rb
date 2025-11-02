@@ -4,7 +4,7 @@ class AssistantConversation::AddAssistantMessage
   initialize_with :user, :context_type, :context_identifier, :content, :timestamp, :signature
 
   def call
-    AssistantConversation::VerifyHMAC.(user.id, context_type, context_identifier, content, timestamp, signature)
+    AssistantConversation::VerifyHMAC.(user.id, content, timestamp, signature)
 
     AssistantConversation::AddMessage.(conversation, "assistant", content, timestamp)
   end

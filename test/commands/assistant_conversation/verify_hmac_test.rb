@@ -3,18 +3,14 @@ require "test_helper"
 class AssistantConversation::VerifyHMACTest < ActiveSupport::TestCase
   test "returns true with valid signature" do
     user_id = 123
-    context_type = "Lesson"
-    context_identifier = "basic-movement"
     assistant_message = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
 
-    payload = "#{user_id}:#{context_type}:#{context_identifier}:#{assistant_message}:#{timestamp}"
+    payload = "#{user_id}:#{assistant_message}:#{timestamp}"
     signature = OpenSSL::HMAC.hexdigest('SHA256', Jiki.secrets.hmac_secret, payload)
 
     result = AssistantConversation::VerifyHMAC.(
       user_id,
-      context_type,
-      context_identifier,
       assistant_message,
       timestamp,
       signature
@@ -25,8 +21,6 @@ class AssistantConversation::VerifyHMACTest < ActiveSupport::TestCase
 
   test "raises InvalidHMACSignatureError with invalid signature" do
     user_id = 123
-    context_type = "Lesson"
-    context_identifier = "basic-movement"
     assistant_message = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
     invalid_signature = "invalid_signature_abc123"
@@ -34,8 +28,6 @@ class AssistantConversation::VerifyHMACTest < ActiveSupport::TestCase
     error = assert_raises InvalidHMACSignatureError do
       AssistantConversation::VerifyHMAC.(
         user_id,
-        context_type,
-        context_identifier,
         assistant_message,
         timestamp,
         invalid_signature
@@ -47,12 +39,10 @@ class AssistantConversation::VerifyHMACTest < ActiveSupport::TestCase
 
   test "raises InvalidHMACSignatureError when payload is modified" do
     user_id = 123
-    context_type = "Lesson"
-    context_identifier = "basic-movement"
     assistant_message = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
 
-    payload = "#{user_id}:#{context_type}:#{context_identifier}:#{assistant_message}:#{timestamp}"
+    payload = "#{user_id}:#{assistant_message}:#{timestamp}"
     signature = OpenSSL::HMAC.hexdigest('SHA256', Jiki.secrets.hmac_secret, payload)
 
     # Modify the message
@@ -61,8 +51,6 @@ class AssistantConversation::VerifyHMACTest < ActiveSupport::TestCase
     error = assert_raises InvalidHMACSignatureError do
       AssistantConversation::VerifyHMAC.(
         user_id,
-        context_type,
-        context_identifier,
         modified_message,
         timestamp,
         signature

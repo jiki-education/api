@@ -51,7 +51,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   test "POST assistant_messages successfully adds assistant message with valid signature" do
     content = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
-    payload = "#{@current_user.id}:Lesson:basic-movement:#{content}:#{timestamp}"
+    payload = "#{@current_user.id}:#{content}:#{timestamp}"
     signature = OpenSSL::HMAC.hexdigest('SHA256', Jiki.secrets.hmac_secret, payload)
 
     post assistant_messages_internal_assistant_conversations_path,
@@ -88,7 +88,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   test "POST assistant_messages delegates to AddAssistantMessage command" do
     content = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
-    payload = "#{@current_user.id}:Lesson:basic-movement:#{content}:#{timestamp}"
+    payload = "#{@current_user.id}:#{content}:#{timestamp}"
     signature = OpenSSL::HMAC.hexdigest('SHA256', Jiki.secrets.hmac_secret, payload)
 
     AssistantConversation::AddAssistantMessage.expects(:call).with(

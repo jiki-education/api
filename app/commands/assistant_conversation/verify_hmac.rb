@@ -1,7 +1,7 @@
 class AssistantConversation::VerifyHMAC
   include Mandate
 
-  initialize_with :user_id, :context_type, :context_identifier, :assistant_message, :timestamp, :signature
+  initialize_with :user_id, :assistant_message, :timestamp, :signature
 
   def call
     expected_signature = generate_hmac
@@ -15,7 +15,7 @@ class AssistantConversation::VerifyHMAC
 
   private
   def generate_hmac
-    payload = "#{user_id}:#{context_type}:#{context_identifier}:#{assistant_message}:#{timestamp}"
+    payload = "#{user_id}:#{assistant_message}:#{timestamp}"
     OpenSSL::HMAC.hexdigest('SHA256', Jiki.secrets.hmac_secret, payload)
   end
 end
