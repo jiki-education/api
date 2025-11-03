@@ -318,14 +318,8 @@ Devise.setup do |config|
   # ==> JWT Configuration
   # Configure JWT tokens for API authentication
   config.jwt do |jwt|
-    # Use Rails credentials for the secret key
-    # In test environment, load from plain YAML file
-    if Rails.env.test? && File.exist?(Rails.root.join("config", "credentials", "test.yml"))
-      test_creds = YAML.load_file(Rails.root.join("config", "credentials", "test.yml"))
-      jwt.secret = test_creds["devise_jwt_secret_key"]
-    else
-      jwt.secret = Rails.application.credentials.devise_jwt_secret_key
-    end
+    # Use Jiki.secrets for JWT secret in all environments
+    jwt.secret = Jiki.secrets.jwt_secret
 
     # Dispatch tokens in Authorization header
     jwt.dispatch_requests = [

@@ -11,7 +11,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   def respond_with(resource, _opts = {})
     if resource.persisted?
       render json: {
-        user: user_data(resource)
+        user: SerializeUser.(resource)
       }, status: :created
     else
       render json: {
@@ -25,15 +25,6 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   end
 
   def sign_up_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :name)
-  end
-
-  def user_data(user)
-    {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      created_at: user.created_at
-    }
+    params.require(:user).permit(:email, :password, :password_confirmation, :name, :handle)
   end
 end

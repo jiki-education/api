@@ -34,6 +34,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
 
       ## User profile
       t.string :name, null: false
+      t.string :handle, null: false
       t.string :locale, null: false, default: "en"
 
       ## Admin access
@@ -51,6 +52,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
     add_index :users, :email,                unique: true
     add_index :users, :reset_password_token, unique: true
     add_index :users, :jti,                   unique: true
+    add_index :users, :handle,                unique: true
     # add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,         unique: true
   end

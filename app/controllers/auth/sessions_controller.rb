@@ -4,7 +4,7 @@ class Auth::SessionsController < Devise::SessionsController
   private
   def respond_with(resource, _opts = {})
     render json: {
-      user: user_data(resource)
+      user: SerializeUser.(resource)
     }, status: :ok
   end
 
@@ -28,14 +28,5 @@ class Auth::SessionsController < Devise::SessionsController
         }
       }, status: :unauthorized
     end
-  end
-
-  def user_data(user)
-    {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      created_at: user.created_at
-    }
   end
 end
