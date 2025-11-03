@@ -1,0 +1,56 @@
+{
+  "uuid": "c7f9d3b4-8e2a-4f1c-9d5e-3a8f6b2c4d7e",
+  "title": "Simple Talking Head Example",
+  "version": "1.0",
+  "config": {},
+  "nodes": [
+    {
+      "uuid": "1a2b3c4d-5e6f-4789-a0b1-c2d3e4f5a6b7",
+      "title": "Welcome Script",
+      "type": "asset",
+      "inputs": {},
+      "config": {},
+      "asset": {
+        "type": "script",
+        "content": "Welcome to Jiki, where learning to code becomes an adventure!"
+      }
+    },
+    {
+      "uuid": "2b3c4d5e-6f7a-4890-b1c2-d3e4f5a6b7c8",
+      "title": "ElevenLabs Voiceover",
+      "type": "generate-voiceover",
+      "inputs": {
+        "script": ["1a2b3c4d-5e6f-4789-a0b1-c2d3e4f5a6b7"]
+      },
+      "config": {
+        "provider": "elevenlabs"
+      }
+    },
+    {
+      "uuid": "3c4d5e6f-7a8b-4901-c2d3-e4f5a6b7c8d9",
+      "title": "Background Image",
+      "type": "asset",
+      "inputs": {},
+      "config": {},
+      "asset": {
+        "type": "image",
+        "url": "https://example.com/classroom-background.jpg"
+      }
+    },
+    {
+      "uuid": "4d5e6f7a-8b9c-4012-d3e4-f5a6b7c8d9e0",
+      "title": "HeyGen Talking Head",
+      "type": "generate-talking-head",
+      "inputs": {
+        "audio": ["2b3c4d5e-6f7a-4890-b1c2-d3e4f5a6b7c8"],
+        "background": ["3c4d5e6f-7a8b-4901-c2d3-e4f5a6b7c8d9"]
+      },
+      "config": {
+        "provider": "heygen",
+        "avatarId": "Monica_inSleeveless_20220819",
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ]
+}

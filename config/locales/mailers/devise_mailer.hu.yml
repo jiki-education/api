@@ -1,0 +1,13 @@
+hu:
+  devise:
+    mailer:
+      reset_password_instructions:
+        subject: "Jelszó visszaállítása"
+        preview: "Állítsd vissza jelszavadat a Jiki fiókodhoz"
+        greeting: "Szia %{name},"
+        intro: "Valaki jelszó-visszaállítási linket kért a Jiki fiókodhoz."
+        body: "Ha ez te voltál, kattints az alábbi gombra egy új jelszó választásához:"
+        cta: "Jelszó visszaállítása"
+        no_request: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt."
+        no_change: "A jelszavad nem fog megváltozni, amíg nem használod a fenti linket és nem hozol létre egy újat."
+        expires_in: "Ez a jelszó-visszaállítási link 6 óra múlva lejár."

@@ -1,0 +1,38 @@
+{
+  "name": "@jiki/api-types",
+  "version": "1.0.0",
+  "description": "Auto-generated TypeScript types from Jiki Rails API schemas",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "pnpm clean && pnpm build"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "keywords": [
+    "jiki",
+    "typescript",
+    "types",
+    "api"
+  ],
+  "author": "Jiki Team",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jiki-education/jiki",
+    "directory": "typescript"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

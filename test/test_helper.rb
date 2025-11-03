@@ -92,8 +92,23 @@ end
 
 # JSON response assertions
 module JsonAssertions
+  # Helper to compare JSON structures with normalized string keys
+  # Useful for comparing serializer output with actual values
+  def assert_equal_json(expected, actual)
+    assert_equal expected.deep_stringify_keys, actual.deep_stringify_keys
+  end
+
   def assert_json_response(expected)
     actual = response.parsed_body
+
+    # Automatically add meta: {events: []} to expected response if not present
+    # This allows existing tests to continue working with MetaResponseWrapper
+    # Tests that specifically test events should explicitly include meta in expected
+    # Only add meta if the actual response has it (non-admin controllers)
+    if actual.key?("meta") && expected.is_a?(Hash) && !expected.key?(:meta) && !expected.key?("meta")
+      expected = expected.merge(meta: { events: [] })
+    end
+
     assert_equal expected.deep_stringify_keys, actual
   end
 
@@ -136,6 +151,29 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
       assert_response :unauthorized
       assert_equal "unauthorized", response.parsed_body["error"]["type"]
+    end
+  end
+
+  # Macro for testing admin-only endpoints (includes authentication + admin checks)
+  def self.guard_admin!(path_helper, args: [], method: :get)
+    # First, guard against incorrect tokens (401 errors)
+    guard_incorrect_token!(path_helper, args:, method:)
+
+    # Then, guard against non-admin users (403 error)
+    test "#{method} #{path_helper} returns 403 for non-admin users" do
+      user = create(:user, admin: false)
+      headers = auth_headers_for(user)
+      path = send(path_helper, *args)
+
+      send(method, path, headers:, as: :json)
+
+      assert_response :forbidden
+      assert_json_response({
+        error: {
+          type: "forbidden",
+          message: "Admin access required"
+        }
+      })
     end
   end
 end

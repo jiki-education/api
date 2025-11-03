@@ -16,29 +16,29 @@ class ExerciseSubmissionTest < ActiveSupport::TestCase
     assert_includes duplicate.errors[:uuid], "has already been taken"
   end
 
-  test "validates presence of user_lesson" do
-    submission = build(:exercise_submission, user_lesson: nil)
+  test "validates presence of context" do
+    submission = build(:exercise_submission, context: nil)
 
     refute submission.valid?
-    assert_includes submission.errors[:user_lesson], "must exist"
+    assert_includes submission.errors[:context], "must exist"
   end
 
-  test "delegates user to user_lesson" do
+  test "delegates user to context for user_lesson" do
     user = create(:user)
     lesson = create(:lesson)
     user_lesson = create(:user_lesson, user:, lesson:)
-    submission = create(:exercise_submission, user_lesson:)
+    submission = create(:exercise_submission, context: user_lesson)
 
     assert_equal user, submission.user
   end
 
-  test "delegates lesson to user_lesson" do
+  test "delegates user to context for user_project" do
     user = create(:user)
-    lesson = create(:lesson)
-    user_lesson = create(:user_lesson, user:, lesson:)
-    submission = create(:exercise_submission, user_lesson:)
+    project = create(:project)
+    user_project = create(:user_project, user:, project:)
+    submission = create(:exercise_submission, context: user_project)
 
-    assert_equal lesson, submission.lesson
+    assert_equal user, submission.user
   end
 
   test "to_param returns uuid" do

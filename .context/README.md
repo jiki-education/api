@@ -23,6 +23,10 @@ Context files help AI assistants:
 - **[serializers.md](./serializers.md)** - Serializer patterns using Mandate and JSON transformation
 - **[mailers.md](./mailers.md)** - Email system with MJML, HAML, and i18n patterns
 - **[jobs.md](./jobs.md)** - Background jobs with Sidekiq, Mandate integration, and queue management
+- **[concepts.md](./concepts.md)** - Concept model for educational content with markdown processing
+- **[video_production.md](./video_production.md)** - Video production pipeline system for AI-generated content
+- **[spi.md](./spi.md)** - Service Provider Interface pattern for network-guarded service-to-service communication
+- **[typescript_generation.md](./typescript_generation.md)** - TypeScript type generation from Rails schemas for frontend type safety
 
 ## How to Use These Files
 
@@ -37,6 +41,10 @@ Context files help AI assistants:
 7. **Serializers** - Reference `serializers.md` for JSON serialization patterns using Mandate
 8. **Mailers** - Reference `mailers.md` for email templates, MJML/HAML patterns, and i18n
 9. **Jobs** - Reference `jobs.md` for background job patterns, Sidekiq configuration, and queue management
+10. **Concepts** - Reference `concepts.md` for educational content model and markdown processing
+11. **Video Production** - Reference `video_production.md` for video pipeline system implementation
+12. **SPI** - Reference `spi.md` for service-to-service communication patterns and network-guarded endpoints
+13. **TypeScript Generation** - Reference `typescript_generation.md` for type generation from Rails schemas
 
 ### When to Update
 
@@ -71,7 +79,7 @@ When you learn something important or encounter a pattern worth documenting, upd
 Always run these checks before committing code:
 1. **Tests**: `bin/rails test`
 2. **Linting**: `bin/rubocop`
-3. **Type checking**: If TypeScript is added later
+3. **TypeScript Generation**: `bundle exec rake typescript:generate` (if schemas changed)
 4. **Security**: `bin/brakeman`
 
 ### Context File Maintenance

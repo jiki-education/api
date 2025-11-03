@@ -1,0 +1,13 @@
+en:
+  devise:
+    mailer:
+      reset_password_instructions:
+        subject: "Reset Your Password"
+        preview: "Reset your password for your Jiki account"
+        greeting: "Hi %{name},"
+        intro: "Someone requested a link to reset your password for your Jiki account."
+        body: "If this was you, click the button below to choose a new password:"
+        cta: "Reset My Password"
+        no_request: "If you didn't request this, you can safely ignore this email."
+        no_change: "Your password won't change until you access the link above and create a new one."
+        expires_in: "This password reset link will expire in 6 hours."

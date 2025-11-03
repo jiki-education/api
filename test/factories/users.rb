@@ -4,10 +4,15 @@ FactoryBot.define do
     password { "password123" }
     password_confirmation { password }
     name { Faker::Name.name }
+    handle { Faker::Internet.unique.username(specifier: 5..15, separators: %w[_]) }
     locale { "en" }
 
     trait :hungarian do
       locale { "hu" }
+    end
+
+    trait :admin do
+      admin { true }
     end
   end
 end

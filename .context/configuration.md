@@ -163,7 +163,7 @@ config.time_zone = 'UTC'
 
 ### Puma Web Server
 - Config file: `config/puma.rb`
-- Default port: 3061
+- Default port: 3060
 - Worker processes
 - Thread pool configuration
 - Preload app for performance
@@ -254,6 +254,48 @@ Sidekiq.configure_server do |config|
   config.redis = { url: Jiki.config.sidekiq_redis_url }
 end
 ```
+
+### Gem Source Configuration
+
+The `jiki-config` gem is referenced differently in different environments:
+
+**Local Development**: Uses `path: "../config"` - changes to config gem are immediately available
+**CI/Production**: Will use published gem from gem source when available
+
+The Gemfile automatically detects local development and uses path-based gem. To force gem source in development:
+```bash
+JIKI_USE_LOCAL_CONFIG=false bundle install
+```
+
+### Configuration Guidelines
+
+**IMPORTANT**: Never use `ENV` vars directly in application code. Always use `Jiki.config.*` instead.
+
+**Why?**
+- Consistent interface across development, test, and production
+- Development/test: Loads from YAML files in `../config/settings/`
+- Production: Loads from DynamoDB
+- Easy to switch configuration sources without code changes
+- Centralized configuration management
+
+**Examples:**
+
+❌ **Wrong** - Don't do this:
+```ruby
+frontend_url = ENV.fetch('FRONTEND_URL', 'http://localhost:3000')
+```
+
+✅ **Correct** - Use Jiki.config:
+```ruby
+frontend_url = Jiki.config.frontend_base_url
+```
+
+**Adding New Configuration Values:**
+
+1. Add to `../config/settings/local.yml` for development
+2. Add to `../config/settings/ci.yml` for CI/test
+3. Add to DynamoDB for production (via deployment process)
+4. Access via `Jiki.config.your_key_name`
 
 ### See Also
 - Exercism's exercism-config gem at `../../exercism/config` for reference implementation

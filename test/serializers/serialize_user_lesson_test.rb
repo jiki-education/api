@@ -30,7 +30,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   test "includes last_submission for exercise lesson with submission" do
     lesson = create(:lesson, slug: "hello-world", type: "exercise")
     user_lesson = create(:user_lesson, lesson:)
-    submission = create(:exercise_submission, user_lesson:)
+    submission = create(:exercise_submission, context: user_lesson)
     file = create(:exercise_submission_file, exercise_submission: submission, filename: "solution.rb")
     file.content.attach(io: StringIO.new("puts 'Hello'"), filename: "solution.rb")
 
@@ -73,12 +73,12 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     user_lesson = create(:user_lesson, lesson:)
 
     # Create older submission
-    old_submission = create(:exercise_submission, user_lesson:, created_at: 2.days.ago)
+    old_submission = create(:exercise_submission, context: user_lesson, created_at: 2.days.ago)
     old_file = create(:exercise_submission_file, exercise_submission: old_submission, filename: "old.rb")
     old_file.content.attach(io: StringIO.new("old code"), filename: "old.rb")
 
     # Create newer submission
-    new_submission = create(:exercise_submission, user_lesson:, created_at: 1.day.ago)
+    new_submission = create(:exercise_submission, context: user_lesson, created_at: 1.day.ago)
     new_file = create(:exercise_submission_file, exercise_submission: new_submission, filename: "new.rb")
     new_file.content.attach(io: StringIO.new("new code"), filename: "new.rb")
 
@@ -92,7 +92,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   test "serializes multiple files in submission" do
     lesson = create(:lesson, slug: "hello-world", type: "exercise")
     user_lesson = create(:user_lesson, lesson:)
-    submission = create(:exercise_submission, user_lesson:)
+    submission = create(:exercise_submission, context: user_lesson)
 
     file1 = create(:exercise_submission_file, exercise_submission: submission, filename: "main.rb")
     file1.content.attach(io: StringIO.new("main code"), filename: "main.rb")

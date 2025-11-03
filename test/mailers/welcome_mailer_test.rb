@@ -72,7 +72,8 @@ class WelcomeMailerTest < ActionMailer::TestCase
 
     # ApplicationMailer defaults to I18n.default_locale (en) when user.locale is nil
     assert_equal "Welcome to Jiki!", mail.subject
-    assert_match "Hi #{user.name},", mail.html_part.body.to_s
+    # HTML emails escape special characters, so we need to escape the expected value
+    assert_match "Hi #{ERB::Util.html_escape(user.name)},", mail.html_part.body.to_s
   end
 
   test "welcome email uses user name in greeting" do
@@ -81,6 +82,16 @@ class WelcomeMailerTest < ActionMailer::TestCase
 
     assert_match "Hi Test User,", mail.html_part.body.to_s
     assert_match "Hi Test User,", mail.text_part.body.to_s
+  end
+
+  test "welcome email correctly escapes user names with apostrophes in HTML" do
+    user = create(:user, name: "Graig D'Amore")
+    mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
+
+    # HTML part should escape the apostrophe as &#39;
+    assert_match "Hi Graig D&#39;Amore,", mail.html_part.body.to_s
+    # Text part should keep the literal apostrophe
+    assert_match "Hi Graig D'Amore,", mail.text_part.body.to_s
   end
 
   test "welcome email includes login URL in button" do

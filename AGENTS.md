@@ -2,6 +2,11 @@
 
 This file provides guidance to Agents (e.g. Claude Code) when working with code in this repository.
 
+## Subagents
+
+ALWAYS use subagents in the following situation:
+- `git commit ...` or `git add ... && git commit ...`: Use the Task tool with `subagent_type: git-commit`.
+
 ## How to work in this project
 
 ### Context for Agents
@@ -37,9 +42,35 @@ Always perform these checks before committing code:
 
 1. **Run Tests**: `bin/rails test`
 2. **Run Linting**: `bin/rubocop`
-3. **Security Check**: `bin/brakeman`
-4. **Update Context Files**: Review if any `.context/` files need updating based on your changes
-5. **Commit Message**: Use clear, descriptive commit messages that explain the "why"
+3. **TypeScript Generation**: Automatically handled by pre-commit hook if schemas changed
+4. **Security Check**: `bin/brakeman`
+5. **Update Context Files**: Review if any `.context/` files need updating based on your changes
+6. **Commit Message**: Use clear, descriptive commit messages that explain the "why"
+
+### Pre-Commit Hook
+
+The `.husky/pre-commit` hook automatically:
+- Runs linting on staged files
+- Runs all tests
+- Runs security scanning with Brakeman
+- **Generates TypeScript types** if schema files changed
+- Stages generated TypeScript files automatically
+
+If schema files in `app/commands/video_production/node/schemas/` are staged, the hook will:
+1. Detect the schema changes
+2. Run `bundle exec rake typescript:generate`
+3. Stage the generated files in `typescript/src/`
+4. Include them in your commit
+
+### CI Auto-Generation
+
+If you bypass the pre-commit hook or forget to regenerate types, the CI pipeline will:
+1. Detect missing type updates after merge to `main`
+2. Generate the types automatically
+3. Create a follow-up commit with the updated types
+4. Push it to `main`
+
+This ensures types are always in sync with schemas on the `main` branch.
 
 ## 5. Git Workflow for Agents (Committing)
 
@@ -48,7 +79,7 @@ Always perform these checks before committing code:
 1. **Create Feature Branch**: Always work on a descriptively named feature branch (e.g., `setup-factorybot`, `add-user-authentication`)
 2. **Implement Changes**: Make all necessary code and documentation changes
 3. **Quality Checks**: Run tests, linting, and security checks
-4. **Commit Changes**: Create a clear, descriptive commit message
+4. **Commit Changes**: **ALWAYS use the git-commit subagent** - Never create commits directly. The git-commit subagent will validate changes, review code quality, and execute the commit.
 5. **Push Branch**: Push the feature branch to the remote repository
 6. **Create Pull Request**: Always create a PR with a comprehensive description of changes
 
@@ -85,6 +116,7 @@ For detailed information, see the context files:
 - **Controllers**: `.context/controllers.md` - Controller patterns and helper methods
 - **Configuration**: `.context/configuration.md` - Environment variables, CORS, storage setup
 - **Testing**: `.context/testing.md` - Testing framework and patterns
+- **Serializers**: `.context/serializers.md` - JSON serialization patterns using Mandate
 
 ## Next Implementation Priorities
 

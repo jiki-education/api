@@ -10,4 +10,34 @@ if [ ! -f Procfile.dev ]; then
   exit 1
 fi
 
+# Set environment for LocalStack initialization
+export JIKI_ENV=development
+
+# Check if LocalStack is already running
+RUNNING_CONTAINER=$(docker ps -q --filter "name=^localstack-jiki$" --filter "status=running")
+if [ -n "$RUNNING_CONTAINER" ]; then
+  echo "✓ LocalStack already running (container: $RUNNING_CONTAINER)"
+else
+  # Start LocalStack (clean up any stopped containers first)
+  echo "Starting LocalStack..."
+  EXISTING_CONTAINER=$(docker ps -aq --filter "name=^localstack-jiki$")
+  if [ -n "$EXISTING_CONTAINER" ]; then
+    echo "Removing stopped LocalStack container(s)..."
+    docker rm $EXISTING_CONTAINER > /dev/null 2>&1
+  fi
+  docker run -dp 3067:8080 -p 3065:4566 -p 3066:4566 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -e LAMBDA_DOCKER_FLAGS=--add-host=local.jiki.io:host-gateway \
+    --add-host=local.jiki.io:host-gateway \
+    --name localstack-jiki $(jq -r '.localstack' .dockerimages.json)
+
+  # Initialize LocalStack (create S3 buckets)
+  echo "Initializing LocalStack..."
+  bin/init-localstack
+fi
+
+# Deploy Lambda functions (only if missing)
+echo "Checking Lambda functions..."
+bin/deploy-lambdas --deploy-missing
+
 hivemind Procfile.dev

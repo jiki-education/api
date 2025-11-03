@@ -76,6 +76,14 @@ end
 - **Naming**: `*_test.rb` files with descriptive test method names
 - **Assertions**: Use Minitest assertions (`assert_equal`, `assert_raises`, etc.)
 
+### Command Tests
+- **Location**: `test/commands/`
+- **Purpose**: Test command objects that encapsulate business logic
+- **Coverage Rule**: **Every command MUST have a corresponding test file** with 1-1 mapping
+  - `app/commands/concept/create.rb` → `test/commands/concept/create_test.rb`
+  - `app/commands/utils/markdown/parse.rb` → `test/commands/utils/markdown/parse_test.rb`
+- **Testing**: Validate inputs, outputs, error handling, and side effects
+
 ### Integration Tests
 - **Location**: `test/integration/`
 - **Purpose**: Test feature workflows and cross-system interactions
@@ -93,6 +101,32 @@ end
 - **Isolation**: Each test runs in a database transaction (rolled back after)
 - **Cleanup**: Automatic cleanup between tests via Rails transactional fixtures
 - **Performance**: Fast test execution through transaction-based isolation
+- **Schema Management**: Rails automatically manages test database schema
+
+### Important: Never Manually Reset Test Database
+
+**IMPORTANT**: Do NOT manually reset the test database using `RAILS_ENV=test bin/rails db:reset`. This is bad practice.
+
+**Why:**
+- Rails automatically handles test database schema and cleanup
+- Each test runs in a transaction that is rolled back automatically
+- Manual resets can cause race conditions in parallel tests
+- It bypasses Rails' built-in test database management
+
+**What Rails Does Automatically:**
+- Loads the schema before running tests (if needed)
+- Wraps each test in a transaction that is rolled back
+- Maintains a clean database state between test runs
+- Handles parallel test database preparation
+
+**If you need to update the test database schema:**
+```bash
+# Simply run your tests - Rails will handle schema updates
+bin/rails test
+
+# Or explicitly load the schema (rarely needed)
+bin/rails db:test:prepare
+```
 
 ### Data Creation
 ```ruby
@@ -154,27 +188,115 @@ bin/rails test test/integration/
 
 #### JSON Response Testing
 
+**IMPORTANT**: Always use `assert_json_response` helper for testing complete JSON responses, and always use serializers instead of manually constructing expected data structures.
+
+##### Using Serializers in Tests
+
+**CRITICAL**: Always use the actual serializer to generate expected data instead of manually building JSON structures. This ensures tests remain valid when serializers change.
+
+```ruby
+# CORRECT: Use serializers to generate expected data
+test "GET index returns user levels" do
+  user_level1 = create(:user_level, user: @current_user, level: level1)
+  user_level2 = create(:user_level, user: @current_user, level: level2)
+
+  get v1_user_levels_path, headers: @headers, as: :json
+
+  assert_response :success
+  assert_json_response({
+    user_levels: SerializeUserLevels.([user_level1, user_level2])
+  })
+end
+
+# INCORRECT: Don't manually construct expected JSON structures
+test "GET index returns user levels" do
+  user_level1 = create(:user_level, user: @current_user, level: level1)
+
+  get v1_user_levels_path, headers: @headers, as: :json
+
+  assert_response :success
+  assert_json_response({
+    user_levels: [
+      {
+        level_slug: "basics",
+        user_lessons: [
+          { lesson_slug: "lesson-1", status: "completed" }
+        ]
+      }
+    ]
+  })
+end
+```
+
+**Benefits of using serializers:**
+- Tests remain valid when serializer output changes
+- Single source of truth for JSON structure
+- Automatically includes all fields from serializer
+- Catches mismatches between actual API response and test expectations
+- Reduces test maintenance burden
+
+##### Using assert_equal_json for Nested Data
+
+When testing nested serialized data (like event payloads), use the `assert_equal_json` helper to compare serializer output with actual values:
+
+```ruby
+# CORRECT: Use assert_equal_json with serializers for nested data
+test "PATCH complete emits events for unlocked concept" do
+  concept = create(:concept, slug: "variables", title: "Variables")
+  lesson = create(:lesson, unlocked_concept: concept)
+
+  patch complete_v1_user_lesson_path(lesson_slug: lesson.slug),
+    headers: @headers,
+    as: :json
+
+  response_json = JSON.parse(response.body, symbolize_names: true)
+  concept_event = response_json[:meta][:events].find { |e| e[:type] == "concept_unlocked" }
+
+  assert_equal_json SerializeConcept.(concept), concept_event[:data][:concept]
+end
+
+# INCORRECT: Don't assert individual fields
+test "PATCH complete emits events for unlocked concept" do
+  concept = create(:concept, slug: "variables", title: "Variables")
+  lesson = create(:lesson, unlocked_concept: concept)
+
+  patch complete_v1_user_lesson_path(lesson_slug: lesson.slug),
+    headers: @headers,
+    as: :json
+
+  response_json = JSON.parse(response.body, symbolize_names: true)
+  concept_event = response_json[:meta][:events].find { |e| e[:type] == "concept_unlocked" }
+
+  assert_equal "variables", concept_event[:data][:concept][:slug]
+  assert_equal "Variables", concept_event[:data][:concept][:title]
+  # ... many more field assertions
+end
+```
+
+**`assert_equal_json` helper:**
+- Normalizes both sides to deep string keys
+- Useful for comparing serializer output with response data
+- Ensures consistent key format (string vs symbol) doesn't cause false failures
+
+##### Complete Response Testing
+
 **IMPORTANT**: Always use `assert_json_response` helper for testing complete JSON responses. This provides clearer, more maintainable tests compared to manual assertions.
 
 ```ruby
-# CORRECT: Use assert_json_response for complete response verification
-test "GET index returns user data" do
+# CORRECT: Use assert_json_response with serializers
+test "GET show returns user data" do
   user = create(:user, name: "Test User", email: "test@example.com")
 
   get user_path(user), headers: @headers, as: :json
 
   assert_response :success
   assert_json_response({
-    user: {
-      id: user.id,
-      name: "Test User",
-      email: "test@example.com"
-    }
+    user: SerializeUser.(user)
   })
 end
 
 # INCORRECT: Don't manually parse JSON and assert each field
-test "GET index returns user data" do
+test "GET show returns user data" do
   user = create(:user, name: "Test User")
 
   get user_path(user), headers: @headers, as: :json
@@ -187,12 +309,13 @@ test "GET index returns user data" do
 end
 ```
 
-**Benefits of `assert_json_response`:**
+**Benefits of `assert_json_response` with serializers:**
+- Single source of truth (the serializer)
 - Compares entire response structure at once
 - Automatically handles string/symbol key conversions
 - More readable - shows expected structure clearly
 - Catches unexpected fields in response
-- Easier to maintain when response format changes
+- Tests automatically update when serializers change
 
 #### Basic Controller Test
 ```ruby
@@ -262,6 +385,85 @@ test "GET index uses SerializeLevels" do
 end
 ```
 
+#### Testing Paginated Controllers
+
+For controllers that return paginated collections:
+
+```ruby
+test "GET index calls Command with correct params" do
+  records = create_list(:model, 2)
+  paginated = Kaminari.paginate_array(records, total_count: 2).page(1).per(24)
+
+  Model::Search.expects(:call).with(
+    filter1: "value",
+    filter2: nil,
+    page: "2",
+    per: nil
+  ).returns(paginated)
+
+  get v1_admin_models_path(filter1: "value", page: 2),
+    headers: @headers,
+    as: :json
+
+  assert_response :success
+end
+
+test "GET index uses SerializePaginatedCollection" do
+  Prosopite.finish
+  records = create_list(:model, 2)
+  paginated = Kaminari.paginate_array(records, total_count: 2).page(1).per(24)
+
+  Model::Search.expects(:call).returns(paginated)
+  SerializePaginatedCollection.expects(:call).with(
+    paginated,
+    serializer: SerializeModels
+  ).returns({ results: [], meta: {} })
+
+  Prosopite.scan
+  get v1_admin_models_path, headers: @headers, as: :json
+
+  assert_response :success
+end
+
+test "GET index filters by parameter" do
+  create(:model, name: "Alice")
+  bob = create(:model, name: "Bob")
+
+  get v1_admin_models_path(name: "Bob"),
+    headers: @headers,
+    as: :json
+
+  assert_response :success
+  json = response.parsed_body
+  assert_equal 1, json["results"].length
+  assert_equal bob.id, json["results"][0]["id"]
+end
+
+test "GET index paginates results" do
+  Prosopite.finish
+  3.times { create(:model) }
+
+  Prosopite.scan
+  get v1_admin_models_path(page: 1, per: 2),
+    headers: @headers,
+    as: :json
+
+  assert_response :success
+  json = response.parsed_body
+  assert_equal 2, json["results"].length
+  assert_equal 1, json["meta"]["current_page"]
+  assert_equal 2, json["meta"]["total_pages"]
+end
+```
+
+**Key Patterns**:
+- Pass query params via path helper: `path(param: value)`
+- Mock command with Kaminari-paginated array
+- Verify SerializePaginatedCollection is called
+- Test actual filtering (don't just mock)
+- Test pagination metadata is correct
+- Use `Prosopite.finish/scan` around data creation for N+1 detection
+
 #### Testing Commands in Controllers
 ```ruby
 class LessonsControllerTest < ActionDispatch::IntegrationTest
@@ -329,7 +531,9 @@ end
 
 #### Testing Authentication Guards
 
-**IMPORTANT**: Use the `guard_incorrect_token!` macro instead of writing manual authentication tests.
+**IMPORTANT**: Use the `guard_incorrect_token!` or `guard_admin!` macros instead of writing manual authentication tests.
+
+##### guard_incorrect_token! - For Regular Authenticated Endpoints
 
 The `guard_incorrect_token!` macro automatically generates two tests:
 1. Test that the endpoint returns 401 with an invalid token
@@ -364,6 +568,7 @@ end
 
 ```ruby
 # CORRECT: Use guard_incorrect_token! macro at the top of your test class
+# IMPORTANT: Always use `class V1::ControllerTest` format, not module wrapping
 class V1::LessonsControllerTest < ApplicationControllerTest
   setup do
     setup_user
@@ -393,28 +598,109 @@ class V1::LessonsControllerTest < ApplicationControllerTest
 end
 ```
 
-**INCORRECT: Don't write manual authentication tests**
+##### guard_admin! - For Admin-Only Endpoints
+
+**IMPORTANT**: For admin-only endpoints, use `guard_admin!` instead of `guard_incorrect_token!`.
+
+The `guard_admin!` macro automatically generates THREE tests:
+1. Test that the endpoint returns 401 with an invalid token (via `guard_incorrect_token!`)
+2. Test that the endpoint returns 401 without any token (via `guard_incorrect_token!`)
+3. Test that the endpoint returns 403 for authenticated non-admin users
+
+This macro internally calls `guard_incorrect_token!`, so you only need to use `guard_admin!` for admin endpoints.
 
 ```ruby
-# DON'T DO THIS - the guard macro handles these automatically
-test "POST start requires authentication" do
-  post start_v1_lesson_path(@lesson.slug), as: :json
+# Base test class with guard macro (defined in test_helper.rb)
+class ApplicationControllerTest < ActionDispatch::IntegrationTest
+  def self.guard_admin!(path_helper, args: [], method: :get)
+    # First, guard against incorrect tokens (401 errors)
+    guard_incorrect_token!(path_helper, args:, method:)
+
+    # Then, guard against non-admin users (403 error)
+    test "#{method} #{path_helper} returns 403 for non-admin users" do
+      user = create(:user, admin: false)
+      headers = auth_headers_for(user)
+      path = send(path_helper, *args)
+
+      send(method, path, headers:, as: :json)
+
+      assert_response :forbidden
+      assert_json_response({
+        error: {
+          type: "forbidden",
+          message: "Admin access required"
+        }
+      })
+    end
+  end
+end
+```
+
+**Usage Pattern:**
+
+```ruby
+# CORRECT: Use guard_admin! for admin endpoints
+module V1
+  module Admin
+    class EmailTemplatesControllerTest < ApplicationControllerTest
+      setup do
+        @admin = create(:user, :admin)
+        @headers = auth_headers_for(@admin)
+      end
+
+      # Place admin guards at the top - handles both auth and admin checks
+      guard_admin! :v1_admin_email_templates_path, method: :get
+      guard_admin! :v1_admin_email_templates_path, method: :post
+      guard_admin! :v1_admin_email_template_path, args: [1], method: :patch
+
+      # Then write your functional tests (skip manual auth/admin tests)
+      test "GET index returns all templates" do
+        template = create(:email_template)
+
+        get v1_admin_email_templates_path, headers: @headers, as: :json
+
+        assert_response :success
+        assert_json_response({
+          email_templates: [
+            { id: template.id, slug: template.slug, locale: template.locale }
+          ]
+        })
+      end
+    end
+  end
+end
+```
+
+**INCORRECT: Don't write manual authentication or admin tests**
+
+```ruby
+# DON'T DO THIS - the guard_admin! macro handles these automatically
+test "GET index requires authentication" do
+  get v1_admin_email_templates_path, as: :json
   assert_response :unauthorized
 end
 
-test "POST start returns 401 with invalid token" do
-  post start_v1_lesson_path(@lesson.slug),
+test "GET index returns 401 with invalid token" do
+  get v1_admin_email_templates_path,
     headers: { "Authorization" => "Bearer invalid" },
     as: :json
   assert_response :unauthorized
 end
+
+test "GET index returns 403 for non-admin users" do
+  user = create(:user, admin: false)
+  headers = auth_headers_for(user)
+  get v1_admin_email_templates_path, headers:, as: :json
+  assert_response :forbidden
+end
 ```
 
-**Why Use guard_incorrect_token!:**
-- **DRY**: Eliminates repetitive authentication tests across all controller tests
-- **Consistency**: Ensures all endpoints have the same authentication behavior
+**Why Use guard_incorrect_token! and guard_admin!:**
+- **DRY**: Eliminates repetitive authentication/authorization tests across all controller tests
+- **Consistency**: Ensures all endpoints have the same authentication/authorization behavior
 - **Maintainability**: Changes to auth logic only require updating the macro once
-- **Coverage**: Automatically tests both invalid token and missing token scenarios
+- **Coverage**: Automatically tests invalid token, missing token, and (for admin) non-admin scenarios
+- **Clarity**: Makes it immediately obvious which endpoints require admin access
 
 ### Serializer Testing Patterns
 
@@ -474,6 +760,68 @@ end
 - **Use traits wisely** to avoid complex factory hierarchies
 - **Prefer `build` over `create`** when database persistence isn't required
 - **Use `create_list` efficiently** for bulk data creation
+
+## Search Command Testing
+
+Search commands should test filtering, pagination, and combinations:
+
+```ruby
+class Model::SearchTest < ActiveSupport::TestCase
+  test "no options returns all records paginated" do
+    record_1 = create :model
+    record_2 = create :model
+
+    result = Model::Search.()
+
+    assert_equal [record_1, record_2], result.to_a
+  end
+
+  test "filter: search with partial match" do
+    match = create :model, name: "Amy Smith"
+    create :model, name: "Bob Jones"
+
+    assert_equal [match], Model::Search.(name: "Amy").to_a
+    assert_empty Model::Search.(name: "xyz").to_a
+  end
+
+  test "pagination" do
+    record_1 = create :model
+    record_2 = create :model
+
+    assert_equal [record_1], Model::Search.(page: 1, per: 1).to_a
+    assert_equal [record_2], Model::Search.(page: 2, per: 1).to_a
+  end
+
+  test "returns paginated collection with correct metadata" do
+    5.times { create :model }
+
+    result = Model::Search.(page: 2, per: 2)
+
+    assert_equal 2, result.current_page
+    assert_equal 5, result.total_count
+    assert_equal 3, result.total_pages
+    assert_equal 2, result.size
+  end
+
+  test "combines multiple filters" do
+    match = create :model, name: "Amy", email: "amy@example.com"
+    create :model, name: "Amy", email: "amy@test.org"
+
+    result = Model::Search.(name: "Amy", email: "example")
+
+    assert_equal [match], result.to_a
+  end
+end
+```
+
+**Test Coverage Checklist**:
+- No options returns all (default pagination)
+- Each filter works independently
+- Each filter handles empty strings
+- Each filter handles no matches (use `assert_empty`)
+- Pagination works correctly (page/per)
+- Metadata is correct (current_page, total_count, total_pages, size)
+- Multiple filters combine correctly (AND logic)
 
 ## Command Testing
 

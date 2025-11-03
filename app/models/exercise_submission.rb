@@ -1,14 +1,14 @@
 class ExerciseSubmission < ApplicationRecord
-  belongs_to :user_lesson
+  belongs_to :context, polymorphic: true
   has_many :files, -> { order(:filename) },
     class_name: "ExerciseSubmission::File",
     dependent: :destroy,
     inverse_of: :exercise_submission
 
   validates :uuid, presence: true, uniqueness: true
-  validates :user_lesson, presence: true
+  validates :context, presence: true
 
-  delegate :user, :lesson, to: :user_lesson
+  delegate :user, to: :context
 
   def to_param = uuid
 end

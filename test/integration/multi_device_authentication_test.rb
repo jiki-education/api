@@ -264,10 +264,10 @@ class MultiDeviceAuthenticationTest < ActionDispatch::IntegrationTest
 
   private
   def user_levels_index_path
-    "/v1/user_levels"
+    "/internal/user_levels"
   end
 
   def refresh_path
-    "/v1/auth/refresh"
+    "/auth/refresh"
   end
 end

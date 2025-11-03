@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.3"
+gem "rails", "~> 8.1.0.rc1"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -49,7 +49,34 @@ gem "mrml" # Rust-based MJML compiler (faster alternative to Node.js)
 # HAML templating
 gem "haml-rails"
 
+# Liquid templating for user-editable email templates
+gem "liquid"
+
+# Configuration management
+# Uses GitHub source for CI/production
+# For local development, run: bundle config set --local local.jiki-config ../config
+gem "jiki-config", github: "jiki-education/config", branch: "main"
+
+# Pagination
+gem "kaminari"
+
+# HTTP client for external API integration
+gem "httparty"
+
+# AWS SDK for S3 storage
+gem "aws-sdk-s3"
+
+# Markdown parsing and HTML sanitization
+gem "commonmarker"
+gem "loofah"
+
+# Friendly URLs with slug history
+gem "friendly_id"
+
 group :development, :test do
+  # AWS SDK for Lambda (local development with LocalStack)
+  gem "aws-sdk-lambda"
+
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
 

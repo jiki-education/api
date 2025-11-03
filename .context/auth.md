@@ -649,7 +649,7 @@ Allow frontend domain with credentials:
 ```ruby
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ENV.fetch('FRONTEND_URL', 'http://localhost:3000')
+    origins Jiki.config.frontend_base_url
     resource '*',
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
@@ -658,6 +658,8 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   end
 end
 ```
+
+**Note**: Uses `Jiki.config.frontend_base_url` from `../config/settings/*.yml` files.
 
 ## Background Jobs
 
