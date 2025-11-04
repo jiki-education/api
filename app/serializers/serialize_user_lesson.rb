@@ -20,7 +20,7 @@ class SerializeUserLesson
   def conversation
     assistant_conversation = AssistantConversation.find_by(
       user: user_lesson.user,
-      context_type: "Lesson",
+      context_type: "lesson",
       context_identifier: user_lesson.lesson.slug
     )
 
