@@ -1,9 +1,10 @@
 class Internal::AssistantConversationsController < Internal::BaseController
   def create_user_message
+    context = Utils::RecordForIdentifier.(params[:context_type], params[:context_identifier])
+
     AssistantConversation::AddUserMessage.(
       current_user,
-      params[:context_type],
-      params[:context_identifier],
+      context,
       params[:content],
       params[:timestamp]
     )
@@ -12,10 +13,11 @@ class Internal::AssistantConversationsController < Internal::BaseController
   end
 
   def create_assistant_message
+    context = Utils::RecordForIdentifier.(params[:context_type], params[:context_identifier])
+
     AssistantConversation::AddAssistantMessage.(
       current_user,
-      params[:context_type],
-      params[:context_identifier],
+      context,
       params[:content],
       params[:timestamp],
       params[:signature]

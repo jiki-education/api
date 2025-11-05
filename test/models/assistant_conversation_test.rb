@@ -8,18 +8,14 @@ class AssistantConversationTest < ActiveSupport::TestCase
     assert_equal user, conversation.user
   end
 
-  test "validates presence of context_type" do
-    conversation = build(:assistant_conversation, context_type: nil)
+  test "belongs_to context polymorphically" do
+    user = create(:user)
+    lesson = create(:lesson)
+    conversation = create(:assistant_conversation, user:, context: lesson)
 
-    refute conversation.valid?
-    assert_includes conversation.errors[:context_type], "can't be blank"
-  end
-
-  test "validates presence of context_identifier" do
-    conversation = build(:assistant_conversation, context_identifier: nil)
-
-    refute conversation.valid?
-    assert_includes conversation.errors[:context_identifier], "can't be blank"
+    assert_equal lesson, conversation.context
+    assert_equal "Lesson", conversation.context_type
+    assert_equal lesson.id, conversation.context_id
   end
 
   test "messages defaults to empty array" do
@@ -28,12 +24,13 @@ class AssistantConversationTest < ActiveSupport::TestCase
     assert_empty conversation.messages
   end
 
-  test "enforces unique index on user_id, context_type, context_identifier" do
+  test "enforces unique index on user_id, context_type, context_id" do
     user = create(:user)
-    create(:assistant_conversation, user:, context_type: "Lesson", context_identifier: "test-lesson")
+    lesson = create(:lesson)
+    create(:assistant_conversation, user:, context: lesson)
 
     error = assert_raises ActiveRecord::RecordNotUnique do
-      create(:assistant_conversation, user:, context_type: "Lesson", context_identifier: "test-lesson")
+      create(:assistant_conversation, user:, context: lesson)
     end
 
     assert_match(/index_assistant_conversations_on_user_and_context/, error.message)

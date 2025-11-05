@@ -127,8 +127,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
 
     create(:assistant_conversation,
       user: user_lesson.user,
-      context_type: "Lesson",
-      context_identifier: lesson.slug,
+      context: lesson,
       messages: messages)
 
     result = SerializeUserLesson.(user_lesson)
@@ -151,8 +150,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
 
     create(:assistant_conversation,
       user: user_lesson.user,
-      context_type: "Lesson",
-      context_identifier: lesson.slug,
+      context: lesson,
       messages: messages)
 
     result = SerializeUserLesson.(user_lesson)

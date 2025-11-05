@@ -1,8 +1,7 @@
 FactoryBot.define do
   factory :assistant_conversation do
     user
-    context_type { "Lesson" }
-    sequence(:context_identifier) { |n| "lesson-#{n}" }
+    association :context, factory: :lesson
     messages { [] }
 
     trait :with_messages do

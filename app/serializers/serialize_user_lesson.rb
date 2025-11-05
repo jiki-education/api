@@ -17,15 +17,7 @@ class SerializeUserLesson
     user_lesson.completed_at.present? ? "completed" : "started"
   end
 
-  def conversation
-    assistant_conversation = AssistantConversation.find_by(
-      user: user_lesson.user,
-      context_type: "Lesson",
-      context_identifier: user_lesson.lesson.slug
-    )
-
-    assistant_conversation&.messages || []
-  end
+  def conversation = user_lesson.assistant_conversation&.messages || []
 
   def data
     case user_lesson.lesson.type

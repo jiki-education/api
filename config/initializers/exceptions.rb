@@ -5,3 +5,4 @@ class TooManyFilesError < RuntimeError; end
 class InvalidSubmissionError < RuntimeError; end
 class VideoProductionBadInputsError < RuntimeError; end
 class InvalidHMACSignatureError < RuntimeError; end
+class InvalidPolymorphicRecordType < RuntimeError; end

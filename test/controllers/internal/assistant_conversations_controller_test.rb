@@ -3,6 +3,7 @@ require "test_helper"
 class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   setup do
     setup_user
+    @lesson = create(:lesson, slug: "basic-movement")
   end
 
   # Auth guards
@@ -14,7 +15,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     post user_messages_internal_assistant_conversations_path,
       headers: @headers,
       params: {
-        context_type: "Lesson",
+        context_type: "lesson",
         context_identifier: "basic-movement",
         content: "How do I solve this?",
         timestamp: "2025-10-31T08:15:30.000Z"
@@ -28,8 +29,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   test "POST user_messages delegates to AddUserMessage command" do
     AssistantConversation::AddUserMessage.expects(:call).with(
       @current_user,
-      "Lesson",
-      "basic-movement",
+      @lesson,
       "How do I solve this?",
       "2025-10-31T08:15:30.000Z"
     ).returns(build_stubbed(:assistant_conversation))
@@ -37,7 +37,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     post user_messages_internal_assistant_conversations_path,
       headers: @headers,
       params: {
-        context_type: "Lesson",
+        context_type: "lesson",
         context_identifier: "basic-movement",
         content: "How do I solve this?",
         timestamp: "2025-10-31T08:15:30.000Z"
@@ -57,7 +57,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     post assistant_messages_internal_assistant_conversations_path,
       headers: @headers,
       params: {
-        context_type: "Lesson",
+        context_type: "lesson",
         context_identifier: "basic-movement",
         content:,
         timestamp:,
@@ -73,7 +73,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     post assistant_messages_internal_assistant_conversations_path,
       headers: @headers,
       params: {
-        context_type: "Lesson",
+        context_type: "lesson",
         context_identifier: "basic-movement",
         content: "Try breaking it down step by step.",
         timestamp: "2025-10-31T08:15:35.000Z",
@@ -93,8 +93,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
     AssistantConversation::AddAssistantMessage.expects(:call).with(
       @current_user,
-      "Lesson",
-      "basic-movement",
+      @lesson,
       content,
       timestamp,
       signature
@@ -103,7 +102,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     post assistant_messages_internal_assistant_conversations_path,
       headers: @headers,
       params: {
-        context_type: "Lesson",
+        context_type: "lesson",
         context_identifier: "basic-movement",
         content:,
         timestamp:,

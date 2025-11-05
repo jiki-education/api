@@ -57,4 +57,21 @@ class UserLessonTest < ActiveSupport::TestCase
     refute ExerciseSubmission.exists?(submission1_id)
     refute ExerciseSubmission.exists?(submission2_id)
   end
+
+  test "assistant_conversation returns conversation when one exists" do
+    user = create(:user)
+    lesson = create(:lesson)
+    user_lesson = create(:user_lesson, user:, lesson:)
+    conversation = create(:assistant_conversation, user:, context: lesson)
+
+    assert_equal conversation, user_lesson.assistant_conversation
+  end
+
+  test "assistant_conversation returns nil when no conversation exists" do
+    user = create(:user)
+    lesson = create(:lesson)
+    user_lesson = create(:user_lesson, user:, lesson:)
+
+    assert_nil user_lesson.assistant_conversation
+  end
 end
