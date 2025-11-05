@@ -6,7 +6,7 @@ class Utils::RecordForIdentifier
   def call
     guard!
 
-    klass.find_by(key => identifier)
+    klass.find_by!(key => identifier)
   end
 
   private

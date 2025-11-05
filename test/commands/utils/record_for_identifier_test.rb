@@ -17,16 +17,16 @@ class Utils::RecordForIdentifierTest < ActiveSupport::TestCase
     assert_equal project, result
   end
 
-  test "returns nil when lesson not found" do
-    result = Utils::RecordForIdentifier.("lesson", "non-existent-slug")
-
-    assert_nil result
+  test "raises ActiveRecord::RecordNotFound when lesson not found" do
+    assert_raises(ActiveRecord::RecordNotFound) do
+      Utils::RecordForIdentifier.("lesson", "non-existent-slug")
+    end
   end
 
-  test "returns nil when project not found" do
-    result = Utils::RecordForIdentifier.("project", "non-existent-slug")
-
-    assert_nil result
+  test "raises ActiveRecord::RecordNotFound when project not found" do
+    assert_raises(ActiveRecord::RecordNotFound) do
+      Utils::RecordForIdentifier.("project", "non-existent-slug")
+    end
   end
 
   test "raises error for unsupported context type" do
