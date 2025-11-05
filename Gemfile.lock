@@ -433,6 +433,7 @@ GEM
       rack (>= 3.1.0)
       redis-client (>= 0.23.2)
     stringio (3.1.7)
+    stripe (17.1.0)
     strscan (3.1.5)
     temple (0.10.4)
     thor (1.4.0)
@@ -519,6 +520,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   sidekiq (~> 8.0)
+  stripe
   thruster
   tzinfo-data
   webmock

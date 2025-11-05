@@ -64,6 +64,14 @@ Rails.application.routes.draw do
       post :user_messages, action: :create_user_message
       post :assistant_messages, action: :create_assistant_message
     end
+
+    # Subscription management
+    namespace :subscriptions do
+      post :checkout_session
+      post :verify_checkout
+      post :portal_session
+      get :status
+    end
   end
 
   # Admin routes
@@ -100,6 +108,12 @@ Rails.application.routes.draw do
     namespace :video_production do
       post :executor_callback
     end
+  end
+
+  # Webhooks endpoints
+  # Unauthenticated - security handled by signature verification
+  namespace :webhooks do
+    post 'stripe', to: 'stripe#create'
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
