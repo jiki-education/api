@@ -10,4 +10,11 @@ class UserProject < ApplicationRecord
   # State helper methods
   def started? = started_at.present?
   def completed? = completed_at.present?
+
+  def assistant_conversation
+    AssistantConversation.find_by(
+      user: user,
+      context: project
+    )
+  end
 end
