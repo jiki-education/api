@@ -10,4 +10,11 @@ class UserLesson < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :lesson_id }
   validates :started_at, presence: true
+
+  def assistant_conversation
+    AssistantConversation.find_by(
+      user: user,
+      context: lesson
+    )
+  end
 end

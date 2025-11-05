@@ -43,14 +43,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
   end
 
   create_table "assistant_conversations", force: :cascade do |t|
-    t.string "context_identifier", null: false
+    t.bigint "context_id", null: false
     t.string "context_type", null: false
     t.datetime "created_at", null: false
     t.json "messages", default: [], null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["context_type", "context_identifier"], name: "idx_on_context_type_context_identifier_830dbae703"
-    t.index ["user_id", "context_type", "context_identifier"], name: "index_assistant_conversations_on_user_and_context", unique: true
+    t.index ["context_type", "context_id"], name: "index_assistant_conversations_on_context"
+    t.index ["user_id", "context_type", "context_id"], name: "index_assistant_conversations_on_user_and_context", unique: true
     t.index ["user_id"], name: "index_assistant_conversations_on_user_id"
   end
 
