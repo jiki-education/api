@@ -58,6 +58,8 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :user_projects, only: [:show], param: :project_slug
+
     resources :concepts, only: %i[index show], param: :concept_slug
 
     resource :assistant_conversations, only: [] do
