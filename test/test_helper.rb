@@ -167,6 +167,31 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
       })
     end
   end
+
+  # Macro for testing dev-only endpoints (returns 404 in non-development environments)
+  def self.guard_dev_only!(path_helper, args: [], method: :get)
+    test "#{method} #{path_helper} returns 404 in production environment" do
+      path = send(path_helper, *args)
+
+      # Stub Rails.env to return production
+      Rails.env.stubs(:development?).returns(false)
+
+      begin
+        send(method, path, as: :json)
+
+        assert_response :not_found
+        assert_json_response({
+          error: {
+            type: "not_found",
+            message: "Not found"
+          }
+        })
+      ensure
+        # Clean up the stub
+        Rails.env.unstub(:development?)
+      end
+    end
+  end
 end
 
 # Include helpers in integration tests
