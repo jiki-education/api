@@ -18,16 +18,23 @@ class Stripe::VerifyCheckoutSession
     # Retrieve the full subscription object to get all details
     subscription = ::Stripe::Subscription.retrieve(session.subscription)
 
+    # Get the subscription item (should only be one for our use case)
+    subscription_item = subscription.items.data.first
+    raise ArgumentError, "Subscription has no items" unless subscription_item
+
     # Get the tier based on price ID
-    price_id = subscription.items.data.first.price.id
+    price_id = subscription_item.price.id
     tier = determine_tier(price_id)
+
+    # Validate we have required fields
+    raise ArgumentError, "Subscription item missing current_period_end" unless subscription_item.current_period_end
 
     # Update user's subscription data (same as webhook handlers)
     user.data.update!(
       membership_type: tier,
       stripe_subscription_id: subscription.id,
       stripe_subscription_status: subscription.status,
-      subscription_current_period_end: Time.zone.at(subscription.current_period_end),
+      subscription_current_period_end: Time.zone.at(subscription_item.current_period_end),
       payment_failed_at: nil
     )
 
@@ -44,8 +51,8 @@ class Stripe::VerifyCheckoutSession
     when Jiki.config.stripe_max_price_id
       'max'
     else
-      Rails.logger.warn("Unknown price ID: #{price_id}, defaulting to premium")
-      'premium'
+      raise ArgumentError,
+        "Unknown Stripe price ID: #{price_id}. Expected #{Jiki.config.stripe_premium_price_id} or #{Jiki.config.stripe_max_price_id}"
     end
   end
 end

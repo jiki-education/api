@@ -110,8 +110,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     assert_response :bad_request
     json = response.parsed_body
-    assert_equal "missing_return_url", json["error"]["type"]
-    assert_equal "return_url is required", json["error"]["message"]
+    assert_equal "invalid_return_url", json["error"]["type"]
+    assert_match(/must be from/, json["error"]["message"])
   end
 
   test "POST checkout_session handles Stripe errors gracefully" do
@@ -155,7 +155,53 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "invalid_return_url", json["error"]["type"]
-    assert_match(/must start with/, json["error"]["message"])
+    assert_match(/must be from/, json["error"]["message"])
+  end
+
+  test "POST checkout_session rejects subdomain bypass attempt" do
+    frontend_base_url = Jiki.config.frontend_base_url
+    uri = URI.parse(frontend_base_url)
+    bypass_url = "#{uri.scheme}://#{uri.host}.evil.com/callback"
+
+    post internal_subscriptions_checkout_session_path,
+      params: { product: "premium", return_url: bypass_url },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "invalid_return_url", json["error"]["type"]
+  end
+
+  test "POST checkout_session rejects URL with different scheme" do
+    frontend_base_url = Jiki.config.frontend_base_url
+    uri = URI.parse(frontend_base_url)
+    different_scheme = uri.scheme == "https" ? "http" : "https"
+    bypass_url = "#{different_scheme}://#{uri.host}/callback"
+
+    post internal_subscriptions_checkout_session_path,
+      params: { product: "premium", return_url: bypass_url },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "invalid_return_url", json["error"]["type"]
+  end
+
+  test "POST checkout_session rejects URL with userinfo in host" do
+    frontend_base_url = Jiki.config.frontend_base_url
+    uri = URI.parse(frontend_base_url)
+    bypass_url = "#{uri.scheme}://evil.com@#{uri.host}/callback"
+
+    post internal_subscriptions_checkout_session_path,
+      params: { product: "premium", return_url: bypass_url },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "invalid_return_url", json["error"]["type"]
   end
 
   ### verify_checkout tests ###

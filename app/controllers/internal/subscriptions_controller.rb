@@ -15,21 +15,12 @@ class Internal::SubscriptionsController < Internal::BaseController
       }, status: :bad_request
     end
 
-    # Validate return_url is provided and secure
-    unless return_url.present?
-      return render json: {
-        error: {
-          type: "missing_return_url",
-          message: "return_url is required"
-        }
-      }, status: :bad_request
-    end
-
-    unless return_url.start_with?(Jiki.config.frontend_base_url)
+    # Validate return_url is from frontend
+    unless Utils::VerifyFrontendUrl.(return_url)
       return render json: {
         error: {
           type: "invalid_return_url",
-          message: "Return URL must start with #{Jiki.config.frontend_base_url}"
+          message: "Return URL must be from #{Jiki.config.frontend_base_url}"
         }
       }, status: :bad_request
     end

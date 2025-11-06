@@ -61,4 +61,32 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     user.data.reload
     assert_equal "max", user.data.membership_type
   end
+
+  test "raises ArgumentError for unknown price ID" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    price = mock
+    price.stubs(:id).returns("price_unknown_xyz")
+
+    item = mock
+    item.stubs(:price).returns(price)
+
+    items = mock
+    items.stubs(:data).returns([item])
+
+    subscription = mock
+    subscription.stubs(:customer).returns("cus_123")
+    subscription.stubs(:items).returns(items)
+
+    event = mock
+    event.stubs(:data).returns(mock(object: subscription))
+
+    error = assert_raises(ArgumentError) do
+      Stripe::Webhook::SubscriptionCreated.(event)
+    end
+
+    assert_match(/Unknown Stripe price ID/, error.message)
+    assert_match(/price_unknown_xyz/, error.message)
+  end
 end

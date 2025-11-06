@@ -48,8 +48,8 @@ class Stripe::Webhook::SubscriptionCreated
     when Jiki.config.stripe_max_price_id
       'max'
     else
-      Rails.logger.warn("Unknown price ID: #{price_id}, defaulting to premium")
-      'premium'
+      raise ArgumentError,
+        "Unknown Stripe price ID: #{price_id}. Expected #{Jiki.config.stripe_premium_price_id} or #{Jiki.config.stripe_max_price_id}"
     end
   end
 end

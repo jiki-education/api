@@ -19,5 +19,6 @@ class CreateUserData < ActiveRecord::Migration[8.1]
     add_index :user_data, :membership_type
     add_index :user_data, :stripe_customer_id, unique: true
     add_index :user_data, :stripe_subscription_id
+    add_index :user_data, :payment_failed_at
   end
 end

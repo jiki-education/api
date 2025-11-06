@@ -15,9 +15,12 @@ class Webhooks::StripeController < ActionController::API
       # Invalid signature
       Rails.logger.error("Stripe webhook signature verification failed: #{e.message}")
       head :bad_request
+    rescue ActiveRecord::ConnectionNotEstablished, ActiveRecord::LockWaitTimeout => e
+      # Transient errors - let Stripe retry
+      Rails.logger.error("Stripe webhook transient error: #{e.message}")
+      head :internal_server_error
     rescue StandardError => e
-      # Log other errors but still return 200 to Stripe
-      # (We don't want Stripe to retry if it's our bug)
+      # Permanent errors - return 200 to prevent retries
       Rails.logger.error("Stripe webhook processing error: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
       head :ok

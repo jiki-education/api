@@ -15,9 +15,13 @@ class Stripe::Webhook::SubscriptionUpdated
     # Update subscription status
     handle_status_change(user, subscription)
 
-    # Always update current period end
+    # Always update current period end from subscription item
+    subscription_item = subscription.items.data.first
+    raise ArgumentError, "Subscription has no items" unless subscription_item
+    raise ArgumentError, "Subscription item missing current_period_end" unless subscription_item.current_period_end
+
     user.data.update!(
-      subscription_current_period_end: Time.zone.at(subscription.current_period_end)
+      subscription_current_period_end: Time.zone.at(subscription_item.current_period_end)
     )
 
     Rails.logger.info("Subscription updated for user #{user.id}: status=#{subscription.status}")
@@ -95,8 +99,8 @@ class Stripe::Webhook::SubscriptionUpdated
     when Jiki.config.stripe_max_price_id
       'max'
     else
-      Rails.logger.warn("Unknown price ID: #{price_id}, defaulting to premium")
-      'premium'
+      raise ArgumentError,
+        "Unknown Stripe price ID: #{price_id}. Expected #{Jiki.config.stripe_premium_price_id} or #{Jiki.config.stripe_max_price_id}"
     end
   end
 end
