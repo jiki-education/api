@@ -31,110 +31,96 @@ class User::DataTest < ActiveSupport::TestCase
     assert user.data.subscription_paid?
   end
 
-  test "subscription_paid? returns true for active subscription" do
+  test "subscription_paid? returns true for active subscription with future subscription_valid_until" do
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "active"
+      subscription_valid_until: 1.month.from_now
     )
     assert user.data.subscription_paid?
   end
 
-  test "subscription_paid? returns true for trialing subscription" do
+  test "subscription_paid? returns false for past subscription_valid_until" do
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "trialing"
-    )
-    assert user.data.subscription_paid?
-  end
-
-  test "subscription_paid? returns false for past_due subscription" do
-    user = create(:user)
-    user.data.update!(
-      membership_type: "premium",
-      stripe_subscription_status: "past_due"
+      subscription_valid_until: 1.day.ago
     )
     refute user.data.subscription_paid?
   end
 
-  test "subscription_paid? returns false for canceled subscription" do
+  test "subscription_paid? returns false when no subscription_valid_until" do
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "canceled"
+      subscription_valid_until: nil
     )
     refute user.data.subscription_paid?
   end
 
-  test "subscription_paid? returns false when no subscription status" do
+  test "in_grace_period? returns false when subscription is active" do
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: nil
-    )
-    refute user.data.subscription_paid?
-  end
-
-  test "in_grace_period? returns false when subscription is paid" do
-    user = create(:user)
-    user.data.update!(
-      membership_type: "premium",
-      stripe_subscription_status: "active",
-      payment_failed_at: 3.days.ago
+      subscription_status: "active",
+      subscription_valid_until: 1.month.from_now
     )
     refute user.data.in_grace_period?
   end
 
-  test "in_grace_period? returns false when no payment_failed_at" do
+  test "in_grace_period? returns false when payment_failed but subscription_valid_until is nil" do
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "past_due",
-      payment_failed_at: nil
+      subscription_status: "payment_failed",
+      subscription_valid_until: nil
     )
     refute user.data.in_grace_period?
   end
 
-  test "in_grace_period? returns true when payment failed within last week" do
+  test "in_grace_period? returns true when payment_failed and within grace period" do
     user = create(:user)
+    period_end = 3.days.ago # Expired 3 days ago
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "past_due",
-      payment_failed_at: 3.days.ago
+      subscription_status: "payment_failed",
+      subscription_valid_until: period_end
     )
+    # Grace period is period_end + 7 days, so 4 days from now
     assert user.data.in_grace_period?
   end
 
-  test "in_grace_period? returns false when payment failed over a week ago" do
+  test "in_grace_period? returns false when payment_failed but grace period expired" do
     user = create(:user)
+    period_end = 8.days.ago # Expired 8 days ago
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "past_due",
-      payment_failed_at: 8.days.ago
+      subscription_status: "payment_failed",
+      subscription_valid_until: period_end
     )
+    # Grace period was period_end + 7 days, so 1 day ago - expired
     refute user.data.in_grace_period?
   end
 
-  test "grace_period_ends_at returns nil when not in grace period" do
+  test "grace_period_ends_at returns nil when subscription_valid_until is nil" do
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "active"
+      subscription_valid_until: nil
     )
     assert_nil user.data.grace_period_ends_at
   end
 
-  test "grace_period_ends_at returns correct date when in grace period" do
-    payment_failed = 3.days.ago
+  test "grace_period_ends_at returns subscription_valid_until + 7 days" do
+    period_end = 3.days.ago
     user = create(:user)
     user.data.update!(
       membership_type: "premium",
-      stripe_subscription_status: "past_due",
-      payment_failed_at: payment_failed
+      subscription_status: "payment_failed",
+      subscription_valid_until: period_end
     )
 
-    expected_end = payment_failed + 1.week
+    expected_end = period_end + 7.days
     assert_in_delta expected_end.to_i, user.data.grace_period_ends_at.to_i, 1
   end
 
@@ -172,5 +158,47 @@ class User::DataTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(membership_type: "max")
     assert user.data.has_max_access?
+  end
+
+  test "can_checkout? returns true for never_subscribed" do
+    user = create(:user)
+    user.data.update!(subscription_status: "never_subscribed")
+    assert user.data.can_checkout?
+  end
+
+  test "can_checkout? returns true for canceled" do
+    user = create(:user)
+    user.data.update!(subscription_status: "canceled")
+    assert user.data.can_checkout?
+  end
+
+  test "can_checkout? returns false for active" do
+    user = create(:user)
+    user.data.update!(subscription_status: "active")
+    refute user.data.can_checkout?
+  end
+
+  test "can_change_tier? returns true for active" do
+    user = create(:user)
+    user.data.update!(subscription_status: "active")
+    assert user.data.can_change_tier?
+  end
+
+  test "can_change_tier? returns true for payment_failed" do
+    user = create(:user)
+    user.data.update!(subscription_status: "payment_failed")
+    assert user.data.can_change_tier?
+  end
+
+  test "can_change_tier? returns true for cancelling" do
+    user = create(:user)
+    user.data.update!(subscription_status: "cancelling")
+    assert user.data.can_change_tier?
+  end
+
+  test "can_change_tier? returns false for never_subscribed" do
+    user = create(:user)
+    user.data.update!(subscription_status: "never_subscribed")
+    refute user.data.can_change_tier?
   end
 end

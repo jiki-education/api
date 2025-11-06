@@ -345,9 +345,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     json = response.parsed_body
 
     assert_equal "standard", json["subscription"]["tier"]
-    assert_equal "none", json["subscription"]["status"]
-    assert_nil json["subscription"]["current_period_end"]
-    refute json["subscription"]["payment_failed"]
+    assert_equal "never_subscribed", json["subscription"]["subscription_status"]
+    assert_nil json["subscription"]["subscription_valid_until"]
     refute json["subscription"]["in_grace_period"]
     assert_nil json["subscription"]["grace_period_ends_at"]
   end
@@ -356,7 +355,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_status: "active",
-      subscription_current_period_end: 1.month.from_now
+      subscription_status: "active",
+      subscription_valid_until: 1.month.from_now
     )
 
     get internal_subscriptions_status_path,
@@ -367,17 +367,18 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     json = response.parsed_body
 
     assert_equal "premium", json["subscription"]["tier"]
-    assert_equal "active", json["subscription"]["status"]
-    refute_nil json["subscription"]["current_period_end"]
-    refute json["subscription"]["payment_failed"]
+    assert_equal "active", json["subscription"]["subscription_status"]
+    refute_nil json["subscription"]["subscription_valid_until"]
     refute json["subscription"]["in_grace_period"]
   end
 
   test "GET status returns subscription data for user in grace period" do
+    period_end = 3.days.ago # Expired but within grace period
     @user.data.update!(
       membership_type: "max",
       stripe_subscription_status: "past_due",
-      payment_failed_at: 3.days.ago
+      subscription_status: "payment_failed",
+      subscription_valid_until: period_end
     )
 
     get internal_subscriptions_status_path,
@@ -388,8 +389,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     json = response.parsed_body
 
     assert_equal "max", json["subscription"]["tier"]
-    assert_equal "past_due", json["subscription"]["status"]
-    assert json["subscription"]["payment_failed"]
+    assert_equal "payment_failed", json["subscription"]["subscription_status"]
     assert json["subscription"]["in_grace_period"]
     refute_nil json["subscription"]["grace_period_ends_at"]
   end

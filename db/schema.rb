@@ -155,17 +155,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
   create_table "user_data", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "membership_type", default: "standard", null: false
-    t.datetime "payment_failed_at"
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "stripe_subscription_status"
-    t.datetime "subscription_current_period_end"
+    t.integer "subscription_status", default: 0, null: false
+    t.datetime "subscription_valid_until"
+    t.jsonb "subscriptions", default: [], null: false
     t.bigint "unlocked_concept_ids", default: [], null: false, array: true
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["membership_type"], name: "index_user_data_on_membership_type"
     t.index ["stripe_customer_id"], name: "index_user_data_on_stripe_customer_id", unique: true
     t.index ["stripe_subscription_id"], name: "index_user_data_on_stripe_subscription_id"
+    t.index ["subscription_status"], name: "index_user_data_on_subscription_status"
+    t.index ["subscriptions"], name: "index_user_data_on_subscriptions", using: :gin
     t.index ["unlocked_concept_ids"], name: "index_user_data_on_unlocked_concept_ids", using: :gin
     t.index ["user_id"], name: "index_user_data_on_user_id", unique: true
   end

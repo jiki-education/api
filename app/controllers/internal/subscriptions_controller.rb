@@ -15,6 +15,16 @@ class Internal::SubscriptionsController < Internal::BaseController
       }, status: :bad_request
     end
 
+    # Block if user already has subscription
+    unless current_user.data.can_checkout?
+      return render json: {
+        error: {
+          type: "existing_subscription",
+          message: "You already have a subscription. Use the update endpoint to change tiers or cancel first."
+        }
+      }, status: :bad_request
+    end
+
     # Validate return_url is from frontend
     unless Utils::VerifyFrontendUrl.(return_url)
       return render json: {
@@ -125,15 +135,106 @@ class Internal::SubscriptionsController < Internal::BaseController
     }, status: :internal_server_error
   end
 
+  # POST /internal/subscriptions/update
+  # Updates subscription tier (upgrade/downgrade)
+  def update
+    product = params[:product]
+
+    # Validate product
+    unless %w[premium max].include?(product)
+      return render json: {
+        error: {
+          type: "invalid_product",
+          message: "Invalid product. Must be 'premium' or 'max'"
+        }
+      }, status: :bad_request
+    end
+
+    # Check user can change tier
+    unless current_user.data.can_change_tier?
+      return render json: {
+        error: {
+          type: "no_subscription",
+          message: "You don't have an active subscription. Use checkout to create one."
+        }
+      }, status: :bad_request
+    end
+
+    # Check not same tier
+    if current_user.data.membership_type == product
+      return render json: {
+        error: {
+          type: "same_tier",
+          message: "You are already subscribed to #{product}"
+        }
+      }, status: :bad_request
+    end
+
+    # Update subscription
+    result = Stripe::UpdateSubscription.(current_user, product)
+
+    render json: {
+      success: result[:success],
+      tier: result[:tier],
+      effective_at: result[:effective_at],
+      subscription_valid_until: result[:subscription_valid_until]
+    }
+  rescue ArgumentError => e
+    Rails.logger.error("Invalid subscription update: #{e.message}")
+    render json: {
+      error: {
+        type: "invalid_request",
+        message: e.message
+      }
+    }, status: :unprocessable_entity
+  rescue StandardError => e
+    Rails.logger.error("Failed to update subscription: #{e.message}")
+    render json: {
+      error: {
+        type: "update_failed",
+        message: "Failed to update subscription"
+      }
+    }, status: :internal_server_error
+  end
+
+  # DELETE /internal/subscriptions/cancel
+  # Cancels subscription at period end
+  def cancel
+    # Check user has subscription
+    unless current_user.data.stripe_subscription_id.present?
+      return render json: {
+        error: {
+          type: "no_subscription",
+          message: "You don't have an active subscription"
+        }
+      }, status: :bad_request
+    end
+
+    # Cancel subscription
+    result = Stripe::CancelSubscription.(current_user)
+
+    render json: {
+      success: result[:success],
+      cancels_at: result[:cancels_at]
+    }
+  rescue StandardError => e
+    Rails.logger.error("Failed to cancel subscription: #{e.message}")
+    render json: {
+      error: {
+        type: "cancel_failed",
+        message: "Failed to cancel subscription"
+      }
+    }, status: :internal_server_error
+  end
+
   # GET /internal/subscriptions/status
   # Returns the current subscription status for the authenticated user
   def status
     render json: {
       subscription: {
         tier: current_user.data.membership_type,
-        status: current_user.data.stripe_subscription_status || "none",
-        current_period_end: current_user.data.subscription_current_period_end,
-        payment_failed: !current_user.data.subscription_paid?,
+        subscription_status: current_user.data.subscription_status,
+        subscription_valid_until: current_user.data.subscription_valid_until,
         in_grace_period: current_user.data.in_grace_period?,
         grace_period_ends_at: current_user.data.grace_period_ends_at
       }

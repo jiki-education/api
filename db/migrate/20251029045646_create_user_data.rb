@@ -9,8 +9,9 @@ class CreateUserData < ActiveRecord::Migration[8.1]
       t.string :stripe_customer_id
       t.string :stripe_subscription_id
       t.string :stripe_subscription_status
-      t.datetime :subscription_current_period_end
-      t.datetime :payment_failed_at
+      t.integer :subscription_status, default: 0, null: false
+      t.datetime :subscription_valid_until
+      t.jsonb :subscriptions, default: [], null: false
 
       t.timestamps
     end
@@ -19,6 +20,7 @@ class CreateUserData < ActiveRecord::Migration[8.1]
     add_index :user_data, :membership_type
     add_index :user_data, :stripe_customer_id, unique: true
     add_index :user_data, :stripe_subscription_id
-    add_index :user_data, :payment_failed_at
+    add_index :user_data, :subscription_status
+    add_index :user_data, :subscriptions, using: :gin
   end
 end

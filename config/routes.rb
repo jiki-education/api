@@ -70,6 +70,8 @@ Rails.application.routes.draw do
       post :checkout_session
       post :verify_checkout
       post :portal_session
+      post :update
+      delete :cancel
       get :status
     end
   end
@@ -119,7 +121,7 @@ Rails.application.routes.draw do
   # Dev endpoints
   # Development-only utilities - return 404 in production
   namespace :dev do
-    resources :users, only: [] do
+    resources :users, param: :handle, only: [] do
       member do
         delete :clear_stripe_history
       end

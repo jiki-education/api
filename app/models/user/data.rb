@@ -1,39 +1,38 @@
 class User::Data < ApplicationRecord
   belongs_to :user
 
+  # Subscription status enum
+  enum :subscription_status, {
+    never_subscribed: 0,
+    incomplete: 1,
+    active: 2,
+    payment_failed: 3,
+    cancelling: 4,
+    canceled: 5
+  }, prefix: true
+
   # Membership tier checks
-  def standard?
-    membership_type == "standard"
-  end
-
-  def premium?
-    membership_type == "premium"
-  end
-
-  def max?
-    membership_type == "max"
-  end
+  def standard? = membership_type == "standard"
+  def premium? = membership_type == "premium"
+  def max? = membership_type == "max"
 
   # Payment status - whether subscription payments are current
   def subscription_paid?
     return true if standard? # Free tier is always "paid"
-    return false unless stripe_subscription_status
 
-    %w[active trialing].include?(stripe_subscription_status)
+    subscription_valid_until.present? && subscription_valid_until > Time.current
   end
 
   # Grace period (1 week after payment failure)
   def in_grace_period?
-    return false if subscription_paid?
-    return false unless payment_failed_at
+    return false unless subscription_status_payment_failed?
+    return false unless subscription_valid_until.present?
 
-    payment_failed_at > 1.week.ago
+    grace_period_ends_at > Time.current
   end
 
   def grace_period_ends_at
-    return nil unless in_grace_period?
-
-    payment_failed_at + 1.week
+    subscription_valid_until + 7.days if subscription_valid_until.present?
   end
 
   # Effective access levels (for feature gating)
@@ -43,5 +42,18 @@ class User::Data < ApplicationRecord
 
   def has_max_access?
     max?
+  end
+
+  # Subscription state helpers
+  def can_checkout?
+    subscription_status.in?(%w[never_subscribed canceled])
+  end
+
+  def can_change_tier?
+    subscription_status.in?(%w[active payment_failed cancelling])
+  end
+
+  def current_subscription
+    subscriptions.find { |s| s['ended_at'].nil? }
   end
 end

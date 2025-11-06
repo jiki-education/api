@@ -39,8 +39,15 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "premium", user.data.membership_type
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "active", user.data.stripe_subscription_status
-    refute_nil user.data.subscription_current_period_end
-    assert_nil user.data.payment_failed_at
+    assert_equal "active", user.data.subscription_status
+    refute_nil user.data.subscription_valid_until
+
+    # Verify subscriptions array was initialized
+    assert_equal 1, user.data.subscriptions.length
+    sub_entry = user.data.subscriptions.first
+    assert_equal "sub_123", sub_entry["stripe_subscription_id"]
+    assert_equal "premium", sub_entry["tier"]
+    assert_nil sub_entry["ended_at"]
   end
 
   test "verifies checkout session and updates user subscription data for max" do
@@ -78,6 +85,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
 
     user.data.reload
     assert_equal "max", user.data.membership_type
+    assert_equal "active", user.data.subscription_status
+    assert_equal 1, user.data.subscriptions.length
   end
 
   test "raises SecurityError when session customer does not match user" do

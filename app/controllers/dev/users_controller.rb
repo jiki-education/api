@@ -1,13 +1,14 @@
 class Dev::UsersController < Dev::BaseController
   def clear_stripe_history
-    user = User.find(params[:id])
+    user = User.find_by!(handle: params[:handle])
 
     user.data.update!(
       stripe_customer_id: nil,
       stripe_subscription_id: nil,
       stripe_subscription_status: nil,
-      subscription_current_period_end: nil,
-      payment_failed_at: nil,
+      subscription_status: 'never_subscribed',
+      subscription_valid_until: nil,
+      subscriptions: [],
       membership_type: "standard"
     )
 
@@ -16,7 +17,8 @@ class Dev::UsersController < Dev::BaseController
       user: {
         id: user.id,
         handle: user.handle,
-        membership_type: user.data.membership_type
+        membership_type: user.data.membership_type,
+        subscription_status: user.data.subscription_status
       }
     }, status: :ok
   end
