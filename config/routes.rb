@@ -116,6 +116,16 @@ Rails.application.routes.draw do
     post 'stripe', to: 'stripe#create'
   end
 
+  # Dev endpoints
+  # Development-only utilities - return 404 in production
+  namespace :dev do
+    resources :users, only: [] do
+      member do
+        delete :clear_stripe_history
+      end
+    end
+  end
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
