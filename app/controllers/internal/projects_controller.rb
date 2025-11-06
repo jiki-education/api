@@ -1,4 +1,6 @@
 class Internal::ProjectsController < Internal::BaseController
+  before_action :use_project!, only: [:show]
+
   def index
     projects = Project::Search.(
       title: params[:title],
@@ -12,5 +14,11 @@ class Internal::ProjectsController < Internal::BaseController
       serializer: SerializeProjects,
       serializer_kwargs: { for_user: current_user }
     )
+  end
+
+  def show
+    render json: {
+      project: SerializeProject.(@project)
+    }
   end
 end

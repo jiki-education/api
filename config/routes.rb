@@ -47,7 +47,7 @@ Rails.application.routes.draw do
     end
 
     # Projects with exercise submissions
-    resources :projects, only: [:index], param: :slug do
+    resources :projects, only: [:index, :show], param: :project_slug do
       resources :exercise_submissions, only: [:create], controller: 'projects/exercise_submissions'
     end
 
