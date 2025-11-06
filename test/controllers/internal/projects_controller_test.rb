@@ -7,7 +7,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   # Authentication guards
   guard_incorrect_token! :internal_projects_path, method: :get
-  guard_incorrect_token! :internal_project_path, method: :get, args: proc { { project_slug: "test-project" } }
+  guard_incorrect_token! :internal_project_path, method: :get, args: ["test-project"]
 
   # GET /v1/projects (index) tests
   test "GET index returns projects with unlocked first, then locked" do
@@ -157,11 +157,9 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     get internal_project_path(project_slug: project.slug), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal "calculator", response_json[:project][:slug]
-    assert_equal "Calculator", response_json[:project][:title]
-    assert_equal "Build a calculator", response_json[:project][:description]
+    assert_json_response({
+      project: SerializeProject.(project)
+    })
   end
 
   test "GET show returns 404 for non-existent project" do
@@ -173,22 +171,5 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     response_json = JSON.parse(response.body, symbolize_names: true)
     assert_equal "not_found", response_json[:error][:type]
     assert_equal "Project not found", response_json[:error][:message]
-  end
-
-  test "GET show returns correct fields" do
-    Prosopite.finish
-    project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
-
-    get internal_project_path(project_slug: project.slug), headers: @headers, as: :json
-
-    assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    project_data = response_json[:project]
-    assert_includes project_data.keys, :slug
-    assert_includes project_data.keys, :title
-    assert_includes project_data.keys, :description
-    # Note: Individual project serializer doesn't include status field
-    refute_includes project_data.keys, :status
   end
 end
