@@ -27,15 +27,17 @@ Subscription state is stored in `User::Data` model (`app/models/user/data.rb`):
 
 **Subscription Status Enum:**
 ```ruby
-enum subscription_status: {
+enum :subscription_status, {
   never_subscribed: 0,  # Initial state, user never had a subscription
   incomplete: 1,        # Checkout started, waiting for payment confirmation
   active: 2,            # Has active subscription (includes Stripe trialing status)
   payment_failed: 3,    # Stripe past_due or unpaid - payment issues
   cancelling: 4,        # User canceled, keeps access until period end
   canceled: 5           # Previously had subscription, now canceled/expired
-}
+}, prefix: true
 ```
+
+**Note:** The `prefix: true` option generates method names like `subscription_status_active?` instead of `active?` to avoid conflicts with other methods.
 
 **Subscriptions Array (JSONB):**
 Tracks full subscription history for analytics, customer support, and grace period calculations:
@@ -46,8 +48,8 @@ subscriptions: [
     tier: "premium",
     started_at: "2024-01-15T10:00:00Z",
     ended_at: "2024-06-15T10:00:00Z",
-    end_reason: "canceled",  # canceled, upgraded, downgraded
-    payment_failed_at: nil   # or timestamp if subscription ended due to payment failure
+    end_reason: "canceled",  # canceled, upgraded, downgraded, payment_failed
+    payment_failed_at: nil   # or timestamp if payment failure occurred during this subscription
   },
   {
     stripe_subscription_id: "sub_456",
@@ -60,6 +62,11 @@ subscriptions: [
 ]
 ```
 
+**Notes:**
+- Webhook handlers match subscriptions by `stripe_subscription_id` for accuracy
+- When a user upgrades/downgrades, the old subscription entry is closed (ended_at set, end_reason set) and a new entry is opened
+- `payment_failed_at` is recorded when payment fails, cleared when payment succeeds
+
 **Grace Period Logic:**
 - Grace period is 7 days after the original `subscription_valid_until` (current_period_end)
 - When payment fails, `subscription_valid_until` is NOT modified - it stays at the original period end
@@ -70,8 +77,10 @@ subscriptions: [
 
 **Methods:**
 - `subscription_paid?` - Returns true if `subscription_valid_until > Time.current` or user is on standard tier
-- `in_grace_period?` - Returns true if `payment_failed? && (subscription_valid_until + 7.days) > Time.current`
+- `in_grace_period?` - Returns true if `subscription_status_payment_failed? && (subscription_valid_until + 7.days) > Time.current`
 - `grace_period_ends_at` - Returns `subscription_valid_until + 7.days` if subscription_valid_until is present
+- `can_checkout?` - Returns true if `subscription_status.in?(['never_subscribed', 'canceled'])`
+- `can_change_tier?` - Returns true if `subscription_status.in?(['active', 'payment_failed', 'cancelling'])`
 
 ### Membership Tiers
 
@@ -97,8 +106,8 @@ Creates a Stripe Checkout Session for new subscriptions.
 - `return_url`: Frontend URL to return to after checkout
 
 **Validation:**
-- Blocks if user has `subscription_status` of `active`, `payment_failed`, or `incomplete`
-- Allows if `subscription_status` is `never_subscribed` or `canceled`
+- Blocks if `!user.data.can_checkout?` (i.e., user has `subscription_status` of `active`, `payment_failed`, `cancelling`, or `incomplete`)
+- Allows if `user.data.can_checkout?` (i.e., `subscription_status` is `never_subscribed` or `canceled`)
 
 **Behavior:**
 - Calls `Stripe::CreateCheckoutSession` command
@@ -115,9 +124,9 @@ Updates an existing subscription tier (upgrade/downgrade).
 - `product`: `"premium"` or `"max"`
 
 **Validation:**
-- User must have `subscription_status: active` or `subscription_status: payment_failed`
+- User must have `user.data.can_change_tier?` (i.e., `subscription_status` of `active`, `payment_failed`, or `cancelling`)
 - User must not already be on the requested tier
-- If user has `subscription_status: cancelling`, changing tier will automatically resume subscription
+- If user has `subscription_status: cancelling`, changing tier will automatically resume subscription (Stripe clears `cancel_at_period_end`)
 
 **Behavior:**
 - **Both upgrades and downgrades happen immediately**
@@ -129,7 +138,7 @@ Updates an existing subscription tier (upgrade/downgrade).
 - Calls `Stripe::UpdateSubscription` command
 - Returns new tier and updated `subscription_valid_until`
 
-**Command:** `app/commands/stripe/update_subscription.rb` (to be implemented)
+**Command:** `app/commands/stripe/update_subscription.rb`
 
 ### POST /internal/subscriptions/verify_checkout
 
@@ -175,7 +184,7 @@ Cancels a subscription.
 
 **Also works for incomplete subscriptions** - immediately cancels pending subscription
 
-**Command:** `app/commands/stripe/cancel_subscription.rb` (to be implemented)
+**Command:** `app/commands/stripe/cancel_subscription.rb`
 
 ### GET /internal/subscriptions/status
 
@@ -296,23 +305,22 @@ Webhook endpoint: `POST /webhooks/stripe` (`app/controllers/webhooks/stripe_cont
 
 **Handles:**
 1. **Tier changes** - Detects price changes via `previous_attributes.key?('items')`
-   - Updates `membership_type` when price changes
-   - Updates `subscription_valid_until` to new period end
-   - Updates `subscriptions` array (closes old entry with end_reason, opens new entry)
-   - Logs tier change (upgrade/downgrade)
+   - Matches current subscription in array by `stripe_subscription_id`
+   - Closes old subscription entry: sets `ended_at`, determines `end_reason` (upgraded/downgraded based on tier hierarchy)
+   - Opens new subscription entry with new tier
+   - Updates `membership_type`
    - TODO: Queue email notifications
 
 2. **Status changes** - Updates based on `subscription.status`:
-   - `active` → Set `subscription_status: active`
-   - `trialing` → Set `subscription_status: active` (we don't distinguish trialing in our enum)
-   - `past_due` → Set `subscription_status: payment_failed`, extend `subscription_valid_until` by 7 days for grace period, record `payment_failed_at` in subscriptions array
-   - `unpaid` → Keep `subscription_status: payment_failed`, downgrade `membership_type: standard` (user lost access but subscription still exists)
-   - `canceled` → Set status (actual cleanup happens in `subscription.deleted`)
+   - `active` / `trialing` → Set `subscription_status: 'active'` (unless subscription has `cancel_at_period_end: true`, then preserve 'cancelling' status)
+   - `past_due` → Set `subscription_status: 'payment_failed'`, record `payment_failed_at` in subscriptions array (matched by subscription ID)
+   - `unpaid` → Keep `subscription_status: 'payment_failed'`, downgrade `membership_type: 'standard'` (grace period expired)
+   - `canceled` → Update `stripe_subscription_status` only (cleanup happens in `subscription.deleted`)
    - Other statuses → Update `stripe_subscription_status` only
 
-3. **Cancellation scheduling** - Detects `cancel_at_period_end: true` in Stripe subscription:
-   - Sets `subscription_status: 'cancelling'`
-   - Keeps `subscription_valid_until` unchanged (user keeps access until then)
+3. **Cancellation scheduling** - Detects changes in `cancel_at_period_end`:
+   - If `true` and status not already 'cancelling' → Set `subscription_status: 'cancelling'`
+   - If `false` and status is 'cancelling' → Set `subscription_status: 'active'` (cancellation was undone, e.g., via tier change)
 
 4. **Period updates** - Always updates `subscription_valid_until` from subscription's `current_period_end`
 
@@ -332,7 +340,7 @@ Webhook endpoint: `POST /webhooks/stripe` (`app/controllers/webhooks/stripe_cont
 - `subscription_status: 'canceled'`
 - `stripe_subscription_id: nil` ← **Clears subscription ID**
 - `subscription_valid_until: nil`
-- `subscriptions` array: Updates last entry with `ended_at` and `end_reason` (canceled/payment_failed)
+- `subscriptions` array: Matches subscription by ID, sets `ended_at` and `end_reason` ('canceled' or 'payment_failed' based on previous status)
 
 **Important:** Clearing `stripe_subscription_id` allows user to create new subscription via checkout.
 
@@ -345,9 +353,10 @@ Webhook endpoint: `POST /webhooks/stripe` (`app/controllers/webhooks/stripe_cont
 **Updates:**
 - `stripe_subscription_status: 'active'`
 - `subscription_status: 'active'` (if was `incomplete` or `payment_failed`)
-- Reset `subscription_valid_until` to subscription's `current_period_end` (removes grace period extension)
-- Clear `payment_failed_at` in subscriptions array current entry
-- If subscription was `incomplete`, appends to `subscriptions` array
+- Update `subscription_valid_until` to subscription's `current_period_end`
+- Update `subscriptions` array:
+  - Matches subscription by ID, clears `payment_failed_at` if present
+  - If no matching subscription found, creates new entry (for incomplete subscriptions that just succeeded)
 
 #### invoice.payment_failed
 
@@ -358,10 +367,10 @@ Webhook endpoint: `POST /webhooks/stripe` (`app/controllers/webhooks/stripe_cont
 **Updates:**
 - `stripe_subscription_status: 'past_due'`
 - `subscription_status: 'payment_failed'`
-- Extend `subscription_valid_until` by 7 days from current time (grant grace period)
-- Record `payment_failed_at` in subscriptions array current entry (if not already set)
+- `subscription_valid_until` is NOT modified (stays at original period end)
+- Record `payment_failed_at` in subscriptions array (matches subscription by ID, sets if not already set)
 
-**Grace Period:** Users have 7 days from when we extend `subscription_valid_until` to resolve payment before losing access.
+**Grace Period:** Users have 7 days after `subscription_valid_until` to resolve payment (calculated as `subscription_valid_until + 7.days`). The `subscription_valid_until` field is not extended; grace period is calculated on-the-fly.
 
 ## User Subscription States
 
@@ -475,10 +484,10 @@ Expected data:
 - `stripe_customer_id`: present
 - `stripe_subscription_id`: present
 - `stripe_subscription_status`: `past_due`
-- `subscription_valid_until`: original period end + 7 days
+- `subscription_valid_until`: original period end (NOT extended)
 - `membership_type`: `premium` or `max` (unchanged during grace period)
 - `subscriptions`: Array with current subscription (ended_at: null, payment_failed_at: timestamp)
-- Still has access to paid features while `subscription_valid_until > Time.current`
+- Still has access to paid features while `(subscription_valid_until + 7.days) > Time.current` (grace period calculated, not stored)
 
 User may:
 - ✅ Upgrade/downgrade tier (may help resolve payment issues, immediate with proration)
@@ -486,7 +495,7 @@ User may:
 - ✅ Cancel subscription (becomes `cancelling`)
 - ❌ Create new checkout (already has subscription with issues)
 
-UI should show: "Payment failed. Please update your payment method. Access ends on [subscription_valid_until]."
+UI should show: "Payment failed. Please update your payment method. Access ends on [grace_period_ends_at]." (where grace_period_ends_at = subscription_valid_until + 7 days)
 
 ### 7. Payment Failed - Grace Period Expired
 **`subscription_status`: `payment_failed`**
@@ -635,63 +644,41 @@ These decisions govern how the subscription system behaves in ambiguous scenario
   - Credit automatically applies to next invoice
   - Simpler UX than waiting for period end
 
-## Current Implementation Gaps
+## Implementation Status
 
-Based on code review and decisions above, these features need to be implemented:
+All features described in this document are fully implemented as of Nov 6, 2025:
 
-### 1. Database Schema Changes
-- Add `subscription_status` integer column (enum: never_subscribed=0, incomplete=1, active=2, payment_failed=3, cancelling=4, canceled=5)
-- Rename `subscription_current_period_end` → `subscription_valid_until` timestamp column
-- Add `subscriptions` JSONB array column (default: `[]`)
-- Remove `payment_failed_at` column (tracked in subscriptions array)
-- Remove `cancel_at_period_end` column (tracked via subscription_status enum)
-- Create migration to backfill `subscription_status` from existing data
+### ✅ Database Schema
+- `subscription_status` integer enum column with index
+- `subscription_valid_until` timestamp (renamed from `subscription_current_period_end`)
+- `subscriptions` JSONB array with GIN index
+- Removed: `payment_failed_at`, `cancel_at_period_end`
 
-### 2. Upgrade/Downgrade Endpoint
-- Create `POST /internal/subscriptions/update` endpoint in SubscriptionsController
-- Create `Stripe::UpdateSubscription` command
-- **Both upgrades and downgrades are immediate** with proration
-- Upgrade: `proration_behavior: 'always_invoice'`
-- Downgrade: `proration_behavior: 'create_prorations'`
-- Update `membership_type` and `subscription_valid_until` immediately
-- Add validation: user must have `subscription_status.in?(['active', 'payment_failed', 'cancelling'])`
+### ✅ API Endpoints
+- `POST /internal/subscriptions/update` - Tier changes (immediate upgrades/downgrades)
+- `DELETE /internal/subscriptions/cancel` - Cancel at period end
+- `POST /internal/subscriptions/checkout_session` - Checkout validation with `can_checkout?`
+- `GET /internal/subscriptions/status` - Returns full subscription state
 
-### 3. Cancel Endpoint
-- Create `DELETE /internal/subscriptions/cancel` endpoint
-- Create `Stripe::CancelSubscription` command
-- Call Stripe API with `cancel_at_period_end: true`
-- Set `subscription_status: 'cancelling'`
-- Keep `subscription_valid_until` unchanged
+### ✅ Commands
+- `Stripe::UpdateSubscription` - Handles tier changes with proration
+- `Stripe::CancelSubscription` - Sets cancel_at_period_end
+- All webhook handlers updated for new schema
 
-### 4. Checkout Validation
-- Update `checkout_session` endpoint to validate `subscription_status`
-- Block if status is `active`, `payment_failed`, `cancelling`, or `incomplete`
-- Allow if status is `never_subscribed` or `canceled`
+### ✅ Webhook Handlers
+All handlers updated to maintain `subscription_status` enum and `subscriptions` array:
+- `subscription.created` - Sets incomplete status when appropriate
+- `subscription.updated` - Handles tier changes, cancellation scheduling, status changes
+- `subscription.deleted` - Clears subscription, updates array
+- `invoice.payment_succeeded` - Clears payment_failed_at, handles incomplete→active
+- `invoice.payment_failed` - Records payment_failed_at without extending subscription_valid_until
 
-### 5. Webhook Updates
-- Update all webhook handlers to maintain `subscription_status` enum
-- Update all webhook handlers to maintain `subscriptions` array
-- Update `subscription.updated` to:
-  - Detect `cancel_at_period_end: true` → set `subscription_status: 'cancelling'`
-  - Extend `subscription_valid_until` by 7 days on payment failure
-  - Update `subscription_valid_until` from Stripe's `current_period_end`
-- Update `subscription.created` to set `subscription_status: 'incomplete'` for incomplete subscriptions
-- Update `subscription.deleted` to clear `subscription_valid_until`
-- Update `invoice.payment_failed` to extend `subscription_valid_until` and record in subscriptions array
-
-### 6. Status Endpoint Enhancement
-- Update `/internal/subscriptions/status` to return:
-  - `subscription_status` (our enum)
-  - `subscription_valid_until`
-  - `in_grace_period` (computed)
-  - Remove old fields: `cancel_at_period_end`, `current_period_end`, `payment_failed`
-
-### 7. User Data Model Methods
-- Add `can_checkout?` → `subscription_status.in?(['never_subscribed', 'canceled'])`
-- Add `can_change_tier?` → `subscription_status.in?(['active', 'payment_failed', 'cancelling'])`
-- Update `subscription_paid?` → check `subscription_valid_until > Time.current` or `standard?`
-- Update `in_grace_period?` → `payment_failed? && subscription_valid_until > Time.current`
-- Update `grace_period_ends_at` → returns `subscription_valid_until` if in grace period
+### ✅ User Data Model
+- `can_checkout?` - Returns true for never_subscribed/canceled
+- `can_change_tier?` - Returns true for active/payment_failed/cancelling
+- `subscription_paid?` - Checks subscription_valid_until or standard tier
+- `in_grace_period?` - Calculates grace period as subscription_valid_until + 7 days
+- `grace_period_ends_at` - Returns subscription_valid_until + 7.days
 
 ## Configuration
 
