@@ -28,6 +28,12 @@ Rails.application.routes.draw do
     },
     skip: [:omniauth_callbacks]
 
+  # Refresh token endpoint (outside devise scope)
+  namespace :auth do
+    post "refresh", to: "refresh_tokens#create"
+    delete "logout/all", to: "logout_all#destroy"
+  end
+
   # External (public, unauthenticated) endpoints
   namespace :external do
     resources :concepts, only: %i[index show], param: :concept_slug

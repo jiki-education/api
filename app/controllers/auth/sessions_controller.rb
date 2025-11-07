@@ -3,8 +3,12 @@ class Auth::SessionsController < Devise::SessionsController
 
   private
   def respond_with(resource, _opts = {})
+    # Generate a refresh token for the user
+    refresh_token = User::Jwt::CreateRefreshToken.(resource)
+
     render json: {
-      user: SerializeUser.(resource)
+      user: SerializeUser.(resource),
+      refresh_token: refresh_token.token
     }, status: :ok
   end
 
@@ -18,6 +22,8 @@ class Auth::SessionsController < Devise::SessionsController
   end
 
   def respond_to_on_destroy
+    # Devise JWT automatically handles per-device logout via revoke_jwt
+    # which deletes both the JWT and its associated refresh token
     if current_user
       render json: {}, status: :no_content
     else

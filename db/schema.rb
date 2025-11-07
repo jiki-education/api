@@ -163,6 +163,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.index ["user_id"], name: "index_user_data_on_user_id", unique: true
   end
 
+  create_table "user_jwt_tokens", force: :cascade do |t|
+    t.string "aud"
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "jti", null: false
+    t.bigint "refresh_token_id"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["expires_at"], name: "index_user_jwt_tokens_on_expires_at"
+    t.index ["jti"], name: "index_user_jwt_tokens_on_jti", unique: true
+    t.index ["refresh_token_id"], name: "index_user_jwt_tokens_on_refresh_token_id"
+    t.index ["user_id"], name: "index_user_jwt_tokens_on_user_id"
+  end
+
   create_table "user_lessons", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -201,6 +215,18 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.index ["user_id", "project_id"], name: "index_user_projects_on_user_id_and_project_id", unique: true
   end
 
+  create_table "user_refresh_tokens", force: :cascade do |t|
+    t.string "aud"
+    t.datetime "created_at", null: false
+    t.string "crypted_token", null: false
+    t.datetime "expires_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["crypted_token"], name: "index_user_refresh_tokens_on_crypted_token", unique: true
+    t.index ["expires_at"], name: "index_user_refresh_tokens_on_expires_at"
+    t.index ["user_id"], name: "index_user_refresh_tokens_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
     t.datetime "created_at", null: false
@@ -208,17 +234,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "handle", null: false
-    t.string "jti", null: false
     t.string "locale", default: "en", null: false
     t.string "name"
-    t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.datetime "updated_at", null: false
     t.index ["current_user_level_id"], name: "index_users_on_current_user_level_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["handle"], name: "index_users_on_handle", unique: true
-    t.index ["jti"], name: "index_users_on_jti", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
@@ -264,6 +287,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
   add_foreign_key "lessons", "levels"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "user_data", "users"
+  add_foreign_key "user_jwt_tokens", "user_refresh_tokens", column: "refresh_token_id"
+  add_foreign_key "user_jwt_tokens", "users"
   add_foreign_key "user_lessons", "lessons"
   add_foreign_key "user_lessons", "users"
   add_foreign_key "user_levels", "levels"
@@ -271,6 +296,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
   add_foreign_key "user_levels", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
+  add_foreign_key "user_refresh_tokens", "users"
   add_foreign_key "users", "user_levels", column: "current_user_level_id"
   add_foreign_key "video_production_nodes", "video_production_pipelines", column: "pipeline_id", on_delete: :cascade
 end

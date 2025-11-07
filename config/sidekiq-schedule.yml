@@ -1,0 +1,9 @@
+# Sidekiq Scheduler Configuration
+# Runs recurring/scheduled jobs via sidekiq-scheduler gem
+
+# Cleanup expired authentication tokens every hour
+# Deletes tokens that expired over 1 hour ago (buffer to avoid edge cases)
+cleanup_expired_auth_tokens:
+  interval: "1h"
+  class: "Auth::CleanupExpiredTokensJob"
+  queue: default

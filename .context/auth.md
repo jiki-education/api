@@ -53,38 +53,42 @@ This document describes the authentication system for the Jiki API and its integ
 
 #### Registration
 1. User fills registration form on frontend
-2. Frontend POSTs to `/api/v1/auth/signup`
+2. Frontend POSTs to `/auth/signup`
 3. API creates user, generates JWT
 4. API returns JWT + user data
 5. Frontend stores JWT, updates auth state
 
 #### Login
 1. User enters credentials on frontend
-2. Frontend POSTs to `/api/v1/auth/login`
+2. Frontend POSTs to `/auth/login`
 3. API validates credentials, generates JWT
 4. API returns JWT + user data
 5. Frontend stores JWT, updates auth state
 
 #### Password Reset
 1. User requests reset on frontend
-2. Frontend POSTs email to `/api/v1/auth/password`
+2. Frontend POSTs email to `/auth/password`
 3. API sends email with frontend reset URL + token
 4. User clicks link, lands on frontend reset form
-5. Frontend PATCHes new password + token to `/api/v1/auth/password`
+5. Frontend PATCHes new password + token to `/auth/password`
 6. API validates token, updates password
 7. Frontend can auto-login or redirect to login
 
 #### JWT Token Lifecycle
-- **Generation**: On login/registration
-- **Expiry**: 30 days (configurable)
-- **Revocation**: On logout (using JTIMatcher strategy)
-- **Refresh**: Not implemented (tokens are long-lived)
+- **Generation**: On login/registration (dual-token system)
+- **Access Token Expiry**: 1 hour (short-lived for security)
+- **Refresh Token Expiry**: 30 days (long-lived for UX)
+- **Revocation**: On logout (using Allowlist strategy)
+- **Refresh**: POST /auth/refresh with refresh token to get new access token
+- **Multi-Device Support**: Users can have multiple active sessions across devices
+- **Per-Device Logout**: `/auth/logout` logs out current device only
+- **Global Logout**: `/auth/logout/all` logs out all devices
 
 ## API Endpoints
 
 ### Authentication Endpoints
 
-#### POST /api/v1/auth/signup
+#### POST /auth/signup
 Register a new user account.
 
 **Request:**
@@ -107,12 +111,13 @@ Register a new user account.
     "email": "user@example.com",
     "name": "John Doe",
     "created_at": "2024-01-01T00:00:00Z"
-  }
+  },
+  "refresh_token": "long_lived_refresh_token_here"
 }
 ```
 **Headers:**
 ```
-Authorization: Bearer <jwt_token>
+Authorization: Bearer <short_lived_access_token>
 ```
 
 **Error Response (422):**
@@ -129,7 +134,7 @@ Authorization: Bearer <jwt_token>
 }
 ```
 
-#### POST /api/v1/auth/login
+#### POST /auth/login
 Authenticate and receive JWT token.
 
 **Request:**
@@ -150,12 +155,13 @@ Authenticate and receive JWT token.
     "email": "user@example.com",
     "name": "John Doe",
     "created_at": "2024-01-01T00:00:00Z"
-  }
+  },
+  "refresh_token": "long_lived_refresh_token_here"
 }
 ```
 **Headers:**
 ```
-Authorization: Bearer <jwt_token>
+Authorization: Bearer <short_lived_access_token>
 ```
 
 **Error Response (401):**
@@ -168,8 +174,26 @@ Authorization: Bearer <jwt_token>
 }
 ```
 
-#### DELETE /api/v1/auth/logout
-Revoke the current JWT token.
+#### DELETE /auth/logout
+Logout from the current device only. Revokes JWT access tokens and refresh tokens for the device making the request, identified by User-Agent header.
+
+**Headers Required:**
+```
+Authorization: Bearer <jwt_token>
+User-Agent: <device_identifier>
+```
+
+**Success Response (204):**
+No content
+
+**Behavior:**
+- Identifies the current device using the User-Agent from the JWT's `aud` field
+- Deletes all JWT tokens with matching `aud` for this user
+- Deletes all refresh tokens with matching `aud` for this user
+- Other devices remain logged in and functional
+
+#### DELETE /auth/logout/all
+Logout from ALL devices. Revokes all JWT access tokens and refresh tokens for the user across all devices.
 
 **Headers Required:**
 ```
@@ -179,7 +203,64 @@ Authorization: Bearer <jwt_token>
 **Success Response (204):**
 No content
 
-#### POST /api/v1/auth/password
+**Behavior:**
+- Deletes ALL JWT tokens for this user
+- Deletes ALL refresh tokens for this user
+- User is logged out from every device
+- Useful for security scenarios (e.g., "I lost my phone")
+
+#### POST /auth/refresh
+Refresh an expired access token using a refresh token.
+
+**Request:**
+```json
+{
+  "refresh_token": "long_lived_refresh_token_here"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "message": "Access token refreshed successfully"
+}
+```
+**Headers:**
+```
+Authorization: Bearer <new_short_lived_access_token>
+```
+
+**Error Response (401 - Invalid):**
+```json
+{
+  "error": {
+    "type": "invalid_token",
+    "message": "Invalid refresh token"
+  }
+}
+```
+
+**Error Response (401 - Expired):**
+```json
+{
+  "error": {
+    "type": "expired_token",
+    "message": "Refresh token has expired"
+  }
+}
+```
+
+**Error Response (400 - Missing):**
+```json
+{
+  "error": {
+    "type": "invalid_request",
+    "message": "Refresh token is required"
+  }
+}
+```
+
+#### POST /auth/password
 Request password reset email.
 
 **Request:**
@@ -198,7 +279,7 @@ Request password reset email.
 }
 ```
 
-#### PATCH /api/v1/auth/password
+#### PATCH /auth/password
 Reset password with token.
 
 **Request:**
@@ -231,7 +312,7 @@ Reset password with token.
 
 ### Future OAuth Endpoints
 
-#### POST /api/v1/auth/google
+#### POST /auth/google
 Authenticate with Google OAuth token.
 
 **Request:**
@@ -278,17 +359,33 @@ import { persist } from 'zustand/middleware';
 const useAuthStore = create(
   persist(
     (set, get) => ({
-      token: null,
+      accessToken: null,      // Short-lived (1 hour), stored in memory/sessionStorage
+      refreshToken: null,     // Long-lived (30 days), stored in localStorage
       user: null,
 
-      setAuth: (token, user) => set({ token, user }),
+      setAuth: (accessToken, refreshToken, user) => set({
+        accessToken,
+        refreshToken,
+        user
+      }),
 
-      clearAuth: () => set({ token: null, user: null }),
+      setAccessToken: (accessToken) => set({ accessToken }),
 
-      isAuthenticated: () => !!get().token,
+      clearAuth: () => set({
+        accessToken: null,
+        refreshToken: null,
+        user: null
+      }),
+
+      isAuthenticated: () => !!get().accessToken,
     }),
     {
       name: 'auth-storage',
+      // Only persist refreshToken and user, not accessToken
+      partialize: (state) => ({
+        refreshToken: state.refreshToken,
+        user: state.user
+      }),
     }
   )
 );
@@ -305,33 +402,90 @@ const apiClient = axios.create({
   },
 });
 
-// Request interceptor to add auth token
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
+// Request interceptor to add access token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const accessToken = useAuthStore.getState().accessToken;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to extract token
+// Response interceptor to handle token refresh
 apiClient.interceptors.response.use(
   (response) => {
-    const token = response.headers.authorization?.replace('Bearer ', '');
-    if (token) {
-      const user = response.data.user;
-      useAuthStore.getState().setAuth(token, user);
+    // Extract access token from login/signup responses
+    const accessToken = response.headers.authorization?.replace('Bearer ', '');
+    if (accessToken && response.data.user) {
+      const { user, refresh_token } = response.data;
+      useAuthStore.getState().setAuth(accessToken, refresh_token, user);
     }
     return response;
   },
-  (error) => {
-    if (error.response?.status === 401) {
-      useAuthStore.getState().clearAuth();
-      window.location.href = '/login';
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If 401 and we haven't tried to refresh yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // Queue this request to retry after refresh completes
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return apiClient(originalRequest);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshToken = useAuthStore.getState().refreshToken;
+      if (!refreshToken) {
+        useAuthStore.getState().clearAuth();
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+
+      try {
+        const response = await apiClient.post('/auth/refresh', {
+          refresh_token: refreshToken
+        });
+
+        const newAccessToken = response.headers.authorization?.replace('Bearer ', '');
+        useAuthStore.getState().setAccessToken(newAccessToken);
+
+        processQueue(null, newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        useAuthStore.getState().clearAuth();
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   }
 );
@@ -345,7 +499,7 @@ export const useAuth = () => {
 
   const login = useMutation({
     mutationFn: async ({ email, password }) => {
-      const response = await apiClient.post('/api/v1/auth/login', {
+      const response = await apiClient.post('/auth/login', {
         user: { email, password }
       });
       return response.data;
@@ -354,7 +508,7 @@ export const useAuth = () => {
 
   const register = useMutation({
     mutationFn: async ({ email, password, name }) => {
-      const response = await apiClient.post('/api/v1/auth/signup', {
+      const response = await apiClient.post('/auth/signup', {
         user: { email, password, password_confirmation: password, name }
       });
       return response.data;
@@ -363,7 +517,14 @@ export const useAuth = () => {
 
   const logout = useMutation({
     mutationFn: async () => {
-      await apiClient.delete('/api/v1/auth/logout');
+      await apiClient.delete('/auth/logout');
+      clearAuth();
+    },
+  });
+
+  const logoutAll = useMutation({
+    mutationFn: async () => {
+      await apiClient.delete('/auth/logout/all');
       clearAuth();
     },
   });
@@ -375,6 +536,7 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    logoutAll,
   };
 };
 ```
@@ -411,41 +573,57 @@ create_table :users do |t|
   t.string   :reset_password_token
   t.datetime :reset_password_sent_at
 
-  # Devise rememberable
-  t.datetime :remember_created_at
-
-  # Devise trackable
-  t.integer  :sign_in_count, default: 0, null: false
-  t.datetime :current_sign_in_at
-  t.datetime :last_sign_in_at
-  t.string   :current_sign_in_ip
-  t.string   :last_sign_in_ip
+  # User profile
+  t.string :locale, null: false, default: "en"
 
   # OAuth ready fields (for future)
   t.string :google_id
   t.string :github_id
   t.string :provider
 
-  # JWT revocation
-  t.string :jti, null: false
-
   t.timestamps
 end
 
 add_index :users, :email, unique: true
 add_index :users, :reset_password_token, unique: true
-add_index :users, :jti, unique: true
 add_index :users, :google_id, unique: true
 add_index :users, :github_id, unique: true
+
+# JWT Allowlist - stores active access tokens (1 hour expiry)
+create_table :user_jwt_tokens do |t|
+  t.references :user, null: false, foreign_key: true
+  t.string :jti, null: false         # JWT ID from token payload
+  t.string :aud                      # Device identifier (User-Agent)
+  t.datetime :exp, null: false       # Expiration time
+  t.timestamps
+end
+
+add_index :user_jwt_tokens, :jti, unique: true
+
+# Refresh Tokens - stores long-lived refresh tokens (30 days)
+create_table :user_refresh_tokens do |t|
+  t.references :user, null: false, foreign_key: true
+  t.string :crypted_token, null: false  # SHA256 hash of refresh token
+  t.string :aud                         # Device identifier (User-Agent)
+  t.datetime :exp, null: false          # Expiration time
+  t.timestamps
+end
+
+add_index :user_refresh_tokens, :crypted_token, unique: true
 ```
 
 ## Security Considerations
 
 ### JWT Token Security
-- Tokens are signed with Rails secret key
-- JTI (JWT ID) used for revocation tracking
-- Tokens expire after 30 days
-- Revoked tokens are blacklisted via JTIMatcher
+- **Dual-Token System**: Access tokens (1hr) + Refresh tokens (30 days)
+- **Access Tokens**: Signed with Rails secret key, stored in Allowlist table
+- **Refresh Tokens**: SHA256 hashed before storage (like passwords)
+- **JTI (JWT ID)**: Used for tracking and revoking individual access tokens
+- **Multi-Device Support**: Users can have multiple active sessions
+- **Revocation**: Allowlist strategy - tokens must exist in db to be valid
+- **Device Tracking**: User-Agent stored in `aud` field for session management
+- **Automated Token Cleanup**: Hourly Sidekiq job removes tokens expired >1 hour ago
+- **Database Indexes**: `expires_at` indexed on both tables for efficient cleanup queries
 
 ### Password Security
 - Minimum 6 characters required
@@ -454,10 +632,14 @@ add_index :users, :github_id, unique: true
 - Reset tokens are single-use
 
 ### Frontend Security
-- XSS Protection: Sanitize all user input
-- Token Storage: Consider memory-only storage for high security
-- HTTPS Required: Always use HTTPS in production
-- CORS: Restrict to known frontend domains
+- **XSS Protection**: Sanitize all user input
+- **Token Storage Strategy**:
+  - Access tokens: sessionStorage or memory (short-lived, less critical)
+  - Refresh tokens: localStorage (long-lived, enables persistence)
+- **HTTPS Required**: Always use HTTPS in production
+- **CORS**: Restrict to known frontend domains
+- **Token Refresh**: Automatic refresh on 401 minimizes exposure window
+- **Request Queueing**: Multiple concurrent 401s handled gracefully
 
 ### API Security
 - Rate limiting on auth endpoints (implement with rack-attack)
@@ -513,6 +695,40 @@ end
 
 **Note**: Uses `Jiki.config.frontend_base_url` from `../config/settings/*.yml` files.
 
+## Background Jobs
+
+### Token Cleanup Job
+
+**Purpose**: Automatically remove expired tokens to prevent database growth
+
+**Schedule**: Runs hourly via `sidekiq-scheduler`
+
+**Configuration**: `config/sidekiq-schedule.yml`
+```yaml
+cleanup_expired_auth_tokens:
+  interval: "1h"
+  class: "Auth::CleanupExpiredTokensJob"
+  queue: default
+```
+
+**Implementation**: `app/jobs/auth/cleanup_expired_tokens_job.rb`
+- Deletes JWT access tokens where `expires_at < 1.hour.ago`
+- Deletes refresh tokens where `expires_at < 1.hour.ago`
+- 1-hour buffer prevents edge cases during token validation
+- Logs deletion counts for monitoring
+
+**Manual Execution**:
+```ruby
+# In Rails console
+Auth::CleanupExpiredTokensJob.perform_now
+```
+
+**Database Impact**:
+- With 1M users, avg 2 devices, 30-day retention:
+  - Without cleanup: ~60M tokens/month (unbounded growth)
+  - With hourly cleanup: ~2M active tokens (bounded)
+- `expires_at` indexes enable efficient deletion queries
+
 ## Monitoring & Debugging
 
 ### Logging
@@ -527,6 +743,7 @@ end
 - Password reset completion rate
 - Average session duration
 - Token refresh patterns
+- Expired tokens cleaned per hour (via `Auth::CleanupExpiredTokensJob` logs)
 
 ### Common Issues & Solutions
 1. **CORS errors**: Check origins in cors.rb
@@ -549,4 +766,4 @@ end
 - [ ] Magic link authentication
 - [ ] Biometric authentication (mobile)
 - [ ] Single Sign-On (SSO)
-- [ ] Multi-device session management
+- [x] Multi-device session management (✅ Implemented with Allowlist strategy)

@@ -1,10 +1,10 @@
 class User < ApplicationRecord
-  include Devise::JWT::RevocationStrategies::JTIMatcher
+  include Devise::JwtStrategy
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-    :recoverable, :rememberable, :validatable,
+    :recoverable, :validatable,
     :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true
@@ -13,6 +13,7 @@ class User < ApplicationRecord
   has_many :lessons, through: :user_lessons
   has_many :user_levels, dependent: :destroy
   has_many :levels, through: :user_levels
+  has_many :refresh_tokens, class_name: "User::RefreshToken", dependent: :destroy
   has_many :user_projects, dependent: :destroy
   has_many :projects, through: :user_projects
 
@@ -25,14 +26,11 @@ class User < ApplicationRecord
   validates :locale, presence: true, inclusion: { in: %w[en hu] }
   validates :handle, presence: true, uniqueness: true
 
-  before_create do
-    # Generate a unique JTI (JWT ID) for each user on creation
-    self.jti = SecureRandom.uuid
-  end
-
-  # Override devise-jwt to add custom claims to JWT payload
+  # Add custom claims to JWT payload
+  # This method is called by Warden::JWTAuth::PayloadUserHelper
+  # and merged with the base payload (sub, scp, etc)
   def jwt_payload
-    super.merge('membershipType' => data.membership_type)
+    { 'membershipType' => data&.membership_type || 'standard' }
   end
 
   # Placeholder for email preferences - always allow emails for now
