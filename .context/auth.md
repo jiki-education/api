@@ -53,24 +53,24 @@ This document describes the authentication system for the Jiki API and its integ
 
 #### Registration
 1. User fills registration form on frontend
-2. Frontend POSTs to `/api/v1/auth/signup`
+2. Frontend POSTs to `/auth/signup`
 3. API creates user, generates JWT
 4. API returns JWT + user data
 5. Frontend stores JWT, updates auth state
 
 #### Login
 1. User enters credentials on frontend
-2. Frontend POSTs to `/api/v1/auth/login`
+2. Frontend POSTs to `/auth/login`
 3. API validates credentials, generates JWT
 4. API returns JWT + user data
 5. Frontend stores JWT, updates auth state
 
 #### Password Reset
 1. User requests reset on frontend
-2. Frontend POSTs email to `/api/v1/auth/password`
+2. Frontend POSTs email to `/auth/password`
 3. API sends email with frontend reset URL + token
 4. User clicks link, lands on frontend reset form
-5. Frontend PATCHes new password + token to `/api/v1/auth/password`
+5. Frontend PATCHes new password + token to `/auth/password`
 6. API validates token, updates password
 7. Frontend can auto-login or redirect to login
 
@@ -79,14 +79,16 @@ This document describes the authentication system for the Jiki API and its integ
 - **Access Token Expiry**: 1 hour (short-lived for security)
 - **Refresh Token Expiry**: 30 days (long-lived for UX)
 - **Revocation**: On logout (using Allowlist strategy)
-- **Refresh**: POST /v1/auth/refresh with refresh token to get new access token
+- **Refresh**: POST /auth/refresh with refresh token to get new access token
 - **Multi-Device Support**: Users can have multiple active sessions across devices
+- **Per-Device Logout**: `/auth/logout` logs out current device only
+- **Global Logout**: `/auth/logout/all` logs out all devices
 
 ## API Endpoints
 
 ### Authentication Endpoints
 
-#### POST /api/v1/auth/signup
+#### POST /auth/signup
 Register a new user account.
 
 **Request:**
@@ -132,7 +134,7 @@ Authorization: Bearer <short_lived_access_token>
 }
 ```
 
-#### POST /api/v1/auth/login
+#### POST /auth/login
 Authenticate and receive JWT token.
 
 **Request:**
@@ -172,8 +174,26 @@ Authorization: Bearer <short_lived_access_token>
 }
 ```
 
-#### DELETE /api/v1/auth/logout
-Revoke all refresh tokens for the user (logs out from all devices).
+#### DELETE /auth/logout
+Logout from the current device only. Revokes JWT access tokens and refresh tokens for the device making the request, identified by User-Agent header.
+
+**Headers Required:**
+```
+Authorization: Bearer <jwt_token>
+User-Agent: <device_identifier>
+```
+
+**Success Response (204):**
+No content
+
+**Behavior:**
+- Identifies the current device using the User-Agent from the JWT's `aud` field
+- Deletes all JWT tokens with matching `aud` for this user
+- Deletes all refresh tokens with matching `aud` for this user
+- Other devices remain logged in and functional
+
+#### DELETE /auth/logout/all
+Logout from ALL devices. Revokes all JWT access tokens and refresh tokens for the user across all devices.
 
 **Headers Required:**
 ```
@@ -183,7 +203,13 @@ Authorization: Bearer <jwt_token>
 **Success Response (204):**
 No content
 
-#### POST /v1/auth/refresh
+**Behavior:**
+- Deletes ALL JWT tokens for this user
+- Deletes ALL refresh tokens for this user
+- User is logged out from every device
+- Useful for security scenarios (e.g., "I lost my phone")
+
+#### POST /auth/refresh
 Refresh an expired access token using a refresh token.
 
 **Request:**
@@ -234,7 +260,7 @@ Authorization: Bearer <new_short_lived_access_token>
 }
 ```
 
-#### POST /api/v1/auth/password
+#### POST /auth/password
 Request password reset email.
 
 **Request:**
@@ -253,7 +279,7 @@ Request password reset email.
 }
 ```
 
-#### PATCH /api/v1/auth/password
+#### PATCH /auth/password
 Reset password with token.
 
 **Request:**
@@ -286,7 +312,7 @@ Reset password with token.
 
 ### Future OAuth Endpoints
 
-#### POST /api/v1/auth/google
+#### POST /auth/google
 Authenticate with Google OAuth token.
 
 **Request:**
@@ -439,7 +465,7 @@ apiClient.interceptors.response.use(
       }
 
       try {
-        const response = await apiClient.post('/v1/auth/refresh', {
+        const response = await apiClient.post('/auth/refresh', {
           refresh_token: refreshToken
         });
 
@@ -473,7 +499,7 @@ export const useAuth = () => {
 
   const login = useMutation({
     mutationFn: async ({ email, password }) => {
-      const response = await apiClient.post('/api/v1/auth/login', {
+      const response = await apiClient.post('/auth/login', {
         user: { email, password }
       });
       return response.data;
@@ -482,7 +508,7 @@ export const useAuth = () => {
 
   const register = useMutation({
     mutationFn: async ({ email, password, name }) => {
-      const response = await apiClient.post('/api/v1/auth/signup', {
+      const response = await apiClient.post('/auth/signup', {
         user: { email, password, password_confirmation: password, name }
       });
       return response.data;
@@ -491,7 +517,14 @@ export const useAuth = () => {
 
   const logout = useMutation({
     mutationFn: async () => {
-      await apiClient.delete('/api/v1/auth/logout');
+      await apiClient.delete('/auth/logout');
+      clearAuth();
+    },
+  });
+
+  const logoutAll = useMutation({
+    mutationFn: async () => {
+      await apiClient.delete('/auth/logout/all');
       clearAuth();
     },
   });
@@ -503,6 +536,7 @@ export const useAuth = () => {
     login,
     register,
     logout,
+    logoutAll,
   };
 };
 ```

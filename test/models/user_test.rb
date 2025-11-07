@@ -78,7 +78,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "JWT revocation strategy included" do
-    assert_includes User.included_modules, Devise::JWT::RevocationStrategies::Allowlist
+    assert_includes User.included_modules, Devise::JwtStrategy
   end
 
   test "deleting user cascades to delete user_lessons and user_levels" do
@@ -96,6 +96,33 @@ class UserTest < ActiveSupport::TestCase
 
     refute UserLevel.exists?(user_level_id)
     refute UserLesson.exists?(user_lesson_id)
+  end
+
+  test "deleting user cascades to delete jwt_tokens and refresh_tokens" do
+    user = create(:user)
+
+    # Create JWT tokens (simulating user logins)
+    jwt_token = user.jwt_tokens.create!(
+      jti: SecureRandom.uuid,
+      aud: "Test Device",
+      expires_at: 1.hour.from_now
+    )
+
+    # Create refresh tokens
+    refresh_token = user.refresh_tokens.create!(
+      aud: "Test Device",
+      expires_at: 30.days.from_now
+    )
+
+    jwt_token_id = jwt_token.id
+    refresh_token_id = refresh_token.id
+
+    # Destroy the user
+    user.destroy!
+
+    # Verify tokens were deleted
+    refute User::JwtToken.exists?(jwt_token_id)
+    refute User::RefreshToken.exists?(refresh_token_id)
   end
 
   test "automatically creates data record on user creation" do

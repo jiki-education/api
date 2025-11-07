@@ -125,13 +125,12 @@ class MultiDeviceAuthenticationTest < ActionDispatch::IntegrationTest
 
     assert_response :no_content
 
-    # All refresh tokens are revoked on logout
-    # This is current behavior - logout revokes ALL sessions
+    # Per-device logout: only device 1's refresh token is revoked
+    # Device 2's refresh token remains active
     @user.reload
-    assert_equal 0, @user.refresh_tokens.count
+    assert_equal 1, @user.refresh_tokens.count
 
-    # Device 2's access token should still work (it's still in allowlist)
-    # even though refresh tokens are gone
+    # Device 2's access token should still work
     get user_levels_index_path,
       headers: { "Authorization" => device2_access_token },
       as: :json

@@ -168,10 +168,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.datetime "created_at", null: false
     t.datetime "expires_at", null: false
     t.string "jti", null: false
+    t.bigint "refresh_token_id"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["expires_at"], name: "index_user_jwt_tokens_on_expires_at"
     t.index ["jti"], name: "index_user_jwt_tokens_on_jti", unique: true
+    t.index ["refresh_token_id"], name: "index_user_jwt_tokens_on_refresh_token_id"
     t.index ["user_id"], name: "index_user_jwt_tokens_on_user_id"
   end
 
@@ -285,6 +287,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
   add_foreign_key "lessons", "levels"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "user_data", "users"
+  add_foreign_key "user_jwt_tokens", "user_refresh_tokens", column: "refresh_token_id"
   add_foreign_key "user_jwt_tokens", "users"
   add_foreign_key "user_lessons", "lessons"
   add_foreign_key "user_lessons", "users"

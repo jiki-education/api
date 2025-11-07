@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   # Refresh token endpoint (outside devise scope)
   namespace :auth do
     post "refresh", to: "refresh_tokens#create"
+    delete "logout/all", to: "logout_all#destroy"
   end
 
   # External (public, unauthenticated) endpoints

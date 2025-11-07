@@ -1,7 +1,13 @@
 class ApplicationController < ActionController::API
   include MetaResponseWrapper
 
+  before_action :set_current_user_agent
+
   private
+  def set_current_user_agent
+    Current.user_agent = request.headers["User-Agent"]
+  end
+
   def authenticate_user!
     # Don't interfere with Devise's own controllers
     return super if devise_controller?

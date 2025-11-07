@@ -12,7 +12,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
       expires_at: 30.days.from_now
     )
 
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: refresh_token.token
     }, as: :json
 
@@ -28,7 +28,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
   end
 
   test "POST refresh with invalid token returns 401" do
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: "invalid_token_that_does_not_exist"
     }, as: :json
 
@@ -51,7 +51,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
 
     token_id = refresh_token.id
 
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: refresh_token.token
     }, as: :json
 
@@ -69,7 +69,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
   end
 
   test "POST refresh without token parameter returns 400" do
-    post refresh_path, params: {}, as: :json
+    post auth_refresh_path, params: {}, as: :json
 
     assert_response :bad_request
 
@@ -82,7 +82,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
   end
 
   test "POST refresh with blank token returns 400" do
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: ""
     }, as: :json
 
@@ -101,7 +101,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
 
     initial_jwt_count = @user.jwt_tokens.count
 
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: refresh_token.token
     }, as: :json
 
@@ -119,7 +119,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
     )
 
     # First refresh
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: refresh_token.token
     }, as: :json
 
@@ -127,7 +127,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
     first_access_token = response.headers["Authorization"]
 
     # Second refresh with same refresh token
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: refresh_token.token
     }, as: :json
 
@@ -164,7 +164,7 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
     assert_response :no_content
 
     # Try to refresh with the now-revoked token
-    post refresh_path, params: {
+    post auth_refresh_path, params: {
       refresh_token: refresh_token_value
     }, as: :json
 
@@ -172,10 +172,5 @@ class Auth::RefreshTokensControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "invalid_token", json["error"]["type"]
-  end
-
-  private
-  def refresh_path
-    "/auth/refresh"
   end
 end

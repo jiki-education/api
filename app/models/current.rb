@@ -1,7 +1,7 @@
 # Provides request-scoped attributes using ActiveSupport::CurrentAttributes
 # Automatically resets after each request, ensuring thread-safety
 class Current < ActiveSupport::CurrentAttributes
-  attribute :events
+  attribute :events, :refresh_token_id, :user_agent, :jwt_record_id
 
   # Adds an event to the current request's event collection
   #

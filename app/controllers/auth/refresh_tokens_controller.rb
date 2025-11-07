@@ -40,6 +40,9 @@ class Auth::RefreshTokensController < ApplicationController
 
     user = refresh_token.user
 
+    # Set refresh_token_id for JWT payload generation
+    Current.refresh_token_id = refresh_token.id
+
     # Generate a new JWT access token
     # Since we're not going through Devise's dispatch_requests,
     # we need to manually add the token to the allowlist
@@ -49,6 +52,7 @@ class Auth::RefreshTokensController < ApplicationController
     user.jwt_tokens.create!(
       jti: payload["jti"],
       aud: payload["aud"],
+      refresh_token_id: refresh_token.id,
       expires_at: Time.zone.at(payload["exp"].to_i)
     )
 
