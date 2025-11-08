@@ -226,18 +226,4 @@ class Internal::SubscriptionsController < Internal::BaseController
       }
     }, status: :internal_server_error
   end
-
-  # GET /internal/subscriptions/status
-  # Returns the current subscription status for the authenticated user
-  def status
-    render json: {
-      subscription: {
-        tier: current_user.data.membership_type,
-        subscription_status: current_user.data.subscription_status,
-        subscription_valid_until: current_user.data.subscription_valid_until,
-        in_grace_period: current_user.data.in_grace_period?,
-        grace_period_ends_at: current_user.data.grace_period_ends_at
-      }
-    }
-  end
 end

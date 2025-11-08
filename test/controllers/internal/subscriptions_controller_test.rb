@@ -12,7 +12,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :internal_subscriptions_portal_session_path, method: :post
   guard_incorrect_token! :internal_subscriptions_update_path, method: :post
   guard_incorrect_token! :internal_subscriptions_cancel_path, method: :delete
-  guard_incorrect_token! :internal_subscriptions_status_path, method: :get
 
   ### checkout_session tests ###
 
@@ -334,66 +333,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :internal_server_error
     json = response.parsed_body
     assert_equal "portal_failed", json["error"]["type"]
-  end
-
-  ### status tests ###
-
-  test "GET status returns subscription data for standard user" do
-    get internal_subscriptions_status_path,
-      headers: @headers,
-      as: :json
-
-    assert_response :success
-    json = response.parsed_body
-
-    assert_equal "standard", json["subscription"]["tier"]
-    assert_equal "never_subscribed", json["subscription"]["subscription_status"]
-    assert_nil json["subscription"]["subscription_valid_until"]
-    refute json["subscription"]["in_grace_period"]
-    assert_nil json["subscription"]["grace_period_ends_at"]
-  end
-
-  test "GET status returns subscription data for premium user with active subscription" do
-    @user.data.update!(
-      membership_type: "premium",
-      stripe_subscription_status: "active",
-      subscription_status: "active",
-      subscription_valid_until: 1.month.from_now
-    )
-
-    get internal_subscriptions_status_path,
-      headers: @headers,
-      as: :json
-
-    assert_response :success
-    json = response.parsed_body
-
-    assert_equal "premium", json["subscription"]["tier"]
-    assert_equal "active", json["subscription"]["subscription_status"]
-    refute_nil json["subscription"]["subscription_valid_until"]
-    refute json["subscription"]["in_grace_period"]
-  end
-
-  test "GET status returns subscription data for user in grace period" do
-    period_end = 3.days.ago # Expired but within grace period
-    @user.data.update!(
-      membership_type: "max",
-      stripe_subscription_status: "past_due",
-      subscription_status: "payment_failed",
-      subscription_valid_until: period_end
-    )
-
-    get internal_subscriptions_status_path,
-      headers: @headers,
-      as: :json
-
-    assert_response :success
-    json = response.parsed_body
-
-    assert_equal "max", json["subscription"]["tier"]
-    assert_equal "payment_failed", json["subscription"]["subscription_status"]
-    assert json["subscription"]["in_grace_period"]
-    refute_nil json["subscription"]["grace_period_ends_at"]
   end
 
   ### update tests ###
