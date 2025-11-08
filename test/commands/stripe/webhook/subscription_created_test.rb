@@ -12,6 +12,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
 
     item = mock
     item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(period_end.to_i)
 
     items = mock
     items.stubs(:data).returns([item])
@@ -20,7 +21,6 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     subscription.stubs(:customer).returns("cus_123")
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(period_end.to_i)
     subscription.stubs(:items).returns(items)
 
     event = mock
@@ -54,6 +54,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
 
     item = mock
     item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(1.month.from_now.to_i)
 
     items = mock
     items.stubs(:data).returns([item])
@@ -62,7 +63,6 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     subscription.stubs(:customer).returns("cus_123")
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(1.month.from_now.to_i)
     subscription.stubs(:items).returns(items)
 
     event = mock
@@ -84,6 +84,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
 
     item = mock
     item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(1.day.from_now.to_i)
 
     items = mock
     items.stubs(:data).returns([item])
@@ -92,7 +93,6 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     subscription.stubs(:customer).returns("cus_123")
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("incomplete")
-    subscription.stubs(:current_period_end).returns(1.day.from_now.to_i)
     subscription.stubs(:items).returns(items)
 
     event = mock

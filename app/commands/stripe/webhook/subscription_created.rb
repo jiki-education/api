@@ -31,7 +31,7 @@ class Stripe::Webhook::SubscriptionCreated
       stripe_subscription_id: subscription.id,
       stripe_subscription_status: subscription.status,
       subscription_status: our_status,
-      subscription_valid_until: Time.zone.at(subscription.current_period_end)
+      subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
     )
 
     Rails.logger.info("Subscription created for user #{user.id}: #{tier} (#{subscription.id})")
@@ -65,7 +65,10 @@ class Stripe::Webhook::SubscriptionCreated
   end
 
   memoize
-  def price_id = subscription.items.data.first.price.id
+  def subscription_item = subscription.items.data.first
+
+  memoize
+  def price_id = subscription_item.price.id
 
   memoize
   def tier

@@ -20,8 +20,14 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
       }]
     )
 
+    item = mock
+    item.stubs(:current_period_end).returns(period_end.to_i)
+
+    items = mock
+    items.stubs(:data).returns([item])
+
     subscription = mock
-    subscription.stubs(:current_period_end).returns(period_end.to_i)
+    subscription.stubs(:items).returns(items)
 
     invoice = mock
     invoice.stubs(:customer).returns("cus_123")
@@ -56,9 +62,15 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
       subscriptions: []
     )
 
+    item = mock
+    item.stubs(:current_period_end).returns(period_end.to_i)
+
+    items = mock
+    items.stubs(:data).returns([item])
+
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
-    subscription.stubs(:current_period_end).returns(period_end.to_i)
+    subscription.stubs(:items).returns(items)
 
     invoice = mock
     invoice.stubs(:customer).returns("cus_123")

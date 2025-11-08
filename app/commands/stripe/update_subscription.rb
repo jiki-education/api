@@ -37,10 +37,14 @@ class Stripe::UpdateSubscription
       proration_behavior: is_upgrade ? 'always_invoice' : 'create_prorations'
     )
 
+    # Get the updated subscription item
+    updated_subscription_item = updated_subscription.items.data.first
+    raise ArgumentError, "Updated subscription has no items" unless updated_subscription_item
+
     # Update user data immediately (for both upgrades and downgrades)
     user.data.update!(
       membership_type: product,
-      subscription_valid_until: Time.zone.at(updated_subscription.current_period_end)
+      subscription_valid_until: Time.zone.at(updated_subscription_item.current_period_end)
     )
 
     Rails.logger.info("User #{user.id} #{is_upgrade ? 'upgraded' : 'downgraded'} to #{product}")
@@ -49,7 +53,7 @@ class Stripe::UpdateSubscription
       success: true,
       tier: product,
       effective_at: 'immediate',
-      subscription_valid_until: Time.zone.at(updated_subscription.current_period_end)
+      subscription_valid_until: Time.zone.at(updated_subscription_item.current_period_end)
     }
   end
 

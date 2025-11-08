@@ -1,6 +1,18 @@
 require "test_helper"
 
 class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
+  # Helper to add items mock with current_period_end to subscription
+  def add_items_mock_to_subscription(subscription, period_end, price_id = nil)
+    item = mock
+    item.stubs(:current_period_end).returns(period_end.to_i) if period_end
+    item.stubs(:price).returns(mock(id: price_id)) if price_id
+
+    items = mock
+    items.stubs(:data).returns([item])
+
+    subscription.stubs(:items).returns(items)
+  end
+
   setup do
     @user = create(:user)
     @period_end = 1.month.from_now
@@ -44,8 +56,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
     subscription.stubs(:cancel_at_period_end).returns(false)
+    add_items_mock_to_subscription(subscription, @period_end)
 
     event_data = mock
     event_data.stubs(:object).returns(subscription)
@@ -65,7 +77,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("past_due")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock
@@ -102,7 +114,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("past_due")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock
@@ -123,7 +135,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("canceled")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock
@@ -145,7 +157,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("unpaid")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock
@@ -167,7 +179,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("trialing")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock
@@ -190,8 +202,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(new_period_end.to_i)
     subscription.stubs(:cancel_at_period_end).returns(false)
+    add_items_mock_to_subscription(subscription, new_period_end)
 
     event_data = mock
     event_data.stubs(:object).returns(subscription)
@@ -214,6 +226,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     item = mock
     item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(@period_end.to_i)
 
     items_data = mock
     items_data.stubs(:first).returns(item)
@@ -224,7 +237,6 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
     subscription.stubs(:cancel_at_period_end).returns(false)
     subscription.stubs(:items).returns(items)
 
@@ -273,6 +285,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     item = mock
     item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(@period_end.to_i)
 
     items_data = mock
     items_data.stubs(:first).returns(item)
@@ -283,7 +296,6 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
     subscription.stubs(:cancel_at_period_end).returns(false)
     subscription.stubs(:items).returns(items)
 
@@ -319,7 +331,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock
@@ -341,7 +353,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(true)
 
     event_data = mock
@@ -363,7 +375,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
-    subscription.stubs(:current_period_end).returns(@period_end.to_i)
+    add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event_data = mock

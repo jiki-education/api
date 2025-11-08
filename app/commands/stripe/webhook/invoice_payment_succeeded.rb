@@ -15,10 +15,13 @@ class Stripe::Webhook::InvoicePaymentSucceeded
     # Reset to active status and normal period end
     return unless invoice.subscription.present?
 
+    subscription_item = subscription.items.data.first
+    return unless subscription_item&.current_period_end
+
     user.data.update!(
       stripe_subscription_status: 'active',
       subscription_status: 'active',
-      subscription_valid_until: Time.zone.at(subscription.current_period_end)
+      subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
     )
 
     Rails.logger.info("Invoice payment succeeded for user #{user.id}")

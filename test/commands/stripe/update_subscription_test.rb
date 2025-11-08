@@ -18,8 +18,11 @@ class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
     subscription_item.stubs(:id).returns("si_123")
     subscription.stubs(:items).returns(mock(data: [subscription_item]))
 
+    updated_subscription_item = mock
+    updated_subscription_item.stubs(:current_period_end).returns((period_end + 1.day).to_i)
+
     updated_subscription = mock
-    updated_subscription.stubs(:current_period_end).returns((period_end + 1.day).to_i)
+    updated_subscription.stubs(:items).returns(mock(data: [updated_subscription_item]))
 
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
     ::Stripe::Subscription.expects(:update).with(
@@ -54,8 +57,11 @@ class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
     subscription_item.stubs(:id).returns("si_123")
     subscription.stubs(:items).returns(mock(data: [subscription_item]))
 
+    updated_subscription_item = mock
+    updated_subscription_item.stubs(:current_period_end).returns(period_end.to_i)
+
     updated_subscription = mock
-    updated_subscription.stubs(:current_period_end).returns(period_end.to_i)
+    updated_subscription.stubs(:items).returns(mock(data: [updated_subscription_item]))
 
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
     ::Stripe::Subscription.expects(:update).with(

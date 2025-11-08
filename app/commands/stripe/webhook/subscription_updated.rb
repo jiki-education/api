@@ -18,10 +18,13 @@ class Stripe::Webhook::SubscriptionUpdated
     # Update subscription status
     handle_status_change
 
-    # Always update period end
-    user.data.update!(
-      subscription_valid_until: Time.zone.at(subscription.current_period_end)
-    )
+    # Always update period end from subscription item
+    subscription_item = subscription.items.data.first
+    if subscription_item&.current_period_end
+      user.data.update!(
+        subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
+      )
+    end
 
     Rails.logger.info("Subscription updated for user #{user.id}: status=#{subscription.status}")
   end
