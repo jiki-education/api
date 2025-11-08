@@ -17,19 +17,16 @@ class Stripe::CreatePortalSession
   end
 
   private
+  memoize
   def portal_configuration_id
     # Retrieve or create a portal configuration that disables subscription management
     configurations = ::Stripe::BillingPortal::Configuration.list(limit: 1, active: true)
 
-    if configurations.data.any?
-      configurations.data.first.id
-    else
-      create_portal_configuration
-    end
+    configurations.data.any? ? configurations.data.first.id : create_portal_configuration!
   end
 
-  def create_portal_configuration
-    config = ::Stripe::BillingPortal::Configuration.create(
+  def create_portal_configuration!
+    ::Stripe::BillingPortal::Configuration.create(
       features: {
         subscription_update: { enabled: false },
         subscription_cancel: { enabled: false }
@@ -37,7 +34,6 @@ class Stripe::CreatePortalSession
       business_profile: {
         headline: "Manage your Jiki subscription"
       }
-    )
-    config.id
+    ).id
   end
 end
