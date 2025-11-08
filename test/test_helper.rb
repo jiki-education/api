@@ -68,7 +68,16 @@ module AuthenticationHelper
   end
 
   def auth_headers_for(user)
-    token, _payload = Warden::JWTAuth::UserEncoder.new.(user, :user, nil)
+    token, payload = Warden::JWTAuth::UserEncoder.new.(user, :user, nil)
+
+    # With Allowlist strategy, we need to manually add the token to the allowlist
+    # The on_jwt_dispatch callback is only triggered on actual login/signup requests
+    user.jwt_tokens.create!(
+      jti: payload["jti"],
+      aud: payload["aud"],
+      expires_at: Time.zone.at(payload["exp"].to_i)
+    )
+
     { "Authorization" => "Bearer #{token}" }
   end
 

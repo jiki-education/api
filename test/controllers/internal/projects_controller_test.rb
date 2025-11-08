@@ -7,6 +7,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   # Authentication guards
   guard_incorrect_token! :internal_projects_path, method: :get
+  guard_incorrect_token! :internal_project_path, method: :get, args: ["test-project"]
 
   # GET /v1/projects (index) tests
   test "GET index returns projects with unlocked first, then locked" do
@@ -146,5 +147,29 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     assert_includes result.keys, :slug
     assert_includes result.keys, :description
     assert_includes result.keys, :status
+  end
+
+  # GET /v1/projects/:slug (show) tests
+  test "GET show returns project by slug" do
+    Prosopite.finish
+    project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
+
+    get internal_project_path(project_slug: project.slug), headers: @headers, as: :json
+
+    assert_response :success
+    assert_json_response({
+      project: SerializeProject.(project)
+    })
+  end
+
+  test "GET show returns 404 for non-existent project" do
+    Prosopite.finish
+
+    get internal_project_path(project_slug: "non-existent"), headers: @headers, as: :json
+
+    assert_response :not_found
+    response_json = JSON.parse(response.body, symbolize_names: true)
+    assert_equal "not_found", response_json[:error][:type]
+    assert_equal "Project not found", response_json[:error][:message]
   end
 end

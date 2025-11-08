@@ -60,28 +60,68 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert json["error"]["message"].present?
   end
 
-  test "DELETE logout revokes the JWT token" do
-    # First, sign in to get a token
-    post user_session_path, params: {
-      user: {
-        email: "test@example.com",
-        password: "password123"
-      }
-    }, as: :json
+  test "DELETE logout revokes tokens for current device only" do
+    # Simulate two devices logging in
+    # Device 1: Desktop (Chrome)
+    post user_session_path,
+      params: {
+        user: {
+          email: "test@example.com",
+          password: "password123"
+        }
+      },
+      headers: { "User-Agent" => "Desktop Chrome" },
+      as: :json
 
-    token = response.headers["Authorization"]
-    assert token.present?
+    device1_token = response.headers["Authorization"]
+    assert device1_token.present?
 
-    # Now logout with the token
+    # Device 2: Mobile (Safari)
+    post user_session_path,
+      params: {
+        user: {
+          email: "test@example.com",
+          password: "password123"
+        }
+      },
+      headers: { "User-Agent" => "Mobile Safari" },
+      as: :json
+
+    device2_token = response.headers["Authorization"]
+    assert device2_token.present?
+
+    @user.reload
+    assert_equal 2, @user.refresh_tokens.count
+    assert_equal 2, @user.jwt_tokens.count
+
+    # Logout from Device 1 only
     delete destroy_user_session_path,
-      headers: { "Authorization" => token },
+      headers: {
+        "Authorization" => device1_token,
+        "User-Agent" => "Desktop Chrome"
+      },
       as: :json
 
     assert_response :no_content
 
-    # The user's JTI should be updated, invalidating the old token
     @user.reload
-    assert @user.jti.present?
+    # Device 1 tokens should be gone
+    assert_equal 1, @user.refresh_tokens.count
+    assert_equal 1, @user.jwt_tokens.count
+
+    # Device 2 access token should still work
+    get internal_me_path,
+      headers: { "Authorization" => device2_token },
+      as: :json
+
+    assert_response :ok
+
+    # Device 1 access token should NOT work
+    get internal_me_path,
+      headers: { "Authorization" => device1_token },
+      as: :json
+
+    assert_response :unauthorized
   end
 
   test "DELETE logout without token returns error" do
@@ -91,5 +131,26 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "unauthorized", json["error"]["type"]
+  end
+
+  test "POST login includes membershipType in JWT payload" do
+    post user_session_path, params: {
+      user: {
+        email: "test@example.com",
+        password: "password123"
+      }
+    }, as: :json
+
+    assert_response :ok
+
+    # Extract and decode the JWT token
+    token = response.headers["Authorization"].sub("Bearer ", "")
+    payload, _header = JWT.decode(token, Jiki.secrets.jwt_secret, true, { verify_expiration: false, algorithm: 'HS256' })
+
+    # Verify membershipType is included in the JWT payload
+    assert_equal "standard", payload["membershipType"]
+    assert payload["sub"].present? # User ID
+    assert payload["scp"].present? # Scope
+    assert payload["jti"].present? # JWT ID
   end
 end

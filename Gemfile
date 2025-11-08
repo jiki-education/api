@@ -36,6 +36,7 @@ gem "mandate", "~> 2.0"
 
 # Background job processing
 gem "sidekiq", "~> 8.0"
+gem "sidekiq-scheduler" # For scheduled/recurring jobs
 gem "redis", "~> 5.0"
 
 # Fast hashing for file deduplication

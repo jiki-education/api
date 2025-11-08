@@ -28,6 +28,12 @@ Rails.application.routes.draw do
     },
     skip: [:omniauth_callbacks]
 
+  # Refresh token endpoint (outside devise scope)
+  namespace :auth do
+    post "refresh", to: "refresh_tokens#create"
+    delete "logout/all", to: "logout_all#destroy"
+  end
+
   # External (public, unauthenticated) endpoints
   namespace :external do
     resources :concepts, only: %i[index show], param: :concept_slug
@@ -47,7 +53,8 @@ Rails.application.routes.draw do
     end
 
     # Projects with exercise submissions
-    resources :projects, only: [:index], param: :slug do
+    resources :projects, only: %i[index show], param: :project_slug
+    resources :projects, only: [], param: :slug do
       resources :exercise_submissions, only: [:create], controller: 'projects/exercise_submissions'
     end
 
@@ -57,6 +64,8 @@ Rails.application.routes.draw do
         patch :complete
       end
     end
+
+    resources :user_projects, only: [:show], param: :project_slug
 
     resources :concepts, only: %i[index show], param: :concept_slug
 
