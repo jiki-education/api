@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       post :portal_session
       post :update
       delete :cancel
+      post :reactivate
     end
   end
 

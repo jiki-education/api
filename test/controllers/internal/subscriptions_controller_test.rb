@@ -12,6 +12,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :internal_subscriptions_portal_session_path, method: :post
   guard_incorrect_token! :internal_subscriptions_update_path, method: :post
   guard_incorrect_token! :internal_subscriptions_cancel_path, method: :delete
+  guard_incorrect_token! :internal_subscriptions_reactivate_path, method: :post
 
   ### checkout_session tests ###
 
@@ -637,5 +638,104 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :internal_server_error
     json = response.parsed_body
     assert_equal "cancel_failed", json["error"]["type"]
+  end
+
+  ### reactivate tests ###
+
+  test "POST reactivate reactivates canceled subscription" do
+    period_end = 1.month.from_now
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "cancelling",
+      subscription_valid_until: period_end
+    )
+
+    result = {
+      success: true,
+      subscription_valid_until: period_end
+    }
+
+    Stripe::ReactivateSubscription.expects(:call).with(@user).returns(result)
+
+    post internal_subscriptions_reactivate_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert json["success"]
+    refute_nil json["subscription_valid_until"]
+  end
+
+  test "POST reactivate rejects when no subscription" do
+    @user.data.update!(
+      membership_type: "standard",
+      stripe_subscription_id: nil,
+      subscription_status: "never_subscribed"
+    )
+
+    post internal_subscriptions_reactivate_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "no_subscription", json["error"]["type"]
+    assert_equal "You don't have an active subscription", json["error"]["message"]
+  end
+
+  test "POST reactivate rejects when subscription is not cancelling" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    post internal_subscriptions_reactivate_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "not_cancelling", json["error"]["type"]
+    assert_equal "Subscription is not scheduled for cancellation", json["error"]["message"]
+  end
+
+  test "POST reactivate handles command ArgumentError" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "cancelling"
+    )
+
+    Stripe::ReactivateSubscription.expects(:call).raises(ArgumentError.new("Custom error"))
+
+    post internal_subscriptions_reactivate_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :unprocessable_entity
+    json = response.parsed_body
+    assert_equal "invalid_request", json["error"]["type"]
+    assert_equal "Custom error", json["error"]["message"]
+  end
+
+  test "POST reactivate handles Stripe errors gracefully" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "cancelling"
+    )
+
+    Stripe::ReactivateSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
+
+    post internal_subscriptions_reactivate_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :internal_server_error
+    json = response.parsed_body
+    assert_equal "reactivate_failed", json["error"]["type"]
   end
 end

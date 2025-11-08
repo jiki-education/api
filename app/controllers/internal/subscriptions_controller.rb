@@ -226,4 +226,52 @@ class Internal::SubscriptionsController < Internal::BaseController
       }
     }, status: :internal_server_error
   end
+
+  # POST /internal/subscriptions/reactivate
+  # Reactivates a subscription that was scheduled for cancellation
+  def reactivate
+    # Check user has subscription
+    unless current_user.data.stripe_subscription_id.present?
+      return render json: {
+        error: {
+          type: "no_subscription",
+          message: "You don't have an active subscription"
+        }
+      }, status: :bad_request
+    end
+
+    # Check subscription is actually scheduled for cancellation
+    unless current_user.data.subscription_status == 'cancelling'
+      return render json: {
+        error: {
+          type: "not_cancelling",
+          message: "Subscription is not scheduled for cancellation"
+        }
+      }, status: :bad_request
+    end
+
+    # Reactivate subscription
+    result = Stripe::ReactivateSubscription.(current_user)
+
+    render json: {
+      success: result[:success],
+      subscription_valid_until: result[:subscription_valid_until]
+    }
+  rescue ArgumentError => e
+    Rails.logger.error("Invalid subscription reactivation: #{e.message}")
+    render json: {
+      error: {
+        type: "invalid_request",
+        message: e.message
+      }
+    }, status: :unprocessable_entity
+  rescue StandardError => e
+    Rails.logger.error("Failed to reactivate subscription: #{e.message}")
+    render json: {
+      error: {
+        type: "reactivate_failed",
+        message: "Failed to reactivate subscription"
+      }
+    }, status: :internal_server_error
+  end
 end
