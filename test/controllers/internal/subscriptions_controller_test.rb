@@ -10,6 +10,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :internal_subscriptions_checkout_session_path, method: :post
   guard_incorrect_token! :internal_subscriptions_verify_checkout_path, method: :post
   guard_incorrect_token! :internal_subscriptions_portal_session_path, method: :post
+  guard_incorrect_token! :internal_subscriptions_update_path, method: :post
+  guard_incorrect_token! :internal_subscriptions_cancel_path, method: :delete
   guard_incorrect_token! :internal_subscriptions_status_path, method: :get
 
   ### checkout_session tests ###
@@ -392,5 +394,309 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "payment_failed", json["subscription"]["subscription_status"]
     assert json["subscription"]["in_grace_period"]
     refute_nil json["subscription"]["grace_period_ends_at"]
+  end
+
+  ### update tests ###
+
+  test "POST update upgrades from premium to max" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    result = {
+      success: true,
+      tier: "max",
+      effective_at: "immediate",
+      subscription_valid_until: 1.month.from_now
+    }
+
+    Stripe::UpdateSubscription.expects(:call).with(@user, "max").returns(result)
+
+    post internal_subscriptions_update_path,
+      params: { product: "max" },
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert json["success"]
+    assert_equal "max", json["tier"]
+    assert_equal "immediate", json["effective_at"]
+    refute_nil json["subscription_valid_until"]
+  end
+
+  test "POST update downgrades from max to premium" do
+    @user.data.update!(
+      membership_type: "max",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    Stripe::UpdateSubscription.expects(:call).with(@user, "premium").returns({
+      success: true,
+      tier: "premium"
+    })
+
+    post internal_subscriptions_update_path,
+      params: { product: "premium" },
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert json["success"]
+    assert_equal "premium", json["tier"]
+  end
+
+  test "POST update allows tier change for payment_failed status" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "payment_failed"
+    )
+
+    Stripe::UpdateSubscription.expects(:call).with(@user, "max").returns({})
+
+    post internal_subscriptions_update_path,
+      params: { product: "max" },
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+  end
+
+  test "POST update allows tier change for cancelling status" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "cancelling"
+    )
+
+    Stripe::UpdateSubscription.expects(:call).with(@user, "max").returns({})
+
+    post internal_subscriptions_update_path,
+      params: { product: "max" },
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+  end
+
+  test "POST update rejects invalid product" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    post internal_subscriptions_update_path,
+      params: { product: "invalid" },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "invalid_product", json["error"]["type"]
+    assert_equal "Invalid product. Must be 'premium' or 'max'", json["error"]["message"]
+  end
+
+  test "POST update rejects same tier" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    post internal_subscriptions_update_path,
+      params: { product: "premium" },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "same_tier", json["error"]["type"]
+    assert_equal "You are already subscribed to premium", json["error"]["message"]
+  end
+
+  test "POST update rejects when user cannot change tier" do
+    @user.data.update!(
+      membership_type: "standard",
+      subscription_status: "never_subscribed"
+    )
+
+    post internal_subscriptions_update_path,
+      params: { product: "premium" },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "no_subscription", json["error"]["type"]
+  end
+
+  test "POST update rejects when user is canceled" do
+    @user.data.update!(
+      membership_type: "standard",
+      subscription_status: "canceled"
+    )
+
+    post internal_subscriptions_update_path,
+      params: { product: "premium" },
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "no_subscription", json["error"]["type"]
+  end
+
+  test "POST update handles Stripe errors gracefully" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    Stripe::UpdateSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
+
+    post internal_subscriptions_update_path,
+      params: { product: "max" },
+      headers: @headers,
+      as: :json
+
+    assert_response :internal_server_error
+    json = response.parsed_body
+    assert_equal "update_failed", json["error"]["type"]
+  end
+
+  test "POST update handles ArgumentError gracefully" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    Stripe::UpdateSubscription.expects(:call).raises(ArgumentError.new("Invalid subscription"))
+
+    post internal_subscriptions_update_path,
+      params: { product: "max" },
+      headers: @headers,
+      as: :json
+
+    assert_response :unprocessable_entity
+    json = response.parsed_body
+    assert_equal "invalid_request", json["error"]["type"]
+  end
+
+  ### cancel tests ###
+
+  test "DELETE cancel cancels active subscription" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    cancels_at = 1.month.from_now
+    result = {
+      success: true,
+      cancels_at: cancels_at
+    }
+
+    Stripe::CancelSubscription.expects(:call).with(@user).returns(result)
+
+    delete internal_subscriptions_cancel_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert json["success"]
+    refute_nil json["cancels_at"]
+  end
+
+  test "DELETE cancel works for payment_failed subscription" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "payment_failed"
+    )
+
+    Stripe::CancelSubscription.expects(:call).with(@user).returns({})
+
+    delete internal_subscriptions_cancel_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+  end
+
+  test "DELETE cancel works for incomplete subscription" do
+    @user.data.update!(
+      membership_type: "standard",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "incomplete"
+    )
+
+    Stripe::CancelSubscription.expects(:call).with(@user).returns({})
+
+    delete internal_subscriptions_cancel_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+  end
+
+  test "DELETE cancel rejects when no subscription" do
+    @user.data.update!(
+      membership_type: "standard",
+      stripe_subscription_id: nil,
+      subscription_status: "never_subscribed"
+    )
+
+    delete internal_subscriptions_cancel_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "no_subscription", json["error"]["type"]
+    assert_equal "You don't have an active subscription", json["error"]["message"]
+  end
+
+  test "DELETE cancel rejects when subscription already canceled" do
+    @user.data.update!(
+      membership_type: "standard",
+      stripe_subscription_id: nil,
+      subscription_status: "canceled"
+    )
+
+    delete internal_subscriptions_cancel_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :bad_request
+    json = response.parsed_body
+    assert_equal "no_subscription", json["error"]["type"]
+  end
+
+  test "DELETE cancel handles Stripe errors gracefully" do
+    @user.data.update!(
+      membership_type: "premium",
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active"
+    )
+
+    Stripe::CancelSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
+
+    delete internal_subscriptions_cancel_path,
+      headers: @headers,
+      as: :json
+
+    assert_response :internal_server_error
+    json = response.parsed_body
+    assert_equal "cancel_failed", json["error"]["type"]
   end
 end
