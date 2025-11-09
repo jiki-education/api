@@ -11,11 +11,11 @@
 # end
 
 # These inflection rules are supported but not enabled by default:
-# ActiveSupport::Inflector.inflections(:en) do |inflect|
-#   inflect.acronym "RESTful"
-# end
-
 ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.acronym "API"
+  inflect.acronym "APIs"
+  inflect.acronym "HMAC"
   inflect.acronym "LLM"
   inflect.acronym "SPI"
+  inflect.irregular "me", "me"
 end

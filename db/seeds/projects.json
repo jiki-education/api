@@ -1,0 +1,9 @@
+[
+  {
+    "slug": "calculator",
+    "title": "Calculator",
+    "description": "Build a calculator that can perform basic arithmetic operations",
+    "exercise_slug": "calculator-project",
+    "unlocked_by_lesson_slug": "maze-solve-basic"
+  }
+]

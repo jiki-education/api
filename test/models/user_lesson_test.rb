@@ -42,8 +42,8 @@ class UserLessonTest < ActiveSupport::TestCase
     user_lesson = create(:user_lesson, user:, lesson:)
 
     # Create exercise submissions for this user_lesson
-    submission1 = create(:exercise_submission, user_lesson:)
-    submission2 = create(:exercise_submission, user_lesson:)
+    submission1 = create(:exercise_submission, context: user_lesson)
+    submission2 = create(:exercise_submission, context: user_lesson)
 
     submission1_id = submission1.id
     submission2_id = submission2.id
@@ -56,5 +56,22 @@ class UserLessonTest < ActiveSupport::TestCase
     # Verify exercise_submissions are deleted
     refute ExerciseSubmission.exists?(submission1_id)
     refute ExerciseSubmission.exists?(submission2_id)
+  end
+
+  test "assistant_conversation returns conversation when one exists" do
+    user = create(:user)
+    lesson = create(:lesson)
+    user_lesson = create(:user_lesson, user:, lesson:)
+    conversation = create(:assistant_conversation, user:, context: lesson)
+
+    assert_equal conversation, user_lesson.assistant_conversation
+  end
+
+  test "assistant_conversation returns nil when no conversation exists" do
+    user = create(:user)
+    lesson = create(:lesson)
+    user_lesson = create(:user_lesson, user:, lesson:)
+
+    assert_nil user_lesson.assistant_conversation
   end
 end

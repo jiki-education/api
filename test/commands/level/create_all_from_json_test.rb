@@ -2,7 +2,7 @@ require "test_helper"
 
 class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
   test "imports levels and lessons from valid JSON" do
-    file_path = Rails.root.join("curriculum.json")
+    file_path = Rails.root.join("db", "seeds", "curriculum.json")
 
     result = Level::CreateAllFromJson.(file_path.to_s)
 
@@ -21,16 +21,16 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
 
     # Verify lessons were created
     assert_equal 3, first_program.lessons.count
-    first_lesson = first_program.lessons.find_by(slug: "solve-a-maze")
+    first_lesson = first_program.lessons.find_by(slug: "maze-solve-basic")
     assert first_lesson
     assert_equal "Your First Function Call", first_lesson.title
     assert_equal "exercise", first_lesson.type
-    assert_equal({ slug: "solve-a-maze" }, first_lesson.data)
+    assert_equal({ slug: "maze-solve-basic" }, first_lesson.data)
     assert_equal 1, first_lesson.position
   end
 
   test "is idempotent - running twice updates existing records" do
-    file_path = Rails.root.join("curriculum.json")
+    file_path = Rails.root.join("db", "seeds", "curriculum.json")
 
     # First run
     Level::CreateAllFromJson.(file_path.to_s)

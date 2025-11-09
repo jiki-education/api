@@ -1,7 +1,7 @@
 require "test_helper"
 
 class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
-  test "creates submission with UUID" do
+  test "creates submission with UUID for user_lesson" do
     user_lesson = create(:user_lesson)
     files = [{ filename: "main.rb", code: "puts 'hello'" }]
 
@@ -9,7 +9,20 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
 
     assert submission.persisted?
     assert submission.uuid.present?
-    assert_equal user_lesson, submission.user_lesson
+    assert_equal user_lesson, submission.context
+    assert_equal "UserLesson", submission.context_type
+  end
+
+  test "creates submission with UUID for user_project" do
+    user_project = create(:user_project)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    submission = ExerciseSubmission::Create.(user_project, files)
+
+    assert submission.persisted?
+    assert submission.uuid.present?
+    assert_equal user_project, submission.context
+    assert_equal "UserProject", submission.context_type
   end
 
   test "creates all files via File::Create" do
@@ -34,7 +47,17 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
     submission = ExerciseSubmission::Create.(user_lesson, files)
 
     assert_equal user_lesson.user, submission.user
-    assert_equal user_lesson.lesson, submission.lesson
+    assert_equal user_lesson, submission.context
+  end
+
+  test "associates with user_project correctly" do
+    user_project = create(:user_project)
+    files = [{ filename: "solution.rb", code: "# solution" }]
+
+    submission = ExerciseSubmission::Create.(user_project, files)
+
+    assert_equal user_project.user, submission.user
+    assert_equal user_project, submission.context
   end
 
   test "each file has correct digest" do

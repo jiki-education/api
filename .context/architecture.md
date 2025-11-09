@@ -157,6 +157,102 @@ Based on business requirements:
 - N+1 query prevention
 - Connection pooling
 
+## Commands
+
+Commands encapsulate business logic following the Command pattern using the Mandate gem.
+
+### General Command Patterns
+
+**Prefer Association Methods Over Manual Attribute Merging**:
+
+When creating records that belong to a parent, use ActiveRecord association methods instead of manually merging foreign keys:
+
+```ruby
+# CORRECT: Use association method
+class Lesson::Create
+  include Mandate
+  initialize_with :level, :attributes
+
+  def call
+    level.lessons.create!(attributes)  # ✅ Association handles level_id automatically
+  end
+end
+
+# INCORRECT: Manual foreign key merging
+class Lesson::Create
+  include Mandate
+  initialize_with :level, :attributes
+
+  def call
+    lesson_attributes = attributes.merge(level_id: level.id)  # ❌ Manual, error-prone
+    Lesson.create!(lesson_attributes)
+  end
+end
+```
+
+**Why association methods are better:**
+- ActiveRecord automatically sets the foreign key through the association
+- More idiomatic Rails code
+- Cleaner and less error-prone
+- Leverages ActiveRecord's built-in association handling
+- Reduces boilerplate code
+
+**Examples**: `Lesson::Create` (app/commands/lesson/create.rb:1)
+
+### Search Commands
+
+Search commands handle filtering and pagination for collection endpoints. They follow a consistent pattern:
+
+**Structure**:
+```ruby
+class Model::Search
+  include Mandate
+
+  DEFAULT_PAGE = 1
+  DEFAULT_PER = 24
+
+  def self.default_per
+    DEFAULT_PER
+  end
+
+  def initialize(filter1: nil, filter2: nil, page: nil, per: nil)
+    @filter1 = filter1
+    @filter2 = filter2
+    @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
+    @per = per.present? && per.to_i.positive? ? per.to_i : self.class.default_per
+  end
+
+  def call
+    @collection = Model.all
+
+    apply_filter1!
+    apply_filter2!
+
+    @collection.page(page).per(per)
+  end
+
+  private
+  attr_reader :filter1, filter2, :page, :per
+
+  def apply_filter1!
+    return if filter1.blank?
+
+    @collection = @collection.where("column LIKE ?", "%#{filter1}%")
+  end
+end
+```
+
+**Key Patterns**:
+- Use constants for default pagination values
+- Class method `default_per` for override in tests
+- Validate and coerce page/per parameters to positive integers
+- Return Kaminari-paginated collection
+- Use private filter methods with mutation (`!`)
+- Early return in filters if parameter is blank
+- Use LIKE queries for partial text matching
+
+**Example**: `User::Search` (app/commands/user/search.rb:1)
+
 ## Monitoring & Observability
 
 ### Logging

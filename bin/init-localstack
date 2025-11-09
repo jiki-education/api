@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'jiki-config'
+
+puts "Waiting for LocalStack to be ready..."
+
+# Wait for LocalStack to be ready (max 30 seconds)
+max_attempts = 30
+attempt = 0
+
+loop do
+  begin
+    Jiki.s3_client.list_buckets
+    puts "✓ LocalStack is ready"
+    break
+  rescue StandardError => e
+    attempt += 1
+    if attempt >= max_attempts
+      puts "✗ LocalStack failed to start after #{max_attempts} seconds"
+      puts "  Error: #{e.message}"
+      exit 1
+    end
+    sleep 1
+  end
+end
+
+# Create S3 buckets
+bucket_name = Jiki.config.s3_bucket_video_production
+
+begin
+  # Check if bucket exists
+  Jiki.s3_client.head_bucket(bucket: bucket_name)
+  puts "✓ S3 bucket '#{bucket_name}' already exists"
+rescue Aws::S3::Errors::NotFound
+  # Bucket doesn't exist, create it
+  puts "Creating S3 bucket '#{bucket_name}'..."
+  Jiki.s3_client.create_bucket(bucket: bucket_name)
+  puts "✓ S3 bucket '#{bucket_name}' created"
+rescue StandardError => e
+  puts "✗ Error with S3 bucket '#{bucket_name}': #{e.message}"
+  exit 1
+end
+
+puts "✓ LocalStack initialization complete"

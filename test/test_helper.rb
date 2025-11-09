@@ -68,7 +68,16 @@ module AuthenticationHelper
   end
 
   def auth_headers_for(user)
-    token, _payload = Warden::JWTAuth::UserEncoder.new.(user, :user, nil)
+    token, payload = Warden::JWTAuth::UserEncoder.new.(user, :user, nil)
+
+    # With Allowlist strategy, we need to manually add the token to the allowlist
+    # The on_jwt_dispatch callback is only triggered on actual login/signup requests
+    user.jwt_tokens.create!(
+      jti: payload["jti"],
+      aud: payload["aud"],
+      expires_at: Time.zone.at(payload["exp"].to_i)
+    )
+
     { "Authorization" => "Bearer #{token}" }
   end
 
@@ -83,8 +92,23 @@ end
 
 # JSON response assertions
 module JsonAssertions
+  # Helper to compare JSON structures with normalized string keys
+  # Useful for comparing serializer output with actual values
+  def assert_equal_json(expected, actual)
+    assert_equal expected.deep_stringify_keys, actual.deep_stringify_keys
+  end
+
   def assert_json_response(expected)
     actual = response.parsed_body
+
+    # Automatically add meta: {events: []} to expected response if not present
+    # This allows existing tests to continue working with MetaResponseWrapper
+    # Tests that specifically test events should explicitly include meta in expected
+    # Only add meta if the actual response has it (non-admin controllers)
+    if actual.key?("meta") && expected.is_a?(Hash) && !expected.key?(:meta) && !expected.key?("meta")
+      expected = expected.merge(meta: { events: [] })
+    end
+
     assert_equal expected.deep_stringify_keys, actual
   end
 
@@ -150,6 +174,31 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
           message: "Admin access required"
         }
       })
+    end
+  end
+
+  # Macro for testing dev-only endpoints (returns 404 in non-development environments)
+  def self.guard_dev_only!(path_helper, args: [], method: :get)
+    test "#{method} #{path_helper} returns 404 in production environment" do
+      path = send(path_helper, *args)
+
+      # Stub Rails.env to return production
+      Rails.env.stubs(:development?).returns(false)
+
+      begin
+        send(method, path, as: :json)
+
+        assert_response :not_found
+        assert_json_response({
+          error: {
+            type: "not_found",
+            message: "Not found"
+          }
+        })
+      ensure
+        # Clean up the stub
+        Rails.env.unstub(:development?)
+      end
     end
   end
 end

@@ -3,6 +3,9 @@ class DuplicateFilenameError < RuntimeError; end
 class FileTooLargeError < RuntimeError; end
 class TooManyFilesError < RuntimeError; end
 class InvalidSubmissionError < RuntimeError; end
+class VideoProductionBadInputsError < RuntimeError; end
+class InvalidHMACSignatureError < RuntimeError; end
+class InvalidPolymorphicRecordType < RuntimeError; end
 
 # Gemini API errors
 module Gemini

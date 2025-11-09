@@ -1,7 +1,7 @@
 class UserLesson < ApplicationRecord
   belongs_to :user
   belongs_to :lesson
-  has_many :exercise_submissions, dependent: :destroy
+  has_many :exercise_submissions, as: :context, dependent: :destroy
   has_many :user_levels_as_current,
     class_name: "UserLevel",
     foreign_key: :current_user_lesson_id,
@@ -10,4 +10,11 @@ class UserLesson < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :lesson_id }
   validates :started_at, presence: true
+
+  def assistant_conversation
+    AssistantConversation.find_by(
+      user: user,
+      context: lesson
+    )
+  end
 end

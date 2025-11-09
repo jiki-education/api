@@ -1,0 +1,9 @@
+[
+  {
+    "slug": "variables",
+    "title": "Variables",
+    "description": "Understanding how to store and reuse values in your programs",
+    "content_markdown": "# Variables\n\nVariables are like labeled boxes where you can store information to use later in your program.\n\n## What are Variables?\n\nThink of a variable as a container with a name. You can put a value inside it, and then refer to that value by the container's name whenever you need it.\n\n```javascript\nlet age = 25;\nlet name = \"Alex\";\n```\n\n## Why Use Variables?\n\n1. **Reusability**: Store a value once and use it many times\n2. **Clarity**: Give meaningful names to values\n3. **Flexibility**: Change the value in one place, update everywhere\n\n## Examples\n\n```javascript\n// Store a number\nlet score = 100;\n\n// Store text\nlet greeting = \"Hello, world!\";\n\n// Use the variable\nconsole.log(greeting); // Outputs: Hello, world!\n\n// Update the variable\nscore = score + 10;\nconsole.log(score); // Outputs: 110\n```\n\nVariables are fundamental to programming and you'll use them in almost every program you write!",
+    "unlocked_by_lesson_slug": "maze-solve-basic"
+  }
+]

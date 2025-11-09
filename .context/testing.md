@@ -76,6 +76,14 @@ end
 - **Naming**: `*_test.rb` files with descriptive test method names
 - **Assertions**: Use Minitest assertions (`assert_equal`, `assert_raises`, etc.)
 
+### Command Tests
+- **Location**: `test/commands/`
+- **Purpose**: Test command objects that encapsulate business logic
+- **Coverage Rule**: **Every command MUST have a corresponding test file** with 1-1 mapping
+  - `app/commands/concept/create.rb` → `test/commands/concept/create_test.rb`
+  - `app/commands/utils/markdown/parse.rb` → `test/commands/utils/markdown/parse_test.rb`
+- **Testing**: Validate inputs, outputs, error handling, and side effects
+
 ### Integration Tests
 - **Location**: `test/integration/`
 - **Purpose**: Test feature workflows and cross-system interactions
@@ -180,27 +188,115 @@ bin/rails test test/integration/
 
 #### JSON Response Testing
 
+**IMPORTANT**: Always use `assert_json_response` helper for testing complete JSON responses, and always use serializers instead of manually constructing expected data structures.
+
+##### Using Serializers in Tests
+
+**CRITICAL**: Always use the actual serializer to generate expected data instead of manually building JSON structures. This ensures tests remain valid when serializers change.
+
+```ruby
+# CORRECT: Use serializers to generate expected data
+test "GET index returns user levels" do
+  user_level1 = create(:user_level, user: @current_user, level: level1)
+  user_level2 = create(:user_level, user: @current_user, level: level2)
+
+  get v1_user_levels_path, headers: @headers, as: :json
+
+  assert_response :success
+  assert_json_response({
+    user_levels: SerializeUserLevels.([user_level1, user_level2])
+  })
+end
+
+# INCORRECT: Don't manually construct expected JSON structures
+test "GET index returns user levels" do
+  user_level1 = create(:user_level, user: @current_user, level: level1)
+
+  get v1_user_levels_path, headers: @headers, as: :json
+
+  assert_response :success
+  assert_json_response({
+    user_levels: [
+      {
+        level_slug: "basics",
+        user_lessons: [
+          { lesson_slug: "lesson-1", status: "completed" }
+        ]
+      }
+    ]
+  })
+end
+```
+
+**Benefits of using serializers:**
+- Tests remain valid when serializer output changes
+- Single source of truth for JSON structure
+- Automatically includes all fields from serializer
+- Catches mismatches between actual API response and test expectations
+- Reduces test maintenance burden
+
+##### Using assert_equal_json for Nested Data
+
+When testing nested serialized data (like event payloads), use the `assert_equal_json` helper to compare serializer output with actual values:
+
+```ruby
+# CORRECT: Use assert_equal_json with serializers for nested data
+test "PATCH complete emits events for unlocked concept" do
+  concept = create(:concept, slug: "variables", title: "Variables")
+  lesson = create(:lesson, unlocked_concept: concept)
+
+  patch complete_v1_user_lesson_path(lesson_slug: lesson.slug),
+    headers: @headers,
+    as: :json
+
+  response_json = JSON.parse(response.body, symbolize_names: true)
+  concept_event = response_json[:meta][:events].find { |e| e[:type] == "concept_unlocked" }
+
+  assert_equal_json SerializeConcept.(concept), concept_event[:data][:concept]
+end
+
+# INCORRECT: Don't assert individual fields
+test "PATCH complete emits events for unlocked concept" do
+  concept = create(:concept, slug: "variables", title: "Variables")
+  lesson = create(:lesson, unlocked_concept: concept)
+
+  patch complete_v1_user_lesson_path(lesson_slug: lesson.slug),
+    headers: @headers,
+    as: :json
+
+  response_json = JSON.parse(response.body, symbolize_names: true)
+  concept_event = response_json[:meta][:events].find { |e| e[:type] == "concept_unlocked" }
+
+  assert_equal "variables", concept_event[:data][:concept][:slug]
+  assert_equal "Variables", concept_event[:data][:concept][:title]
+  # ... many more field assertions
+end
+```
+
+**`assert_equal_json` helper:**
+- Normalizes both sides to deep string keys
+- Useful for comparing serializer output with response data
+- Ensures consistent key format (string vs symbol) doesn't cause false failures
+
+##### Complete Response Testing
+
 **IMPORTANT**: Always use `assert_json_response` helper for testing complete JSON responses. This provides clearer, more maintainable tests compared to manual assertions.
 
 ```ruby
-# CORRECT: Use assert_json_response for complete response verification
-test "GET index returns user data" do
+# CORRECT: Use assert_json_response with serializers
+test "GET show returns user data" do
   user = create(:user, name: "Test User", email: "test@example.com")
 
   get user_path(user), headers: @headers, as: :json
 
   assert_response :success
   assert_json_response({
-    user: {
-      id: user.id,
-      name: "Test User",
-      email: "test@example.com"
-    }
+    user: SerializeUser.(user)
   })
 end
 
 # INCORRECT: Don't manually parse JSON and assert each field
-test "GET index returns user data" do
+test "GET show returns user data" do
   user = create(:user, name: "Test User")
 
   get user_path(user), headers: @headers, as: :json
@@ -213,12 +309,13 @@ test "GET index returns user data" do
 end
 ```
 
-**Benefits of `assert_json_response`:**
+**Benefits of `assert_json_response` with serializers:**
+- Single source of truth (the serializer)
 - Compares entire response structure at once
 - Automatically handles string/symbol key conversions
 - More readable - shows expected structure clearly
 - Catches unexpected fields in response
-- Easier to maintain when response format changes
+- Tests automatically update when serializers change
 
 #### Basic Controller Test
 ```ruby
@@ -287,6 +384,85 @@ test "GET index uses SerializeLevels" do
   refute json["levels"][0].key?("title")
 end
 ```
+
+#### Testing Paginated Controllers
+
+For controllers that return paginated collections:
+
+```ruby
+test "GET index calls Command with correct params" do
+  records = create_list(:model, 2)
+  paginated = Kaminari.paginate_array(records, total_count: 2).page(1).per(24)
+
+  Model::Search.expects(:call).with(
+    filter1: "value",
+    filter2: nil,
+    page: "2",
+    per: nil
+  ).returns(paginated)
+
+  get v1_admin_models_path(filter1: "value", page: 2),
+    headers: @headers,
+    as: :json
+
+  assert_response :success
+end
+
+test "GET index uses SerializePaginatedCollection" do
+  Prosopite.finish
+  records = create_list(:model, 2)
+  paginated = Kaminari.paginate_array(records, total_count: 2).page(1).per(24)
+
+  Model::Search.expects(:call).returns(paginated)
+  SerializePaginatedCollection.expects(:call).with(
+    paginated,
+    serializer: SerializeModels
+  ).returns({ results: [], meta: {} })
+
+  Prosopite.scan
+  get v1_admin_models_path, headers: @headers, as: :json
+
+  assert_response :success
+end
+
+test "GET index filters by parameter" do
+  create(:model, name: "Alice")
+  bob = create(:model, name: "Bob")
+
+  get v1_admin_models_path(name: "Bob"),
+    headers: @headers,
+    as: :json
+
+  assert_response :success
+  json = response.parsed_body
+  assert_equal 1, json["results"].length
+  assert_equal bob.id, json["results"][0]["id"]
+end
+
+test "GET index paginates results" do
+  Prosopite.finish
+  3.times { create(:model) }
+
+  Prosopite.scan
+  get v1_admin_models_path(page: 1, per: 2),
+    headers: @headers,
+    as: :json
+
+  assert_response :success
+  json = response.parsed_body
+  assert_equal 2, json["results"].length
+  assert_equal 1, json["meta"]["current_page"]
+  assert_equal 2, json["meta"]["total_pages"]
+end
+```
+
+**Key Patterns**:
+- Pass query params via path helper: `path(param: value)`
+- Mock command with Kaminari-paginated array
+- Verify SerializePaginatedCollection is called
+- Test actual filtering (don't just mock)
+- Test pagination metadata is correct
+- Use `Prosopite.finish/scan` around data creation for N+1 detection
 
 #### Testing Commands in Controllers
 ```ruby
@@ -584,6 +760,68 @@ end
 - **Use traits wisely** to avoid complex factory hierarchies
 - **Prefer `build` over `create`** when database persistence isn't required
 - **Use `create_list` efficiently** for bulk data creation
+
+## Search Command Testing
+
+Search commands should test filtering, pagination, and combinations:
+
+```ruby
+class Model::SearchTest < ActiveSupport::TestCase
+  test "no options returns all records paginated" do
+    record_1 = create :model
+    record_2 = create :model
+
+    result = Model::Search.()
+
+    assert_equal [record_1, record_2], result.to_a
+  end
+
+  test "filter: search with partial match" do
+    match = create :model, name: "Amy Smith"
+    create :model, name: "Bob Jones"
+
+    assert_equal [match], Model::Search.(name: "Amy").to_a
+    assert_empty Model::Search.(name: "xyz").to_a
+  end
+
+  test "pagination" do
+    record_1 = create :model
+    record_2 = create :model
+
+    assert_equal [record_1], Model::Search.(page: 1, per: 1).to_a
+    assert_equal [record_2], Model::Search.(page: 2, per: 1).to_a
+  end
+
+  test "returns paginated collection with correct metadata" do
+    5.times { create :model }
+
+    result = Model::Search.(page: 2, per: 2)
+
+    assert_equal 2, result.current_page
+    assert_equal 5, result.total_count
+    assert_equal 3, result.total_pages
+    assert_equal 2, result.size
+  end
+
+  test "combines multiple filters" do
+    match = create :model, name: "Amy", email: "amy@example.com"
+    create :model, name: "Amy", email: "amy@test.org"
+
+    result = Model::Search.(name: "Amy", email: "example")
+
+    assert_equal [match], result.to_a
+  end
+end
+```
+
+**Test Coverage Checklist**:
+- No options returns all (default pagination)
+- Each filter works independently
+- Each filter handles empty strings
+- Each filter handles no matches (use `assert_empty`)
+- Pagination works correctly (page/per)
+- Metadata is correct (current_page, total_count, total_pages, size)
+- Multiple filters combine correctly (AND logic)
 
 ## Command Testing
 

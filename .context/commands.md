@@ -392,10 +392,55 @@ class Exercise::Search
 
   def filter_by_criteria(scope)
     return scope if criteria.blank?
-    scope.where("title ILIKE ?", "%#{criteria}%")
+
+    # IMPORTANT: Always sanitize user input before adding wildcards
+    scope.where("title ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(criteria)}%")
   end
 end
 ```
+
+#### Security: SQL Wildcard Injection in Search Commands
+
+**CRITICAL:** When building LIKE/ILIKE queries with user input, **ALWAYS** sanitize the input before adding `%` wildcards.
+
+**Vulnerable Code:**
+```ruby
+# ❌ WRONG - Wildcard injection vulnerability
+scope.where("title LIKE ?", "%#{search_term}%")
+```
+
+**Problem:** User input like `"%"` or `"test_"` will be treated as SQL wildcards:
+- `%` matches any sequence of characters
+- `_` matches any single character
+- Input `"%"` would match ALL records
+
+**Secure Code:**
+```ruby
+# ✅ CORRECT - Sanitize before adding wildcards
+scope.where("title LIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(search_term)}%")
+
+# Or use model method
+scope.where("title LIKE ?", "%#{YourModel.sanitize_sql_like(search_term)}%")
+```
+
+**What `sanitize_sql_like` does:**
+- Escapes `%` → `\%`
+- Escapes `_` → `\_`
+- Input `"%test_"` becomes `"\%test\_"` (literal match, not wildcard)
+
+**Examples in codebase:**
+- ✅ `app/commands/user/search.rb` - Properly sanitized
+- ✅ `app/commands/level/search.rb` - Properly sanitized
+- ✅ `app/commands/concept/search.rb` - Properly sanitized
+
+**Always sanitize when:**
+- Building LIKE or ILIKE queries with user input
+- User input is used in wildcard patterns (`%...%`, `%...`, `..._...`)
+
+**Safe to skip sanitization when:**
+- The value is system-generated (e.g., UUID from database)
+- The value is from a controlled enum/constant
+- The value doesn't include wildcard characters
 
 ### Processing Commands
 

@@ -318,28 +318,29 @@ Devise.setup do |config|
   # ==> JWT Configuration
   # Configure JWT tokens for API authentication
   config.jwt do |jwt|
-    # Use Rails credentials for the secret key
-    # In test environment, load from plain YAML file
-    if Rails.env.test? && File.exist?(Rails.root.join("config", "credentials", "test.yml"))
-      test_creds = YAML.load_file(Rails.root.join("config", "credentials", "test.yml"))
-      jwt.secret = test_creds["devise_jwt_secret_key"]
-    else
-      jwt.secret = Rails.application.credentials.devise_jwt_secret_key
-    end
+    # Use Jiki.secrets for JWT secret in all environments
+    jwt.secret = Jiki.secrets.jwt_secret
 
     # Dispatch tokens in Authorization header
     jwt.dispatch_requests = [
-      ['POST', %r{^/v1/auth/login$}],
-      ['POST', %r{^/v1/auth/signup$}]
+      ['POST', %r{^/auth/login$}],
+      ['POST', %r{^/auth/signup$}],
+      ['POST', %r{^/auth/refresh$}]
     ]
 
-    # Revoke tokens on logout
+    # Revoke tokens on logout (per-device logout only)
+    # Note: logout/all is handled manually in the controller
     jwt.revocation_requests = [
-      ['DELETE', %r{^/v1/auth/logout$}]
+      ['DELETE', %r{^/auth/logout$}]
     ]
 
-    # Token expiration time (30 days)
-    jwt.expiration_time = 30.days.to_i
+    # Token expiration time (1 hour for security with refresh tokens)
+    jwt.expiration_time = 1.hour.to_i
+
+    # Handle requests with .json format suffix
+    jwt.request_formats = {
+      user: [:json]
+    }
   end
 
   # Warden configuration for API responses

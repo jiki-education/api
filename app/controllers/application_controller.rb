@@ -1,10 +1,17 @@
 class ApplicationController < ActionController::API
-  before_action :authenticate_user!
+  include MetaResponseWrapper
+
+  before_action :set_current_user_agent
 
   private
+  def set_current_user_agent
+    Current.user_agent = request.headers["User-Agent"]
+  end
+
   def authenticate_user!
     # Don't interfere with Devise's own controllers
     return super if devise_controller?
+
     # Only allow URL-based authentication in development
     return super unless Rails.env.development?
     return super unless params[:user_id].present?
@@ -28,6 +35,23 @@ class ApplicationController < ActionController::API
     }, status: :not_found
   end
 
+  def use_project!
+    @project = Project.find_by!(slug: params[:project_slug])
+  rescue ActiveRecord::RecordNotFound
+    render json: {
+      error: {
+        type: "not_found",
+        message: "Project not found"
+      }
+    }, status: :not_found
+  end
+
+  def use_concept!
+    @concept = Concept.friendly.find(params[:concept_slug])
+  rescue ActiveRecord::RecordNotFound
+    render_not_found("Concept not found")
+  end
+
   def render_not_found(message)
     render json: {
       error: {
@@ -35,5 +59,14 @@ class ApplicationController < ActionController::API
         message: message
       }
     }, status: :not_found
+  end
+
+  def render_validation_error(exception)
+    render json: {
+      error: {
+        type: "validation_error",
+        message: exception.message
+      }
+    }, status: :unprocessable_entity
   end
 end

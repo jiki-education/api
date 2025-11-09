@@ -4,20 +4,38 @@ This document describes controller patterns and conventions used in the Jiki API
 
 ## Structure
 
-All API controllers are namespaced under `V1` to support versioning:
+API controllers are organized into four main namespaces:
 
 ```
 app/controllers/
 ├── application_controller.rb    # Base controller with shared functionality
-└── v1/                          # API version 1
-    ├── admin/                   # Admin-only controllers
-    │   ├── base_controller.rb
-    │   └── email_templates_controller.rb
-    ├── auth/                    # Devise authentication controllers
-    ├── lessons_controller.rb
-    ├── levels_controller.rb
-    ├── user_lessons_controller.rb
-    └── user_levels_controller.rb
+├── auth/                        # Devise authentication controllers (no auth required)
+│   ├── sessions_controller.rb
+│   ├── registrations_controller.rb
+│   └── passwords_controller.rb
+├── external/                    # Public unauthenticated endpoints
+│   ├── base_controller.rb
+│   └── concepts_controller.rb
+├── internal/                    # Authenticated user endpoints
+│   ├── base_controller.rb      # Enforces authentication
+│   ├── concepts_controller.rb
+│   ├── lessons_controller.rb
+│   ├── levels_controller.rb
+│   ├── projects_controller.rb
+│   ├── user_lessons_controller.rb
+│   └── user_levels_controller.rb
+├── admin/                       # Admin-only endpoints
+│   ├── base_controller.rb      # Enforces auth + admin check
+│   ├── concepts_controller.rb
+│   ├── email_templates_controller.rb
+│   ├── levels_controller.rb
+│   ├── projects_controller.rb
+│   ├── users_controller.rb
+│   └── video_production/
+│       ├── pipelines_controller.rb
+│       └── nodes_controller.rb
+└── spi/                         # Service Provider Interface (network-guarded)
+    └── video_production_controller.rb
 ```
 
 ## ApplicationController
@@ -26,11 +44,70 @@ The base controller (`ApplicationController`) provides shared functionality for 
 
 ### Authentication
 
-All controllers require authentication by default via `before_action :authenticate_user!`.
+**Authentication is NOT enforced globally.** Instead, it's enforced at the namespace level:
+
+- **No auth required:** `External::BaseController`, `Auth::*` controllers, `SPI::BaseController`
+- **Auth required:** `Internal::BaseController` (via `before_action :authenticate_user!`)
+- **Auth + admin required:** `Admin::BaseController` (via `before_action :authenticate_user!` and `before_action :ensure_admin!`)
 
 **Development Mode:** URL-based authentication is available via `?user_id=X` query parameter. See `.context/auth.md` for details.
 
 ### Helper Methods
+
+#### Error Rendering Helpers
+
+ApplicationController provides reusable helper methods for consistent error responses. **Always use these helpers instead of writing inline error rendering.**
+
+##### `render_validation_error(exception)`
+
+Renders a validation error response for `ActiveRecord::RecordInvalid` exceptions.
+
+**Usage:**
+```ruby
+def create
+  resource = Resource::Create.(params)
+  render json: { resource: SerializeResource.(resource) }
+rescue ActiveRecord::RecordInvalid => e
+  render_validation_error(e)
+end
+```
+
+**Response:**
+```json
+{
+  "error": {
+    "type": "validation_error",
+    "message": "Validation failed: Field can't be blank"
+  }
+}
+```
+**Status:** 422 Unprocessable Entity
+
+##### `render_not_found(message)`
+
+Renders a not found error response with a custom message.
+
+**Usage:**
+```ruby
+def use_resource
+  @resource = Resource.find(params[:id])
+rescue ActiveRecord::RecordNotFound
+  render_not_found("Resource not found")
+end
+```
+
+**Response:**
+```json
+{
+  "error": {
+    "type": "not_found",
+    "message": "Resource not found"
+  }
+}
+```
+**Status:** 404 Not Found
+
+**Important:** Always check ApplicationController for existing error rendering helpers before writing inline error responses. This ensures consistency and reduces duplication.
 
 #### `use_lesson!`
 
@@ -77,7 +154,12 @@ end
 
 ### Error Handling
 
-Use consistent error response format:
+**Always use ApplicationController helper methods for error rendering** (see Helper Methods section above):
+
+- `render_validation_error(exception)` - For ActiveRecord::RecordInvalid exceptions
+- `render_not_found(message)` - For ActiveRecord::RecordNotFound exceptions
+
+**Only write inline error responses for unique error cases** not covered by existing helpers:
 
 ```ruby
 render json: {
@@ -91,8 +173,10 @@ render json: {
 ### Before Actions
 
 Use `before_action` for common setup:
-- `before_action :use_lesson!` - Load lesson by slug
-- `before_action :authenticate_user!` - Already applied in ApplicationController
+- `before_action :use_lesson!` - Load lesson by slug (defined in ApplicationController)
+- `before_action :use_concept!` - Load concept by slug (defined in ApplicationController)
+- `before_action :use_project!` - Load project by slug (defined in ApplicationController)
+- `before_action :authenticate_user!` - Applied in `Internal::BaseController` and `Admin::BaseController`
 
 ### Testing
 
@@ -106,17 +190,17 @@ See `.context/testing.md` for detailed testing patterns.
 
 ### Controller Namespacing Pattern
 
-**IMPORTANT:** Always use `class V1::ControllerName` format instead of module wrapping:
+**IMPORTANT:** Always use `class Namespace::ControllerName` format instead of module wrapping:
 
 ```ruby
-# CORRECT: Use class V1:: pattern
-class V1::LessonsController < ApplicationController
+# CORRECT: Use class Internal:: pattern
+class Internal::LessonsController < Internal::BaseController
   # ...
 end
 
 # INCORRECT: Don't use module wrapping
-module V1
-  class LessonsController < ApplicationController
+module Internal
+  class LessonsController < Internal::BaseController
     # ...
   end
 end
@@ -128,40 +212,73 @@ end
 - Consistent with Rails best practices
 - Easier to refactor and maintain
 
-**For nested namespaces (e.g., auth controllers):**
+**For nested namespaces (e.g., admin video production controllers):**
 
 ```ruby
-# CORRECT: Use class V1::Auth:: pattern
-class V1::Auth::PasswordsController < Devise::PasswordsController
+# CORRECT: Use class Admin::VideoProduction:: pattern
+class Admin::VideoProduction::PipelinesController < Admin::BaseController
   # ...
 end
 
 # INCORRECT: Don't use nested modules
-module V1
-  module Auth
-    class PasswordsController < Devise::PasswordsController
+module Admin
+  module VideoProduction
+    class PipelinesController < Admin::BaseController
       # ...
     end
   end
 end
 ```
 
+## Paginated Collection Endpoints
+
+For endpoints that return paginated collections, follow this pattern:
+
+**Controller Pattern**:
+```ruby
+class V1::Admin::ResourcesController < V1::Admin::BaseController
+  def index
+    resources = Resource::Search.(
+      filter1: params[:filter1],
+      filter2: params[:filter2],
+      page: params[:page],
+      per: params[:per]
+    )
+
+    render json: SerializePaginatedCollection.(
+      resources,
+      serializer: SerializeResources
+    )
+  end
+end
+```
+
+**Key Points**:
+- Use a `Resource::Search` command for filtering and pagination
+- Pass all filter and pagination params to the command
+- Use `SerializePaginatedCollection` to wrap results with metadata
+- Always specify the collection serializer explicitly
+
+**Example**: `Admin::UsersController` (app/controllers/admin/users_controller.rb:1)
+
 ## Admin Controllers
 
 Admin controllers provide administrative access to resources and require admin privileges.
 
-### V1::Admin::BaseController
+### Admin::BaseController
 
-All admin controllers inherit from `V1::Admin::BaseController`, which adds admin authorization on top of authentication.
+All admin controllers inherit from `Admin::BaseController`, which adds admin authorization on top of authentication.
 
 **Key Features:**
-- Inherits from `ApplicationController` (gets authentication automatically)
+- Inherits from `ApplicationController`
+- Adds `before_action :authenticate_user!` for authentication
 - Adds `before_action :ensure_admin!` for authorization
 - Returns 403 Forbidden if user is not an admin
 
 **Implementation:**
 ```ruby
-class V1::Admin::BaseController < ApplicationController
+class Admin::BaseController < ApplicationController
+  before_action :authenticate_user!
   before_action :ensure_admin!
 
   private
@@ -180,12 +297,13 @@ end
 
 ### Authentication vs Authorization
 
-**Authentication** (ApplicationController):
+**Authentication** (Namespace Base Controllers):
 - Verifies the user is logged in
 - Returns 401 Unauthorized if not authenticated
 - Handled by Devise's `authenticate_user!`
+- Applied in `Internal::BaseController` and `Admin::BaseController`
 
-**Authorization** (Admin::BaseController):
+**Authorization** (Admin::BaseController only):
 - Verifies the authenticated user has admin privileges
 - Returns 403 Forbidden if not an admin
 - Handled by custom `ensure_admin!` method
@@ -193,7 +311,7 @@ end
 ### Admin Controller Example
 
 ```ruby
-class V1::Admin::EmailTemplatesController < V1::Admin::BaseController
+class Admin::EmailTemplatesController < Admin::BaseController
   before_action :set_email_template, only: %i[show update destroy]
 
   def index
@@ -228,21 +346,21 @@ end
 Admin controller tests should verify both authentication and authorization:
 
 ```ruby
-class EmailTemplatesControllerTest < ApplicationControllerTest
+class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
     @headers = auth_headers_for(@admin)
   end
 
   # Test authentication (401)
-  guard_incorrect_token! :v1_admin_email_templates_path, method: :get
+  guard_incorrect_token! :admin_email_templates_path, method: :get
 
   # Test authorization (403)
   test "GET index returns 403 for non-admin users" do
     user = create(:user, admin: false)
     headers = auth_headers_for(user)
 
-    get v1_admin_email_templates_path, headers:, as: :json
+    get admin_email_templates_path, headers:, as: :json
 
     assert_response :forbidden
     assert_json_response({
@@ -255,7 +373,7 @@ class EmailTemplatesControllerTest < ApplicationControllerTest
 
   # Test successful admin access (200)
   test "GET index returns templates for admin users" do
-    get v1_admin_email_templates_path, headers: @headers, as: :json
+    get admin_email_templates_path, headers: @headers, as: :json
 
     assert_response :success
   end

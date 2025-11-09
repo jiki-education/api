@@ -37,10 +37,10 @@ class UserTest < ActiveSupport::TestCase
     assert(user.errors[:password].any? { |msg| msg.include?("is too short") })
   end
 
-  test "generates JTI on creation" do
+  test "has jwt_tokens association for Allowlist strategy" do
     user = create(:user)
-    assert user.jti.present?
-    assert_match(/^[a-f0-9-]{36}$/, user.jti) # UUID format
+    assert_respond_to user, :jwt_tokens
+    assert_empty user.jwt_tokens.to_a
   end
 
   test "authenticates with correct password" do
@@ -78,7 +78,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "JWT revocation strategy included" do
-    assert_includes User.included_modules, Devise::JWT::RevocationStrategies::JTIMatcher
+    assert_includes User.included_modules, Devise::JwtStrategy
   end
 
   test "deleting user cascades to delete user_lessons and user_levels" do
@@ -96,5 +96,71 @@ class UserTest < ActiveSupport::TestCase
 
     refute UserLevel.exists?(user_level_id)
     refute UserLesson.exists?(user_lesson_id)
+  end
+
+  test "deleting user cascades to delete jwt_tokens and refresh_tokens" do
+    user = create(:user)
+
+    # Create JWT tokens (simulating user logins)
+    jwt_token = user.jwt_tokens.create!(
+      jti: SecureRandom.uuid,
+      aud: "Test Device",
+      expires_at: 1.hour.from_now
+    )
+
+    # Create refresh tokens
+    refresh_token = user.refresh_tokens.create!(
+      aud: "Test Device",
+      expires_at: 30.days.from_now
+    )
+
+    jwt_token_id = jwt_token.id
+    refresh_token_id = refresh_token.id
+
+    # Destroy the user
+    user.destroy!
+
+    # Verify tokens were deleted
+    refute User::JwtToken.exists?(jwt_token_id)
+    refute User::RefreshToken.exists?(refresh_token_id)
+  end
+
+  test "automatically creates data record on user creation" do
+    user = create(:user)
+
+    assert user.data.present?
+    assert_instance_of User::Data, user.data
+    assert user.data.persisted?
+  end
+
+  test "data record has empty unlocked_concept_ids by default" do
+    user = create(:user)
+
+    assert_empty user.data.unlocked_concept_ids
+  end
+
+  test "delegates unknown methods to data record" do
+    user = create(:user)
+
+    # Access via delegation
+    assert_empty user.unlocked_concept_ids
+
+    # Modify via delegation
+    user.data.unlocked_concept_ids << 1
+    assert_equal [1], user.unlocked_concept_ids
+  end
+
+  test "respond_to? returns true for data record methods" do
+    user = create(:user)
+
+    assert_respond_to user, :unlocked_concept_ids
+  end
+
+  test "raises NoMethodError for truly unknown methods" do
+    user = create(:user)
+
+    assert_raises NoMethodError do
+      user.completely_unknown_method
+    end
   end
 end

@@ -1,7 +1,7 @@
 class ExerciseSubmission::Create
   include Mandate
 
-  initialize_with :user_lesson, :files
+  initialize_with :context, :files
 
   def call
     validate_files_present!
@@ -10,7 +10,7 @@ class ExerciseSubmission::Create
 
     ActiveRecord::Base.transaction do
       ExerciseSubmission.create!(
-        user_lesson:,
+        context:,
         uuid:
       ).tap do |submission|
         files.each do |file_params|

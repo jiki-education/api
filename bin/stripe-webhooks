@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Start Stripe webhook forwarding for local development
+#
+# Prerequisites:
+# 1. Install Stripe CLI: brew install stripe/stripe-brew/stripe
+# 2. Authenticate: stripe login
+#
+# This forwards Stripe webhook events to your local Rails server
+
+echo "Starting Stripe webhook forwarding..."
+echo "Make sure your Rails server is running on port 3060"
+echo ""
+echo "The webhook signing secret will be displayed below."
+echo "Copy it to ~/.config/jiki/secrets.yml as 'stripe_webhook_secret'"
+echo ""
+
+stripe listen --forward-to localhost:3060/webhooks/stripe

@@ -5,6 +5,8 @@
 # Create an admin user
 User.find_or_create_by!(email: "ihid@jiki.io") do |u|
   u.admin = true
+  u.handle = "iHiD"
+  u.name = "Jeremy Walker"
   u.password = "password"
   u.password_confirmation = "password"
 end
@@ -12,18 +14,74 @@ puts "Created admin user"
 
 # Create a test user
 user = User.find_or_create_by!(email: "test@example.com") do |u|
+  u.handle = "testuser"
+  u.name = "Test User"
   u.password = "password123"
   u.password_confirmation = "password123"
 end
 puts "Created user: #{user.email}"
 
 # Bootstrap levels from curriculum.json
-curriculum_file = File.join(Rails.root, "curriculum.json")
+curriculum_file = File.join(Rails.root, "db", "seeds", "curriculum.json")
 puts "Loading levels from #{curriculum_file}..."
 
 Level::CreateAllFromJson.call(curriculum_file, delete_existing: false)
 
 puts "✓ Successfully loaded levels and lessons!"
+
+# Load concepts
+puts "\nLoading concepts..."
+concepts_file = File.join(Rails.root, "db", "seeds", "concepts.json")
+if File.exist?(concepts_file)
+  concepts_data = JSON.parse(File.read(concepts_file), symbolize_names: true)
+
+  concepts_data.each do |concept_data|
+    concept = Concept.find_or_initialize_by(slug: concept_data[:slug])
+    concept.title = concept_data[:title]
+    concept.description = concept_data[:description]
+    concept.content_markdown = concept_data[:content_markdown]
+
+    # Link to lesson if specified
+    if concept_data[:unlocked_by_lesson_slug]
+      lesson = Lesson.find_by(slug: concept_data[:unlocked_by_lesson_slug])
+      concept.unlocked_by_lesson = lesson if lesson
+    end
+
+    concept.save!
+    puts "  ✓ Loaded concept: #{concept.title}"
+  end
+
+  puts "✓ Successfully loaded #{concepts_data.size} concept(s)!"
+else
+  puts "⚠ No concepts.json found at #{concepts_file}"
+end
+
+# Load projects
+puts "\nLoading projects..."
+projects_file = File.join(Rails.root, "db", "seeds", "projects.json")
+if File.exist?(projects_file)
+  projects_data = JSON.parse(File.read(projects_file), symbolize_names: true)
+
+  projects_data.each do |project_data|
+    project = Project.find_or_initialize_by(slug: project_data[:slug])
+    project.title = project_data[:title]
+    project.description = project_data[:description]
+    project.exercise_slug = project_data[:exercise_slug]
+
+    # Link to lesson if specified
+    if project_data[:unlocked_by_lesson_slug]
+      lesson = Lesson.find_by(slug: project_data[:unlocked_by_lesson_slug])
+      project.unlocked_by_lesson = lesson if lesson
+    end
+
+    project.save!
+    puts "  ✓ Loaded project: #{project.title}"
+  end
+
+  puts "✓ Successfully loaded #{projects_data.size} project(s)!"
+else
+  puts "⚠ No projects.json found at #{projects_file}"
+end
 
 # Create some user progress data for testing
 puts "\nCreating sample user progress..."
@@ -184,3 +242,128 @@ EmailTemplate.find_or_create_by!(
 end
 
 puts "✓ Created email templates for level-1 in English and Hungarian"
+
+# Create test videos for video production
+puts "\nCreating test videos for video production..."
+
+# Check if ffmpeg is available
+unless system("which ffmpeg > /dev/null 2>&1")
+  abort "Error: ffmpeg not found. Install with: brew install ffmpeg"
+end
+
+# Create temporary directory for test videos
+temp_dir = Dir.mktmpdir
+video1_path = File.join(temp_dir, "video1.mp4")
+video2_path = File.join(temp_dir, "video2.mp4")
+
+begin
+  # Create 3-second blue video
+  puts "  Creating blue test video (3 seconds)..."
+  system("ffmpeg -f lavfi -i color=c=blue:s=1280x720:d=3 -c:v libx264 -pix_fmt yuv420p #{video1_path} -y > /dev/null 2>&1")
+
+  # Create 3-second red video
+  puts "  Creating red test video (3 seconds)..."
+  system("ffmpeg -f lavfi -i color=c=red:s=1280x720:d=3 -c:v libx264 -pix_fmt yuv420p #{video2_path} -y > /dev/null 2>&1")
+
+  # Upload to S3
+  bucket = Jiki.config.s3_bucket_video_production
+
+  puts "  Uploading test videos to S3..."
+  Jiki.s3_client.put_object(
+    bucket: bucket,
+    key: 'test-assets/video1.mp4',
+    body: File.read(video1_path),
+    content_type: 'video/mp4'
+  )
+
+  Jiki.s3_client.put_object(
+    bucket: bucket,
+    key: 'test-assets/video2.mp4',
+    body: File.read(video2_path),
+    content_type: 'video/mp4'
+  )
+
+  puts "  ✓ Test videos created and uploaded to s3://#{bucket}/test-assets/"
+ensure
+  # Clean up temporary files
+  FileUtils.rm_rf(temp_dir)
+end
+
+# Load video production pipelines
+puts "\nLoading video production pipelines..."
+
+video_production_seeds_dir = File.join(Rails.root, "db", "seeds", "video_production")
+
+if Dir.exist?(video_production_seeds_dir)
+  Dir.glob(File.join(video_production_seeds_dir, "*.json")).each do |file|
+    puts "  Loading #{File.basename(file)}..."
+
+    pipeline_data = JSON.parse(File.read(file), symbolize_names: true)
+
+    # Create or update pipeline
+    pipeline = VideoProduction::Pipeline.find_or_initialize_by(uuid: pipeline_data[:uuid])
+    pipeline.title = pipeline_data[:title]
+    pipeline.version = pipeline_data[:version] || "1.0"
+    pipeline.config = pipeline_data[:config] || {}
+    pipeline.metadata = {
+      'totalCost' => 0,
+      'estimatedTotalCost' => 0,
+      'progress' => {
+        'completed' => 0,
+        'in_progress' => 0,
+        'pending' => pipeline_data[:nodes].length,
+        'failed' => 0,
+        'total' => pipeline_data[:nodes].length
+      }
+    }
+    pipeline.save!
+
+    # Delete existing nodes for clean slate
+    pipeline.nodes.destroy_all
+
+    # Create nodes
+    pipeline_data[:nodes].each do |node_data|
+      # Assets are immediately available, other nodes need execution
+      status = node_data[:type] == 'asset' ? 'completed' : 'pending'
+
+      # Config stays as-is (provider is inside config JSONB)
+      config_hash = node_data[:config] || {}
+
+      # For asset nodes with S3 paths, populate output field
+      output = nil
+      if node_data[:type] == 'asset' && node_data[:asset] && node_data[:asset][:source]
+        source = node_data[:asset][:source]
+        # Handle both S3 URLs (s3://bucket/key) and relative paths (key)
+        s3_key = if source.start_with?('s3://')
+          # Parse S3 URL to extract key (remove s3://bucket/)
+          source.sub(%r{^s3://[^/]+/}, '')
+        else
+          # Use as-is (relative path)
+          source
+        end
+
+        output = {
+          'type' => node_data[:asset][:type],
+          's3Key' => s3_key
+        }
+      end
+
+      node = pipeline.nodes.create!(
+        uuid: node_data[:uuid],
+        title: node_data[:title],
+        type: node_data[:type],
+        inputs: node_data[:inputs] || {},
+        config: config_hash,
+        asset: node_data[:asset],
+        status: status,
+        output: output
+      )
+    end
+
+    puts "    ✓ Created pipeline '#{pipeline.title}' with #{pipeline.nodes.count} nodes"
+  end
+
+  puts "✓ Successfully loaded video production pipelines!"
+else
+  puts "⚠ No video production seeds directory found at #{video_production_seeds_dir}"
+end

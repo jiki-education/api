@@ -53,7 +53,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     assert user_level.completed_at <= time_after
   end
 
-  test "updates completed_at on already completed level" do
+  test "is idempotent when completing already completed level" do
     user = create(:user)
     level = create(:level)
     user_level = create(:user_level, user: user, level: level, completed_at: 1.day.ago)
@@ -61,7 +61,8 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
 
     result = UserLevel::Complete.(user, level)
 
-    assert result.completed_at > old_completed_at
+    # Timestamp should not change on re-completion (idempotent)
+    assert_equal old_completed_at.to_i, result.completed_at.to_i
   end
 
   test "preserves started_at when completing" do
@@ -166,5 +167,31 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
 
     user_level = UserLevel::Complete.(user, level)
     assert user_level.reload.email_skipped?
+  end
+
+  test "idempotency: does not create next level or send email on re-completion" do
+    user = create(:user, locale: "en")
+    level1 = create(:level, position: 1, slug: "level-1")
+    level2 = create(:level, position: 2)
+    create(:email_template, slug: "level-1", locale: "en")
+
+    # First completion
+    user_level = UserLevel::Complete.(user, level1)
+    old_completed_at = user_level.completed_at
+
+    # Verify next level was created
+    assert_equal 2, user.user_levels.count
+    next_user_level = UserLevel.find_by(user: user, level: level2)
+    refute_nil next_user_level
+
+    # Second completion should be idempotent
+    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+      assert_no_difference -> { user.user_levels.count } do
+        result = UserLevel::Complete.(user, level1)
+
+        # Timestamp should not change
+        assert_equal old_completed_at.to_i, result.completed_at.to_i
+      end
+    end
   end
 end

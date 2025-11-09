@@ -13,23 +13,36 @@ Rails.application.routes.draw do
   end
   mount Sidekiq::Web => "/sidekiq"
 
-  # API routes
+  # Auth routes (Devise)
   devise_for :users,
-    path: "v1/auth",
+    path: "auth",
     path_names: {
       sign_in: "login",
       sign_out: "logout",
       registration: "signup"
     },
     controllers: {
-      sessions: "v1/auth/sessions",
-      registrations: "v1/auth/registrations",
-      passwords: "v1/auth/passwords"
+      sessions: "auth/sessions",
+      registrations: "auth/registrations",
+      passwords: "auth/passwords"
     },
     skip: [:omniauth_callbacks]
 
-  # V1 API endpoints
-  namespace :v1 do
+  # Refresh token endpoint (outside devise scope)
+  namespace :auth do
+    post "refresh", to: "refresh_tokens#create"
+    delete "logout/all", to: "logout_all#destroy"
+  end
+
+  # External (public, unauthenticated) endpoints
+  namespace :external do
+    resources :concepts, only: %i[index show], param: :concept_slug
+  end
+
+  # Internal (authenticated user) endpoints
+  namespace :internal do
+    resource :me, only: [:show]
+
     resources :levels, only: [:index]
     resources :user_levels, only: [:index]
 
@@ -39,6 +52,12 @@ Rails.application.routes.draw do
       resources :exercise_submissions, only: [:create]
     end
 
+    # Projects with exercise submissions
+    resources :projects, only: %i[index show], param: :project_slug
+    resources :projects, only: [], param: :slug do
+      resources :exercise_submissions, only: [:create], controller: 'projects/exercise_submissions'
+    end
+
     resources :user_lessons, only: [:show], param: :lesson_slug do
       member do
         post :start
@@ -46,20 +65,77 @@ Rails.application.routes.draw do
       end
     end
 
-    # Admin routes
-    namespace :admin do
-      resources :email_templates, only: %i[index show create update destroy] do
-        collection do
-          get :types
+    resources :user_projects, only: [:show], param: :project_slug
+
+    resources :concepts, only: %i[index show], param: :concept_slug
+
+    resource :assistant_conversations, only: [] do
+      post :user_messages, action: :create_user_message
+      post :assistant_messages, action: :create_assistant_message
+    end
+
+    # Subscription management
+    namespace :subscriptions do
+      post :checkout_session
+      post :verify_checkout
+      post :portal_session
+      post :update
+      delete :cancel
+      post :reactivate
+    end
+  end
+
+  # Admin routes
+  namespace :admin do
+    resources :concepts, only: %i[index show create update destroy]
+    resources :projects, only: %i[index show create update destroy]
+    resources :email_templates, only: %i[index show create update destroy] do
+      collection do
+        get :types
+        get :summary
+      end
+    end
+    resources :users, only: %i[index show update destroy]
+    resources :levels, only: %i[index create update] do
+      resources :lessons, only: %i[index create update], controller: "levels/lessons"
+    end
+
+    namespace :video_production do
+      resources :pipelines, only: %i[index show create update destroy], param: :uuid do
+        resources :nodes, only: %i[index show create update destroy], param: :uuid do
+          member do
+            post :execute
+            get :output
+          end
         end
       end
     end
   end
 
-  # SPI (Service Provider Interface) routes for external service callbacks
-  # namespace :spi do
-  #   # Reserved for future SPI endpoints
-  # end
+  # SPI (Service Provider Interface) endpoints
+  # Network-guarded endpoints for service-to-service communication
+  # No authentication required - security handled at network level
+  namespace :spi do
+    namespace :video_production do
+      post :executor_callback
+    end
+  end
+
+  # Webhooks endpoints
+  # Unauthenticated - security handled by signature verification
+  namespace :webhooks do
+    post 'stripe', to: 'stripe#create'
+  end
+
+  # Dev endpoints
+  # Development-only utilities - return 404 in production
+  namespace :dev do
+    resources :users, param: :handle, only: [] do
+      member do
+        delete :clear_stripe_history
+      end
+    end
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.

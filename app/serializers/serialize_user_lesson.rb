@@ -7,6 +7,7 @@ class SerializeUserLesson
     {
       lesson_slug: user_lesson.lesson.slug,
       status: status,
+      conversation: conversation,
       data: data
     }
   end
@@ -15,6 +16,8 @@ class SerializeUserLesson
   def status
     user_lesson.completed_at.present? ? "completed" : "started"
   end
+
+  def conversation = user_lesson.assistant_conversation&.messages || []
 
   def data
     case user_lesson.lesson.type

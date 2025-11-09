@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :level do
-    sequence(:slug) { |n| "level-#{n}" }
+    slug { "level-#{SecureRandom.hex(4)}" }
     title { "Level #{slug}" }
     description { "Description for #{title}" }
   end

@@ -1,0 +1,59 @@
+#!/bin/bash
+
+echo "=== Tearing Down LocalStack ==="
+echo ""
+
+# Kill all running LocalStack containers aggressively
+echo "Killing LocalStack containers..."
+RUNNING=$(docker ps --filter "name=localstack" --format "{{.ID}}")
+if [ -n "$RUNNING" ]; then
+  echo "$RUNNING" | xargs -n 1 docker kill 2>/dev/null || true
+  echo "✓ Killed running containers"
+else
+  echo "✓ No running containers"
+fi
+
+# Force remove all LocalStack containers by ID (more reliable than names)
+echo ""
+echo "Removing all LocalStack containers..."
+ALL_IDS=$(docker ps -a --filter "name=localstack" --format "{{.ID}}")
+if [ -n "$ALL_IDS" ]; then
+  # Remove each container individually with aggressive flags
+  for ID in $ALL_IDS; do
+    echo "  Removing $ID..."
+    docker rm -f -v "$ID" 2>/dev/null &
+  done
+
+  # Wait a bit for background jobs, but not forever
+  sleep 2
+
+  # Kill any remaining docker rm processes
+  pkill -f "docker rm" 2>/dev/null || true
+
+  echo "✓ Removed LocalStack containers"
+else
+  echo "✓ No containers to remove"
+fi
+
+# Nuclear option: prune any orphaned containers with localstack image
+echo ""
+echo "Pruning orphaned containers..."
+docker container prune -f --filter "label=com.docker.compose.project=localstack" 2>/dev/null || true
+docker container prune -f --filter "until=1h" 2>/dev/null || true
+
+# Final verification
+echo ""
+echo "Verifying cleanup..."
+REMAINING=$(docker ps -a --filter "name=localstack" --format "{{.Names}}")
+if [ -z "$REMAINING" ]; then
+  echo "✓ All LocalStack containers removed"
+else
+  echo "⚠ Warning: Stuck containers detected (may need manual removal):"
+  docker ps -a --filter "name=localstack" --format "  {{.ID}} {{.Names}} ({{.Status}})"
+  echo ""
+  echo "To forcefully remove, try:"
+  echo "  docker ps -a --filter 'name=localstack' -q | xargs docker rm -f"
+fi
+
+echo ""
+echo "=== Teardown Complete ==="
