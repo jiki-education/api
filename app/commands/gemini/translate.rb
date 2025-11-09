@@ -30,9 +30,7 @@ class Gemini::Translate
   end
 
   memoize
-  def api_key
-    Jiki.secrets.google_api_key
-  end
+  def api_key = Jiki.secrets.google_api_key
 
   memoize
   def model_name
@@ -43,9 +41,7 @@ class Gemini::Translate
   end
 
   memoize
-  def api_endpoint
-    "/v1beta/models/#{model_name}:generateContent"
-  end
+  def api_endpoint = "/v1beta/models/#{model_name}:generateContent"
 
   memoize
   def request_payload

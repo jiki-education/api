@@ -28,9 +28,7 @@ class LLM::Exec
   end
 
   memoize
-  def llm_proxy_url
-    Jiki.config.llm_proxy_url
-  end
+  def llm_proxy_url = Jiki.config.llm_proxy_url
 
   memoize
   def payload

@@ -23,12 +23,8 @@ class EmailTemplate::TranslateToAllLocales
   end
 
   memoize
-  def target_locales
-    all_locales - ["en"]
-  end
+  def target_locales = all_locales - ["en"]
 
   memoize
-  def all_locales
-    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
-  end
+  def all_locales = (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
 end
