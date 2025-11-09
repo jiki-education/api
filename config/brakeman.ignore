@@ -26,7 +26,7 @@
     {
       "warning_type": "Mass Assignment",
       "warning_code": 70,
-      "fingerprint": "bfe994920d9d5ae18d9dd906d6f29896bd32a77135fca6f2f8f5f0e5bd581b92",
+      "fingerprint": "3a093d8ef38f7f0089385e9a90f41745bf0d11e753f6490fb55bdfc8b7006ff8",
       "check_name": "MassAssignment",
       "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
       "file": "app/controllers/spi/video_production_controller.rb",
