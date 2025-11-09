@@ -49,7 +49,7 @@ Jiki.config.spi_base_url
 **File:** `app/controllers/spi/base_controller.rb`
 
 ```ruby
-module Spi
+module SPI
   class BaseController < ActionController::API
     # No authentication - security at network level
     # Logs all SPI requests for audit
@@ -71,16 +71,16 @@ end
 ```
 
 **Generated routes:**
-- `POST /spi/video_production/executor_callback` → `Spi::VideoProductionController#executor_callback`
+- `POST /spi/video_production/executor_callback` → `SPI::VideoProductionController#executor_callback`
 
 ### Controllers
 
-**Pattern:** Inherit from `Spi::BaseController`, validate params, process request, return JSON
+**Pattern:** Inherit from `SPI::BaseController`, validate params, process request, return JSON
 
 **Example:** `app/controllers/spi/video_production_controller.rb`
 ```ruby
-module Spi
-  class VideoProductionController < Spi::BaseController
+module SPI
+  class VideoProductionController < SPI::BaseController
     def executor_callback
       # 1. Validate required params
       # 2. Find the resource (e.g., node)

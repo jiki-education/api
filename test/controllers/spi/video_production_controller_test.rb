@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Spi::VideoProductionControllerTest < ActionDispatch::IntegrationTest
+class SPI::VideoProductionControllerTest < ActionDispatch::IntegrationTest
   test "executor_callback processes successful result" do
     pipeline = create(:video_production_pipeline)
     node = create(:video_production_node, :merge_videos, pipeline: pipeline, status: 'in_progress')

@@ -1,4 +1,4 @@
-module Spi
+module SPI
   class BaseController < ActionController::API
     # SPI endpoints are network-guarded and don't require authentication
     # They should only be accessible from trusted networks/services

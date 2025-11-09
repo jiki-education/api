@@ -46,7 +46,7 @@ The base controller (`ApplicationController`) provides shared functionality for 
 
 **Authentication is NOT enforced globally.** Instead, it's enforced at the namespace level:
 
-- **No auth required:** `External::BaseController`, `Auth::*` controllers, `Spi::BaseController`
+- **No auth required:** `External::BaseController`, `Auth::*` controllers, `SPI::BaseController`
 - **Auth required:** `Internal::BaseController` (via `before_action :authenticate_user!`)
 - **Auth + admin required:** `Admin::BaseController` (via `before_action :authenticate_user!` and `before_action :ensure_admin!`)
 

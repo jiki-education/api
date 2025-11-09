@@ -571,7 +571,7 @@ The API is designed to work seamlessly with modern frontend frameworks:
 # config/initializers/cors.rb
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins ENV.fetch("FRONTEND_URL", "http://localhost:3000")
+    origins Jiki.config.frontend_base_url
     resource "*",
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
@@ -579,6 +579,8 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   end
 end
 ```
+
+**Note**: Uses `Jiki.config.frontend_base_url` from config gem settings. Never use `ENV` variables directly in application code.
 
 ### Response Headers
 

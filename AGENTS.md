@@ -114,7 +114,7 @@ For detailed information, see the context files:
 - **Commands**: `.context/commands.md` - All development, testing, and deployment commands
 - **Architecture**: `.context/architecture.md` - Rails API structure and design patterns
 - **Controllers**: `.context/controllers.md` - Controller patterns and helper methods
-- **Configuration**: `.context/configuration.md` - Environment variables, CORS, storage setup
+- **Configuration**: `.context/configuration.md` - Jiki config gem pattern, CORS, storage setup
 - **Testing**: `.context/testing.md` - Testing framework and patterns
 - **Serializers**: `.context/serializers.md` - JSON serialization patterns using Mandate
 

@@ -75,7 +75,6 @@ gem "loofah"
 
 # Friendly URLs with slug history
 gem "friendly_id"
-
 group :development, :test do
   # AWS SDK for Lambda (local development with LocalStack)
   gem "aws-sdk-lambda"

@@ -1,5 +1,5 @@
-module Spi
-  class VideoProductionController < Spi::BaseController
+module SPI
+  class VideoProductionController < SPI::BaseController
     def executor_callback
       # Validate required parameters
       return render json: { error: 'node_uuid is required' }, status: :bad_request unless params[:node_uuid].present?

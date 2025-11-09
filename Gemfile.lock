@@ -531,8 +531,8 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rails
   sidekiq (~> 8.0)
-  stripe
   sidekiq-scheduler
+  stripe
   thruster
   tzinfo-data
   webmock
