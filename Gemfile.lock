@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/jiki-education/config.git
-  revision: 50b6d197c6c7f4fdd5364464c45123b00b478d67
+  revision: 1a89eebf1fb5138c98d504f3079542b8dd6b1a80
   branch: main
   specs:
     jiki-config (0.1.0)
@@ -8,6 +8,7 @@ GIT
       aws-sdk-secretsmanager (~> 1.0)
       mandate
       ostruct
+      rexml
       zeitwerk
 
 GEM
