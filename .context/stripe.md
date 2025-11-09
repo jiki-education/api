@@ -186,16 +186,34 @@ Cancels a subscription.
 
 **Command:** `app/commands/stripe/cancel_subscription.rb`
 
-### GET /internal/subscriptions/status
+### Subscription Status (via GET /internal/me)
 
-Returns current subscription status for authenticated user.
+**IMPORTANT:** Subscription status is now returned as part of the `/internal/me` endpoint, not a dedicated endpoint.
 
-**Returns:**
-- `tier`: Current membership type
-- `subscription_status`: Our enum status (never_subscribed, incomplete, active, payment_failed, cancelling, canceled)
-- `subscription_valid_until`: When access expires
-- `in_grace_period`: Boolean indicating if in grace period
-- `grace_period_ends_at`: When grace period expires (same as subscription_valid_until if in grace period)
+The `SerializeUser` serializer includes:
+- `subscription_status`: Our enum status (never_subscribed, incomplete, active, payment_failed, cancelling, canceled) - **always present**
+- `subscription`: Object with subscription details - **only present when subscription_status is not never_subscribed or canceled**
+  - `in_grace_period`: Boolean indicating if in grace period
+  - `grace_period_ends_at`: When grace period expires (same as subscription_valid_until if in grace period)
+  - `subscription_valid_until`: When access expires
+
+**Example Response:**
+```json
+{
+  "user": {
+    "handle": "alice",
+    "membership_type": "premium",
+    "email": "alice@example.com",
+    "name": "Alice",
+    "subscription_status": "active",
+    "subscription": {
+      "in_grace_period": false,
+      "grace_period_ends_at": "2025-12-08T09:47:13Z",
+      "subscription_valid_until": "2025-12-08T09:47:13Z"
+    }
+  }
+}
+```
 
 ## Commands
 
@@ -655,10 +673,13 @@ All features described in this document are fully implemented as of Nov 6, 2025:
 - Removed: `payment_failed_at`, `cancel_at_period_end`
 
 ### ✅ API Endpoints
+- `GET /internal/me` - Returns user data including subscription_status and subscription details
+- `POST /internal/subscriptions/checkout_session` - Create checkout session (validates with `can_checkout?`)
+- `POST /internal/subscriptions/verify_checkout` - Verify completed checkout session
+- `POST /internal/subscriptions/portal_session` - Create Stripe customer portal session
 - `POST /internal/subscriptions/update` - Tier changes (immediate upgrades/downgrades)
 - `DELETE /internal/subscriptions/cancel` - Cancel at period end
-- `POST /internal/subscriptions/checkout_session` - Checkout validation with `can_checkout?`
-- `GET /internal/subscriptions/status` - Returns full subscription state
+- `POST /internal/subscriptions/reactivate` - Reactivate a cancelling subscription
 
 ### ✅ Commands
 - `Stripe::UpdateSubscription` - Handles tier changes with proration
