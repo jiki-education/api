@@ -1,5 +1,5 @@
 class Admin::EmailTemplatesController < Admin::BaseController
-  before_action :use_email_template, only: %i[show update destroy]
+  before_action :use_email_template, only: %i[show update destroy translate]
 
   def index
     email_templates = EmailTemplate::Search.(
@@ -59,6 +59,16 @@ class Admin::EmailTemplatesController < Admin::BaseController
   def destroy
     @email_template.destroy!
     head :no_content
+  end
+
+  def translate
+    target_locales = EmailTemplate::TranslateToAllLocales.(@email_template)
+    render json: {
+      email_template: SerializeAdminEmailTemplate.(@email_template),
+      queued_locales: target_locales
+    }, status: :accepted
+  rescue ArgumentError => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   private

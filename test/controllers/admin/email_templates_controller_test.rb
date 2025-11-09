@@ -14,6 +14,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   guard_admin! :admin_email_template_path, args: [1], method: :get
   guard_admin! :admin_email_template_path, args: [1], method: :patch
   guard_admin! :admin_email_template_path, args: [1], method: :delete
+  guard_admin! :translate_admin_email_template_path, args: [1], method: :post
 
   # INDEX tests
 
@@ -373,5 +374,53 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
         message: "Email template not found"
       }
     })
+  end
+
+  # TRANSLATE tests
+  test "POST translate successfully queues translation jobs for English template" do
+    email_template = create(:email_template, locale: "en")
+
+    # Expect .defer to be called for each target locale
+    EmailTemplate::TranslateToLocale.expects(:defer).with(email_template, "hu")
+    EmailTemplate::TranslateToLocale.expects(:defer).with(email_template, "fr")
+
+    post translate_admin_email_template_path(email_template), headers: @headers, as: :json
+
+    assert_response :accepted
+    assert_json_response({
+      email_template: SerializeAdminEmailTemplate.(email_template),
+      queued_locales: %w[hu fr]
+    })
+  end
+
+  test "POST translate returns 422 when template is not in English" do
+    email_template = create(:email_template, locale: "hu")
+
+    post translate_admin_email_template_path(email_template), headers: @headers, as: :json
+
+    assert_response :unprocessable_entity
+    json = response.parsed_body
+    assert_equal "Source template must be in English (en)", json["error"]
+  end
+
+  test "POST translate returns 404 when template not found" do
+    post translate_admin_email_template_path(99_999), headers: @headers, as: :json
+
+    assert_response :not_found
+    assert_json_response({
+      error: {
+        type: "not_found",
+        message: "Email template not found"
+      }
+    })
+  end
+
+  test "POST translate calls EmailTemplate::TranslateToAllLocales with correct template" do
+    email_template = create(:email_template, locale: "en")
+    EmailTemplate::TranslateToAllLocales.expects(:call).with(email_template).returns(%w[hu fr])
+
+    post translate_admin_email_template_path(email_template), headers: @headers, as: :json
+
+    assert_response :accepted
   end
 end

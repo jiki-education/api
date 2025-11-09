@@ -138,6 +138,68 @@ source_template = EmailTemplate.find_for(:level_completion, "basics-1", "en")
 EmailTemplate::TranslateToAllLocales.(source_template)
 ```
 
+## Admin Endpoint for Translation
+
+### Triggering Translations via API
+
+**Endpoint**: `POST /admin/email_templates/:id/translate`
+
+**Purpose**: Queue translation jobs for all target locales for an English email template
+
+**Authentication**: Requires admin authentication
+
+**Request**:
+```bash
+POST /admin/email_templates/:id/translate
+Authorization: Bearer <admin-jwt-token>
+```
+
+**Response (202 Accepted)**:
+```json
+{
+  "email_template": {
+    "id": 1,
+    "type": "level_completion",
+    "slug": "level-1",
+    "locale": "en",
+    "subject": "Congratulations!",
+    "body_mjml": "...",
+    "body_text": "..."
+  },
+  "queued_locales": ["hu", "fr"]
+}
+```
+
+**Error Responses**:
+- `404 Not Found` - Email template doesn't exist
+- `422 Unprocessable Entity` - Template is not in English (source must be `en`)
+  ```json
+  {
+    "error": "Source template must be in English (en)"
+  }
+  ```
+
+**Behavior**:
+- Calls `EmailTemplate::TranslateToAllLocales` to queue translation jobs
+- Queues one `EmailTemplate::TranslateToLocale` job per target locale (hu, fr)
+- Jobs are queued to the `:translations` Sidekiq queue
+- Returns immediately (202 Accepted) while jobs process in background
+- Translation results are stored in database as new EmailTemplate records
+
+**Implementation**:
+```ruby
+# app/controllers/admin/email_templates_controller.rb
+def translate
+  target_locales = EmailTemplate::TranslateToAllLocales.(@email_template)
+  render json: {
+    email_template: SerializeAdminEmailTemplate.(@email_template),
+    queued_locales: target_locales
+  }, status: :accepted
+rescue ArgumentError => e
+  render json: { error: e.message }, status: :unprocessable_entity
+end
+```
+
 ## Exception Definitions
 
 **File**: `config/initializers/exceptions.rb`
