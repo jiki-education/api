@@ -42,6 +42,9 @@ class Stripe::Webhook::SubscriptionCreated
 
   private
   def update_subscriptions_array!
+    # Idempotent - only add if not already present (handles webhook retries and race with verify_checkout)
+    return if user_subscriptions.any? { |s| s['stripe_subscription_id'] == subscription.id }
+
     user_subscriptions << {
       stripe_subscription_id: subscription.id,
       tier: tier,

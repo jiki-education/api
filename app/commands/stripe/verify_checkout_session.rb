@@ -38,17 +38,19 @@ class Stripe::VerifyCheckoutSession
       subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
     )
 
-    # Initialize subscriptions array
+    # Update subscriptions array (idempotent - only add if not already present)
     subscriptions_array = user.data.subscriptions || []
-    subscriptions_array << {
-      stripe_subscription_id: subscription.id,
-      tier: tier,
-      started_at: Time.current.iso8601,
-      ended_at: nil,
-      end_reason: nil,
-      payment_failed_at: nil
-    }
-    user.data.update!(subscriptions: subscriptions_array)
+    unless subscriptions_array.any? { |s| s['stripe_subscription_id'] == subscription.id }
+      subscriptions_array << {
+        stripe_subscription_id: subscription.id,
+        tier: tier,
+        started_at: Time.current.iso8601,
+        ended_at: nil,
+        end_reason: nil,
+        payment_failed_at: nil
+      }
+      user.data.update!(subscriptions: subscriptions_array)
+    end
 
     Rails.logger.info("Verified checkout session #{session_id} for user #{user.id}: #{tier} (#{subscription.id})")
 

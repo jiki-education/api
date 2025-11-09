@@ -176,4 +176,55 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_match(/Unknown Stripe price ID/, error.message)
     assert_match(/price_unknown_xyz/, error.message)
   end
+
+  test "is idempotent - does not duplicate subscription entry if already exists" do
+    user = create(:user)
+    user.data.update!(
+      stripe_customer_id: "cus_123",
+      subscriptions: [
+        {
+          "stripe_subscription_id" => "sub_123",
+          "tier" => "premium",
+          "started_at" => 1.hour.ago.iso8601,
+          "ended_at" => nil,
+          "end_reason" => nil,
+          "payment_failed_at" => nil
+        }
+      ]
+    )
+    session_id = "cs_test_123"
+
+    # Mock Stripe responses
+    stripe_session = mock
+    stripe_session.stubs(:customer).returns("cus_123")
+    stripe_session.stubs(:status).returns("complete")
+    stripe_session.stubs(:subscription).returns("sub_123")
+
+    stripe_subscription = mock
+    stripe_subscription.stubs(:id).returns("sub_123")
+    stripe_subscription.stubs(:status).returns("active")
+
+    # Mock subscription items with premium price
+    price = mock
+    price.stubs(:id).returns(Jiki.config.stripe_premium_price_id)
+    item = mock
+    item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(1.month.from_now.to_i)
+    items_data = mock
+    items_data.stubs(:data).returns([item])
+    stripe_subscription.stubs(:items).returns(items_data)
+
+    ::Stripe::Checkout::Session.expects(:retrieve).with(session_id).returns(stripe_session)
+    ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
+
+    result = Stripe::VerifyCheckoutSession.(user, session_id)
+
+    assert result[:success]
+    assert_equal "premium", result[:tier]
+
+    # Verify subscriptions array still has only 1 entry (not duplicated)
+    user.data.reload
+    assert_equal 1, user.data.subscriptions.length
+    assert_equal "sub_123", user.data.subscriptions.first["stripe_subscription_id"]
+  end
 end

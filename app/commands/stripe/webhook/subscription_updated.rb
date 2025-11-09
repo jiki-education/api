@@ -49,15 +49,20 @@ class Stripe::Webhook::SubscriptionUpdated
       current_sub['end_reason'] = tier_order[new_tier] > tier_order[old_tier] ? 'upgraded' : 'downgraded'
     end
 
-    # Open new subscription entry
-    user_subscriptions << {
-      stripe_subscription_id: subscription.id,
-      tier: new_tier,
-      started_at: Time.current.iso8601,
-      ended_at: nil,
-      end_reason: nil,
-      payment_failed_at: nil
-    }
+    # Open new subscription entry (idempotent - check if already exists with new tier)
+    # This handles webhook retries where the tier change was already recorded
+    unless user_subscriptions.any? do |s|
+      s['stripe_subscription_id'] == subscription.id && s['tier'] == new_tier && s['ended_at'].nil?
+    end
+      user_subscriptions << {
+        stripe_subscription_id: subscription.id,
+        tier: new_tier,
+        started_at: Time.current.iso8601,
+        ended_at: nil,
+        end_reason: nil,
+        payment_failed_at: nil
+      }
+    end
 
     user.data.update!(
       membership_type: new_tier,

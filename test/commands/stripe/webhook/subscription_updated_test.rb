@@ -424,4 +424,67 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_match(/Unknown Stripe price ID/, error.message)
     assert_match(/price_unknown_xyz/, error.message)
   end
+
+  test "is idempotent - does not duplicate new tier entry on retry" do
+    # Simulate webhook already processed once - user has both old and new subscription entries
+    @user.data.update!(
+      membership_type: "max",
+      subscriptions: [
+        {
+          stripe_subscription_id: "sub_123",
+          tier: "premium",
+          started_at: 2.months.ago.iso8601,
+          ended_at: 1.hour.ago.iso8601,
+          end_reason: "upgraded",
+          payment_failed_at: nil
+        },
+        {
+          stripe_subscription_id: "sub_123",
+          tier: "max",
+          started_at: 1.hour.ago.iso8601,
+          ended_at: nil,
+          end_reason: nil,
+          payment_failed_at: nil
+        }
+      ]
+    )
+
+    price = mock
+    price.stubs(:id).returns(Jiki.config.stripe_max_price_id)
+
+    item = mock
+    item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(@period_end.to_i)
+
+    items_data = mock
+    items_data.stubs(:first).returns(item)
+
+    items = mock
+    items.stubs(:data).returns(items_data)
+
+    subscription = mock
+    subscription.stubs(:id).returns("sub_123")
+    subscription.stubs(:status).returns("active")
+    subscription.stubs(:cancel_at_period_end).returns(false)
+    subscription.stubs(:items).returns(items)
+
+    event_data = mock
+    event_data.stubs(:object).returns(subscription)
+    event_data.stubs(:previous_attributes).returns({ 'items' => true })
+
+    event = mock
+    event.stubs(:data).returns(event_data)
+
+    # Call webhook again (simulating retry)
+    Stripe::Webhook::SubscriptionUpdated.(event)
+
+    @user.data.reload
+    # Should still have exactly 2 entries (not 3)
+    assert_equal 2, @user.data.subscriptions.length
+
+    # Verify the max tier entry exists and is still open
+    max_sub = @user.data.subscriptions.find { |s| s["tier"] == "max" }
+    refute_nil max_sub
+    assert_nil max_sub["ended_at"]
+  end
 end
