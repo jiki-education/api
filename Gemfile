@@ -63,6 +63,9 @@ gem "kaminari"
 # HTTP client for external API integration
 gem "httparty"
 
+# Stripe payment processing
+gem "stripe"
+
 # AWS SDK for S3 storage
 gem "aws-sdk-s3"
 

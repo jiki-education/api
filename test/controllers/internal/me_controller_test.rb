@@ -18,6 +18,8 @@ class Internal::MeControllerTest < ApplicationControllerTest
     assert_equal @user.email, json["user"]["email"]
     assert_equal @user.name, json["user"]["name"]
     assert_equal "standard", json["user"]["membership_type"]
+    assert json["user"].key?("subscription_status")
+    assert json["user"].key?("subscription")
   end
 
   test "GET show returns correct membership_type for premium user" do

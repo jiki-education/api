@@ -73,6 +73,16 @@ Rails.application.routes.draw do
       post :user_messages, action: :create_user_message
       post :assistant_messages, action: :create_assistant_message
     end
+
+    # Subscription management
+    namespace :subscriptions do
+      post :checkout_session
+      post :verify_checkout
+      post :portal_session
+      post :update
+      delete :cancel
+      post :reactivate
+    end
   end
 
   # Admin routes
@@ -108,6 +118,22 @@ Rails.application.routes.draw do
   namespace :spi do
     namespace :video_production do
       post :executor_callback
+    end
+  end
+
+  # Webhooks endpoints
+  # Unauthenticated - security handled by signature verification
+  namespace :webhooks do
+    post 'stripe', to: 'stripe#create'
+  end
+
+  # Dev endpoints
+  # Development-only utilities - return 404 in production
+  namespace :dev do
+    resources :users, param: :handle, only: [] do
+      member do
+        delete :clear_stripe_history
+      end
     end
   end
 
