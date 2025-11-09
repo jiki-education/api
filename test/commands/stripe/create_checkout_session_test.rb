@@ -22,7 +22,6 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
         }
       ],
       mode: 'subscription',
-      billing_address_collection: 'required',
       adaptive_pricing: {
         enabled: true
       },
@@ -60,7 +59,6 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
         }
       ],
       mode: 'subscription',
-      billing_address_collection: 'required',
       adaptive_pricing: {
         enabled: true
       },

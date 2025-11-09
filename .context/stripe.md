@@ -245,7 +245,7 @@ Creates a Stripe Checkout Session for subscription purchase.
 **Creates session with:**
 - `ui_mode: 'custom'` - For embedded checkout with PaymentElement
 - `mode: 'subscription'` - Subscription billing
-- `billing_address_collection: 'required'` - Collect billing address
+- ~~`billing_address_collection: 'required'`~~ - Removed for now
 - `adaptive_pricing: { enabled: true }` - PPP pricing
 - `subscription_data.metadata.user_id` - Track user in Stripe
 

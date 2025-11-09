@@ -18,7 +18,6 @@ class Stripe::CreateCheckoutSession
         }
       ],
       mode: 'subscription',
-      billing_address_collection: 'required',
       adaptive_pricing: {
         enabled: true
       },
