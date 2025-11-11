@@ -9,9 +9,9 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
     get external_concepts_path, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
 
-    assert_equal 2, response_json[:results].size
+    json = response.parsed_body
+    assert_equal 2, json["results"].size
   end
 
   test "GET index does not filter by user unlock status" do
@@ -27,10 +27,10 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
     get external_concepts_path, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
 
+    json = response.parsed_body
     # Both concepts should be returned
-    assert_equal 2, response_json[:results].size
+    assert_equal 2, json["results"].size
   end
 
   test "GET show returns any concept without authentication" do
@@ -39,19 +39,22 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
     get external_concept_path(concept.slug), as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
 
-    assert_equal "Arrays", response_json[:concept][:title]
-    assert_equal concept.slug, response_json[:concept][:slug]
+    json = response.parsed_body
+    assert_equal "Arrays", json["concept"]["title"]
+    assert_equal concept.slug, json["concept"]["slug"]
   end
 
   test "GET show returns 404 for non-existent concept" do
     get external_concept_path(concept_slug: "non-existent-slug"), as: :json
 
     assert_response :not_found
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal "Concept not found", response_json[:error][:message]
+    assert_json_response({
+      error: {
+        type: "not_found",
+        message: "Concept not found"
+      }
+    })
   end
 
   test "GET index filters by title parameter" do
@@ -63,10 +66,10 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
     get external_concepts_path(title: "String"), as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
 
-    assert_equal 2, response_json[:results].size
-    titles = response_json[:results].map { |c| c[:title] }
+    json = response.parsed_body
+    assert_equal 2, json["results"].size
+    titles = json["results"].map { |c| c["title"] }
     assert_includes titles, "String Basics"
     assert_includes titles, "String Advanced"
     refute_includes titles, "Arrays"

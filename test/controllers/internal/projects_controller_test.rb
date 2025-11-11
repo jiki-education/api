@@ -13,7 +13,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
   test "GET index returns projects with unlocked first, then locked" do
     Prosopite.finish
     project_zebra = create(:project, title: "Zebra Project")
-    create(:project, title: "Apple Project")
+    project_apple = create(:project, title: "Apple Project")
     project_middle = create(:project, title: "Middle Project")
 
     # Unlock Zebra and Middle for current user
@@ -23,36 +23,36 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     get internal_projects_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 3, response_json[:results].size
     # Unlocked first (Middle, Zebra), then locked (Apple)
-    assert_equal "Middle Project", response_json[:results][0][:title]
-    assert_equal "Zebra Project", response_json[:results][1][:title]
-    assert_equal "Apple Project", response_json[:results][2][:title]
-
-    # Verify status fields
-    assert_equal "unlocked", response_json[:results][0][:status]
-    assert_equal "unlocked", response_json[:results][1][:status]
-    assert_equal "locked", response_json[:results][2][:status]
+    assert_json_response({
+      results: SerializeProjects.([project_middle, project_zebra, project_apple], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 3,
+        events: []
+      }
+    })
   end
 
   test "GET index returns all projects when user has none unlocked" do
     Prosopite.finish
-    create(:project, title: "Apple Project")
-    create(:project, title: "Banana Project")
+    project_apple = create(:project, title: "Apple Project")
+    project_banana = create(:project, title: "Banana Project")
 
     get internal_projects_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 2, response_json[:results].size
     # All locked, ordered by title
-    assert_equal "Apple Project", response_json[:results][0][:title]
-    assert_equal "Banana Project", response_json[:results][1][:title]
-    assert_equal "locked", response_json[:results][0][:status]
-    assert_equal "locked", response_json[:results][1][:status]
+    assert_json_response({
+      results: SerializeProjects.([project_apple, project_banana], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 2,
+        events: []
+      }
+    })
   end
 
   test "GET index shows started status" do
@@ -63,10 +63,15 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     get internal_projects_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 1, response_json[:results].size
-    assert_equal "started", response_json[:results][0][:status]
+    assert_json_response({
+      results: SerializeProjects.([project], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
   end
 
   test "GET index shows completed status" do
@@ -77,76 +82,96 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     get internal_projects_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 1, response_json[:results].size
-    assert_equal "completed", response_json[:results][0][:status]
+    assert_json_response({
+      results: SerializeProjects.([project], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
   end
 
   test "GET index filters by title parameter" do
     Prosopite.finish
-    create(:project, title: "Calculator App")
+    project_calc_app = create(:project, title: "Calculator App")
     create(:project, title: "Todo List")
-    project_3 = create(:project, title: "Scientific Calculator")
+    project_sci_calc = create(:project, title: "Scientific Calculator")
 
-    create(:user_project, user: @current_user, project: project_3)
+    create(:user_project, user: @current_user, project: project_sci_calc)
 
     get internal_projects_path(title: "Calculator"), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 2, response_json[:results].size
     # Scientific Calculator (unlocked) first, then Calculator App (locked)
-    assert_equal "Scientific Calculator", response_json[:results][0][:title]
-    assert_equal "Calculator App", response_json[:results][1][:title]
+    assert_json_response({
+      results: SerializeProjects.([project_sci_calc, project_calc_app], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 2,
+        events: []
+      }
+    })
   end
 
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
-    create(:project, title: "Apple")
+    project_apple = create(:project, title: "Apple")
     create(:project, title: "Banana")
-    project_3 = create(:project, title: "Cherry")
+    project_cherry = create(:project, title: "Cherry")
 
-    create(:user_project, user: @current_user, project: project_3)
+    create(:user_project, user: @current_user, project: project_cherry)
 
     get internal_projects_path(page: 1, per: 2), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 2, response_json[:results].size
-    assert_equal 1, response_json[:meta][:current_page]
-    assert_equal 3, response_json[:meta][:total_count]
-    assert_equal 2, response_json[:meta][:total_pages]
+    assert_json_response({
+      results: SerializeProjects.([project_cherry, project_apple], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 2,
+        total_count: 3,
+        events: []
+      }
+    })
   end
 
   test "GET index supports pagination with per parameter" do
     Prosopite.finish
-    5.times { |i| create(:project, title: "Project #{i}") }
+    projects = Array.new(5) { |i| create(:project, title: "Project #{i}") }
 
     get internal_projects_path(per: 3), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 3, response_json[:results].size
+    assert_json_response({
+      results: SerializeProjects.(projects.first(3), for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 2,
+        total_count: 5,
+        events: []
+      }
+    })
   end
 
   test "GET index returns correct fields" do
     Prosopite.finish
-    create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
 
     get internal_projects_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    result = response_json[:results][0]
-    assert_includes result.keys, :title
-    assert_includes result.keys, :slug
-    assert_includes result.keys, :description
-    assert_includes result.keys, :status
+    assert_json_response({
+      results: SerializeProjects.([project], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
   end
 
   # GET /v1/projects/:slug (show) tests
@@ -168,8 +193,11 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     get internal_project_path(project_slug: "non-existent"), headers: @headers, as: :json
 
     assert_response :not_found
-    response_json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "not_found", response_json[:error][:type]
-    assert_equal "Project not found", response_json[:error][:message]
+    assert_json_response({
+      error: {
+        type: "not_found",
+        message: "Project not found"
+      }
+    })
   end
 end

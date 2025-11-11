@@ -66,9 +66,10 @@ Scan all changed code files against these project-specific rules. **Report viola
 - ✓ No data formatting in controllers
 
 #### Controller Tests (`test/controllers/**/*.rb`)
-- ✓ Uses `assert_json_response` with **inline expected JSON structure**
-- ✓ **NEVER** calls serializers directly in assertions (e.g., avoid `SerializeAdminConcepts.([...])`)
-- ✓ Specifies exact expected hash structure inline
+- ✓ Uses `assert_json_response` with serializers for ALL data responses (index, show, create, update)
+- ✓ **ALWAYS** uses serializers in assertions (e.g., `assert_json_response({ users: SerializeAdminUsers.([...]) })`)
+- ✓ Uses `response.parsed_body` ONLY for non-serialized values (error messages with regex, implementation details)
+- ✓ Never uses `JSON.parse(response.body)` - always uses `response.parsed_body` or `assert_json_response`
 - ✓ Uses guard macros: `guard_incorrect_token!`, `guard_admin!`
 - ✓ Uses authentication helpers: `setup_user`, `auth_headers_for`
 - ✓ Never manually resets test database

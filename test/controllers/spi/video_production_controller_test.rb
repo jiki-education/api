@@ -17,7 +17,9 @@ class SPI::VideoProductionControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :ok
-    assert_equal 'ok', JSON.parse(response.body)['status']
+    assert_json_response({
+      status: 'ok'
+    })
 
     node.reload
     assert_equal 'completed', node.status
@@ -66,8 +68,10 @@ class SPI::VideoProductionControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :ok
-    assert_equal 'ignored', JSON.parse(response.body)['status']
-    assert_equal 'stale_callback', JSON.parse(response.body)['reason']
+    assert_json_response({
+      status: 'ignored',
+      reason: 'stale_callback'
+    })
   end
 
   test "executor_callback requires node_uuid" do
@@ -77,7 +81,9 @@ class SPI::VideoProductionControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :bad_request
-    assert_includes JSON.parse(response.body)['error'], 'node_uuid'
+
+    json = response.parsed_body
+    assert_includes json['error'], 'node_uuid'
   end
 
   test "executor_callback requires executor_type" do
@@ -87,6 +93,8 @@ class SPI::VideoProductionControllerTest < ActionDispatch::IntegrationTest
     }, as: :json
 
     assert_response :bad_request
-    assert_includes JSON.parse(response.body)['error'], 'executor_type'
+
+    json = response.parsed_body
+    assert_includes json['error'], 'executor_type'
   end
 end
