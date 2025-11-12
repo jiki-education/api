@@ -1,13 +1,15 @@
 require "test_helper"
 
 class User::SearchTest < ActiveSupport::TestCase
-  test "no options returns all users paginated" do
-    user_1 = create :user
-    user_2 = create :user
+  test "no options returns all users paginated ordered by name" do
+    user_1 = create :user, name: "Zara"
+    user_2 = create :user, name: "Alice"
+    user_3 = create :user, name: "James"
 
     result = User::Search.()
 
-    assert_equal [user_1, user_2], result.to_a
+    # Should be ordered by name, not ID
+    assert_equal [user_2, user_3, user_1], result.to_a
   end
 
   test "name: search for partial name match" do
@@ -15,29 +17,32 @@ class User::SearchTest < ActiveSupport::TestCase
     user_2 = create :user, name: "Chris Johnson"
     user_3 = create :user, name: "Amanda Jones"
 
-    assert_equal [user_1, user_2, user_3], User::Search.(name: "").to_a
-    assert_equal [user_1, user_3], User::Search.(name: "Am").to_a
+    # Results ordered by name
+    assert_equal [user_3, user_1, user_2], User::Search.(name: "").to_a
+    assert_equal [user_3, user_1], User::Search.(name: "Am").to_a
     assert_equal [user_2], User::Search.(name: "Chris").to_a
     assert_empty User::Search.(name: "xyz").to_a
   end
 
   test "email: search for partial email match" do
-    user_1 = create :user, email: "amy@example.com"
-    user_2 = create :user, email: "chris@test.org"
-    user_3 = create :user, email: "amanda@example.com"
+    user_1 = create :user, name: "Zara", email: "amy@example.com"
+    user_2 = create :user, name: "Yolanda", email: "chris@test.org"
+    user_3 = create :user, name: "Xavier", email: "amanda@example.com"
 
-    assert_equal [user_1, user_2, user_3], User::Search.(email: "").to_a
-    assert_equal [user_1, user_3], User::Search.(email: "example").to_a
+    # Results ordered by name
+    assert_equal [user_3, user_2, user_1], User::Search.(email: "").to_a
+    assert_equal [user_3, user_1], User::Search.(email: "example").to_a
     assert_equal [user_2], User::Search.(email: "chris").to_a
     assert_empty User::Search.(email: "xyz").to_a
   end
 
   test "pagination" do
-    user_1 = create :user
-    user_2 = create :user
+    user_1 = create :user, name: "Zara"
+    user_2 = create :user, name: "Alice"
 
-    assert_equal [user_1], User::Search.(page: 1, per: 1).to_a
-    assert_equal [user_2], User::Search.(page: 2, per: 1).to_a
+    # Ordered by name: Alice first, then Zara
+    assert_equal [user_2], User::Search.(page: 1, per: 1).to_a
+    assert_equal [user_1], User::Search.(page: 2, per: 1).to_a
   end
 
   test "returns paginated collection with correct metadata" do

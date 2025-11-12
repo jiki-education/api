@@ -2,7 +2,7 @@ require "test_helper"
 
 class Admin::UsersControllerTest < ApplicationControllerTest
   setup do
-    @admin = create(:user, :admin)
+    @admin = create(:user, :admin, name: "Admin User")
     @headers = auth_headers_for(@admin)
   end
 
@@ -16,8 +16,8 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
   test "GET index returns all users with pagination meta" do
     Prosopite.finish # Stop scan before creating test data
-    user_1 = create(:user, name: "User 1", email: "user1@example.com", admin: false)
-    user_2 = create(:user, name: "User 2", email: "user2@example.com", admin: false)
+    user_1 = create(:user, name: "Bob", email: "user1@example.com", admin: false)
+    user_2 = create(:user, name: "Charlie", email: "user2@example.com", admin: false)
 
     Prosopite.scan # Resume scan for the actual request
     get admin_users_path, headers: @headers, as: :json

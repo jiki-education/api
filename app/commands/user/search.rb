@@ -21,7 +21,7 @@ class User::Search
     filter_name!
     filter_email!
 
-    @users.page(page).per(per)
+    @users.order(:name).page(page).per(per)
   end
 
   private
