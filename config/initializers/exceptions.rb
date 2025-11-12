@@ -7,6 +7,10 @@ class VideoProductionBadInputsError < RuntimeError; end
 class InvalidHMACSignatureError < RuntimeError; end
 class InvalidPolymorphicRecordType < RuntimeError; end
 
+# Image upload errors
+class ImageFileTooLargeError < RuntimeError; end
+class InvalidImageTypeError < RuntimeError; end
+
 # Gemini API errors
 module Gemini
   class Error < RuntimeError; end

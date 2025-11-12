@@ -102,6 +102,7 @@ Rails.application.routes.draw do
     resources :levels, only: %i[index create update] do
       resources :lessons, only: %i[index create update], controller: "levels/lessons"
     end
+    resources :images, only: [:create]
 
     namespace :video_production do
       resources :pipelines, only: %i[index show create update destroy], param: :uuid do
