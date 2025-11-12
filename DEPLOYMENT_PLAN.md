@@ -1561,15 +1561,68 @@ aws ecs update-service --cluster jiki-production --service jiki-api-sidekiq --fo
 
 ---
 
+## TODO Before Going Live
+
+These items must be completed before launching to production users:
+
+### Infrastructure Scaling
+- [ ] **Increase Aurora scaling from 2 ACU to 20 ACU**
+  - Edit `terraform/terraform/aws/rds.tf`
+  - Change `min_capacity = 0.5` to `min_capacity = 2`
+  - Change `max_capacity = 1` to `max_capacity = 20`
+  - Run `terraform apply`
+
+### Security Hardening
+- [ ] Review and update all security group rules
+- [ ] Rotate database master password from temporary value
+- [ ] Enable deletion protection on critical resources
+- [ ] Set up AWS CloudTrail for audit logging
+- [ ] Configure AWS Config for compliance monitoring
+
+### High Availability
+- [ ] Enable Multi-AZ for Aurora cluster
+- [ ] Scale ECS services to minimum 2 tasks per service
+- [ ] Configure ALB health check thresholds for production traffic
+- [ ] Set up cross-region backups (if required)
+
+### Monitoring & Alerts
+- [ ] Set up CloudWatch alarms for critical metrics:
+  - Aurora CPU/memory/connections
+  - ECS task failures
+  - ALB 5xx errors
+  - ElastiCache memory usage
+- [ ] Configure SNS topics for alert notifications
+- [ ] Set up CloudWatch dashboard for operations team
+- [ ] Configure log aggregation and retention policies
+
+### Performance Optimization
+- [ ] Load test the application under expected traffic
+- [ ] Tune Aurora parameter groups based on workload
+- [ ] Review and optimize database connection pooling
+- [ ] Configure Redis cache strategies
+- [ ] Set up CDN for static assets (if needed)
+
+### Disaster Recovery
+- [ ] Document disaster recovery procedures
+- [ ] Test database restore from backup
+- [ ] Verify backup retention meets requirements (currently 10 days)
+- [ ] Set up automated backup monitoring
+
+### Compliance & Documentation
+- [ ] Update runbooks with production procedures
+- [ ] Document incident response procedures
+- [ ] Review data retention policies
+- [ ] Ensure compliance with data protection regulations
+
+---
+
 ## Future Enhancements
 
 **After initial deployment**:
 - [ ] Set up CI/CD pipeline (GitHub Actions)
 - [ ] Add pre-deployment migration task (if migrations get slow)
-- [ ] Enable Multi-AZ for Aurora (high availability)
 - [ ] Add private subnets + NAT Gateway (if needed)
 - [ ] Add VPC endpoints for DynamoDB/S3 (cost optimization)
-- [ ] Set up monitoring dashboard
 - [ ] Configure autoscaling for Sidekiq based on queue depth
 - [ ] Add staging environment
 - [ ] Implement blue/green deployment strategy
