@@ -129,7 +129,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
 
   test "POST google generates unique handle when email prefix is taken" do
     create(:user, handle: 'testuser')
-    create(:user, handle: 'testuser1')
 
     google_payload = {
       'sub' => 'google-user-id-collision',
@@ -145,7 +144,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert_response :ok
 
     user = User.find_by(email: 'testuser@gmail.com')
-    assert_equal 'testuser2', user.handle
+    # Handle should be testuser + random number (not sequential)
+    assert user.handle.start_with?('testuser')
+    refute_equal 'testuser', user.handle
+    assert_match(/\Atestuser\d+\z/, user.handle)
   end
 
   test "POST google without token parameter returns error" do

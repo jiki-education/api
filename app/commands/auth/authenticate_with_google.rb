@@ -25,15 +25,27 @@ module Auth
     end
 
     def create_user!
-      User.create!(
-        email:,
-        name:,
-        google_id:,
-        provider: 'google',
-        email_verified: true,
-        password: SecureRandom.hex(32), # Random password (won't be used)
-        handle: generate_handle!(email)
-      )
+      # Retry up to 5 times in case of handle uniqueness constraint violation
+      retries = 0
+      max_retries = 5
+
+      begin
+        User.create!(
+          email:,
+          name:,
+          google_id:,
+          provider: 'google',
+          email_verified: true,
+          password: SecureRandom.hex(32), # Random password (won't be used)
+          handle: generate_handle!(email)
+        )
+      rescue ActiveRecord::RecordInvalid => e
+        # Only retry if it's a handle uniqueness error
+        raise unless e.record.errors[:handle].any? && retries < max_retries
+
+        retries += 1
+        retry
+      end
     end
 
     memoize
@@ -45,15 +57,19 @@ module Auth
 
     def generate_handle!(email)
       base = email.split('@').first.parameterize
+
+      # Start with base, then try base + random suffix
+      # Random suffix reduces collision probability vs sequential counter
       handle = base
-      counter = 1
 
-      # Fetch all existing handles with this base in one query to avoid N+1
-      existing_handles = User.where("handle LIKE ?", "#{base}%").pluck(:handle).to_set
+      # Check if base handle exists
+      return handle unless User.exists?(handle:)
 
-      while existing_handles.include?(handle)
-        handle = "#{base}#{counter}"
-        counter += 1
+      # If base is taken, append random number
+      # This reduces race condition window compared to sequential counter
+      loop do
+        handle = "#{base}#{SecureRandom.random_number(10_000)}"
+        break unless User.exists?(handle:)
       end
 
       handle
