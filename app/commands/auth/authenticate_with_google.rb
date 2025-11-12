@@ -5,23 +5,35 @@ module Auth
     initialize_with :google_token
 
     def call
-      # Try to find by google_id first
-      user = User.find_by(google_id:)
-      return user if user
+      find_by_google_id! || find_by_email! || create_user!
+    end
 
-      # Try to find by email (auto-linking)
+    private
+    memoize
+    def payload = Auth::VerifyGoogleToken.(google_token)
+
+    def google_id = payload['sub']
+    def email = payload['email']
+    def name = payload['name']
+
+    def find_by_google_id!
+      User.find_by(google_id:)
+    end
+
+    def find_by_email!
       user = User.find_by(email:)
-      if user
-        # Link existing account to Google
-        user.update!(
-          google_id:,
-          provider: 'google',
-          email_verified: true
-        )
-        return user
-      end
+      return unless user
 
-      # Create new user
+      # Link existing account to Google
+      user.update!(
+        google_id:,
+        provider: 'google',
+        email_verified: true
+      )
+      user
+    end
+
+    def create_user!
       User.create!(
         email:,
         name:,
@@ -32,14 +44,6 @@ module Auth
         handle: generate_handle!(email)
       )
     end
-
-    private
-    memoize
-    def payload = Auth::VerifyGoogleToken.(google_token)
-
-    def google_id = payload['sub']
-    def email = payload['email']
-    def name = payload['name']
 
     def generate_handle!(email)
       base = email.split('@').first.parameterize
