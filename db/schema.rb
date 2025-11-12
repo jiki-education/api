@@ -242,15 +242,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_01_113829) do
     t.datetime "created_at", null: false
     t.bigint "current_user_level_id"
     t.string "email", default: "", null: false
+    t.boolean "email_verified", default: false, null: false
     t.string "encrypted_password", default: "", null: false
+    t.string "google_id"
     t.string "handle", null: false
     t.string "locale", default: "en", null: false
     t.string "name"
+    t.string "provider"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.datetime "updated_at", null: false
     t.index ["current_user_level_id"], name: "index_users_on_current_user_level_id"
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["email_verified"], name: "index_users_on_email_verified"
+    t.index ["google_id"], name: "index_users_on_google_id", unique: true
     t.index ["handle"], name: "index_users_on_handle", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

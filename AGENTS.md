@@ -118,13 +118,35 @@ For detailed information, see the context files:
 - **Testing**: `.context/testing.md` - Testing framework and patterns
 - **Serializers**: `.context/serializers.md` - JSON serialization patterns using Mandate
 
-## Next Implementation Priorities
+## AWS Deployment Status
 
-Based on business requirements, these features need implementation:
+### Completed Infrastructure (Terraform)
+- ✅ **VPC & Networking**: VPC, subnets, internet gateway (`terraform/terraform/aws/vpc.tf`)
+- ✅ **S3 Video Production**: Bucket and IAM user for video generation (`terraform/terraform/aws/video-production.tf`)
+- ✅ **DynamoDB Config**: Configuration table with 14 items populated from Terraform (`terraform/terraform/aws/dynamodb.tf`)
+  - Includes: domains, Cloudflare R2 config, database config, Stripe placeholders
+  - Cost: ~$0.01/month
+  - IAM policy for ECS task access included
+- ✅ **Cloudflare R2**: Assets bucket with CDN (`terraform/terraform/cloudflare/r2.tf`)
+
+### Next Implementation Priorities
+
+Based on business requirements and deployment needs:
+
+**AWS Infrastructure (see DEPLOYMENT_PLAN.md)**:
+1. Aurora PostgreSQL Serverless v2 (0-1 ACU)
+2. ElastiCache Serverless for Redis
+3. S3 bucket for Active Storage
+4. ECS cluster and services (web + Sidekiq)
+5. Application Load Balancer with ACM certificate
+6. Security groups and IAM roles
+7. CloudWatch logs and alarms
+
+**Application Features**:
 1. User model with progression tracking
 2. Lesson/Exercise models with state management
 3. JWT authentication
 4. API versioning (controllers/api/v1/)
 5. CORS configuration for frontend
-6. Stripe integration for PPP pricing
+6. Stripe integration for PPP pricing (update Stripe config values in DynamoDB)
 7. I18n database storage and file generation

@@ -14,3 +14,6 @@ module Gemini
   class InvalidRequestError < Error; end
   class APIError < Error; end
 end
+
+# Google OAuth errors
+class InvalidGoogleTokenError < RuntimeError; end
