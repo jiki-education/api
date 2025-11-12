@@ -9,13 +9,6 @@ module Auth
     end
 
     private
-    memoize
-    def payload = Auth::VerifyGoogleToken.(google_token)
-
-    def google_id = payload['sub']
-    def email = payload['email']
-    def name = payload['name']
-
     def find_by_google_id!
       User.find_by(google_id:)
     end
@@ -42,6 +35,13 @@ module Auth
         handle: generate_handle!(email)
       )
     end
+
+    memoize
+    def payload = Auth::VerifyGoogleToken.(google_token)
+
+    def google_id = payload['sub']
+    def email = payload['email']
+    def name = payload['name']
 
     def generate_handle!(email)
       base = email.split('@').first.parameterize
