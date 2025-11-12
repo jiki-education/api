@@ -10,9 +10,10 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
       'exp' => 1.hour.from_now.to_i
     }
 
-    validator = mock
-    validator.expects(:check).with(token, Jiki.secrets.google_oauth_client_id).returns(expected_payload)
-    GoogleIDToken::Validator.expects(:new).returns(validator)
+    Google::Auth::IDTokens.expects(:verify_oidc).with(
+      token,
+      aud: Jiki.secrets.google_oauth_client_id
+    ).returns(expected_payload)
 
     result = Auth::VerifyGoogleToken.(token)
 
@@ -22,9 +23,10 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
   test "raises InvalidGoogleTokenError for invalid token" do
     token = "invalid-token"
 
-    validator = mock
-    validator.expects(:check).with(token, Jiki.secrets.google_oauth_client_id).returns(nil)
-    GoogleIDToken::Validator.expects(:new).returns(validator)
+    Google::Auth::IDTokens.expects(:verify_oidc).with(
+      token,
+      aud: Jiki.secrets.google_oauth_client_id
+    ).raises(Google::Auth::IDTokens::VerificationError.new("Invalid token"))
 
     assert_raises(InvalidGoogleTokenError) do
       Auth::VerifyGoogleToken.(token)
@@ -33,15 +35,11 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
 
   test "raises InvalidGoogleTokenError for expired token" do
     token = "expired-token"
-    expired_payload = {
-      'sub' => 'google-user-123',
-      'email' => 'user@gmail.com',
-      'exp' => 1.hour.ago.to_i
-    }
 
-    validator = mock
-    validator.expects(:check).with(token, Jiki.secrets.google_oauth_client_id).returns(expired_payload)
-    GoogleIDToken::Validator.expects(:new).returns(validator)
+    Google::Auth::IDTokens.expects(:verify_oidc).with(
+      token,
+      aud: Jiki.secrets.google_oauth_client_id
+    ).raises(Google::Auth::IDTokens::VerificationError.new("Token expired"))
 
     error = assert_raises(InvalidGoogleTokenError) do
       Auth::VerifyGoogleToken.(token)
@@ -53,10 +51,10 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
   test "raises InvalidGoogleTokenError when validation fails" do
     token = "malformed-token"
 
-    validator = mock
-    validator.expects(:check).with(token, Jiki.secrets.google_oauth_client_id).
-      raises(GoogleIDToken::ValidationError.new("Signature verification failed"))
-    GoogleIDToken::Validator.expects(:new).returns(validator)
+    Google::Auth::IDTokens.expects(:verify_oidc).with(
+      token,
+      aud: Jiki.secrets.google_oauth_client_id
+    ).raises(Google::Auth::IDTokens::VerificationError.new("Signature verification failed"))
 
     error = assert_raises(InvalidGoogleTokenError) do
       Auth::VerifyGoogleToken.(token)

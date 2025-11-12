@@ -741,71 +741,45 @@ output "s3_bucket_name" {
 
 ## Phase 4: Configuration Management
 
-### 4.1 DynamoDB Config Table
+### 4.1 DynamoDB Config Table ✅ COMPLETED
 
-**Create new file**: `terraform/terraform/aws/dynamodb.tf`
+**Status**: ✅ Deployed to production
 
-```hcl
-# DynamoDB table for configuration
-resource "aws_dynamodb_table" "config" {
-  name           = "jiki-config"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 1
-  write_capacity = 1
-  hash_key       = "id"
+**File**: `terraform/terraform/aws/dynamodb.tf`
 
-  attribute {
-    name = "id"
-    type = "S"
-  }
+**What was created**:
+- DynamoDB table `jiki-config` with provisioned capacity (1 read/1 write)
+- 14 configuration items populated from Terraform
+- IAM policy `jiki-read-dynamodb-config` for ECS task access
 
-  tags = {
-    Name        = "jiki-config"
-    Environment = "production"
-  }
-}
+**Configuration items**:
+- **Hardcoded production values**:
+  - `frontend_base_url` → `https://jiki.io`
+  - `admin_base_url` → `https://admin.jiki.io`
+  - `spi_base_url` → `https://spi.jiki.io`
+  - `llm_proxy_url` → `https://llm.jiki.io/exec`
+  - `aurora_port` → `5432`
+  - `aurora_database_name` → `jiki_production`
 
-# Populate config items from Terraform outputs
-resource "aws_dynamodb_table_item" "database_url" {
-  table_name = aws_dynamodb_table.config.name
-  hash_key   = aws_dynamodb_table.config.hash_key
+- **Dynamic from Cloudflare**:
+  - `r2_account_id` → From Cloudflare account
+  - `r2_bucket_assets` → `assets`
+  - `assets_cdn_url` → `https://assets.jiki.io`
 
-  item = jsonencode({
-    id    = { S = "database_url" }
-    value = { S = "postgresql://jiki@${aws_rds_cluster.main.endpoint}:5432/jiki_production" }
-  })
-}
+- **Dynamic from AWS**:
+  - `s3_bucket_video_production` → `jiki-video-production`
 
-resource "aws_dynamodb_table_item" "redis_url" {
-  table_name = aws_dynamodb_table.config.name
-  hash_key   = aws_dynamodb_table.config.hash_key
+- **TODO placeholders** (update before production):
+  - `stripe_publishable_key` → Replace with `pk_live_*`
+  - `stripe_premium_price_id` → Replace with production price ID
+  - `stripe_max_price_id` → Replace with production price ID
 
-  item = jsonencode({
-    id    = { S = "sidekiq_redis_url" }
-    value = { S = "redis://${aws_elasticache_serverless_cache.main.endpoint[0].address}:${aws_elasticache_serverless_cache.main.endpoint[0].port}/0" }
-  })
-}
+**Cost**: ~$0.01/month (effectively free with minimal reads/writes)
 
-resource "aws_dynamodb_table_item" "s3_bucket" {
-  table_name = aws_dynamodb_table.config.name
-  hash_key   = aws_dynamodb_table.config.hash_key
-
-  item = jsonencode({
-    id    = { S = "s3_bucket_name" }
-    value = { S = aws_s3_bucket.api_storage.bucket }
-  })
-}
-
-resource "aws_dynamodb_table_item" "frontend_url" {
-  table_name = aws_dynamodb_table.config.name
-  hash_key   = aws_dynamodb_table.config.hash_key
-
-  item = jsonencode({
-    id    = { S = "frontend_base_url" }
-    value = { S = "https://jiki.io" }  # Update as needed
-  })
-}
-```
+**Next steps**:
+- ✅ Integrate with jiki-config gem to read from DynamoDB in production
+- ⚠️ Update Stripe values before going live
+- 📝 Uncomment `aurora_endpoint` item after RDS is created
 
 ### 4.2 AWS Secrets Manager
 
