@@ -21,16 +21,14 @@ module Auth
     end
 
     def find_by_email!
-      user = User.find_by(email:)
-      return unless user
-
-      # Link existing account to Google
-      user.update!(
-        google_id:,
-        provider: 'google',
-        email_verified: true
-      )
-      user
+      User.find_by(email:)&.tap do |user|
+        # Link existing account to Google
+        user.update!(
+          google_id:,
+          provider: 'google',
+          email_verified: true
+        )
+      end
     end
 
     def create_user!
