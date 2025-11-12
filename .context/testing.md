@@ -280,10 +280,20 @@ end
 
 ##### Complete Response Testing
 
-**IMPORTANT**: Always use `assert_json_response` helper for testing complete JSON responses. This provides clearer, more maintainable tests compared to manual assertions.
+**CRITICAL RULE**: Use the right assertion method based on what you're testing:
+
+**Use `assert_json_response` with serializers for ALL data responses:**
+- Index, show, create, update actions
+- Any endpoint returning serialized data
+- Full response comparisons
+
+**Use `response.parsed_body` ONLY for:**
+- Testing non-serialized values (error messages with regex)
+- Testing specific implementation details not in serializers
+- Nested event data checks (use with `assert_equal_json`)
 
 ```ruby
-# CORRECT: Use assert_json_response with serializers
+# CORRECT: Use assert_json_response with serializers for data responses
 test "GET show returns user data" do
   user = create(:user, name: "Test User", email: "test@example.com")
 
@@ -295,7 +305,36 @@ test "GET show returns user data" do
   })
 end
 
-# INCORRECT: Don't manually parse JSON and assert each field
+# CORRECT: Use assert_json_response for paginated responses
+test "GET index returns projects with pagination" do
+  project1 = create(:project)
+  project2 = create(:project)
+
+  get admin_projects_path(page: 1, per: 2), headers: @headers, as: :json
+
+  assert_response :success
+  assert_json_response({
+    results: SerializeAdminProjects.([project1, project2]),
+    meta: {
+      current_page: 1,
+      total_pages: 1,
+      total_count: 2
+    }
+  })
+end
+
+# CORRECT: Use response.parsed_body for error messages with regex
+test "POST create returns validation error" do
+  post projects_path, params: { project: { title: "" } }, headers: @headers, as: :json
+
+  assert_response :unprocessable_entity
+
+  json = response.parsed_body
+  assert_equal "validation_error", json["error"]["type"]
+  assert_match(/Title can't be blank/, json["error"]["message"])
+end
+
+# INCORRECT: Don't use response.parsed_body for serialized data
 test "GET show returns user data" do
   user = create(:user, name: "Test User")
 
@@ -305,7 +344,7 @@ test "GET show returns user data" do
   json = response.parsed_body
   assert_equal user.id, json["user"]["id"]
   assert_equal "Test User", json["user"]["name"]
-  # ... many more assertions
+  # BAD: Should use assert_json_response with serializer
 end
 ```
 

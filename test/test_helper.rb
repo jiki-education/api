@@ -109,7 +109,59 @@ module JsonAssertions
       expected = expected.merge(meta: { events: [] })
     end
 
-    assert_equal expected.deep_stringify_keys, actual
+    # Check if expected contains any Regexp values (they can't be JSON-serialized)
+    has_regex = contains_regex?(expected)
+
+    if has_regex
+      # Don't normalize if we have regexes - use deep_stringify_keys instead
+      assert_json_match(expected.deep_stringify_keys, actual)
+    else
+      # Use JSON serialization round-trip to normalize the expected value
+      # This ensures symbols become strings, just like in the actual response
+      expected_normalized = JSON.parse(expected.to_json)
+      assert_json_match(expected_normalized, actual)
+    end
+  end
+
+  private
+  # Check if a value contains any Regexp objects (recursively)
+  def contains_regex?(value)
+    case value
+    when Regexp
+      true
+    when Hash
+      value.values.any? { |v| contains_regex?(v) }
+    when Array
+      value.any? { |v| contains_regex?(v) }
+    else
+      false
+    end
+  end
+
+  # Recursively match expected structure with actual, supporting Regex for values
+  def assert_json_match(expected, actual, path = "root")
+    case expected
+    when Hash
+      assert actual.is_a?(Hash), "Expected Hash at #{path}, got #{actual.class}"
+      expected.each do |key, value|
+        key_str = key.to_s
+        assert actual.key?(key_str), "Missing key '#{key}' at #{path}"
+        assert_json_match(value, actual[key_str], "#{path}.#{key}")
+      end
+      # Check for unexpected keys
+      extra_keys = actual.keys - expected.keys.map(&:to_s)
+      assert_empty extra_keys, "Unexpected keys at #{path}: #{extra_keys.join(', ')}"
+    when Array
+      assert actual.is_a?(Array), "Expected Array at #{path}, got #{actual.class}"
+      assert_equal expected.length, actual.length, "Array length mismatch at #{path}"
+      expected.each_with_index do |value, index|
+        assert_json_match(value, actual[index], "#{path}[#{index}]")
+      end
+    when Regexp
+      assert_match expected, actual.to_s, "Regex mismatch at #{path}"
+    else
+      assert_equal expected, actual, "Value mismatch at #{path}"
+    end
   end
 
   def assert_json_structure(structure, data = response.parsed_body)
