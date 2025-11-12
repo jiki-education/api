@@ -15,6 +15,7 @@ gem "bcrypt", "~> 3.1.7"
 # Authentication
 gem "devise", "~> 4.9"
 gem "devise-jwt", "~> 0.12.0"
+gem "google-id-token", "~> 1.4" # Google OAuth token verification
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[windows jruby]

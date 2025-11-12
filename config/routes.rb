@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   namespace :auth do
     post "refresh", to: "refresh_tokens#create"
     delete "logout/all", to: "logout_all#destroy"
+    post "google", to: "google#create"
   end
 
   # External (public, unauthenticated) endpoints
