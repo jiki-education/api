@@ -10,7 +10,7 @@ class Admin::ImagesController < Admin::BaseController
     )
 
     render json: { url: result[:url] }, status: :created
-  rescue Jiki::ConfigError => e
+  rescue ImageFileTooLargeError, InvalidImageTypeError => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
 end

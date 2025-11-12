@@ -10,8 +10,6 @@ class Utils::R2::Upload
       body:,
       content_type:
     )
-
-    r2_key
   end
 
   private

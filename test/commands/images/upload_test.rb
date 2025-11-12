@@ -10,7 +10,7 @@ class Images::UploadTest < ActiveSupport::TestCase
       assert_equal image_data, body
       assert_equal 'image/jpeg', content_type
       true
-    end.returns("test/images/123/uuid.jpg")
+    end
 
     result = Images::Upload.(image_data, filename)
 
@@ -23,7 +23,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     image_data = "fake-image-data"
     filename = "test.png"
 
-    Utils::R2::Upload.expects(:call).returns("key")
+    Utils::R2::Upload.expects(:call)
 
     result = Images::Upload.(image_data, filename)
 
@@ -37,7 +37,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     Utils::R2::Upload.expects(:call).with do |_key, _body, content_type|
       assert_equal 'image/jpeg', content_type
       true
-    end.returns("key")
+    end
 
     Images::Upload.(image_data, "image.jpg")
   end
@@ -49,7 +49,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     Utils::R2::Upload.expects(:call).with do |_key, _body, content_type|
       assert_equal 'image/png', content_type
       true
-    end.returns("key")
+    end
 
     Images::Upload.(image_data, "image.png")
   end
@@ -58,7 +58,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     large_image_data = "x" * (5.megabytes + 1)
     filename = "large.jpg"
 
-    error = assert_raises(Jiki::ConfigError) do
+    error = assert_raises(ImageFileTooLargeError) do
       Images::Upload.(large_image_data, filename)
     end
 
@@ -71,7 +71,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     image_data = "This is not an image"
     filename = "fake.txt"
 
-    error = assert_raises(Jiki::ConfigError) do
+    error = assert_raises(InvalidImageTypeError) do
       Images::Upload.(image_data, filename)
     end
 
@@ -80,7 +80,7 @@ class Images::UploadTest < ActiveSupport::TestCase
 
   test "accepts JPEG images" do
     image_data = File.read(Rails.root.join('test', "fixtures", "files", "test_image.jpg"))
-    Utils::R2::Upload.expects(:call).returns("key")
+    Utils::R2::Upload.expects(:call)
 
     assert_nothing_raised do
       Images::Upload.(image_data, "test.jpg")
@@ -89,7 +89,7 @@ class Images::UploadTest < ActiveSupport::TestCase
 
   test "accepts PNG images" do
     image_data = "\x89PNG\r\n\x1a\n"
-    Utils::R2::Upload.expects(:call).returns("key")
+    Utils::R2::Upload.expects(:call)
 
     assert_nothing_raised do
       Images::Upload.(image_data, "test.png")
@@ -98,7 +98,7 @@ class Images::UploadTest < ActiveSupport::TestCase
 
   test "accepts GIF images" do
     image_data = "GIF89a"
-    Utils::R2::Upload.expects(:call).returns("key")
+    Utils::R2::Upload.expects(:call)
 
     assert_nothing_raised do
       Images::Upload.(image_data, "test.gif")
@@ -108,7 +108,7 @@ class Images::UploadTest < ActiveSupport::TestCase
   test "accepts WebP images" do
     # Minimal WebP header
     image_data = "RIFF\x00\x00\x00\x00WEBP"
-    Utils::R2::Upload.expects(:call).returns("key")
+    Utils::R2::Upload.expects(:call)
 
     assert_nothing_raised do
       Images::Upload.(image_data, "test.webp")
@@ -119,7 +119,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     image_data = "consistent-content"
     filename = "test.jpg"
 
-    Utils::R2::Upload.expects(:call).twice.returns("key")
+    Utils::R2::Upload.expects(:call).twice
 
     result1 = Images::Upload.(image_data, filename)
     result2 = Images::Upload.(image_data, filename)
@@ -131,7 +131,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     image_data = File.read(Rails.root.join('test', "fixtures", "files", "test_image.jpg"))
     filename = "test.jpg"
 
-    Utils::R2::Upload.expects(:call).returns("test/images/123/uuid.jpg")
+    Utils::R2::Upload.expects(:call)
 
     result = Images::Upload.(image_data, filename)
 

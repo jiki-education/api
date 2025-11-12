@@ -23,13 +23,13 @@ class Images::Upload
   def validate_file_size!
     return if image_data.bytesize <= MAX_FILE_SIZE
 
-    raise Jiki::ConfigError, "Image file size exceeds maximum of #{MAX_FILE_SIZE / 1.megabyte}MB"
+    raise ImageFileTooLargeError, "Image file size exceeds maximum of #{MAX_FILE_SIZE / 1.megabyte}MB"
   end
 
   def validate_content_type!
     return if ALLOWED_CONTENT_TYPES.include?(content_type)
 
-    raise Jiki::ConfigError, "Invalid image type. Allowed types: #{ALLOWED_CONTENT_TYPES.join(', ')}"
+    raise InvalidImageTypeError, "Invalid image type. Allowed types: #{ALLOWED_CONTENT_TYPES.join(', ')}"
   end
 
   memoize

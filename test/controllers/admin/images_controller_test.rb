@@ -49,7 +49,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
     )
 
     Images::Upload.expects(:call).with(image_data, 'test_image.jpg').raises(
-      Jiki::ConfigError.new('Image file size exceeds maximum of 5MB')
+      ImageFileTooLargeError.new('Image file size exceeds maximum of 5MB')
     )
 
     post admin_images_path, params: { image: image_file }, headers: @headers
@@ -68,7 +68,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
     )
 
     Images::Upload.expects(:call).with(image_data, 'test_image.jpg').raises(
-      Jiki::ConfigError.new('Invalid image type. Allowed types: image/jpeg, image/png, image/gif, image/webp')
+      InvalidImageTypeError.new('Invalid image type. Allowed types: image/jpeg, image/png, image/gif, image/webp')
     )
 
     post admin_images_path, params: { image: image_file }, headers: @headers

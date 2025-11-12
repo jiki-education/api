@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Utils::R2::UploadTest < ActiveSupport::TestCase
-  test "uploads file to R2 and returns r2_key" do
+  test "uploads file to R2" do
     r2_key = "development/images/abc123/uuid.jpg"
     body = "test-image-content"
     content_type = "image/jpeg"
@@ -15,9 +15,7 @@ class Utils::R2::UploadTest < ActiveSupport::TestCase
       content_type: content_type
     )
 
-    result = Utils::R2::Upload.(r2_key, body, content_type)
-
-    assert_equal r2_key, result
+    Utils::R2::Upload.(r2_key, body, content_type)
   end
 
   test "uses bucket name from Jiki.config" do
