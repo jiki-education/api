@@ -11,9 +11,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
     assert_difference 'User.count', 1 do
-      result = Auth::AuthenticateWithGoogle.('google-token')
-
-      user = result[:user]
+      user = Auth::AuthenticateWithGoogle.('google-token')
       assert_equal 'newuser@gmail.com', user.email
       assert_equal 'New User', user.name
       assert_equal 'google-123', user.google_id
@@ -38,9 +36,9 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
     assert_no_difference 'User.count' do
-      result = Auth::AuthenticateWithGoogle.('google-token')
+      user = Auth::AuthenticateWithGoogle.('google-token')
 
-      assert_equal existing_user.id, result[:user].id
+      assert_equal existing_user.id, user.id
     end
   end
 
@@ -60,9 +58,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
     assert_no_difference 'User.count' do
-      result = Auth::AuthenticateWithGoogle.('google-token')
-
-      user = result[:user]
+      user = Auth::AuthenticateWithGoogle.('google-token')
       assert_equal existing_user.id, user.id
       assert_equal 'google-789', user.google_id
       assert_equal 'google', user.provider
@@ -82,9 +78,9 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
-    result = Auth::AuthenticateWithGoogle.('google-token')
+    user = Auth::AuthenticateWithGoogle.('google-token')
 
-    assert_equal 'testuser2', result[:user].handle
+    assert_equal 'testuser2', user.handle
   end
 
   test "handles email with special characters in handle generation" do
@@ -96,10 +92,10 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
-    result = Auth::AuthenticateWithGoogle.('google-token')
+    user = Auth::AuthenticateWithGoogle.('google-token')
 
     # parameterize should convert special chars
-    assert_equal 'test-user-tag', result[:user].handle
+    assert_equal 'test-user-tag', user.handle
   end
 
   test "generates random password for OAuth users" do
@@ -111,11 +107,11 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
-    result = Auth::AuthenticateWithGoogle.('google-token')
+    user = Auth::AuthenticateWithGoogle.('google-token')
 
     # User should have an encrypted password (random generated)
-    assert result[:user].encrypted_password.present?
+    assert user.encrypted_password.present?
     # Should not be able to login with empty password
-    refute result[:user].valid_password?("")
+    refute user.valid_password?("")
   end
 end

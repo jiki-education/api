@@ -1,8 +1,7 @@
 module Auth
-  class GoogleController < ApplicationController
+  class GoogleOauthController < ApplicationController
     def create
-      result = Auth::AuthenticateWithGoogle.(params[:token])
-      user = result[:user]
+      user = Auth::AuthenticateWithGoogle.(params[:token])
 
       # Generate JWT tokens (same as login)
       token = Warden::JWTAuth::UserEncoder.new.(user, :user, request.headers['User-Agent'])
@@ -16,7 +15,7 @@ module Auth
         user: SerializeUser.(user),
         refresh_token: refresh_token.token
       }, status: :ok
-    rescue Auth::VerifyGoogleToken::InvalidTokenError => e
+    rescue InvalidGoogleTokenError => e
       render json: {
         error: {
           type: :invalid_token,

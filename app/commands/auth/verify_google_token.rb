@@ -5,17 +5,22 @@ module Auth
     initialize_with :token
 
     def call
-      validator = GoogleIDToken::Validator.new
-      payload = validator.check(token, Jiki.secrets.google_oauth_client_id)
-
-      raise InvalidTokenError, "Invalid Google token" unless payload
-      raise InvalidTokenError, "Token expired" if Time.zone.at(payload['exp']) < Time.zone.now
+      raise InvalidGoogleTokenError, "Invalid Google token" unless payload
+      raise InvalidGoogleTokenError, "Token expired" if Time.zone.at(payload['exp']) < Time.zone.now
 
       payload
     rescue GoogleIDToken::ValidationError => e
-      raise InvalidTokenError, "Google token validation failed: #{e.message}"
+      raise InvalidGoogleTokenError, "Google token validation failed: #{e.message}"
     end
 
-    class InvalidTokenError < StandardError; end
+    private
+    memoize
+    def payload = validator.check(token, google_oauth_client_id)
+
+    memoize
+    def validator = GoogleIDToken::Validator.new
+
+    memoize
+    def google_oauth_client_id = Jiki.secrets.google_oauth_client_id
   end
 end

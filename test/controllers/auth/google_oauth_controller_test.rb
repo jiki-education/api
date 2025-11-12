@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Auth::GoogleControllerTest < ApplicationControllerTest
+class Auth::GoogleOauthControllerTest < ApplicationControllerTest
   test "POST google with valid token creates new user and returns JWT" do
     google_payload = {
       'sub' => 'google-user-id-123',
@@ -98,7 +98,7 @@ class Auth::GoogleControllerTest < ApplicationControllerTest
 
   test "POST google with invalid token returns unauthorized" do
     Auth::VerifyGoogleToken.stubs(:call).raises(
-      Auth::VerifyGoogleToken::InvalidTokenError.new("Invalid Google token")
+      InvalidGoogleTokenError.new("Invalid Google token")
     )
 
     post auth_google_path, params: { token: 'invalid-token' }, as: :json
@@ -115,7 +115,7 @@ class Auth::GoogleControllerTest < ApplicationControllerTest
 
   test "POST google with expired token returns unauthorized" do
     Auth::VerifyGoogleToken.stubs(:call).raises(
-      Auth::VerifyGoogleToken::InvalidTokenError.new("Token expired")
+      InvalidGoogleTokenError.new("Token expired")
     )
 
     post auth_google_path, params: { token: 'expired-token' }, as: :json
@@ -151,7 +151,7 @@ class Auth::GoogleControllerTest < ApplicationControllerTest
   test "POST google without token parameter returns error" do
     # Stub the Google token verification to raise an error for nil token
     Auth::VerifyGoogleToken.stubs(:call).raises(
-      Auth::VerifyGoogleToken::InvalidTokenError.new("Invalid Google token")
+      InvalidGoogleTokenError.new("Invalid Google token")
     )
 
     post auth_google_path, params: {}, as: :json

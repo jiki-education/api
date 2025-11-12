@@ -19,19 +19,19 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
     assert_equal expected_payload, result
   end
 
-  test "raises InvalidTokenError for invalid token" do
+  test "raises InvalidGoogleTokenError for invalid token" do
     token = "invalid-token"
 
     validator = mock
     validator.expects(:check).with(token, Jiki.secrets.google_oauth_client_id).returns(nil)
     GoogleIDToken::Validator.expects(:new).returns(validator)
 
-    assert_raises(Auth::VerifyGoogleToken::InvalidTokenError) do
+    assert_raises(InvalidGoogleTokenError) do
       Auth::VerifyGoogleToken.(token)
     end
   end
 
-  test "raises InvalidTokenError for expired token" do
+  test "raises InvalidGoogleTokenError for expired token" do
     token = "expired-token"
     expired_payload = {
       'sub' => 'google-user-123',
@@ -43,14 +43,14 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
     validator.expects(:check).with(token, Jiki.secrets.google_oauth_client_id).returns(expired_payload)
     GoogleIDToken::Validator.expects(:new).returns(validator)
 
-    error = assert_raises(Auth::VerifyGoogleToken::InvalidTokenError) do
+    error = assert_raises(InvalidGoogleTokenError) do
       Auth::VerifyGoogleToken.(token)
     end
 
     assert_match(/Token expired/, error.message)
   end
 
-  test "raises InvalidTokenError when validation fails" do
+  test "raises InvalidGoogleTokenError when validation fails" do
     token = "malformed-token"
 
     validator = mock
@@ -58,7 +58,7 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
       raises(GoogleIDToken::ValidationError.new("Signature verification failed"))
     GoogleIDToken::Validator.expects(:new).returns(validator)
 
-    error = assert_raises(Auth::VerifyGoogleToken::InvalidTokenError) do
+    error = assert_raises(InvalidGoogleTokenError) do
       Auth::VerifyGoogleToken.(token)
     end
 

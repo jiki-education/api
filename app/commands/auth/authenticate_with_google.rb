@@ -5,19 +5,6 @@ module Auth
     initialize_with :google_token
 
     def call
-      payload = Auth::VerifyGoogleToken.(google_token)
-
-      user = find_or_create_user(payload)
-
-      { user: }
-    end
-
-    private
-    def find_or_create_user(payload)
-      google_id = payload['sub']
-      email = payload['email']
-      name = payload['name']
-
       # Try to find by google_id first
       user = User.find_by(google_id:)
       return user if user
@@ -42,11 +29,19 @@ module Auth
         provider: 'google',
         email_verified: true,
         password: SecureRandom.hex(32), # Random password (won't be used)
-        handle: generate_handle(email)
+        handle: generate_handle!(email)
       )
     end
 
-    def generate_handle(email)
+    private
+    memoize
+    def payload = Auth::VerifyGoogleToken.(google_token)
+
+    def google_id = payload['sub']
+    def email = payload['email']
+    def name = payload['name']
+
+    def generate_handle!(email)
       base = email.split('@').first.parameterize
       handle = base
       counter = 1
