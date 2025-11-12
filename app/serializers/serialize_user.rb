@@ -9,6 +9,8 @@ class SerializeUser
       membership_type: user.data.membership_type,
       email: user.email,
       name: user.name,
+      provider: user.provider,
+      email_verified: user.email_verified,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data
     }
