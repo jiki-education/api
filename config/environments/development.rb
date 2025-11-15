@@ -5,6 +5,7 @@ Rails.application.configure do
 
   # Allow requests from local.jiki.io domain
   config.hosts << "local.jiki.io"
+  config.hosts << "ihid.ngrok.dev"
 
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
