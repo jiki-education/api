@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins Jiki.config.frontend_base_url, Jiki.config.admin_base_url, 'localhost:3064', 'local.jiki.io:3064'
+    origins Jiki.config.frontend_base_url, Jiki.config.admin_base_url, 'localhost:3064', 'local.jiki.io:3064', "ihid.ngrok.dev"
 
     resource "*",
       headers: :any,

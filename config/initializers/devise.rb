@@ -341,6 +341,11 @@ Devise.setup do |config|
     jwt.request_formats = {
       user: [:json]
     }
+
+    # Disable aud (audience) claim validation
+    # We don't use aud for token validation, only jti (allowlist) for security
+    # User-Agent is tracked in the database for display purposes only
+    jwt.aud_header = nil
   end
 
   # Warden configuration for API responses
