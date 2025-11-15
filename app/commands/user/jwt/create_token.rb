@@ -6,8 +6,6 @@ class User::Jwt::CreateToken
   def call
     user.jwt_tokens.create!(
       jti: payload["jti"],
-      # NOTE: We don't store aud in JWT tokens - only use jti for validation
-      # aud is stored in refresh tokens for tracking purposes
       refresh_token_id: refresh_token_id,
       expires_at: Time.zone.at(payload["exp"].to_i)
     ).tap do |jwt_record|
