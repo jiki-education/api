@@ -28,7 +28,6 @@ class User::RefreshToken < ApplicationRecord
     expires_at < Time.current
   end
 
-  # Optional: Extract device information from aud header
   def device_name
     return "Unknown Device" if aud.blank?
 
