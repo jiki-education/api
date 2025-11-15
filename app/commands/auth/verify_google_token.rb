@@ -5,15 +5,19 @@ module Auth
     initialize_with :token
 
     def call
-      access_token = exchange_code_for_token
-      user_info = fetch_user_info(access_token)
-      parse_user_info(user_info)
+      {
+        'sub' => user_info['id'],
+        'email' => user_info['email'],
+        'name' => user_info['name'],
+        'email_verified' => user_info['verified_email']
+      }
     rescue StandardError => e
       raise InvalidGoogleTokenError, "Google token validation failed: #{e.message}"
     end
 
     private
-    def exchange_code_for_token
+    memoize
+    def access_token
       response = HTTParty.post(
         'https://oauth2.googleapis.com/token',
         body: {
@@ -30,7 +34,8 @@ module Auth
       response.parsed_response['access_token']
     end
 
-    def fetch_user_info(access_token)
+    memoize
+    def user_info
       response = HTTParty.get(
         'https://www.googleapis.com/oauth2/v2/userinfo',
         headers: { 'Authorization' => "Bearer #{access_token}" }
@@ -39,15 +44,6 @@ module Auth
       raise InvalidGoogleTokenError, "UserInfo API returned #{response.code}: #{response.body}" unless response.success?
 
       response.parsed_response
-    end
-
-    def parse_user_info(response)
-      {
-        'sub' => response['id'],
-        'email' => response['email'],
-        'name' => response['name'],
-        'email_verified' => response['verified_email']
-      }
     end
 
     memoize
