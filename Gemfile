@@ -34,10 +34,9 @@ gem "rack-cors"
 # Command pattern implementation for business logic
 gem "mandate", "~> 2.0"
 
-# Background job processing
-gem "sidekiq", "~> 8.0"
-gem "sidekiq-scheduler" # For scheduled/recurring jobs
-gem "redis", "~> 5.0"
+# Background job processing with Solid Queue (database-backed)
+gem "solid_queue"
+gem "solid_queue_monitor"
 
 # Fast hashing for file deduplication
 gem "xxhash"

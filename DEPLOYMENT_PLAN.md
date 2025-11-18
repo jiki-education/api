@@ -8,21 +8,49 @@ Deploy Jiki API (Rails 8.1) to AWS ECS using Terraform, following Exercism patte
 **Deployment Method**: Terraform + ECS Fargate
 
 ## Cost-Optimized Configuration
-- **Aurora Serverless v2**: 0-1 ACU (scales to zero when idle)
-- **ElastiCache Serverless**: Auto-scaling Redis
-- **ECS Services**: 1 task each (web + Sidekiq)
+- **Aurora Serverless v2**: 0-1 ACU (scales to zero when idle) - Database + Solid Queue
+- **ECS Services**: 1 web task (Solid Queue runs in-process)
+- **No ElastiCache/Redis**: Using Solid Queue (database-backed jobs) and memory cache
 - **No private subnets/NAT**: Use public subnets only (save ~$32/month)
-- **Estimated cost**: ~$85-110/month for low traffic
+- **Estimated cost**: ~$40-65/month for low traffic (~$45-70/month savings vs Sidekiq+Redis)
 
 ---
 
-## Phase 1: Application Preparation
+## Phase 1: Application Preparation ✅ COMPLETED
 
-### 1.1 Add Migration Concurrent Guard
+**Status**: All Rails changes complete and tested locally with `bin/dev`
+
+### Key Architecture Changes from Original Plan:
+
+**Replaced Sidekiq + Redis with Solid Queue:**
+- ❌ Removed: Sidekiq, sidekiq-scheduler, redis gem, ElastiCache Serverless (~$90-110/month)
+- ✅ Added: Solid Queue (database-backed jobs), solid_queue_monitor dashboard
+- ✅ Configuration: Single database approach (queue tables in main Postgres)
+- ✅ Cache: Memory store instead of Redis
+- 💰 **Cost Savings: ~$45-70/month**
+
+**Completed Rails Changes:**
+1. ✅ Migration concurrent guard (`lib/run_migrations_with_concurrent_guard.rb`)
+2. ✅ Updated docker-entrypoint to use guard
+3. ✅ Health check controller (`/health-check`) with DB connectivity check
+4. ✅ Dockerfile HEALTHCHECK directive
+5. ✅ Production environment config (cache store, hosts, Active Storage S3)
+6. ✅ Database config using `Jiki.config` (aurora_endpoint, aurora_port, etc.)
+7. ✅ Solid Queue installed with single-database configuration
+8. ✅ Solid Queue Monitor mounted at `/solid_queue` with basic auth
+9. ✅ `Procfile.dev` updated for local development
+10. ✅ Storage config for S3 Active Storage bucket
+
+**What Changed:**
+- No longer need ElastiCache/Redis infrastructure in Terraform
+- No separate Sidekiq ECS service needed (Solid Queue runs in web process)
+- Simplified architecture: Just web server + database
+
+### 1.1 Add Migration Concurrent Guard ✅ COMPLETED
 
 **Why**: Prevents race conditions when multiple containers start simultaneously during rolling deployments.
 
-**Implementation**:
+**Implementation**: Created `lib/run_migrations_with_concurrent_guard.rb`
 ```ruby
 # lib/run_migrations_with_concurrent_guard.rb
 # This file runs Rails migrations with a retry guard for any concurrent failures

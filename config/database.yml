@@ -80,6 +80,8 @@ test:
 #
 production:
   <<: *default
-  database: jiki_production
+  host: <%= Jiki.config.aurora_endpoint %>
+  port: <%= Jiki.config.aurora_port %>
+  database: <%= Jiki.config.aurora_database_name %>
   username: jiki
-  password: <%= ENV["JIKI_DATABASE_PASSWORD"] %>
+  password: <%= Jiki.secrets.aurora_password %>
