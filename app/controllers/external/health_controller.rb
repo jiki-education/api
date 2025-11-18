@@ -1,4 +1,4 @@
-class External::HealthController < External::BaseController
+class External::HealthController < ApplicationController
   def check
     # Verify database connectivity
     user = User.first
