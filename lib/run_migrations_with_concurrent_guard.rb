@@ -6,12 +6,13 @@ begin
   # Put it in this begin so it keeps on happening on each retry.
   sleep(rand * 30)
 
-  migrations = ActiveRecord::Migration.new.migration_context.migrations
+  migration_context = ActiveRecord::Base.connection_pool.migration_context
+  migrations = migration_context.migrations
   ActiveRecord::Migrator.new(
     :up,
     migrations,
-    ActiveRecord::Base.connection.schema_migration,
-    ActiveRecord::Base.connection.internal_metadata
+    migration_context.schema_migration,
+    migration_context.internal_metadata
   ).migrate
 
   Rails.logger.info "Migrations ran cleanly"
