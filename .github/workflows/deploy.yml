@@ -32,6 +32,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Run Zeitwerk test
+        env:
+          RAILS_ENV: production
+        run: bundle exec rails test:zeitwerk
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
