@@ -2,7 +2,7 @@ name: Deploy to ECS
 
 on:
   push:
-    branches: [main]
+    branches: [main, deployment]
   workflow_dispatch:  # Allows manual trigger from any branch
 
 env:
