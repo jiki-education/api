@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Use secret_key_base from Jiki secrets (AWS Secrets Manager)
+  config.secret_key_base = Jiki.secrets.secret_key_base
+
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
