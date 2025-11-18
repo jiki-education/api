@@ -142,6 +142,13 @@ Based on business requirements and deployment needs:
 6. CloudWatch logs and alarms
 
 **Note**: No ElastiCache/Redis needed - using Solid Queue (database-backed) for jobs and memory cache
+1. Aurora PostgreSQL Serverless v2 (0-1 ACU)
+2. ElastiCache Serverless for Redis
+3. S3 bucket for Active Storage
+4. ECS cluster and services (web + Sidekiq)
+5. Application Load Balancer with ACM certificate
+6. Security groups and IAM roles
+7. CloudWatch logs and alarms
 
 **Application Features**:
 1. User model with progression tracking
