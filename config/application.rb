@@ -28,6 +28,10 @@ module Api
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # Ignore run_migrations_with_concurrent_guard.rb - it's a standalone script
+    # loaded via rails runner, not a class to be autoloaded
+    Rails.autoloaders.main.ignore(Rails.root.join("lib", "run_migrations_with_concurrent_guard.rb").to_s)
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
