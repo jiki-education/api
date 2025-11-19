@@ -78,6 +78,6 @@ ENV PUMA_PORT=3001
 
 # Health check for ECS/ALB
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000/up || exit 1
+  CMD curl -f http://localhost:3000/health-check || exit 1
 
 CMD ["./bin/thrust", "./bin/rails", "server"]
