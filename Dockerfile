@@ -70,10 +70,13 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
+# Use port 3000 (unprivileged) since we run as non-root user
+EXPOSE 3000
+ENV PORT=3000
+ENV THRUSTER_HTTP_PORT=3000
 
 # Health check for ECS/ALB
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost/up || exit 1
+  CMD curl -f http://localhost:3000/up || exit 1
 
 CMD ["./bin/thrust", "./bin/rails", "server"]
