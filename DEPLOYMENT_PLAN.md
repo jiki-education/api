@@ -2,7 +2,7 @@
 
 ## Current State: Infrastructure Complete, Ready for Production
 
-**Last Updated**: 2025-01-19
+**Last Updated**: 2025-11-19
 **Status**: ✅ All infrastructure deployed and production-ready
 **Domain**: `api.jiki.io`
 **Region**: `eu-west-1` (Ireland)
@@ -405,10 +405,7 @@ terraform/
 
 - [ ] Private subnets + NAT Gateway (adds ~$32/month for security)
 - [ ] VPC endpoints for DynamoDB/S3 (cost optimization at scale)
-- [ ] AWS WAF for ALB (DDoS protection)
 - [ ] CloudWatch dashboard for operations
-- [ ] Staging environment
-- [ ] Blue/green deployment strategy
 - [ ] Enhanced monitoring with Datadog/New Relic
 
 ---
@@ -451,44 +448,6 @@ terraform/
 
 ---
 
-## Troubleshooting
-
-### Common Issues
-
-**502 Bad Gateway**
-- Check: Thruster can reach Puma (`TARGET_PORT=3001` set?)
-- Check: ECS tasks are healthy (`aws ecs describe-services`)
-- Check: Health check endpoint returns 200 (`curl localhost:3000/health-check`)
-- Check: Security group allows ALB → ECS on port 3000
-
-**Health Checks Failing**
-- Check: Database connectivity (security group: ECS → RDS 5432)
-- Check: Database credentials in Secrets Manager
-- Check: DynamoDB config has correct `aurora_endpoint`
-- Test: `curl http://localhost:3000/health-check` from inside container
-
-**Migrations Timeout**
-- Check: Health check grace period is 300s
-- Check: Random sleep isn't too long (max 30s)
-- Check: Database connectivity
-- Increase: Grace period if migrations take >4 minutes
-
-**Build Takes 10+ Minutes**
-- Check: Docker Buildx is set up in workflow
-- Check: `--cache-from` and `--cache-to` flags are present
-- Check: ECR `:buildcache` tag exists
-- First build always takes longer (creates cache)
-
-**ECS Tasks Crashing**
-- Check CloudWatch logs: `/ecs/jiki-api-web` or `/ecs/jiki-api-solid-queue`
-- Common causes:
-  - Missing `RAILS_MASTER_KEY` in Secrets Manager
-  - Database connection failure
-  - DynamoDB config table missing/inaccessible
-  - Memory limit exceeded (increase task memory)
-
----
-
 ## References
 
 ### Key Files
@@ -511,42 +470,3 @@ terraform/
 - [Aurora Serverless v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html)
 - [Solid Queue](https://github.com/basecamp/solid_queue)
 - [Thruster](https://github.com/basecamp/thruster)
-
----
-
-## Architecture Decisions
-
-### Why Solid Queue Instead of Sidekiq?
-
-- **Cost**: Saves ~$45-70/month (no ElastiCache/Redis needed)
-- **Simplicity**: One less service to manage
-- **Reliability**: Database-backed (same reliability as app data)
-- **Rails 8**: Native Rails 8 pattern (DHH recommendation)
-
-### Why Separate Worker Service?
-
-- **Resource Allocation**: Jobs can scale independently from web
-- **Graceful Shutdown**: Workers can finish jobs during deployment
-- **Monitoring**: Separate logs and metrics
-- **Future Flexibility**: Easy to add more worker types
-
-### Why Thruster Instead of Nginx?
-
-- **Rails 8 Default**: Built into Rails 8 Docker setup
-- **HTTP/2**: Native support with asset caching
-- **Simplicity**: No separate nginx configuration
-- **Zero Config**: Works out of box with Puma
-
-### Why No Private Subnets?
-
-- **Cost**: Saves $32/month (no NAT Gateway)
-- **Complexity**: Simpler networking
-- **Security**: Still protected by security groups
-- **Future**: Can add later if needed
-
-### Why Aurora Serverless v2?
-
-- **Cost**: Scales to zero when idle (~$43/month savings)
-- **Scalability**: Can scale up to 128 ACU if needed
-- **Performance**: Better than v1 (instant scaling)
-- **Compatibility**: Full PostgreSQL compatibility
