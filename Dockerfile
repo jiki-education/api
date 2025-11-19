@@ -70,10 +70,10 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
-# Use port 3000 (unprivileged) since we run as non-root user
+# Thruster listens on 3000 for ALB, Puma on 3001 (both unprivileged ports)
 EXPOSE 3000
-ENV PORT=3000
 ENV THRUSTER_HTTP_PORT=3000
+ENV PUMA_PORT=3001
 
 # Health check for ECS/ALB
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
