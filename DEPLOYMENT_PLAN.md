@@ -3,7 +3,7 @@
 ## Current State: Infrastructure Complete, Ready for Production
 
 **Last Updated**: 2025-01-19
-**Status**: ✅ All infrastructure deployed, recent critical fixes applied
+**Status**: ✅ All infrastructure deployed and production-ready
 **Domain**: `api.jiki.io`
 **Region**: `eu-west-1` (Ireland)
 
@@ -33,59 +33,6 @@ Internet → Cloudflare (HTTPS) → ALB (port 443) → ECS Tasks (port 3000)
 - **Jobs**: Solid Queue (database-backed, no Redis/Sidekiq)
 
 **Monthly Cost**: ~$40-65 (startup configuration)
-
----
-
-## Recent Critical Fixes (Last 3 Commits)
-
-### 1. Docker Layer Caching (Commit: 2950e93)
-**Problem**: Every build took 8-12 minutes, reinstalling all gems
-**Solution**: Added Docker Buildx with ECR-based layer caching
-
-```yaml
-# .github/workflows/deploy.yml
-- name: Set up Docker Buildx
-  uses: docker/setup-buildx-action@v3
-
-- name: Build with cache
-  run: |
-    docker buildx build \
-      --cache-from type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache \
-      --cache-to type=registry,ref=$ECR_REGISTRY/$ECR_REPOSITORY:buildcache,mode=max \
-      --push .
-```
-
-**Impact**: Build times reduced from 8-12 min → 1-2 min (70-90% faster)
-
-### 2. Thruster TARGET_PORT Fix (Commit: da2c95a)
-**Problem**: 502 Bad Gateway errors on `/health-check`, Thruster couldn't reach Puma
-**Solution**: Added `TARGET_PORT=3001` environment variable
-
-```dockerfile
-# Dockerfile
-ENV THRUSTER_HTTP_PORT=3000  # Thruster listens on 3000 for ALB
-ENV TARGET_PORT=3001          # Thruster proxies to Puma on 3001
-ENV PUMA_PORT=3001            # Puma listens on 3001
-```
-
-**Also Fixed**: X-Forwarded-For header loop (thousands of 127.0.0.1 in logs)
-
-```ruby
-# config/environments/production.rb
-config.action_dispatch.trusted_proxies = [
-  IPAddr.new("10.0.0.0/16"),  # VPC CIDR (ALB and ECS tasks)
-  "127.0.0.1"                  # Localhost (Thruster proxy)
-]
-```
-
-### 3. Health Check Optimization (Commit: 4fe78d9)
-**Problem**: Slow deployment detection (30s health check interval)
-**Solution**: Reduced to 5s for faster recovery
-
-```dockerfile
-HEALTHCHECK --interval=5s --timeout=5s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000/health-check || exit 1
-```
 
 ---
 
@@ -346,12 +293,6 @@ All secrets need to be added to AWS Secrets Manager (JSON format).
 **Branch**: `add-workers-deployment-infrastructure`
 **Status**: All committed and applied
 
-**Recent Changes**:
-1. ✅ ECR lifecycle policy: 3 → 10 images (protects buildcache)
-2. ✅ ECS web service: Added lifecycle to ignore task_definition
-3. ✅ ECS worker service: Added lifecycle to ignore task_definition
-4. ✅ Security group: Port 80 → 3000 (matches Thruster)
-
 **Terraform Files**:
 ```
 terraform/
@@ -443,9 +384,9 @@ terraform/
 
 ### Security Hardening (Before Public Launch)
 
+- [x] Enable ALB deletion protection
+- [x] Enable RDS deletion protection
 - [ ] Rotate database password from temporary value
-- [ ] Enable ALB deletion protection
-- [ ] Enable RDS deletion protection
 - [ ] Review all security group rules
 - [ ] Set up CloudWatch alarms (CPU, 5xx errors, DB connections)
 - [ ] Configure SNS for alert notifications
