@@ -73,6 +73,7 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 # Thruster listens on 3000 for ALB, Puma on 3001 (both unprivileged ports)
 EXPOSE 3000
 ENV THRUSTER_HTTP_PORT=3000
+ENV TARGET_PORT=3001
 ENV PUMA_PORT=3001
 
 # Health check for ECS/ALB

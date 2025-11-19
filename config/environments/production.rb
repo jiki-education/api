@@ -30,6 +30,14 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
 
+  # Configure trusted proxy IPs for X-Forwarded-For header handling
+  # Trust the VPC CIDR range (10.0.0.0/16) for ALB and Thruster (localhost)
+  # This prevents X-Forwarded-For header accumulation and ensures proper client IP detection
+  config.action_dispatch.trusted_proxies = [
+    IPAddr.new("10.0.0.0/16"), # VPC CIDR range (ALB and ECS tasks)
+    "127.0.0.1" # Localhost (Thruster proxy)
+  ]
+
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
