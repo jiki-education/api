@@ -2,7 +2,7 @@ module Auth
   class CleanupExpiredTokensJob < ApplicationJob
     queue_as :default
 
-    # Run hourly (via sidekiq-scheduler) to clean up expired tokens
+    # Run hourly (via Solid Queue recurring jobs) to clean up expired tokens
     # This prevents the user_jwt_tokens and user_refresh_tokens tables from growing unbounded
     #
     # We use a 1-hour buffer (expires_at < 1.hour.ago) to avoid edge cases where a token
