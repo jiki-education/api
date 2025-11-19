@@ -39,8 +39,6 @@ jobs:
           bundler-cache: true
 
       - name: Run Zeitwerk test
-        env:
-          RAILS_ENV: production
         run: bundle exec rails test:zeitwerk
 
       - name: Build, tag, and push image to Amazon ECR

@@ -69,14 +69,15 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      - name: Run Zeitwerk test
+        run: bundle exec rails test:zeitwerk
+
       - name: Run tests
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
           # REDIS_URL: redis://localhost:6379/0
-        run: |
-          bundle exec rails test:zeitwerk
-          bin/rails db:test:prepare test
+        run: bin/rails db:test:prepare test
 
   typescript:
     runs-on: ubuntu-latest
