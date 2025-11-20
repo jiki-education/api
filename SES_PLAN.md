@@ -1,9 +1,31 @@
 # AWS SES Email Infrastructure - Implementation Plan
 
-**Status**: Ready to implement
+**Status**: Terraform infrastructure complete, API changes pending
 **Last Updated**: 2025-11-19
 **Timeline**: December 2025 → March 2026 (4 months)
 **Architecture**: AWS SES Managed Dedicated IPs with 3 subdomains
+
+---
+
+## ✅ Implementation Progress
+
+### Completed (2025-11-19)
+
+**Terraform Infrastructure** ([PR #5](https://github.com/jiki-education/terraform/pull/5)):
+- ✅ AWS SES domain identities (3 subdomains)
+- ✅ Easy DKIM configuration (AWS-managed keys)
+- ✅ Custom MAIL FROM domains
+- ✅ Configuration sets with SNS event destinations
+- ✅ CloudWatch alarms (6 total: bounce + complaint rate monitoring)
+- ✅ IAM permissions for ECS tasks to send emails
+- ✅ DynamoDB configuration items (8 SES config values)
+- ✅ Cloudflare DNS records (18 total: DKIM, MX, SPF, DMARC)
+- ✅ Automatic DKIM token passing between AWS and Cloudflare modules
+
+**What's Left**:
+- ⏳ Manual AWS Console steps (production access, managed IPs, SNS confirmations)
+- ⏳ API implementation (mailers, webhook handlers, email templates)
+- ⏳ Testing and verification
 
 ---
 
