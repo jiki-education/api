@@ -48,20 +48,21 @@ class MandateJob < ApplicationJob
   def __guard_prereq_jobs__!(prereq_jobs)
     return unless prereq_jobs.present?
 
-    prereq_jobs.each do |job|
-      jid = job[:job_id]
+    # TODO: Implement prerequisite job checking for Solid Queue
+    # This feature was ported from Sidekiq but is not currently used in the codebase.
+    # When needed, implement using Solid Queue's job querying API:
+    # - SolidQueue::Job.where(active_job_id: jid).exists?
+    # - Check both ready and failed execution tables
+    #
+    # Original Sidekiq implementation (for reference):
+    # prereq_jobs.each do |job|
+    #   jid = job[:job_id]
+    #   if Sidekiq::Queue.new(job[:queue_name]).find_job(jid) ||
+    #      Sidekiq::RetrySet.new.find_job(jid)
+    #     raise PreqJobNotFinishedError, jid
+    #   end
+    # end
 
-      # Check if prerequisite job is still pending in its queue or being retried.
-      # We intentionally don't check DeadSet - if a prerequisite job dies, we allow
-      # the dependent job to proceed. This matches Exercism's behavior and is an
-      # acceptable trade-off, as most failed jobs should retry automatically.
-      #
-      # Note: Creates new Queue/RetrySet objects per iteration. This could be optimized
-      # by caching, but impact is minimal as most jobs have 0-1 prerequisites.
-      if Sidekiq::Queue.new(job[:queue_name]).find_job(jid) ||
-         Sidekiq::RetrySet.new.find_job(jid)
-        raise PreqJobNotFinishedError, jid
-      end
-    end
+    Rails.logger.warn("Prerequisite job checking not yet implemented for Solid Queue")
   end
 end

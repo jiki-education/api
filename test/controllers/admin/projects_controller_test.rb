@@ -57,9 +57,9 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination" do
     Prosopite.finish
-    project1 = create(:project)
-    project2 = create(:project)
-    create(:project)
+    project1 = create(:project, title: "AAA Project")
+    project2 = create(:project, title: "BBB Project")
+    create(:project, title: "CCC Project")
 
     Prosopite.scan
     get admin_projects_path(page: 1, per: 2), headers: @headers, as: :json

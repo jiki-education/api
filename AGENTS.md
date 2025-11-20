@@ -134,13 +134,14 @@ For detailed information, see the context files:
 Based on business requirements and deployment needs:
 
 **AWS Infrastructure (see DEPLOYMENT_PLAN.md)**:
-1. Aurora PostgreSQL Serverless v2 (0-1 ACU)
-2. ElastiCache Serverless for Redis
-3. S3 bucket for Active Storage
-4. ECS cluster and services (web + Sidekiq)
-5. Application Load Balancer with ACM certificate
-6. Security groups and IAM roles
-7. CloudWatch logs and alarms
+1. Aurora PostgreSQL Serverless v2 (0-1 ACU) - Database + Solid Queue
+2. S3 bucket for Active Storage (exercise submission files)
+3. ECS cluster and services (web only - Solid Queue runs in same process)
+4. Application Load Balancer with ACM certificate
+5. Security groups and IAM roles
+6. CloudWatch logs and alarms
+
+**Note**: No ElastiCache/Redis needed - using Solid Queue (database-backed) for jobs and memory cache
 
 **Application Features**:
 1. User model with progression tracking
