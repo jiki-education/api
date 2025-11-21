@@ -13,8 +13,6 @@ class SES::HandleEmailBounce
   initialize_with :event
 
   def call
-    Rails.logger.info("Processing #{bounce_type} bounce for #{bounced_recipients.count} recipients")
-
     bounced_recipients.each do |recipient|
       next unless bounce_type == 'Permanent'
 
@@ -22,7 +20,7 @@ class SES::HandleEmailBounce
       diagnostic_code = recipient['diagnosticCode']
       user = users_by_email[email]
 
-      handle_permanent_bounce!(user, email, diagnostic_code)
+      handle_permanent_bounce!(user, diagnostic_code)
     end
   end
 
@@ -42,9 +40,7 @@ class SES::HandleEmailBounce
     User.includes(:data).where(email: emails).index_by(&:email)
   end
 
-  def handle_permanent_bounce!(user, email, diagnostic_code)
-    Rails.logger.warn("Hard bounce: #{email} - #{diagnostic_code}")
-
+  def handle_permanent_bounce!(user, diagnostic_code)
     return unless user&.data
 
     # Mark email as invalid to prevent future sending
@@ -53,7 +49,5 @@ class SES::HandleEmailBounce
       email_bounce_reason: diagnostic_code,
       email_bounced_at: Time.current
     )
-
-    Rails.logger.info("Marked #{email} as invalid in database")
   end
 end

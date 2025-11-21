@@ -15,8 +15,6 @@ class SES::Webhooks::Handle
       confirm_subscription!
     when 'Notification'
       handle_notification!
-    else
-      Rails.logger.warn("Unknown SNS message type: #{message_type}")
     end
   end
 
@@ -31,12 +29,9 @@ class SES::Webhooks::Handle
     # Auto-confirm SNS subscription
     uri = URI.parse(subscribe_url)
     Net::HTTP.get(uri)
-    Rails.logger.info("SNS subscription confirmed: #{parsed_body['TopicArn']}")
   end
 
   def handle_notification!
-    Rails.logger.info("SES event: #{event_type}")
-
     case event_type
     when 'Bounce'
       SES::HandleEmailBounce.(message)
@@ -44,9 +39,7 @@ class SES::Webhooks::Handle
       SES::HandleEmailComplaint.(message)
     when 'Delivery'
       # Optional: track successful deliveries
-      Rails.logger.debug("Email delivered: #{message['mail']['messageId']}")
-    else
-      Rails.logger.warn("Unknown SES event type: #{event_type}")
+      nil
     end
   end
 

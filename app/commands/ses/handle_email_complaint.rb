@@ -12,13 +12,11 @@ class SES::HandleEmailComplaint
   initialize_with :event
 
   def call
-    Rails.logger.warn("Processing spam complaint (#{complaint_feedback_type}) for #{complained_recipients.count} recipients")
-
     complained_recipients.each do |recipient|
       email = recipient['emailAddress']
       user = users_by_email[email]
 
-      handle_complaint!(user, email)
+      handle_complaint!(user)
     end
   end
 
@@ -38,9 +36,7 @@ class SES::HandleEmailComplaint
     User.includes(:data).where(email: emails).index_by(&:email)
   end
 
-  def handle_complaint!(user, email)
-    Rails.logger.warn("Spam complaint: #{email} - #{complaint_feedback_type}")
-
+  def handle_complaint!(user)
     return unless user&.data
 
     # Immediately unsubscribe from marketing emails
@@ -49,8 +45,6 @@ class SES::HandleEmailComplaint
       email_complaint_at: Time.current,
       email_complaint_type: complaint_feedback_type
     )
-
-    Rails.logger.info("Unsubscribed #{email} from marketing emails")
 
     # Critical: DO NOT send marketing emails to this address again
     # Transactional emails (auth, payments) can still be sent

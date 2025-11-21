@@ -16,9 +16,7 @@ class Webhooks::SESController < Webhooks::BaseController
     SES::Webhooks::Handle.(request.body.read, message_type)
 
     head :ok
-  rescue StandardError => e
-    Rails.logger.error("SES webhook error: #{e.message}")
-    Rails.logger.error(e.backtrace.join("\n"))
+  rescue StandardError
     head :ok # Always return 200 to prevent SNS retries
   end
 
