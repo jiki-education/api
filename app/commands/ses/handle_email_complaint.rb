@@ -13,26 +13,34 @@ module SES
     initialize_with :event
 
     def call
-      complaint = event['complaint']
-      complained_recipients = complaint['complainedRecipients']
-      complaint_feedback_type = complaint['complaintFeedbackType'] # abuse, fraud, etc
-
       Rails.logger.warn("Processing spam complaint (#{complaint_feedback_type}) for #{complained_recipients.count} recipients")
-
-      # Batch load users to avoid N+1 queries
-      emails = complained_recipients.map { |r| r['emailAddress'] }
-      users_by_email = User.includes(:data).where(email: emails).index_by(&:email)
 
       complained_recipients.each do |recipient|
         email = recipient['emailAddress']
         user = users_by_email[email]
-        handle_complaint(user, email, complaint_feedback_type)
+
+        handle_complaint!(user, email)
       end
     end
 
     private
-    def handle_complaint(user, email, feedback_type)
-      Rails.logger.warn("Spam complaint: #{email} - #{feedback_type}")
+    memoize
+    def complaint = event['complaint']
+
+    memoize
+    def complained_recipients = complaint['complainedRecipients']
+
+    memoize
+    def complaint_feedback_type = complaint['complaintFeedbackType']
+
+    memoize
+    def users_by_email
+      emails = complained_recipients.map { |r| r['emailAddress'] }
+      User.includes(:data).where(email: emails).index_by(&:email)
+    end
+
+    def handle_complaint!(user, email)
+      Rails.logger.warn("Spam complaint: #{email} - #{complaint_feedback_type}")
 
       return unless user&.data
 
@@ -40,7 +48,7 @@ module SES
       user.data.update!(
         marketing_emails_enabled: false,
         email_complaint_at: Time.current,
-        email_complaint_type: feedback_type
+        email_complaint_type: complaint_feedback_type
       )
 
       Rails.logger.info("Unsubscribed #{email} from marketing emails")

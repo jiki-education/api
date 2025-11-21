@@ -39,21 +39,6 @@ class NotificationsMailer < ApplicationMailer
   #   )
   # end
 
-  # Example: Daily streak reminder
-  # TODO: Implement when User model exists
-  # def streak_reminder(user)
-  #   return unless user.notifications_enabled?
-  #   return unless user.streak_reminders_enabled?
-  #
-  #   @user = user
-  #   @streak_days = user.current_streak
-  #
-  #   mail(
-  #     to: user.email,
-  #     subject: "🔥 Keep your #{@streak_days}-day streak going!"
-  #   )
-  # end
-
   # Test email for verification
   def test_email(to)
     mail(
@@ -66,11 +51,6 @@ class NotificationsMailer < ApplicationMailer
   end
 
   private
-  def default_from_email
-    Jiki.config.notifications_from_email
-  end
-
-  def configuration_set
-    Jiki.config.ses_notifications_configuration_set
-  end
+  def default_from_email = Jiki.config.notifications_from_email
+  def configuration_set = Jiki.config.ses_notifications_configuration_set
 end

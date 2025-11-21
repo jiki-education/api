@@ -2,7 +2,6 @@ class AddEmailTrackingToUserData < ActiveRecord::Migration[8.1]
   def change
     # Email preferences (default to enabled/valid for existing users)
     add_column :user_data, :notifications_enabled, :boolean, default: true, null: false
-    add_column :user_data, :streak_reminders_enabled, :boolean, default: true, null: false
     add_column :user_data, :marketing_emails_enabled, :boolean, default: true, null: false
     add_column :user_data, :email_valid, :boolean, default: true, null: false
 

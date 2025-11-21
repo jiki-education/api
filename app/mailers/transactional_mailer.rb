@@ -46,23 +46,17 @@ class TransactionalMailer < ApplicationMailer
   #   )
   # end
 
-  # Test email for verification
-  def test_email(to)
+  # Welcome email sent after user signs up
+  def welcome_email(user)
+    @user = user
+
     mail(
-      to: to,
-      subject: '[TEST] Transactional email from mail.jiki.io'
-    ) do |format|
-      format.html { render html: '<p>This is a test transactional email from mail.jiki.io</p>'.html_safe }
-      format.text { render plain: 'This is a test transactional email from mail.jiki.io' }
-    end
+      to: user.email,
+      subject: 'Welcome to Jiki!'
+    )
   end
 
   private
-  def default_from_email
-    Jiki.config.mail_from_email
-  end
-
-  def configuration_set
-    Jiki.config.ses_mail_configuration_set
-  end
+  def default_from_email = Jiki.config.mail_from_email
+  def configuration_set = Jiki.config.ses_mail_configuration_set
 end

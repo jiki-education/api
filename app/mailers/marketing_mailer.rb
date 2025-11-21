@@ -51,25 +51,16 @@ class MarketingMailer < ApplicationMailer
   end
 
   private
-  def default_from_email
-    Jiki.config.marketing_from_email
-  end
-
-  def configuration_set
-    Jiki.config.ses_marketing_configuration_set
-  end
-
-  def reply_to_email
-    Jiki.config.support_email
-  end
+  def default_from_email = Jiki.config.marketing_from_email
+  def configuration_set = Jiki.config.ses_marketing_configuration_set
+  def reply_to_email = Jiki.config.support_email
 
   # Add RFC 8058 one-click unsubscribe headers for marketing emails
-  # TODO: Implement when User model has unsubscribe_token
   def mail(**args)
-    # if defined?(@user) && @user
-    #   headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @user.unsubscribe_token)}>"
-    #   headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
-    # end
+    if defined?(@user) && @user&.data&.unsubscribe_token
+      headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @user.data.unsubscribe_token)}>"
+      headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
+    end
 
     super(**args)
   end

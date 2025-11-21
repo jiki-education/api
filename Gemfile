@@ -70,7 +70,7 @@ gem "stripe"
 gem "aws-sdk-s3"
 
 # AWS SDK Rails integration (includes SES, S3, etc.)
-gem "aws-sdk-rails", "~> 4.0"
+gem "aws-sdk-rails", "~> 5.0"
 
 # Markdown parsing and HTML sanitization
 gem "commonmarker"

@@ -1,4 +1,5 @@
 require "test_helper"
+require_relative "../../../app/commands/ses/webhooks/handle"
 
 class Webhooks::SesControllerTest < ActionDispatch::IntegrationTest
   test "handles subscription confirmation" do
@@ -10,8 +11,8 @@ class Webhooks::SesControllerTest < ActionDispatch::IntegrationTest
       'SubscribeURL' => subscribe_url
     }
 
-    # Mock the HTTP GET request to confirm subscription
-    Net::HTTP.expects(:get).with(URI.parse(subscribe_url))
+    # Expect controller proxies to the command
+    ::SES::Webhooks::Handle.expects(:call).with(body.to_json, 'SubscriptionConfirmation')
 
     post webhooks_ses_path,
       params: body.to_json,
@@ -45,7 +46,8 @@ class Webhooks::SesControllerTest < ActionDispatch::IntegrationTest
       'Message' => bounce_message.to_json
     }
 
-    SES::HandleEmailBounce.expects(:call).with(bounce_message)
+    # Expect controller proxies to the command
+    ::SES::Webhooks::Handle.expects(:call).with(body.to_json, 'Notification')
 
     post webhooks_ses_path,
       params: body.to_json,
@@ -78,7 +80,8 @@ class Webhooks::SesControllerTest < ActionDispatch::IntegrationTest
       'Message' => complaint_message.to_json
     }
 
-    SES::HandleEmailComplaint.expects(:call).with(complaint_message)
+    # Expect controller proxies to the command
+    ::SES::Webhooks::Handle.expects(:call).with(body.to_json, 'Notification')
 
     post webhooks_ses_path,
       params: body.to_json,

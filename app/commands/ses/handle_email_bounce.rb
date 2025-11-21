@@ -14,31 +14,36 @@ module SES
     initialize_with :event
 
     def call
-      bounce = event['bounce']
-      bounced_recipients = bounce['bouncedRecipients']
-      bounce_type = bounce['bounceType'] # Permanent or Transient
-
       Rails.logger.info("Processing #{bounce_type} bounce for #{bounced_recipients.count} recipients")
 
-      # Batch load users to avoid N+1 queries
-      emails = bounced_recipients.map { |r| r['emailAddress'] }
-      users_by_email = User.includes(:data).where(email: emails).index_by(&:email)
-
       bounced_recipients.each do |recipient|
+        next unless bounce_type == 'Permanent'
+
         email = recipient['emailAddress']
         diagnostic_code = recipient['diagnosticCode']
         user = users_by_email[email]
 
-        if bounce_type == 'Permanent'
-          handle_permanent_bounce(user, email, diagnostic_code)
-        else
-          handle_transient_bounce(email, diagnostic_code)
-        end
+        handle_permanent_bounce!(user, email, diagnostic_code)
       end
     end
 
     private
-    def handle_permanent_bounce(user, email, diagnostic_code)
+    memoize
+    def bounce = event['bounce']
+
+    memoize
+    def bounced_recipients = bounce['bouncedRecipients']
+
+    memoize
+    def bounce_type = bounce['bounceType']
+
+    memoize
+    def users_by_email
+      emails = bounced_recipients.map { |r| r['emailAddress'] }
+      User.includes(:data).where(email: emails).index_by(&:email)
+    end
+
+    def handle_permanent_bounce!(user, email, diagnostic_code)
       Rails.logger.warn("Hard bounce: #{email} - #{diagnostic_code}")
 
       return unless user&.data
@@ -51,14 +56,6 @@ module SES
       )
 
       Rails.logger.info("Marked #{email} as invalid in database")
-    end
-
-    def handle_transient_bounce(email, diagnostic_code)
-      Rails.logger.info("Soft bounce: #{email} - #{diagnostic_code}")
-
-      # Soft bounces may resolve (mailbox full, temporary server issue)
-      # Log but don't disable email
-      # Could track bounce count and disable after X soft bounces
     end
   end
 end
