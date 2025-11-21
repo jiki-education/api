@@ -39,9 +39,8 @@ class SES::HandleEmailComplaint
   def handle_complaint!(user)
     return unless user&.data
 
-    # Immediately unsubscribe from marketing emails
+    # Record spam complaint - email_wants_emails? will return false
     user.data.update!(
-      marketing_emails_enabled: false,
       email_complaint_at: Time.current,
       email_complaint_type: complaint_feedback_type
     )

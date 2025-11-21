@@ -43,9 +43,8 @@ class SES::HandleEmailBounce
   def handle_permanent_bounce!(user, diagnostic_code)
     return unless user&.data
 
-    # Mark email as invalid to prevent future sending
+    # Mark email as bounced to prevent future sending
     user.data.update!(
-      email_valid: false,
       email_bounce_reason: diagnostic_code,
       email_bounced_at: Time.current
     )

@@ -1,15 +1,15 @@
 class AddEmailTrackingToUserData < ActiveRecord::Migration[8.1]
   def change
-    # Email preferences (default to enabled/valid for existing users)
+    # Email preferences (default to enabled for existing users)
     add_column :user_data, :notifications_enabled, :boolean, default: true, null: false
-    add_column :user_data, :marketing_emails_enabled, :boolean, default: true, null: false
-    add_column :user_data, :email_valid, :boolean, default: true, null: false
 
     # Bounce tracking (nullable - only populated when bounces occur)
+    # email_valid? method checks if email_bounced_at.nil?
     add_column :user_data, :email_bounce_reason, :string
     add_column :user_data, :email_bounced_at, :datetime
 
     # Complaint tracking (nullable - only populated when complaints occur)
+    # email_wants_emails? method checks if email_complaint_at.nil?
     add_column :user_data, :email_complaint_at, :datetime
     add_column :user_data, :email_complaint_type, :string
 

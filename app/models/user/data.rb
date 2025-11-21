@@ -60,6 +60,15 @@ class User::Data < ApplicationRecord
     subscriptions.find { |s| s['ended_at'].nil? }
   end
 
+  # Email validity checks
+  def email_valid?
+    email_bounced_at.nil?
+  end
+
+  def email_wants_emails?
+    email_complaint_at.nil?
+  end
+
   private
   def generate_unsubscribe_token
     self.unsubscribe_token ||= SecureRandom.uuid
