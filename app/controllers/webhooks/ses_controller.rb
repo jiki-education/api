@@ -9,7 +9,7 @@
 # 2. Bounce processing (mark invalid emails)
 # 3. Complaint processing (unsubscribe from marketing)
 
-class Webhooks::SesController < Webhooks::BaseController
+class Webhooks::SESController < Webhooks::BaseController
   def create
     return head :unauthorized unless valid_sns_message?
 

@@ -1,7 +1,6 @@
 require "test_helper"
-require_relative "../../../app/commands/ses/webhooks/handle"
 
-class Webhooks::SesControllerTest < ActionDispatch::IntegrationTest
+class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
   test "handles subscription confirmation" do
     subscribe_url = "https://sns.amazonaws.com/confirm-subscription?token=test"
 

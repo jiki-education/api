@@ -7,55 +7,53 @@
 # For permanent bounces, we mark the email as invalid to prevent
 # future sending and protect sender reputation.
 
-module SES
-  class HandleEmailBounce
-    include Mandate
+class SES::HandleEmailBounce
+  include Mandate
 
-    initialize_with :event
+  initialize_with :event
 
-    def call
-      Rails.logger.info("Processing #{bounce_type} bounce for #{bounced_recipients.count} recipients")
+  def call
+    Rails.logger.info("Processing #{bounce_type} bounce for #{bounced_recipients.count} recipients")
 
-      bounced_recipients.each do |recipient|
-        next unless bounce_type == 'Permanent'
+    bounced_recipients.each do |recipient|
+      next unless bounce_type == 'Permanent'
 
-        email = recipient['emailAddress']
-        diagnostic_code = recipient['diagnosticCode']
-        user = users_by_email[email]
+      email = recipient['emailAddress']
+      diagnostic_code = recipient['diagnosticCode']
+      user = users_by_email[email]
 
-        handle_permanent_bounce!(user, email, diagnostic_code)
-      end
+      handle_permanent_bounce!(user, email, diagnostic_code)
     end
+  end
 
-    private
-    memoize
-    def bounce = event['bounce']
+  private
+  memoize
+  def bounce = event['bounce']
 
-    memoize
-    def bounced_recipients = bounce['bouncedRecipients']
+  memoize
+  def bounced_recipients = bounce['bouncedRecipients']
 
-    memoize
-    def bounce_type = bounce['bounceType']
+  memoize
+  def bounce_type = bounce['bounceType']
 
-    memoize
-    def users_by_email
-      emails = bounced_recipients.map { |r| r['emailAddress'] }
-      User.includes(:data).where(email: emails).index_by(&:email)
-    end
+  memoize
+  def users_by_email
+    emails = bounced_recipients.map { |r| r['emailAddress'] }
+    User.includes(:data).where(email: emails).index_by(&:email)
+  end
 
-    def handle_permanent_bounce!(user, email, diagnostic_code)
-      Rails.logger.warn("Hard bounce: #{email} - #{diagnostic_code}")
+  def handle_permanent_bounce!(user, email, diagnostic_code)
+    Rails.logger.warn("Hard bounce: #{email} - #{diagnostic_code}")
 
-      return unless user&.data
+    return unless user&.data
 
-      # Mark email as invalid to prevent future sending
-      user.data.update!(
-        email_valid: false,
-        email_bounce_reason: diagnostic_code,
-        email_bounced_at: Time.current
-      )
+    # Mark email as invalid to prevent future sending
+    user.data.update!(
+      email_valid: false,
+      email_bounce_reason: diagnostic_code,
+      email_bounced_at: Time.current
+    )
 
-      Rails.logger.info("Marked #{email} as invalid in database")
-    end
+    Rails.logger.info("Marked #{email} as invalid in database")
   end
 end
