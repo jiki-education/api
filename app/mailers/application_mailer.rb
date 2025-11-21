@@ -1,8 +1,35 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "hello@jiki.io"
+  default from: -> { default_from_email }
   layout "mailer"
 
   private
+  # Override in subclasses to specify different from email
+  def default_from_email
+    Jiki.config.respond_to?(:mail_from_email) ? Jiki.config.mail_from_email : "hello@jiki.io"
+  end
+
+  # Override in subclasses to specify SES configuration set
+  def configuration_set
+    Jiki.config.ses_mail_configuration_set if Jiki.config.respond_to?(:ses_mail_configuration_set)
+  end
+
+  # Override in subclasses to customize reply-to
+  def reply_to_email
+    Jiki.config.support_email if Jiki.config.respond_to?(:support_email)
+  end
+
+  # Add SES configuration set header to all emails
+  # This enables tracking, dedicated IP routing, and event notifications
+  def mail(**args)
+    # Set SES configuration set for tracking and dedicated IP routing
+    headers['X-SES-CONFIGURATION-SET'] = configuration_set if configuration_set
+
+    # Set reply-to if different from from address
+    args[:reply_to] ||= reply_to_email if reply_to_email
+
+    super(**args)
+  end
+
   # Sends an email using a database-backed email template with Liquid rendering
   #
   # Automatically injects the user into the Liquid context and handles all template

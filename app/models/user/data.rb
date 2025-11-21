@@ -1,6 +1,9 @@
 class User::Data < ApplicationRecord
   belongs_to :user
 
+  # Generate unsubscribe token for new records
+  before_create :generate_unsubscribe_token
+
   # Subscription status enum
   enum :subscription_status, {
     never_subscribed: 0,
@@ -55,5 +58,16 @@ class User::Data < ApplicationRecord
 
   def current_subscription
     subscriptions.find { |s| s['ended_at'].nil? }
+  end
+
+  # Email preference helpers (delegate to boolean columns)
+  def notifications_enabled? = notifications_enabled
+  def streak_reminders_enabled? = streak_reminders_enabled
+  def marketing_emails_enabled? = marketing_emails_enabled
+  def email_valid? = email_valid
+
+  private
+  def generate_unsubscribe_token
+    self.unsubscribe_token ||= SecureRandom.uuid
   end
 end

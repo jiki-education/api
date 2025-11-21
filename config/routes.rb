@@ -129,6 +129,7 @@ Rails.application.routes.draw do
   # Unauthenticated - security handled by signature verification
   namespace :webhooks do
     post 'stripe', to: 'stripe#create'
+    post 'ses', to: 'ses#create'
   end
 
   # Dev endpoints
