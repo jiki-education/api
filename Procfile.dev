@@ -1,2 +1,2 @@
 web: bin/rails server -p 3060
-sidekiq: bundle exec sidekiq
+solid_queue: bundle exec rake solid_queue:start
