@@ -119,7 +119,7 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
     }
 
     # Mock signature verification
-    ::SES::Webhooks::VerifySignature.expects(:call).returns(true)
+    Aws::SNS::MessageVerifier.any_instance.expects(:authentic?).returns(true)
 
     post webhooks_ses_path,
       params: body.to_json,
@@ -140,7 +140,7 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
     }
 
     # Mock signature verification
-    ::SES::Webhooks::VerifySignature.expects(:call).returns(true)
+    Aws::SNS::MessageVerifier.any_instance.expects(:authentic?).returns(true)
 
     post webhooks_ses_path,
       params: body.to_json,
@@ -162,7 +162,7 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
     }
 
     # Mock signature verification to pass, but command will fail parsing
-    ::SES::Webhooks::VerifySignature.expects(:call).returns(true)
+    Aws::SNS::MessageVerifier.any_instance.expects(:authentic?).returns(true)
 
     post webhooks_ses_path,
       params: body.to_json,

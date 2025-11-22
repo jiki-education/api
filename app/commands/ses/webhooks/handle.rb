@@ -22,14 +22,8 @@ class SES::Webhooks::Handle
 
   private
   def verify_signature!
-    valid = SES::Webhooks::VerifySignature.(
-      request_body,
-      request.headers['x-amz-sns-signature'],
-      request.headers['x-amz-sns-signing-cert-url'],
-      request.headers['x-amz-sns-signature-version']
-    )
-
-    raise InvalidSNSSignatureError unless valid
+    verifier = Aws::SNS::MessageVerifier.new
+    raise InvalidSNSSignatureError unless verifier.authentic?(request_body)
   end
 
   memoize
@@ -57,7 +51,9 @@ class SES::Webhooks::Handle
     when 'Complaint'
       SES::HandleEmailComplaint.(message)
     when 'Delivery'
-      # Optional: track successful deliveries
+      # Delivery notifications are disabled at the SNS level (terraform/aws/ses.tf)
+      # Only bounces and complaints are sent to this webhook to minimize volume
+      # Delivery metrics are sent to CloudWatch instead
       nil
     end
   end

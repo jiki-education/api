@@ -69,6 +69,9 @@ gem "stripe"
 # AWS SDK for S3 storage
 gem "aws-sdk-s3"
 
+# AWS SDK for SNS (used for webhook signature verification)
+gem "aws-sdk-sns"
+
 # AWS SDK Rails integration (includes SES, S3, etc.)
 gem "aws-sdk-rails", "~> 5.0"
 
