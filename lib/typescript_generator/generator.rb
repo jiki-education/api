@@ -50,12 +50,9 @@ module TypescriptGenerator
         # Build TypeScript
         result = system('pnpm build')
 
-        if result
-          puts "✅ TypeScript build successful"
-        else
-          puts "❌ TypeScript build failed"
-          abort
-        end
+        raise "TypeScript build failed" unless result
+
+        puts "✅ TypeScript build successful"
       end
     end
 
