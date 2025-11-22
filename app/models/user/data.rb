@@ -39,15 +39,12 @@ class User::Data < ApplicationRecord
   end
 
   # Effective access levels (for feature gating)
-  def has_premium_access?
-    premium? || max?
-  end
-
-  def has_max_access?
-    max?
-  end
+  def has_premium_access? = premium? || max?
+  def has_max_access? = max?
 
   # Subscription state helpers
+  def current_subscription = subscriptions.find { |s| s['ended_at'].nil? }
+
   def can_checkout?
     subscription_status.in?(%w[never_subscribed canceled])
   end
@@ -56,18 +53,9 @@ class User::Data < ApplicationRecord
     subscription_status.in?(%w[active payment_failed cancelling])
   end
 
-  def current_subscription
-    subscriptions.find { |s| s['ended_at'].nil? }
-  end
-
   # Email validity checks
-  def email_valid?
-    email_bounced_at.nil?
-  end
-
-  def email_wants_emails?
-    email_complaint_at.nil?
-  end
+  def email_valid? = email_bounced_at.nil?
+  def email_wants_emails? = email_complaint_at.nil?
 
   private
   def generate_unsubscribe_token

@@ -8,7 +8,7 @@ class User::Unsubscribe
   initialize_with :token
 
   def call
-    raise InvalidUnsubscribeTokenError unless user
+    raise InvalidUnsubscribeTokenError unless user&.data
 
     user.data.update!(
       email_complaint_at: Time.current,

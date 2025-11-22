@@ -16,31 +16,16 @@ class SES::HandleEmailBounce
     bounced_recipients.each do |recipient|
       next unless bounce_type == 'Permanent'
 
-      email = recipient['emailAddress']
-      diagnostic_code = recipient['diagnosticCode']
-      user = users_by_email[email]
-
-      handle_permanent_bounce!(user, diagnostic_code)
+      handle_permanent_bounce!(
+        recipient['emailAddress'],
+        recipient['diagnosticCode']
+      )
     end
   end
 
   private
-  memoize
-  def bounce = event['bounce']
-
-  memoize
-  def bounced_recipients = bounce['bouncedRecipients']
-
-  memoize
-  def bounce_type = bounce['bounceType']
-
-  memoize
-  def users_by_email
-    emails = bounced_recipients.map { |r| r['emailAddress'] }
-    User.includes(:data).where(email: emails).index_by(&:email)
-  end
-
-  def handle_permanent_bounce!(user, diagnostic_code)
+  def handle_permanent_bounce!(email, diagnostic_code)
+    user = users_by_email[email]
     return unless user&.data
 
     # Mark email as bounced to prevent future sending
@@ -49,4 +34,19 @@ class SES::HandleEmailBounce
       email_bounced_at: Time.current
     )
   end
+
+  memoize
+  def users_by_email
+    emails = bounced_recipients.map { |r| r['emailAddress'] }
+    User.includes(:data).where(email: emails).index_by(&:email)
+  end
+
+  memoize
+  def bounce = event['bounce']
+
+  memoize
+  def bounced_recipients = bounce['bouncedRecipients']
+
+  memoize
+  def bounce_type = bounce['bounceType']
 end

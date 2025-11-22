@@ -26,15 +26,6 @@ class SES::Webhooks::Handle
     raise InvalidSNSSignatureError unless verifier.authentic?(request_body)
   end
 
-  memoize
-  def message_type = request.headers['x-amz-sns-message-type']
-
-  memoize
-  def request_body = request.body.read
-
-  memoize
-  def parsed_body = JSON.parse(request_body)
-
   def confirm_subscription!
     subscribe_url = parsed_body['SubscribeURL']
     return unless subscribe_url
@@ -56,6 +47,15 @@ class SES::Webhooks::Handle
       nil
     end
   end
+
+  memoize
+  def message_type = request.headers['x-amz-sns-message-type']
+
+  memoize
+  def request_body = request.body.read
+
+  memoize
+  def parsed_body = JSON.parse(request_body)
 
   memoize
   def message = JSON.parse(parsed_body['Message'])
