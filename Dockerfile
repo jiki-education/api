@@ -25,6 +25,10 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
 
+# ------
+# ------
+# ------
+
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
@@ -45,8 +49,9 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
-
-
+# ------
+# ------
+# ------
 
 # Final stage for app image
 FROM base
@@ -65,5 +70,14 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
+# Thruster listens on 3000 for ALB, Puma on 3001 (both unprivileged ports)
+EXPOSE 3000
+ENV THRUSTER_HTTP_PORT=3000
+ENV TARGET_PORT=3001
+ENV PUMA_PORT=3001
+
+# Health check for ECS/ALB
+HEALTHCHECK --interval=5s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000/health-check || exit 1
+
 CMD ["./bin/thrust", "./bin/rails", "server"]
