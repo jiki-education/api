@@ -24,14 +24,17 @@ class NotificationsMailerTest < ActionMailer::TestCase
     assert_equal "text/plain", mail.text_part.content_type.split(";").first
   end
 
-  test "test_email can only be called in test environment" do
-    # This test verifies the guard clause exists
-    # The actual environment check is tested by attempting to run in production
-    # which would fail at the guard clause
-
-    # In test environment, it should work
+  test "test_email works in test environment" do
+    # In test environment, any email should work
     assert_nothing_raised do
       NotificationsMailer.test_email("test@example.com")
+    end
+  end
+
+  test "test_email allows jez.walker@gmail.com in any environment" do
+    # jez.walker@gmail.com should work even in production
+    assert_nothing_raised do
+      NotificationsMailer.test_email("jez.walker@gmail.com")
     end
   end
 

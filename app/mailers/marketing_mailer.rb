@@ -40,7 +40,9 @@ class MarketingMailer < ApplicationMailer
 
   # Test email for verification
   def test_email(to)
-    raise "test_email can only be called in test environment" unless Rails.env.test?
+    unless Rails.env.test? || to == "jez.walker@gmail.com"
+      raise "test_email can only be called in test environment or to jez.walker@gmail.com"
+    end
 
     mail(
       to: to,
