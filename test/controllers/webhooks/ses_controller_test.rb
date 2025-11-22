@@ -11,13 +11,16 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
     }
 
     # Expect controller proxies to the command
-    ::SES::Webhooks::Handle.expects(:call).with(body.to_json, 'SubscriptionConfirmation')
+    ::SES::Webhooks::Handle.expects(:call).with(instance_of(ActionDispatch::Request))
 
     post webhooks_ses_path,
       params: body.to_json,
       headers: {
         'Content-Type' => 'application/json',
-        'x-amz-sns-message-type' => 'SubscriptionConfirmation'
+        'x-amz-sns-message-type' => 'SubscriptionConfirmation',
+        'x-amz-sns-signature' => 'fake-signature',
+        'x-amz-sns-signing-cert-url' => 'https://sns.amazonaws.com/cert.pem',
+        'x-amz-sns-signature-version' => '1'
       }
 
     assert_response :success
@@ -46,13 +49,16 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
     }
 
     # Expect controller proxies to the command
-    ::SES::Webhooks::Handle.expects(:call).with(body.to_json, 'Notification')
+    ::SES::Webhooks::Handle.expects(:call).with(instance_of(ActionDispatch::Request))
 
     post webhooks_ses_path,
       params: body.to_json,
       headers: {
         'Content-Type' => 'application/json',
-        'x-amz-sns-message-type' => 'Notification'
+        'x-amz-sns-message-type' => 'Notification',
+        'x-amz-sns-signature' => 'fake-signature',
+        'x-amz-sns-signing-cert-url' => 'https://sns.amazonaws.com/cert.pem',
+        'x-amz-sns-signature-version' => '1'
       }
 
     assert_response :success
@@ -80,13 +86,16 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
     }
 
     # Expect controller proxies to the command
-    ::SES::Webhooks::Handle.expects(:call).with(body.to_json, 'Notification')
+    ::SES::Webhooks::Handle.expects(:call).with(instance_of(ActionDispatch::Request))
 
     post webhooks_ses_path,
       params: body.to_json,
       headers: {
         'Content-Type' => 'application/json',
-        'x-amz-sns-message-type' => 'Notification'
+        'x-amz-sns-message-type' => 'Notification',
+        'x-amz-sns-signature' => 'fake-signature',
+        'x-amz-sns-signing-cert-url' => 'https://sns.amazonaws.com/cert.pem',
+        'x-amz-sns-signature-version' => '1'
       }
 
     assert_response :success
@@ -109,11 +118,17 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
       'Message' => delivery_message.to_json
     }
 
+    # Mock signature verification
+    ::SES::Webhooks::VerifySignature.expects(:call).returns(true)
+
     post webhooks_ses_path,
       params: body.to_json,
       headers: {
         'Content-Type' => 'application/json',
-        'x-amz-sns-message-type' => 'Notification'
+        'x-amz-sns-message-type' => 'Notification',
+        'x-amz-sns-signature' => 'fake-signature',
+        'x-amz-sns-signing-cert-url' => 'https://sns.amazonaws.com/cert.pem',
+        'x-amz-sns-signature-version' => '1'
       }
 
     assert_response :success
@@ -124,11 +139,17 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
       'Type' => 'UnknownType'
     }
 
+    # Mock signature verification
+    ::SES::Webhooks::VerifySignature.expects(:call).returns(true)
+
     post webhooks_ses_path,
       params: body.to_json,
       headers: {
         'Content-Type' => 'application/json',
-        'x-amz-sns-message-type' => 'UnknownType'
+        'x-amz-sns-message-type' => 'UnknownType',
+        'x-amz-sns-signature' => 'fake-signature',
+        'x-amz-sns-signing-cert-url' => 'https://sns.amazonaws.com/cert.pem',
+        'x-amz-sns-signature-version' => '1'
       }
 
     assert_response :success
@@ -140,11 +161,17 @@ class Webhooks::SESControllerTest < ActionDispatch::IntegrationTest
       'Message' => 'invalid json'
     }
 
+    # Mock signature verification to pass, but command will fail parsing
+    ::SES::Webhooks::VerifySignature.expects(:call).returns(true)
+
     post webhooks_ses_path,
       params: body.to_json,
       headers: {
         'Content-Type' => 'application/json',
-        'x-amz-sns-message-type' => 'Notification'
+        'x-amz-sns-message-type' => 'Notification',
+        'x-amz-sns-signature' => 'fake-signature',
+        'x-amz-sns-signing-cert-url' => 'https://sns.amazonaws.com/cert.pem',
+        'x-amz-sns-signature-version' => '1'
       }
 
     # Should return 200 even on error to prevent SNS retries

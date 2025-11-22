@@ -167,7 +167,7 @@ class ApplicationMailerTest < ActionMailer::TestCase
       { level: LevelDrop.new(level) }
     )
 
-    assert_equal ["hello@jiki.io"], mail.from
+    assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal ["eve@example.com"], mail.to
     assert_equal "Congratulations Eve!", mail.subject
   end

@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     post "refresh", to: "refresh_tokens#create"
     delete "logout/all", to: "logout_all#destroy"
     post "google", to: "google_oauth#create"
+    post "unsubscribe/:token", to: "unsubscribe#create", as: :unsubscribe
   end
 
   # External (public, unauthenticated) endpoints

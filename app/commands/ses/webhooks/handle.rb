@@ -7,9 +7,11 @@
 class SES::Webhooks::Handle
   include Mandate
 
-  initialize_with :request_body, :message_type
+  initialize_with :request
 
   def call
+    verify_signature!
+
     case message_type
     when 'SubscriptionConfirmation'
       confirm_subscription!
@@ -19,6 +21,23 @@ class SES::Webhooks::Handle
   end
 
   private
+  def verify_signature!
+    valid = SES::Webhooks::VerifySignature.(
+      request_body,
+      request.headers['x-amz-sns-signature'],
+      request.headers['x-amz-sns-signing-cert-url'],
+      request.headers['x-amz-sns-signature-version']
+    )
+
+    raise InvalidSNSSignatureError unless valid
+  end
+
+  memoize
+  def message_type = request.headers['x-amz-sns-message-type']
+
+  memoize
+  def request_body = request.body.read
+
   memoize
   def parsed_body = JSON.parse(request_body)
 

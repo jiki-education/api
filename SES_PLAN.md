@@ -122,12 +122,12 @@ locals {
     mail = {
       domain      = "mail.jiki.io"
       description = "Transactional emails (auth, payments)"
-      from_email  = "noreply@mail.jiki.io"
+      from_email  = "hello@mail.jiki.io"
     }
     notifications = {
       domain      = "notifications.jiki.io"
       description = "Learning notifications"
-      from_email  = "notifications@notifications.jiki.io"
+      from_email  = "hello@notifications.jiki.io"
     }
     marketing = {
       domain      = "hello.jiki.io"

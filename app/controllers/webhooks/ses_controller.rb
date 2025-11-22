@@ -11,27 +11,12 @@
 
 class Webhooks::SESController < Webhooks::BaseController
   def create
-    return head :unauthorized unless valid_sns_message?
-
-    SES::Webhooks::Handle.(request.body.read, message_type)
+    SES::Webhooks::Handle.(request)
 
     head :ok
+  rescue InvalidSNSSignatureError
+    head :unauthorized
   rescue StandardError
     head :ok # Always return 200 to prevent SNS retries
-  end
-
-  private
-  def message_type = request.headers['x-amz-sns-message-type']
-
-  def valid_sns_message?
-    # TODO: Implement proper SNS signature verification
-    # https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html
-    #
-    # For now, accept all messages (SNS endpoint is not publicly advertised)
-    # In production, should verify:
-    # 1. SigningCertURL is from amazonaws.com
-    # 2. Download certificate from SigningCertURL
-    # 3. Verify signature using certificate and message body
-    true
   end
 end

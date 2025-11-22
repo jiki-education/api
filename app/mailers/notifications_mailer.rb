@@ -4,7 +4,6 @@
 # - Progress milestones
 # - Streak reminders
 #
-# High volume (~600k/month → 3.6M/month)
 # Users can unsubscribe from these in preferences
 
 class NotificationsMailer < ApplicationMailer
@@ -41,6 +40,8 @@ class NotificationsMailer < ApplicationMailer
 
   # Test email for verification
   def test_email(to)
+    raise "test_email can only be called in test environment" unless Rails.env.test?
+
     mail(
       to: to,
       subject: '[TEST] Notification email from notifications.jiki.io'
@@ -53,4 +54,10 @@ class NotificationsMailer < ApplicationMailer
   private
   def default_from_email = Jiki.config.notifications_from_email
   def configuration_set = Jiki.config.ses_notifications_configuration_set
+
+  # Add RFC 8058 one-click unsubscribe headers for notification emails
+  def mail(**args)
+    add_unsubscribe_headers!
+    super(**args)
+  end
 end

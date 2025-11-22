@@ -3,7 +3,6 @@
 # - Feature announcements
 # - Product updates
 #
-# Low volume (~60k/month → 360k/month)
 # Users can unsubscribe via one-click unsubscribe
 
 class MarketingMailer < ApplicationMailer
@@ -41,6 +40,8 @@ class MarketingMailer < ApplicationMailer
 
   # Test email for verification
   def test_email(to)
+    raise "test_email can only be called in test environment" unless Rails.env.test?
+
     mail(
       to: to,
       subject: '[TEST] Marketing email from hello.jiki.io'
@@ -57,11 +58,7 @@ class MarketingMailer < ApplicationMailer
 
   # Add RFC 8058 one-click unsubscribe headers for marketing emails
   def mail(**args)
-    if defined?(@user) && @user&.data&.unsubscribe_token
-      headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @user.data.unsubscribe_token)}>"
-      headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
-    end
-
+    add_unsubscribe_headers!
     super(**args)
   end
 end

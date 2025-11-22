@@ -18,6 +18,20 @@ class ApplicationMailer < ActionMailer::Base
     Jiki.config.support_email if Jiki.config.respond_to?(:support_email)
   end
 
+  # Generate unsubscribe URL for frontend
+  def unsubscribe_url(token:)
+    "#{Jiki.config.frontend_base_url}/unsubscribe/#{token}"
+  end
+
+  # Add RFC 8058 one-click unsubscribe headers
+  # Call this from subclass mail methods for marketing emails
+  def add_unsubscribe_headers!
+    return unless defined?(@user) && @user&.data&.unsubscribe_token
+
+    headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: @user.data.unsubscribe_token)}>"
+    headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
+  end
+
   # Add SES configuration set header to all emails
   # This enables tracking, dedicated IP routing, and event notifications
   def mail(**args)

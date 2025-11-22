@@ -6,7 +6,7 @@ class WelcomeMailerTest < ActionMailer::TestCase
     mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
 
     assert_equal "Welcome to Jiki!", mail.subject
-    assert_equal ["hello@jiki.io"], mail.from
+    assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains English text
@@ -25,7 +25,7 @@ class WelcomeMailerTest < ActionMailer::TestCase
     mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
 
     assert_equal "Üdvözlünk a Jiki-nél!", mail.subject
-    assert_equal ["hello@jiki.io"], mail.from
+    assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains Hungarian text
@@ -101,5 +101,14 @@ class WelcomeMailerTest < ActionMailer::TestCase
 
     assert_match login_url, mail.html_part.body.to_s
     assert_match login_url, mail.text_part.body.to_s
+  end
+
+  test "welcome email does not include unsubscribe headers" do
+    user = create(:user)
+    mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
+
+    # Transactional emails should not have unsubscribe headers
+    assert_nil mail.header['List-Unsubscribe']
+    assert_nil mail.header['List-Unsubscribe-Post']
   end
 end
