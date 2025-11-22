@@ -40,8 +40,7 @@ class SES::Webhooks::Handle
     return unless subscribe_url
 
     # Auto-confirm SNS subscription
-    uri = URI.parse(subscribe_url)
-    Net::HTTP.get(uri)
+    HTTParty.get(subscribe_url, timeout: 10)
   end
 
   def handle_notification!
