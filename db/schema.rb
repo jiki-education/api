@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_18_045615) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_21_094810) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -275,7 +275,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_045615) do
 
   create_table "user_data", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.string "email_bounce_reason"
+    t.datetime "email_bounced_at"
+    t.datetime "email_complaint_at"
+    t.string "email_complaint_type"
+    t.string "email_verification_token"
+    t.datetime "last_email_opened_at"
     t.string "membership_type", default: "standard", null: false
+    t.boolean "notifications_enabled", default: true, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "stripe_subscription_status"
@@ -283,6 +290,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_045615) do
     t.datetime "subscription_valid_until"
     t.jsonb "subscriptions", default: [], null: false
     t.bigint "unlocked_concept_ids", default: [], null: false, array: true
+    t.string "unsubscribe_token", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["membership_type"], name: "index_user_data_on_membership_type"
@@ -291,6 +299,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_045615) do
     t.index ["subscription_status"], name: "index_user_data_on_subscription_status"
     t.index ["subscriptions"], name: "index_user_data_on_subscriptions", using: :gin
     t.index ["unlocked_concept_ids"], name: "index_user_data_on_unlocked_concept_ids", using: :gin
+    t.index ["unsubscribe_token"], name: "index_user_data_on_unsubscribe_token", unique: true
     t.index ["user_id"], name: "index_user_data_on_user_id", unique: true
   end
 
