@@ -448,6 +448,154 @@ terraform/
 
 ---
 
+## Bastion Host Access
+
+### Overview
+
+A secure bastion host provides on-demand access to the production database and Rails console via ECS Exec.
+
+**Key Features**:
+- Uses the same Docker image as the web application
+- MFA authentication required (via aws-vault)
+- IP-restricted access (86.104.250.204, 124.34.215.153, 180.50.134.226)
+- On-demand only (no permanent cost)
+- Auto-cleanup or long-running mode
+
+### Usage
+
+**Basic Usage** (auto-starts, auto-stops):
+```bash
+cd /path/to/jiki/api
+./bin/bastion
+# Prompts for MFA code if needed
+# Connects to bastion shell
+# Auto-stops task on exit
+```
+
+**Long-Running Sessions** (keep bastion running):
+```bash
+./bin/bastion --keep-alive
+# Bastion stays running after disconnect
+# Reconnect anytime without starting a new task
+```
+
+**Connecting to Existing Bastion**:
+```bash
+./bin/bastion
+# Automatically detects and connects to existing task
+# No new task started
+```
+
+### Inside the Bastion
+
+Once connected, you have full access to the Rails application:
+
+```bash
+# Rails console
+rails console
+
+# Database console
+rails dbconsole
+
+# Run migrations
+rails db:migrate
+
+# Run arbitrary Ruby code
+rails runner "puts User.count"
+
+# Check environment
+env | grep RAILS
+```
+
+### Security Model
+
+**Authentication**:
+- AWS IAM credentials required
+- MFA code from Authy (via aws-vault)
+- 12-hour session duration
+
+**IP Restriction**:
+- Access restricted to whitelisted IPs only:
+  - 86.104.250.204/32 (primary)
+  - 124.34.215.153/32 (temporary)
+  - 180.50.134.226/32 (temporary)
+- IAM policy denies bastion access from other IPs
+- Terraform operations unaffected (work from any IP)
+
+**Network Isolation**:
+- Bastion → Database: Port 5432 only
+- Bastion → Internet: HTTPS (443) for AWS APIs
+- No inbound connections
+- All sessions logged to CloudWatch (`/ecs/exec`)
+
+### Cost
+
+- **On-Demand**: ~$0.01/hour (256 CPU / 512 MB Fargate)
+- **Typical Usage**: 1-2 hours/month = $0.01-0.02/month
+- **No Permanent Infrastructure**: $0 when not running
+
+### Troubleshooting
+
+**"Access Denied" Error**:
+```bash
+# Check you're on a whitelisted IP
+curl ifconfig.me
+
+# Verify IAM permissions
+aws sts get-caller-identity
+```
+
+**Connection Timeout**:
+```bash
+# Check task is running
+aws ecs list-tasks \
+  --cluster jiki-production \
+  --family jiki-bastion \
+  --region eu-west-1 --profile jiki
+
+# Check ECS Exec is enabled on cluster
+aws ecs describe-clusters \
+  --clusters jiki-production \
+  --region eu-west-1 --profile jiki
+```
+
+**Manually Stop All Bastion Tasks**:
+```bash
+# List running bastion tasks
+aws ecs list-tasks \
+  --cluster jiki-production \
+  --family jiki-bastion \
+  --desired-status RUNNING \
+  --region eu-west-1 --profile jiki
+
+# Stop a specific task
+aws ecs stop-task \
+  --cluster jiki-production \
+  --task <task-id> \
+  --region eu-west-1 --profile jiki
+```
+
+**Update Whitelisted IPs**:
+1. Edit `../terraform/terraform/aws/iam_bastion_ip_restriction.tf`
+2. Update IP addresses in the policy
+3. Apply Terraform: `aws-vault exec jiki -- terraform apply`
+
+### Infrastructure
+
+**Terraform Files**:
+- `iam_bastion_ip_restriction.tf` - IP whitelist policy
+- `security_group_bastion.tf` - Bastion security group
+- `ecs_bastion.tf` - Bastion task definition
+- `security_group_rds.tf` - RDS ingress from bastion (added)
+- `ecs_cluster.tf` - ECS Exec configuration (updated)
+- `iam.tf` - SSM permissions for ECS Exec (updated)
+- `outputs.tf` - Subnet and SG outputs for script
+
+**API Repository**:
+- `bin/bastion` - One-command bastion access script
+
+---
+
 ## References
 
 ### Key Files
