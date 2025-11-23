@@ -1,0 +1,225 @@
+#!/bin/bash
+set -euo pipefail
+
+# Bastion Host Access Script
+# Starts an ECS bastion task and connects via ECS Exec
+# Requires: aws-vault with MFA configured
+# Usage: ./bin/bastion [--keep-alive]
+#   --keep-alive: Don't stop the bastion task on exit (for long-running sessions)
+
+CLUSTER="jiki-production"
+TASK_FAMILY="jiki-bastion"
+REGION="eu-west-1"
+TERRAFORM_DIR="../terraform/terraform"
+TASK_ID=""
+KEEP_ALIVE=false
+REUSED_TASK=false
+
+# Check if we're running with aws-vault, if not, re-exec with it
+# This must happen BEFORE argument parsing so arguments are preserved
+if [ -z "${AWS_VAULT:-}" ]; then
+    exec aws-vault exec jiki -- "$0" "$@"
+fi
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --keep-alive)
+            KEEP_ALIVE=true
+            shift
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: ./bin/bastion [--keep-alive]"
+            exit 1
+            ;;
+    esac
+done
+
+# Cleanup function - stops bastion task on exit/interrupt
+cleanup() {
+    if [ -n "$TASK_ID" ] && [ "$KEEP_ALIVE" = false ] && [ "$REUSED_TASK" = false ]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🧹 Cleaning up..."
+        echo "Stopping bastion task..."
+        aws ecs stop-task \
+            --cluster "$CLUSTER" \
+            --task "$TASK_ID" \
+            --region "$REGION" > /dev/null 2>&1 || true
+        echo "✓ Bastion stopped"
+        echo ""
+        echo "👋 Goodbye!"
+    elif [ "$KEEP_ALIVE" = true ]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⏸️  Bastion task $TASK_ID left running (--keep-alive)"
+        echo "   To stop it later, run: aws ecs stop-task --cluster $CLUSTER --task $TASK_ID --region $REGION"
+        echo ""
+        echo "👋 Goodbye!"
+    elif [ "$REUSED_TASK" = true ]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⏸️  Disconnected from existing bastion task (not stopped)"
+        echo ""
+        echo "👋 Goodbye!"
+    fi
+}
+
+# Trap to ensure cleanup on exit, interrupt, or termination
+trap cleanup EXIT INT TERM
+
+echo "🔐 Bastion Access Script"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "✓ Running with aws-vault profile: $AWS_VAULT"
+if [ "$KEEP_ALIVE" = true ]; then
+    echo "⏸️  Keep-alive mode: bastion will not stop on exit"
+fi
+echo ""
+
+# Check for existing bastion tasks
+echo "🔍 Checking for existing bastion tasks..."
+EXISTING_TASK_ARN=$(aws ecs list-tasks \
+    --cluster "$CLUSTER" \
+    --family "$TASK_FAMILY" \
+    --desired-status RUNNING \
+    --region "$REGION" \
+    --query 'taskArns[0]' \
+    --output text)
+
+if [ -n "$EXISTING_TASK_ARN" ] && [ "$EXISTING_TASK_ARN" != "None" ]; then
+    TASK_ID=$(echo "$EXISTING_TASK_ARN" | cut -d/ -f3)
+    REUSED_TASK=true
+    echo "✓ Found existing bastion task: $TASK_ID"
+    echo "  Connecting to existing task instead of starting a new one..."
+    echo ""
+else
+    echo "✓ No existing bastion task found, starting a new one..."
+    echo ""
+
+# Fetch bastion configuration from Terraform outputs
+echo "📋 Fetching bastion configuration from Terraform..."
+
+if [ ! -d "$TERRAFORM_DIR" ]; then
+    echo "❌ ERROR: Terraform directory not found: $TERRAFORM_DIR"
+    exit 1
+fi
+
+cd "$TERRAFORM_DIR"
+
+# Get subnet IDs (comma-separated)
+SUBNETS=$(terraform output -json bastion_subnet_ids | jq -r '. | join(",")')
+if [ -z "$SUBNETS" ] || [ "$SUBNETS" = "null" ]; then
+    echo "❌ ERROR: Could not fetch subnet IDs from Terraform"
+    exit 1
+fi
+
+# Get security group ID
+SECURITY_GROUP=$(terraform output -raw bastion_security_group_id)
+if [ -z "$SECURITY_GROUP" ] || [ "$SECURITY_GROUP" = "null" ]; then
+    echo "❌ ERROR: Could not fetch security group ID from Terraform"
+    exit 1
+fi
+
+# Return to API directory
+cd - > /dev/null
+
+echo "✓ Configuration loaded"
+echo "  Subnets: $SUBNETS"
+echo "  Security Group: $SECURITY_GROUP"
+echo ""
+
+# Start bastion task
+echo "🚀 Starting bastion task..."
+TASK_ARN=$(aws ecs run-task \
+  --cluster "$CLUSTER" \
+  --task-definition "$TASK_FAMILY" \
+  --launch-type FARGATE \
+  --enable-execute-command \
+  --network-configuration "awsvpcConfiguration={
+    subnets=[$SUBNETS],
+    securityGroups=[$SECURITY_GROUP],
+    assignPublicIp=ENABLED
+  }" \
+  --region "$REGION" \
+  --query 'tasks[0].taskArn' \
+  --output text)
+
+if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
+    echo "❌ ERROR: Failed to start bastion task"
+    exit 1
+fi
+
+TASK_ID=$(echo "$TASK_ARN" | cut -d/ -f3)
+echo "✓ Bastion started: $TASK_ID"
+echo ""
+
+# Wait for task to be running
+echo "⏳ Waiting for task to be ready..."
+MAX_WAIT=60
+WAITED=0
+
+while [ $WAITED -lt $MAX_WAIT ]; do
+    TASK_STATUS=$(aws ecs describe-tasks \
+        --cluster "$CLUSTER" \
+        --tasks "$TASK_ARN" \
+        --region "$REGION" \
+        --query 'tasks[0].lastStatus' \
+        --output text)
+
+    if [ "$TASK_STATUS" = "RUNNING" ]; then
+        break
+    fi
+
+    if [ "$TASK_STATUS" = "STOPPED" ]; then
+        echo "❌ ERROR: Task stopped unexpectedly"
+        exit 1
+    fi
+
+    sleep 2
+    WAITED=$((WAITED + 2))
+    echo "  Status: $TASK_STATUS (${WAITED}s elapsed)"
+done
+
+if [ "$TASK_STATUS" != "RUNNING" ]; then
+    echo "❌ ERROR: Task did not start within ${MAX_WAIT}s"
+    echo "Stopping task..."
+    aws ecs stop-task \
+        --cluster "$CLUSTER" \
+        --task "$TASK_ID" \
+        --region "$REGION" > /dev/null
+    exit 1
+fi
+
+echo "✓ Task is running"
+echo ""
+
+# Additional wait to ensure exec agent is ready
+echo "⏳ Waiting for ECS Exec agent to be ready..."
+sleep 5
+echo ""
+fi
+
+# Connect to bastion
+echo "🔌 Connecting to bastion..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "You are now connected to the bastion container."
+echo "Available commands:"
+echo "  rails console    - Rails console"
+echo "  rails dbconsole  - Database console"
+echo "  rails runner ... - Run Ruby code"
+echo ""
+echo "Type 'exit' to disconnect and stop the bastion."
+echo ""
+
+aws ecs execute-command \
+  --cluster "$CLUSTER" \
+  --task "$TASK_ID" \
+  --container bastion \
+  --interactive \
+  --command "/bin/bash" \
+  --region "$REGION"
+
+# Cleanup handled by trap on EXIT
