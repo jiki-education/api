@@ -6,10 +6,6 @@
 # Credentials: AWS SDK automatically uses ECS task IAM role (no manual config needed)
 # Region: Configured via Jiki.config.ses_region (from DynamoDB)
 #
-# DEPLOYMENT DEPENDENCY: This requires Terraform from ../terraform ses branch to be:
-#   1. Merged to main
-#   2. Applied to production (creates ses_region in DynamoDB config table)
-#
 # The delivery method is configured in config/environments/production.rb:
 #   config.action_mailer.delivery_method = :ses_v2
 #   config.action_mailer.ses_v2_settings = { region: Jiki.config.ses_region }

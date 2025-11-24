@@ -62,7 +62,6 @@ Rails.application.configure do
   # Using single database for simplicity (queue tables in main database)
 
   # Email configuration via AWS SES (using SESV2 API)
-  # IMPORTANT: Requires ses_region config from DynamoDB (../terraform ses branch)
   config.action_mailer.delivery_method = :ses_v2
   config.action_mailer.ses_v2_settings = {
     region: Jiki.config.ses_region
