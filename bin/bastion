@@ -141,9 +141,26 @@ EXISTING_TASK_ARN=$(aws ecs list-tasks \
 
 if [ -n "$EXISTING_TASK_ARN" ] && [ "$EXISTING_TASK_ARN" != "None" ]; then
     TASK_ID=$(echo "$EXISTING_TASK_ARN" | cut -d/ -f3)
+    TASK_ARN="$EXISTING_TASK_ARN"
     REUSED_TASK=true
     echo "✓ Found existing bastion task: $TASK_ID"
     echo "  Connecting to existing task instead of starting a new one..."
+
+    # Check if the existing task was started with --keep-alive
+    TASK_KEEP_ALIVE=$(aws ecs describe-tasks \
+        --cluster "$CLUSTER" \
+        --tasks "$TASK_ARN" \
+        --region "$REGION" \
+        --query 'tasks[0].overrides.containerOverrides[0].environment[?name==`BASTION_KEEP_ALIVE`].value' \
+        --output text)
+
+    if [ "$TASK_KEEP_ALIVE" = "false" ]; then
+        KEEP_ALIVE=false
+        echo "  Task was started without --keep-alive, will stop on exit"
+    elif [ "$TASK_KEEP_ALIVE" = "true" ]; then
+        KEEP_ALIVE=true
+        echo "  Task was started with --keep-alive, will not stop on exit"
+    fi
     echo ""
 else
     echo "✓ No existing bastion task found, starting a new one..."
@@ -184,12 +201,15 @@ echo ""
 # Start bastion task
 echo "🚀 Starting bastion task..."
 
-# Build task overrides to add 1-hour timeout unless --keep-alive is set
+# Build task overrides to add 1-hour timeout and track keep-alive setting
 if [ "$KEEP_ALIVE" = false ]; then
-    OVERRIDES='{"containerOverrides":[{"name":"bastion","command":["/bin/bash","-c","chown -R rails:rails /rails && echo '\''Bastion ready for access'\'' && timeout 3600 tail -f /dev/null || echo '\''Bastion auto-stopped after 1 hour'\''"]}]}'
+    OVERRIDES=$(cat <<'EOF'
+{"containerOverrides":[{"name":"bastion","command":["/bin/bash","-c","chown -R rails:rails /rails && echo 'Bastion ready for access' && timeout 3600 tail -f /dev/null || echo 'Bastion auto-stopped after 1 hour'"],"environment":[{"name":"BASTION_KEEP_ALIVE","value":"false"}]}]}
+EOF
+)
     echo "⏲️  Auto-stop enabled: bastion will terminate after 1 hour of inactivity"
 else
-    OVERRIDES='{}'
+    OVERRIDES='{"containerOverrides":[{"name":"bastion","environment":[{"name":"BASTION_KEEP_ALIVE","value":"true"}]}]}'
 fi
 
 TASK_ARN=$(aws ecs run-task \
