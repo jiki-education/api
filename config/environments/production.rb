@@ -61,8 +61,11 @@ Rails.application.configure do
   config.active_job.queue_adapter = :solid_queue
   # Using single database for simplicity (queue tables in main database)
 
-  # Email configuration via AWS SES
-  config.action_mailer.delivery_method = :aws_sdk
+  # Email configuration via AWS SES (using SESV2 API)
+  config.action_mailer.delivery_method = :ses_v2
+  config.action_mailer.ses_v2_settings = {
+    region: Jiki.config.ses_region
+  }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.default_url_options = { host: 'jiki.io', protocol: 'https' }

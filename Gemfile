@@ -74,6 +74,9 @@ gem "aws-sdk-sns"
 # AWS SDK Rails integration (includes SES, S3, etc.)
 gem "aws-sdk-rails", "~> 5.0"
 
+# AWS ActionMailer SES integration (provides :ses and :ses_v2 delivery methods)
+gem "aws-actionmailer-ses", "~> 1"
+
 # Markdown parsing and HTML sanitization
 gem "commonmarker"
 gem "loofah"
