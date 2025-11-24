@@ -183,11 +183,21 @@ echo ""
 
 # Start bastion task
 echo "🚀 Starting bastion task..."
+
+# Build task overrides to add 1-hour timeout unless --keep-alive is set
+if [ "$KEEP_ALIVE" = false ]; then
+    OVERRIDES='{"containerOverrides":[{"name":"bastion","command":["/bin/bash","-c","chown -R rails:rails /rails && echo '\''Bastion ready for access'\'' && timeout 3600 tail -f /dev/null || echo '\''Bastion auto-stopped after 1 hour'\''"]}]}'
+    echo "⏲️  Auto-stop enabled: bastion will terminate after 1 hour of inactivity"
+else
+    OVERRIDES='{}'
+fi
+
 TASK_ARN=$(aws ecs run-task \
   --cluster "$CLUSTER" \
   --task-definition "$TASK_FAMILY" \
   --launch-type FARGATE \
   --enable-execute-command \
+  --overrides "$OVERRIDES" \
   --network-configuration "awsvpcConfiguration={
     subnets=[$SUBNETS],
     securityGroups=[$SECURITY_GROUP],
