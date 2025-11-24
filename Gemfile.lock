@@ -461,7 +461,7 @@ GEM
       rails (>= 7.0)
       solid_queue (>= 0.1.0)
     stringio (3.1.8)
-    stripe (17.1.0)
+    stripe (18.0.1)
     strscan (3.1.5)
     temple (0.10.4)
     thor (1.4.0)
