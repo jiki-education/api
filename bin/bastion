@@ -209,11 +209,12 @@ echo "🚀 Starting bastion task..."
 # - environment: to track keep-alive setting
 
 # Base command (without timeout)
-BASE_COMMAND="chown -R rails:rails /rails && echo 'Bastion ready for access' && tail -f /dev/null"
+# Note: Using double quotes in echo to avoid quoting issues when wrapped in bash -c
+BASE_COMMAND='chown -R rails:rails /rails && echo "Bastion ready for access" && tail -f /dev/null'
 
 # Add timeout wrapper if not keeping alive
 if [ "$KEEP_ALIVE" = false ]; then
-    COMMAND="timeout 3600 bash -c '${BASE_COMMAND}' || echo 'Bastion auto-stopped after 1 hour'"
+    COMMAND="timeout 3600 bash -c '${BASE_COMMAND}' || echo \"Bastion auto-stopped after 1 hour\""
     KEEP_ALIVE_VALUE="false"
     echo "⏲️  Auto-stop enabled: bastion will terminate after 1 hour of inactivity"
 else
