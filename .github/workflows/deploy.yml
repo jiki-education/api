@@ -83,7 +83,7 @@ jobs:
           task-definition: ${{ steps.task-def-web.outputs.task-definition }}
           service: ${{ env.ECS_WEB_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+          wait-for-service-stability: false
 
       - name: Download worker service task definition
         run: |
@@ -106,7 +106,15 @@ jobs:
           task-definition: ${{ steps.task-def-worker.outputs.task-definition }}
           service: ${{ env.ECS_WORKER_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+          wait-for-service-stability: false
+
+      - name: Wait for both services to stabilize
+        run: |
+          echo "Waiting for both services to reach stable state..."
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_WEB_SERVICE }} ${{ env.ECS_WORKER_SERVICE }} \
+            --region ${{ env.AWS_REGION }}
 
       - name: Deployment complete
         run: |
