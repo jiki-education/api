@@ -109,14 +109,6 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: false
 
-      - name: Wait for both services to stabilize
-        run: |
-          echo "Waiting for both services to reach stable state..."
-          aws ecs wait services-stable \
-            --cluster ${{ env.ECS_CLUSTER }} \
-            --services ${{ env.ECS_WEB_SERVICE }} ${{ env.ECS_WORKER_SERVICE }} \
-            --region ${{ env.AWS_REGION }}
-
       - name: Download bastion task definition
         run: |
           aws ecs describe-task-definition \
@@ -138,6 +130,14 @@ jobs:
             --cli-input-json file://${{ steps.task-def-bastion.outputs.task-definition }} \
             --region ${{ env.AWS_REGION }}
           echo "✅ Bastion task definition updated"
+
+      - name: Wait for both services to stabilize
+        run: |
+          echo "Waiting for both services to reach stable state..."
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_WEB_SERVICE }} ${{ env.ECS_WORKER_SERVICE }} \
+            --region ${{ env.AWS_REGION }}
 
       - name: Deployment complete
         run: |
