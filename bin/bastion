@@ -4,9 +4,10 @@ set -euo pipefail
 # Bastion Host Access Script
 # Starts an ECS bastion task and connects via ECS Exec
 # Requires: aws-vault with MFA configured
-# Usage: ./bin/bastion [--keep-alive] [--root]
+# Usage: ./bin/bastion [--keep-alive] [--root] [--stop-all]
 #   --keep-alive: Don't stop the bastion task on exit (for long-running sessions)
 #   --root: Connect as root user (for system administration)
+#   --stop-all: Stop all running bastion tasks and exit
 
 CLUSTER="jiki-production"
 TASK_FAMILY="jiki-bastion"
@@ -16,6 +17,7 @@ TASK_ID=""
 KEEP_ALIVE=false
 REUSED_TASK=false
 ROOT_USER=false
+STOP_ALL=false
 
 # Check if we're running with aws-vault, if not, re-exec with it
 # This must happen BEFORE argument parsing so arguments are preserved
@@ -34,13 +36,53 @@ while [[ $# -gt 0 ]]; do
             ROOT_USER=true
             shift
             ;;
+        --stop-all)
+            STOP_ALL=true
+            shift
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: ./bin/bastion [--keep-alive] [--root]"
+            echo "Usage: ./bin/bastion [--keep-alive] [--root] [--stop-all]"
             exit 1
             ;;
     esac
 done
+
+# Handle --stop-all flag
+if [ "$STOP_ALL" = true ]; then
+    echo "🛑 Stopping all running bastion tasks..."
+    echo ""
+
+    RUNNING_TASKS=$(aws ecs list-tasks \
+        --cluster "$CLUSTER" \
+        --family "$TASK_FAMILY" \
+        --desired-status RUNNING \
+        --region "$REGION" \
+        --query 'taskArns[]' \
+        --output text)
+
+    if [ -z "$RUNNING_TASKS" ]; then
+        echo "✓ No running bastion tasks found"
+        exit 0
+    fi
+
+    TASK_COUNT=$(echo "$RUNNING_TASKS" | wc -w | tr -d ' ')
+    echo "Found $TASK_COUNT running bastion task(s)"
+    echo ""
+
+    for task_arn in $RUNNING_TASKS; do
+        task_id=$(echo "$task_arn" | cut -d/ -f3)
+        echo "Stopping task: $task_id"
+        aws ecs stop-task \
+            --cluster "$CLUSTER" \
+            --task "$task_id" \
+            --region "$REGION" > /dev/null
+    done
+
+    echo ""
+    echo "✓ All bastion tasks stopped"
+    exit 0
+fi
 
 # Cleanup function - stops bastion task on exit/interrupt
 cleanup() {
@@ -99,9 +141,26 @@ EXISTING_TASK_ARN=$(aws ecs list-tasks \
 
 if [ -n "$EXISTING_TASK_ARN" ] && [ "$EXISTING_TASK_ARN" != "None" ]; then
     TASK_ID=$(echo "$EXISTING_TASK_ARN" | cut -d/ -f3)
+    TASK_ARN="$EXISTING_TASK_ARN"
     REUSED_TASK=true
     echo "✓ Found existing bastion task: $TASK_ID"
     echo "  Connecting to existing task instead of starting a new one..."
+
+    # Check if the existing task was started with --keep-alive
+    TASK_KEEP_ALIVE=$(aws ecs describe-tasks \
+        --cluster "$CLUSTER" \
+        --tasks "$TASK_ARN" \
+        --region "$REGION" \
+        --query 'tasks[0].overrides.containerOverrides[0].environment[?name==`BASTION_KEEP_ALIVE`].value' \
+        --output text)
+
+    if [ "$TASK_KEEP_ALIVE" = "false" ]; then
+        KEEP_ALIVE=false
+        echo "  Task was started without --keep-alive, will stop on exit"
+    elif [ "$TASK_KEEP_ALIVE" = "true" ]; then
+        KEEP_ALIVE=true
+        echo "  Task was started with --keep-alive, will not stop on exit"
+    fi
     echo ""
 else
     echo "✓ No existing bastion task found, starting a new one..."
@@ -141,11 +200,24 @@ echo ""
 
 # Start bastion task
 echo "🚀 Starting bastion task..."
+
+# Build task overrides to add 1-hour timeout and track keep-alive setting
+if [ "$KEEP_ALIVE" = false ]; then
+    OVERRIDES=$(cat <<'EOF'
+{"containerOverrides":[{"name":"bastion","command":["/bin/bash","-c","chown -R rails:rails /rails && echo 'Bastion ready for access' && timeout 3600 tail -f /dev/null || echo 'Bastion auto-stopped after 1 hour'"],"environment":[{"name":"BASTION_KEEP_ALIVE","value":"false"}]}]}
+EOF
+)
+    echo "⏲️  Auto-stop enabled: bastion will terminate after 1 hour of inactivity"
+else
+    OVERRIDES='{"containerOverrides":[{"name":"bastion","environment":[{"name":"BASTION_KEEP_ALIVE","value":"true"}]}]}'
+fi
+
 TASK_ARN=$(aws ecs run-task \
   --cluster "$CLUSTER" \
   --task-definition "$TASK_FAMILY" \
   --launch-type FARGATE \
   --enable-execute-command \
+  --overrides "$OVERRIDES" \
   --network-configuration "awsvpcConfiguration={
     subnets=[$SUBNETS],
     securityGroups=[$SECURITY_GROUP],
