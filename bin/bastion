@@ -11,6 +11,7 @@ set -euo pipefail
 
 CLUSTER="jiki-production"
 TASK_FAMILY="jiki-bastion"
+CONTAINER_NAME="bastion"
 REGION="eu-west-1"
 TERRAFORM_DIR="../terraform/terraform"
 TASK_ID=""
@@ -151,7 +152,7 @@ if [ -n "$EXISTING_TASK_ARN" ] && [ "$EXISTING_TASK_ARN" != "None" ]; then
         --cluster "$CLUSTER" \
         --tasks "$TASK_ARN" \
         --region "$REGION" \
-        --query 'tasks[0].overrides.containerOverrides[0].environment[?name==`BASTION_KEEP_ALIVE`].value' \
+        --query 'tasks[0].overrides.containerOverrides[0].environment[?name==`BASTION_KEEP_ALIVE`].value | [0]' \
         --output text)
 
     if [ "$TASK_KEEP_ALIVE" = "false" ]; then
@@ -201,16 +202,39 @@ echo ""
 # Start bastion task
 echo "🚀 Starting bastion task..."
 
-# Build task overrides to add 1-hour timeout and track keep-alive setting
+# Build task overrides
+# Note: user, logConfiguration, and linuxParameters are set in task definition
+# We only override:
+# - command: to add timeout wrapper for auto-stop
+# - environment: to track keep-alive setting
+
+# Base command (without timeout)
+BASE_COMMAND="chown -R rails:rails /rails && echo 'Bastion ready for access' && tail -f /dev/null"
+
+# Add timeout wrapper if not keeping alive
 if [ "$KEEP_ALIVE" = false ]; then
-    OVERRIDES=$(cat <<'EOF'
-{"containerOverrides":[{"name":"bastion","command":["/bin/bash","-c","chown -R rails:rails /rails && echo 'Bastion ready for access' && timeout 3600 tail -f /dev/null || echo 'Bastion auto-stopped after 1 hour'"],"environment":[{"name":"BASTION_KEEP_ALIVE","value":"false"}]}]}
-EOF
-)
+    COMMAND="timeout 3600 bash -c '${BASE_COMMAND}' || echo 'Bastion auto-stopped after 1 hour'"
+    KEEP_ALIVE_VALUE="false"
     echo "⏲️  Auto-stop enabled: bastion will terminate after 1 hour of inactivity"
 else
-    OVERRIDES='{"containerOverrides":[{"name":"bastion","environment":[{"name":"BASTION_KEEP_ALIVE","value":"true"}]}]}'
+    COMMAND="$BASE_COMMAND"
+    KEEP_ALIVE_VALUE="true"
 fi
+
+# Build final overrides JSON
+OVERRIDES=$(jq -n \
+  --arg cmd "$COMMAND" \
+  --arg keep_alive "$KEEP_ALIVE_VALUE" \
+  '{
+    containerOverrides: [{
+      name: "bastion",
+      command: ["/bin/bash", "-c", $cmd],
+      environment: [
+        {name: "BASTION_KEEP_ALIVE", value: $keep_alive}
+      ]
+    }]
+  }'
+)
 
 TASK_ARN=$(aws ecs run-task \
   --cluster "$CLUSTER" \
@@ -336,7 +360,7 @@ fi
 aws ecs execute-command \
   --cluster "$CLUSTER" \
   --task "$TASK_ID" \
-  --container bastion \
+  --container "$CONTAINER_NAME" \
   --interactive \
   --command "$EXEC_COMMAND" \
   --region "$REGION"

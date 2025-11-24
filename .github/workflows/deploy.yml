@@ -11,6 +11,7 @@ env:
   ECS_CLUSTER: jiki-production
   ECS_WEB_SERVICE: jiki-api-web
   ECS_WORKER_SERVICE: jiki-api-solid-queue
+  ECS_BASTION_TASK_FAMILY: jiki-bastion
 
 jobs:
   deploy:
@@ -116,9 +117,32 @@ jobs:
             --services ${{ env.ECS_WEB_SERVICE }} ${{ env.ECS_WORKER_SERVICE }} \
             --region ${{ env.AWS_REGION }}
 
+      - name: Download bastion task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_BASTION_TASK_FAMILY }} \
+            --region ${{ env.AWS_REGION }} \
+            --query taskDefinition > task-def-bastion.json
+
+      - name: Update bastion task definition with new image
+        id: task-def-bastion
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-def-bastion.json
+          container-name: bastion
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Register updated bastion task definition
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json file://${{ steps.task-def-bastion.outputs.task-definition }} \
+            --region ${{ env.AWS_REGION }}
+          echo "✅ Bastion task definition updated"
+
       - name: Deployment complete
         run: |
           echo "✅ Deployment complete!"
           echo "Image: ${{ steps.build-image.outputs.image }}"
           echo "Web service: ${{ env.ECS_WEB_SERVICE }}"
           echo "Worker service: ${{ env.ECS_WORKER_SERVICE }}"
+          echo "Bastion task definition: ${{ env.ECS_BASTION_TASK_FAMILY }}"
