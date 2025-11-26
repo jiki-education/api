@@ -5,7 +5,9 @@ class TooManyFilesError < RuntimeError; end
 class InvalidSubmissionError < RuntimeError; end
 class VideoProductionBadInputsError < RuntimeError; end
 class InvalidHMACSignatureError < RuntimeError; end
+class InvalidSNSSignatureError < RuntimeError; end
 class InvalidPolymorphicRecordType < RuntimeError; end
+class InvalidUnsubscribeTokenError < RuntimeError; end
 
 # Image upload errors
 class ImageFileTooLargeError < RuntimeError; end
@@ -18,3 +20,6 @@ module Gemini
   class InvalidRequestError < Error; end
   class APIError < Error; end
 end
+
+# Google OAuth errors
+class InvalidGoogleTokenError < RuntimeError; end

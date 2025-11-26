@@ -972,6 +972,46 @@ bin/rubocop
 bin/brakeman
 ```
 
+## Production Access
+
+### Bastion Host
+
+Secure access to production database and Rails console via ECS Exec with MFA authentication:
+
+```bash
+# Connect as rails user (default)
+./bin/bastion
+
+# Connect as root (for system administration)
+./bin/bastion --root
+
+# Keep bastion running for multiple connections
+./bin/bastion --keep-alive
+
+# Both flags together
+./bin/bastion --keep-alive --root
+```
+
+**Inside bastion:**
+```bash
+./bin/rails console     # Rails console
+./bin/rails dbconsole   # Database console
+./bin/rails runner ...  # Run Ruby code
+```
+
+**Requirements:**
+- aws-vault configured with MFA (Authy)
+- IP whitelisted (86.104.250.204, 124.34.215.153, 180.50.134.226)
+- Session Manager plugin installed: `brew install --cask session-manager-plugin`
+
+**Security:**
+- MFA required (12-hour sessions)
+- IP-restricted access
+- All sessions logged to CloudWatch
+- Auto-cleanup on exit
+
+See `DEPLOYMENT_PLAN.md` for detailed bastion documentation.
+
 ## Additional Documentation
 
 For detailed development guidelines, architecture decisions, and patterns, see the `.context/` directory:

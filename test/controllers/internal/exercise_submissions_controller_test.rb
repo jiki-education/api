@@ -144,7 +144,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     assert_equal "file_too_large", json_response["error"]["type"]
     assert_match(/File 'large.rb' is too large/, json_response["error"]["message"])
   end
@@ -156,7 +157,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/at least one file/i, json_response["error"]["message"])
   end
@@ -170,7 +172,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/filename.*required/i, json_response["error"]["message"])
   end
@@ -184,7 +187,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/filename.*required/i, json_response["error"]["message"])
   end
@@ -198,7 +202,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/code.*required/i, json_response["error"]["message"])
   end
@@ -212,7 +217,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
+
+    json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/code.*required/i, json_response["error"]["message"])
   end

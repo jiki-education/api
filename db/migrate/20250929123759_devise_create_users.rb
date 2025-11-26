@@ -37,6 +37,11 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
       t.string :handle, null: false
       t.string :locale, null: false, default: "en"
 
+      ## OAuth fields
+      t.string :google_id
+      t.string :provider
+      t.boolean :email_verified, null: false, default: false
+
       ## Admin access
       t.boolean :admin, null: false, default: false
 
@@ -53,6 +58,8 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
     add_index :users, :reset_password_token, unique: true
     add_index :users, :jti,                   unique: true
     add_index :users, :handle,                unique: true
+    add_index :users, :google_id,            unique: true
+    add_index :users, :email_verified
     # add_index :users, :confirmation_token,   unique: true
     # add_index :users, :unlock_token,         unique: true
   end

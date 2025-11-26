@@ -1,4 +1,4 @@
-class Webhooks::StripeController < ActionController::API
+class Webhooks::StripeController < Webhooks::BaseController
   # POST /webhooks/stripe
   # Receives and processes Stripe webhook events
   def create

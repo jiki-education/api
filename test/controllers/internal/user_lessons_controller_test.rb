@@ -216,26 +216,30 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     concept = create(:concept, slug: "variables", title: "Variables")
     project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
     lesson = create(:lesson, unlocked_concept: concept, unlocked_project: project)
+    create(:user_lesson, user: @current_user, lesson:)
 
     patch complete_internal_user_lesson_path(lesson_slug: lesson.slug),
       headers: @headers,
       as: :json
 
     assert_response :success
-
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    # Verify we have two events
-    assert_equal 2, response_json[:meta][:events].size
-
-    # Verify concept_unlocked event
-    concept_event = response_json[:meta][:events].find { |e| e[:type] == "concept_unlocked" }
-    refute_nil concept_event, "Expected concept_unlocked event"
-    assert_equal_json SerializeConcept.(concept), concept_event[:data][:concept]
-
-    # Verify project_unlocked event
-    project_event = response_json[:meta][:events].find { |e| e[:type] == "project_unlocked" }
-    refute_nil project_event, "Expected project_unlocked event"
-    assert_equal_json SerializeProject.(project), project_event[:data][:project]
+    assert_json_response({
+      meta: {
+        events: [
+          {
+            type: "concept_unlocked",
+            data: {
+              concept: SerializeConcept.(concept)
+            }
+          },
+          {
+            type: "project_unlocked",
+            data: {
+              project: SerializeProject.(project)
+            }
+          }
+        ]
+      }
+    })
   end
 end

@@ -1,17 +1,17 @@
 Rails.application.routes.draw do
-  # Sidekiq Web UI with Basic Auth
-  require "sidekiq/web"
-  Sidekiq::Web.use Rack::Auth::Basic do |username, password|
+  # Solid Queue Monitor with Basic Auth
+  require "solid_queue_monitor"
+  SolidQueueMonitor::Engine.middleware.use Rack::Auth::Basic do |username, password|
     ActiveSupport::SecurityUtils.secure_compare(
       ::Digest::SHA256.hexdigest(username),
-      ::Digest::SHA256.hexdigest(Jiki.secrets.sidekiq_username)
+      ::Digest::SHA256.hexdigest(Jiki.secrets.job_monitor_username)
     ) &
       ActiveSupport::SecurityUtils.secure_compare(
         ::Digest::SHA256.hexdigest(password),
-        ::Digest::SHA256.hexdigest(Jiki.secrets.sidekiq_password)
+        ::Digest::SHA256.hexdigest(Jiki.secrets.job_monitor_password)
       )
   end
-  mount Sidekiq::Web => "/sidekiq"
+  mount SolidQueueMonitor::Engine, at: "/solid_queue"
 
   # Auth routes (Devise)
   devise_for :users,
@@ -32,6 +32,8 @@ Rails.application.routes.draw do
   namespace :auth do
     post "refresh", to: "refresh_tokens#create"
     delete "logout/all", to: "logout_all#destroy"
+    post "google", to: "google_oauth#create"
+    post "unsubscribe/:token", to: "unsubscribe#create", as: :unsubscribe
   end
 
   # External (public, unauthenticated) endpoints
@@ -129,6 +131,7 @@ Rails.application.routes.draw do
   # Unauthenticated - security handled by signature verification
   namespace :webhooks do
     post 'stripe', to: 'stripe#create'
+    post 'ses', to: 'ses#create'
   end
 
   # Dev endpoints
@@ -141,9 +144,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
+  # Health check endpoint for ECS/ALB (verifies database connectivity)
+  get "health-check", to: "external/health#check"
 
   # Defines the root path route ("/")
   # root "posts#index"

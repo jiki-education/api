@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Use secret_key_base from Jiki secrets (AWS Secrets Manager)
+  config.secret_key_base = Jiki.secrets.secret_key_base
+
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
@@ -18,14 +21,22 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on Amazon S3 (see config/storage.yml for options).
+  config.active_storage.service = :amazon
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+
+  # Configure trusted proxy IPs for X-Forwarded-For header handling
+  # Trust the VPC CIDR range (10.0.0.0/16) for ALB and Thruster (localhost)
+  # This prevents X-Forwarded-For header accumulation and ensures proper client IP detection
+  config.action_dispatch.trusted_proxies = [
+    IPAddr.new("10.0.0.0/16"), # VPC CIDR range (ALB and ECS tasks)
+    "127.0.0.1" # Localhost (Thruster proxy)
+  ]
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -43,27 +54,24 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  # Replace the default in-process memory cache store with a durable alternative.
-  # config.cache_store = :mem_cache_store
+  # Use memory cache store in production (no Redis needed with Solid Queue)
+  config.cache_store = :memory_store
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
-  # config.active_job.queue_adapter = :resque
+  config.active_job.queue_adapter = :solid_queue
+  # Using single database for simplicity (queue tables in main database)
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Email configuration via AWS SES (using SESV2 API)
+  config.action_mailer.delivery_method = :ses_v2
+  config.action_mailer.ses_v2_settings = {
+    region: Jiki.config.ses_region
+  }
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_url_options = { host: 'jiki.io', protocol: 'https' }
 
-  # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
-
-  # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
-  # config.action_mailer.smtp_settings = {
-  #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
-  #   password: Rails.application.credentials.dig(:smtp, :password),
-  #   address: "smtp.example.com",
-  #   port: 587,
-  #   authentication: :plain
-  # }
+  # Asset host for email images (uses Cloudflare R2 CDN)
+  config.action_mailer.asset_host = Jiki.config.assets_cdn_url
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
@@ -76,11 +84,12 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.hosts = [
+    "api.jiki.io",                    # Production domain
+    /.*\.jiki\.io/,                   # Subdomains
+    IPAddr.new("10.0.0.0/8")          # VPC private IPs (ECS tasks)
+  ]
+
+  # Skip DNS rebinding protection for health check endpoints
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" || request.path == "/health-check" } }
 end

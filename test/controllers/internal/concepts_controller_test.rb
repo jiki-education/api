@@ -22,19 +22,15 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concepts_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 2, response_json[:results].size
-    assert_equal "Arrays", response_json[:results][0][:title]
-    assert_equal "Hashes", response_json[:results][1][:title]
-
-    # Verify fields returned (no id, no content_html in collection)
-    result = response_json[:results][0]
-    refute_includes result.keys, :id
-    refute_includes result.keys, :content_html
-    assert_includes result.keys, :title
-    assert_includes result.keys, :slug
-    assert_includes result.keys, :description
+    assert_json_response({
+      results: SerializeConcepts.([concept_1, concept_3]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 2,
+        events: []
+      }
+    })
   end
 
   test "GET index filters by title parameter" do
@@ -50,12 +46,16 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concepts_path(title: "String"), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 2, response_json[:results].size
     # Results ordered alphabetically by title
-    assert_equal "String Advanced", response_json[:results][0][:title]
-    assert_equal "String Basics", response_json[:results][1][:title]
+    assert_json_response({
+      results: SerializeConcepts.([concept_3, concept_1]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 2,
+        events: []
+      }
+    })
   end
 
   test "GET index title filter only returns unlocked concepts" do
@@ -69,17 +69,22 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concepts_path(title: "String"), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 1, response_json[:results].size
-    assert_equal "String Basics", response_json[:results][0][:title]
+    assert_json_response({
+      results: SerializeConcepts.([concept_1]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
   end
 
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
-    concept_1 = create(:concept)
-    concept_2 = create(:concept)
-    concept_3 = create(:concept)
+    concept_1 = create(:concept, title: "Concept A")
+    concept_2 = create(:concept, title: "Concept B")
+    concept_3 = create(:concept, title: "Concept C")
 
     Concept::UnlockForUser.(concept_1, @current_user)
     Concept::UnlockForUser.(concept_2, @current_user)
@@ -88,24 +93,35 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concepts_path(page: 1, per: 2), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 2, response_json[:results].size
-    assert_equal 1, response_json[:meta][:current_page]
-    assert_equal 3, response_json[:meta][:total_count]
-    assert_equal 2, response_json[:meta][:total_pages]
+    # Ordered alphabetically by title: A, B (first page)
+    assert_json_response({
+      results: SerializeConcepts.([concept_1, concept_2]),
+      meta: {
+        current_page: 1,
+        total_pages: 2,
+        total_count: 3,
+        events: []
+      }
+    })
   end
 
   test "GET index supports pagination with per parameter" do
     Prosopite.finish
-    5.times { |_i| Concept::UnlockForUser.(create(:concept), @current_user) }
+    concepts = Array.new(5) { |i| create(:concept, title: "Concept #{i}").tap { |c| Concept::UnlockForUser.(c, @current_user) } }
 
     get internal_concepts_path(per: 3), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 3, response_json[:results].size
+    # Ordered alphabetically by title: Concept 0, 1, 2
+    assert_json_response({
+      results: SerializeConcepts.([concepts[0], concepts[1], concepts[2]]),
+      meta: {
+        current_page: 1,
+        total_pages: 2,
+        total_count: 5,
+        events: []
+      }
+    })
   end
 
   test "GET index returns empty array when user has no unlocked concepts" do
@@ -115,9 +131,15 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concepts_path, headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal 0, response_json[:results].size
+    assert_json_response({
+      results: [],
+      meta: {
+        current_page: 1,
+        total_pages: 0,
+        total_count: 0,
+        events: []
+      }
+    })
   end
 
   # GET /v1/concepts/:slug (show) tests
@@ -128,22 +150,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concept_path(concept_slug: concept.slug, as: :json), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal "Arrays", response_json[:concept][:title]
-    assert_equal concept.slug, response_json[:concept][:slug]
-
-    # Verify fields returned (no id, includes content_html in single)
-    result = response_json[:concept]
-    refute_includes result.keys, :id
-    assert_includes result.keys, :content_html
-    assert_includes result.keys, :title
-    assert_includes result.keys, :slug
-    assert_includes result.keys, :description
-    assert_includes result.keys, :standard_video_provider
-    assert_includes result.keys, :standard_video_id
-    assert_includes result.keys, :premium_video_provider
-    assert_includes result.keys, :premium_video_id
+    assert_json_response({
+      concept: SerializeConcept.(concept)
+    })
   end
 
   test "GET show returns 403 for locked concept" do
@@ -153,18 +162,21 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concept_path(concept_slug: concept.slug, as: :json), headers: @headers, as: :json
 
     assert_response :forbidden
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal "This concept is locked", response_json[:error]
+    assert_json_response({
+      error: "This concept is locked"
+    })
   end
 
   test "GET show returns 404 for non-existent concept" do
     get internal_concept_path(concept_slug: "non-existent-slug"), headers: @headers, as: :json
 
     assert_response :not_found
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal "Concept not found", response_json[:error][:message]
+    assert_json_response({
+      error: {
+        type: "not_found",
+        message: "Concept not found"
+      }
+    })
   end
 
   test "GET show works with slug history" do
@@ -178,9 +190,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concept_path(concept_slug: "original-slug"), headers: @headers, as: :json
 
     assert_response :success
-    response_json = JSON.parse(response.body, symbolize_names: true)
-
-    assert_equal concept.title, response_json[:concept][:title]
+    assert_json_response({
+      concept: SerializeConcept.(concept)
+    })
   end
 
   test "GET show for old slug still respects lock status" do
@@ -192,5 +204,8 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concept_path(concept_slug: "original-slug"), headers: @headers, as: :json
 
     assert_response :forbidden
+    assert_json_response({
+      error: "This concept is locked"
+    })
   end
 end

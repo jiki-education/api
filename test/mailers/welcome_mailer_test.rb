@@ -6,7 +6,7 @@ class WelcomeMailerTest < ActionMailer::TestCase
     mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
 
     assert_equal "Welcome to Jiki!", mail.subject
-    assert_equal ["hello@jiki.io"], mail.from
+    assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains English text
@@ -25,7 +25,7 @@ class WelcomeMailerTest < ActionMailer::TestCase
     mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
 
     assert_equal "Üdvözlünk a Jiki-nél!", mail.subject
-    assert_equal ["hello@jiki.io"], mail.from
+    assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains Hungarian text
@@ -101,5 +101,59 @@ class WelcomeMailerTest < ActionMailer::TestCase
 
     assert_match login_url, mail.html_part.body.to_s
     assert_match login_url, mail.text_part.body.to_s
+  end
+
+  test "welcome email does not include unsubscribe headers" do
+    user = create(:user)
+    mail = WelcomeMailer.welcome(user, login_url: "http://example.com/login")
+
+    # Transactional emails should not have unsubscribe headers
+    assert_nil mail.header['List-Unsubscribe']
+    assert_nil mail.header['List-Unsubscribe-Post']
+  end
+
+  test "test_email sends successfully" do
+    mail = WelcomeMailer.test_email('test@example.com')
+
+    assert_equal '[TEST] Transactional email from mail.jiki.io', mail.subject
+    assert_equal ['hello@mail.jiki.io'], mail.from
+    assert_equal ['test@example.com'], mail.to
+
+    # Check HTML body
+    assert_match 'This is a test transactional email from mail.jiki.io', mail.html_part.body.to_s
+
+    # Check text body
+    assert_match 'This is a test transactional email from mail.jiki.io', mail.text_part.body.to_s
+  end
+
+  test "test_email includes both HTML and text parts" do
+    mail = WelcomeMailer.test_email('test@example.com')
+
+    assert mail.html_part.present?
+    assert mail.text_part.present?
+    assert_equal "text/html", mail.html_part.content_type.split(";").first
+    assert_equal "text/plain", mail.text_part.content_type.split(";").first
+  end
+
+  test "test_email works in test environment" do
+    # In test environment, any email should work
+    assert_nothing_raised do
+      WelcomeMailer.test_email("test@example.com")
+    end
+  end
+
+  test "test_email allows jez.walker@gmail.com in any environment" do
+    # jez.walker@gmail.com should work even in production
+    assert_nothing_raised do
+      WelcomeMailer.test_email("jez.walker@gmail.com")
+    end
+  end
+
+  test "test_email does not include unsubscribe headers" do
+    mail = WelcomeMailer.test_email("test@example.com")
+
+    # Test email without @user should not have unsubscribe headers
+    assert_nil mail.header['List-Unsubscribe']
+    assert_nil mail.header['List-Unsubscribe-Post']
   end
 end

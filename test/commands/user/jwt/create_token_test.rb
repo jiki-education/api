@@ -7,7 +7,6 @@ class User::Jwt::CreateTokenTest < ActiveSupport::TestCase
     exp = 1.hour.from_now
     payload = {
       "jti" => SecureRandom.uuid,
-      "aud" => "Test Browser",
       "exp" => exp.to_i
     }
 
@@ -17,7 +16,7 @@ class User::Jwt::CreateTokenTest < ActiveSupport::TestCase
     assert jwt_token.persisted?
     assert_equal user.id, jwt_token.user_id
     assert_equal payload["jti"], jwt_token.jti
-    assert_equal payload["aud"], jwt_token.aud
+    assert_nil jwt_token.aud # aud is no longer stored in JWT tokens
     assert_in_delta exp, jwt_token.expires_at, 1.second
   end
 
@@ -26,7 +25,6 @@ class User::Jwt::CreateTokenTest < ActiveSupport::TestCase
 
     payload = {
       "jti" => SecureRandom.uuid,
-      "aud" => "Test Browser",
       "exp" => 1.hour.from_now.to_i
     }
 
@@ -52,7 +50,6 @@ class User::Jwt::CreateTokenTest < ActiveSupport::TestCase
     user = create(:user)
 
     payload = {
-      "aud" => "Test Browser"
       # Missing jti and exp
     }
 

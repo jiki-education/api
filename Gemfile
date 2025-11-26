@@ -26,7 +26,7 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 1.2"
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
@@ -34,10 +34,9 @@ gem "rack-cors"
 # Command pattern implementation for business logic
 gem "mandate", "~> 2.0"
 
-# Background job processing
-gem "sidekiq", "~> 8.0"
-gem "sidekiq-scheduler" # For scheduled/recurring jobs
-gem "redis", "~> 5.0"
+# Background job processing with Solid Queue (database-backed)
+gem "solid_queue"
+gem "solid_queue_monitor"
 
 # Fast hashing for file deduplication
 gem "xxhash"
@@ -68,6 +67,15 @@ gem "stripe"
 
 # AWS SDK for S3 storage
 gem "aws-sdk-s3"
+
+# AWS SDK for SNS (used for webhook signature verification)
+gem "aws-sdk-sns"
+
+# AWS SDK Rails integration (includes SES, S3, etc.)
+gem "aws-sdk-rails", "~> 5.0"
+
+# AWS ActionMailer SES integration (provides :ses and :ses_v2 delivery methods)
+gem "aws-actionmailer-ses", "~> 1"
 
 # Markdown parsing and HTML sanitization
 gem "commonmarker"

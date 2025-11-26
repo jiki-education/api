@@ -45,23 +45,34 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     get admin_projects_path(title: "Calculator"), headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal 1, json[:results].length
-    assert_equal project1.id, json[:results][0][:id]
+    assert_json_response({
+      results: SerializeAdminProjects.([project1]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1
+      }
+    })
   end
 
   test "GET index supports pagination" do
     Prosopite.finish
-    3.times { create(:project) }
+    project1 = create(:project, title: "AAA Project")
+    project2 = create(:project, title: "BBB Project")
+    create(:project, title: "CCC Project")
 
     Prosopite.scan
     get admin_projects_path(page: 1, per: 2), headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal 2, json[:results].length
-    assert_equal 2, json[:meta][:total_pages]
-    assert_equal 3, json[:meta][:total_count]
+    assert_json_response({
+      results: SerializeAdminProjects.([project1, project2]),
+      meta: {
+        current_page: 1,
+        total_pages: 2,
+        total_count: 3
+      }
+    })
   end
 
   test "GET index returns empty results when no projects exist" do
@@ -80,7 +91,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index does not use user filtering" do
     Prosopite.finish
-    create(:project, title: "Apple Project")
+    project_1 = create(:project, title: "Apple Project")
     project_2 = create(:project, title: "Zebra Project")
 
     # Create a regular user and unlock a project
@@ -91,12 +102,15 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     get admin_projects_path, headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-
     # Admin should see all projects ordered by title (default ordering)
-    assert_equal 2, json[:results].length
-    assert_equal "Apple Project", json[:results][0][:title]
-    assert_equal "Zebra Project", json[:results][1][:title]
+    assert_json_response({
+      results: SerializeAdminProjects.([project_1, project_2]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 2
+      }
+    })
   end
 
   # CREATE tests
@@ -116,11 +130,11 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     end
 
     assert_response :created
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "Calculator", json[:project][:title]
-    assert_equal "calculator", json[:project][:slug]
-    assert_equal "Build a calculator application", json[:project][:description]
-    assert_equal "calculator-project", json[:project][:exercise_slug]
+
+    project = Project.last
+    assert_json_response({
+      project: SerializeAdminProject.(project)
+    })
   end
 
   test "POST create returns validation error for invalid attributes" do
@@ -135,8 +149,12 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     end
 
     assert_response :unprocessable_entity
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "validation_error", json[:error][:type]
+    assert_json_response({
+      error: {
+        type: "validation_error",
+        message: /Validation failed/
+      }
+    })
   end
 
   # SHOW tests
@@ -147,9 +165,9 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     get admin_project_path(project.id), headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "Calculator", json[:project][:title]
-    assert_equal "calculator-project", json[:project][:exercise_slug]
+    assert_json_response({
+      project: SerializeAdminProject.(project)
+    })
   end
 
   test "GET show returns 404 for non-existent project" do
@@ -177,9 +195,11 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     patch admin_project_path(project.id), params: update_params, headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "Updated", json[:project][:title]
-    assert_equal "Updated", project.reload.title
+
+    project.reload
+    assert_json_response({
+      project: SerializeAdminProject.(project)
+    })
   end
 
   test "PATCH update returns validation error for invalid attributes" do
@@ -193,8 +213,12 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     patch admin_project_path(project.id), params: update_params, headers: @headers, as: :json
 
     assert_response :unprocessable_entity
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "validation_error", json[:error][:type]
+    assert_json_response({
+      error: {
+        type: "validation_error",
+        message: /Validation failed/
+      }
+    })
   end
 
   test "PATCH update returns 404 for non-existent project" do

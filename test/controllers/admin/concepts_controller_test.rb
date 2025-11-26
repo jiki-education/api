@@ -45,23 +45,35 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     get admin_concepts_path(title: "String"), headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal 1, json[:results].length
-    assert_equal concept1.id, json[:results][0][:id]
+    assert_json_response({
+      results: SerializeAdminConcepts.([concept1]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1
+      }
+    })
   end
 
   test "GET index supports pagination" do
     Prosopite.finish
-    3.times { create(:concept) }
+    concept1 = create(:concept, title: "Concept 1")
+    concept2 = create(:concept, title: "Concept 2")
+    create(:concept, title: "Concept 3")
 
     Prosopite.scan
     get admin_concepts_path(page: 1, per: 2), headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal 2, json[:results].length
-    assert_equal 2, json[:meta][:total_pages]
-    assert_equal 3, json[:meta][:total_count]
+    # Ordered alphabetically by title
+    assert_json_response({
+      results: SerializeAdminConcepts.([concept1, concept2]),
+      meta: {
+        current_page: 1,
+        total_pages: 2,
+        total_count: 3
+      }
+    })
   end
 
   test "GET index returns empty results when no concepts exist" do
@@ -95,11 +107,11 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     end
 
     assert_response :created
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "Strings", json[:concept][:title]
-    assert_equal "strings", json[:concept][:slug]
-    assert_equal "Learn about strings", json[:concept][:description]
-    assert_equal "# Strings\n\nText content", json[:concept][:content_markdown]
+
+    concept = Concept.last
+    assert_json_response({
+      concept: SerializeAdminConcept.(concept)
+    })
   end
 
   test "POST create with video providers" do
@@ -118,11 +130,11 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     post admin_concepts_path, params: concept_params, headers: @headers, as: :json
 
     assert_response :created
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "youtube", json[:concept][:standard_video_provider]
-    assert_equal "abc123", json[:concept][:standard_video_id]
-    assert_equal "mux", json[:concept][:premium_video_provider]
-    assert_equal "def456", json[:concept][:premium_video_id]
+
+    concept = Concept.last
+    assert_json_response({
+      concept: SerializeAdminConcept.(concept)
+    })
   end
 
   test "POST create returns validation error for invalid attributes" do
@@ -137,8 +149,12 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     end
 
     assert_response :unprocessable_entity
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "validation_error", json[:error][:type]
+    assert_json_response({
+      error: {
+        type: "validation_error",
+        message: /Validation failed/
+      }
+    })
   end
 
   # SHOW tests
@@ -149,9 +165,9 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     get admin_concept_path(concept.id), headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "Strings", json[:concept][:title]
-    assert_equal "# Strings\n\nContent", json[:concept][:content_markdown]
+    assert_json_response({
+      concept: SerializeAdminConcept.(concept)
+    })
   end
 
   test "GET show returns 404 for non-existent concept" do
@@ -179,9 +195,11 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     patch admin_concept_path(concept.id), params: update_params, headers: @headers, as: :json
 
     assert_response :success
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "Updated", json[:concept][:title]
-    assert_equal "Updated", concept.reload.title
+
+    concept.reload
+    assert_json_response({
+      concept: SerializeAdminConcept.(concept)
+    })
   end
 
   test "PATCH update updates markdown and regenerates HTML" do
@@ -210,8 +228,12 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     patch admin_concept_path(concept.id), params: update_params, headers: @headers, as: :json
 
     assert_response :unprocessable_entity
-    json = JSON.parse(response.body, symbolize_names: true)
-    assert_equal "validation_error", json[:error][:type]
+    assert_json_response({
+      error: {
+        type: "validation_error",
+        message: /Validation failed/
+      }
+    })
   end
 
   test "PATCH update returns 404 for non-existent concept" do

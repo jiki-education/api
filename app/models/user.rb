@@ -26,6 +26,9 @@ class User < ApplicationRecord
   validates :locale, presence: true, inclusion: { in: %w[en hu] }
   validates :handle, presence: true, uniqueness: true
 
+  # OAuth users have random passwords, so skip password validation for them
+  validates :password, presence: true, if: -> { new_record? && provider.nil? && encrypted_password.blank? }
+
   # Add custom claims to JWT payload
   # This method is called by Warden::JWTAuth::PayloadUserHelper
   # and merged with the base payload (sub, scp, etc)

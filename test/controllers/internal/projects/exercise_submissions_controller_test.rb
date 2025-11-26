@@ -146,9 +146,12 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
-    assert_equal "file_too_large", json_response["error"]["type"]
-    assert_match(/File 'large.rb' is too large/, json_response["error"]["message"])
+    assert_json_response({
+      error: {
+        type: "file_too_large",
+        message: /File 'large.rb' is too large/
+      }
+    })
   end
 
   test "POST create returns 422 for empty files array" do
@@ -158,8 +161,11 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
       as: :json
 
     assert_response :unprocessable_entity
-    json_response = JSON.parse(response.body)
-    assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_match(/at least one file/i, json_response["error"]["message"])
+    assert_json_response({
+      error: {
+        type: "invalid_submission",
+        message: /at least one file/i
+      }
+    })
   end
 end
