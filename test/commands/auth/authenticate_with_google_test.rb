@@ -79,10 +79,10 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
 
     user = Auth::AuthenticateWithGoogle.('google-token')
 
-    # Handle should be testuser + random number (not sequential)
+    # Handle should be testuser + random hex suffix
     assert user.handle.start_with?('testuser')
     refute_equal 'testuser', user.handle
-    assert_match(/\Atestuser\d+\z/, user.handle)
+    assert_match(/\Atestuser-[a-f0-9]{6}\z/, user.handle)
   end
 
   test "handles email with special characters in handle generation" do
