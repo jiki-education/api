@@ -5,13 +5,12 @@ class User
     initialize_with :email
 
     def call
-      base = email.split('@').first.parameterize
-      handle = base
-      return handle unless User.exists?(handle:)
+      return base unless User.exists?(handle: base)
 
       # Handle collision with random hex suffix
       max_attempts = 100
       attempts = 0
+      handle = nil
       loop do
         attempts += 1
         raise "Failed to generate unique handle after #{max_attempts} attempts" if attempts > max_attempts
@@ -21,5 +20,8 @@ class User
       end
       handle
     end
+
+    memoize
+    def base = email.split('@').first.parameterize
   end
 end
