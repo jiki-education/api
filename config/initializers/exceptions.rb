@@ -9,6 +9,10 @@ class InvalidSNSSignatureError < RuntimeError; end
 class InvalidPolymorphicRecordType < RuntimeError; end
 class InvalidUnsubscribeTokenError < RuntimeError; end
 
+# Image upload errors
+class ImageFileTooLargeError < RuntimeError; end
+class InvalidImageTypeError < RuntimeError; end
+
 # Gemini API errors
 module Gemini
   class Error < RuntimeError; end
