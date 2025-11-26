@@ -146,4 +146,55 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert_equal "validation_error", json["error"]["type"]
     assert json["error"]["errors"]["password"].present?
   end
+
+  test "POST signup auto-generates handle from email when not provided" do
+    assert_difference("User.count", 1) do
+      post user_registration_path, params: {
+        user: {
+          email: "john.doe@example.com",
+          password: "password123"
+        }
+      }, as: :json
+    end
+
+    assert_response :created
+
+    user = User.last
+    assert_equal "john-doe", user.handle
+    assert_nil user.name
+
+    json = response.parsed_body
+    assert_equal "john-doe", json["user"]["handle"]
+  end
+
+  test "POST signup accepts user-provided handle when provided" do
+    post user_registration_path, params: {
+      user: {
+        email: "john.doe@example.com",
+        password: "password123",
+        handle: "custom-handle"
+      }
+    }, as: :json
+
+    assert_response :created
+
+    user = User.last
+    assert_equal "custom-handle", user.handle
+  end
+
+  test "POST signup handles collision by appending random hex suffix" do
+    create(:user, email: "john@other.com", handle: "john-doe")
+
+    post user_registration_path, params: {
+      user: {
+        email: "john.doe@example.com",
+        password: "password123"
+      }
+    }, as: :json
+
+    assert_response :created
+
+    user = User.last
+    assert_match(/\Ajohn-doe-[a-f0-9]{6}\z/, user.handle)
+  end
 end

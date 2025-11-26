@@ -7,6 +7,11 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  def build_resource(hash = {})
+    hash[:handle] = User::GenerateHandle.(hash[:email]) if hash[:handle].blank? && hash[:email].present?
+    super
+  end
+
   private
   def respond_with(resource, _opts = {})
     if resource.persisted?

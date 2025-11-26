@@ -45,6 +45,10 @@ Rails.application.routes.draw do
   namespace :internal do
     resource :me, only: [:show]
 
+    namespace :settings do
+      resource :handle, only: [:update]
+    end
+
     resources :levels, only: [:index]
     resources :user_levels, only: [:index]
 
