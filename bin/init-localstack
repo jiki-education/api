@@ -26,20 +26,28 @@ loop do
 end
 
 # Create S3 buckets
-bucket_name = Jiki.config.s3_bucket_video_production
+buckets = [
+  { name: Jiki.config.s3_bucket_video_production, description: 'Video Production' },
+  { name: Jiki.config.r2_bucket_assets, description: 'Assets (R2)' }
+]
 
-begin
-  # Check if bucket exists
-  Jiki.s3_client.head_bucket(bucket: bucket_name)
-  puts "✓ S3 bucket '#{bucket_name}' already exists"
-rescue Aws::S3::Errors::NotFound
-  # Bucket doesn't exist, create it
-  puts "Creating S3 bucket '#{bucket_name}'..."
-  Jiki.s3_client.create_bucket(bucket: bucket_name)
-  puts "✓ S3 bucket '#{bucket_name}' created"
-rescue StandardError => e
-  puts "✗ Error with S3 bucket '#{bucket_name}': #{e.message}"
-  exit 1
+buckets.each do |bucket_info|
+  bucket_name = bucket_info[:name]
+  description = bucket_info[:description]
+
+  begin
+    # Check if bucket exists
+    Jiki.s3_client.head_bucket(bucket: bucket_name)
+    puts "✓ S3 bucket '#{bucket_name}' (#{description}) already exists"
+  rescue Aws::S3::Errors::NotFound
+    # Bucket doesn't exist, create it
+    puts "Creating S3 bucket '#{bucket_name}' (#{description})..."
+    Jiki.s3_client.create_bucket(bucket: bucket_name)
+    puts "✓ S3 bucket '#{bucket_name}' (#{description}) created"
+  rescue StandardError => e
+    puts "✗ Error with S3 bucket '#{bucket_name}': #{e.message}"
+    exit 1
+  end
 end
 
 puts "✓ LocalStack initialization complete"

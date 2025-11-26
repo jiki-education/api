@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/jiki-education/config.git
-  revision: 29117ef19c7a4903879967ff25728fed7ba6a5b1
+  revision: 4eac340caa8a62ecb1c8e598854795d1dba11525
   branch: main
   specs:
     jiki-config (0.1.0)

@@ -15,7 +15,7 @@ class Images::UploadTest < ActiveSupport::TestCase
     result = Images::Upload.(image_data, filename)
 
     assert_match %r{^test/images/\d+/[\w-]+\.jpg$}, result[:r2_key]
-    assert_match %r{^https://assets\.jiki\.io/test/images/\d+/[\w-]+\.jpg$}, result[:url]
+    assert_equal "#{Jiki.config.assets_cdn_url}/#{result[:r2_key]}", result[:url]
     assert result[:digest].present?
   end
 
@@ -136,6 +136,6 @@ class Images::UploadTest < ActiveSupport::TestCase
     result = Images::Upload.(image_data, filename)
 
     # Verify URL format (actual key will be different due to hash/uuid)
-    assert_match %r{^https://assets\.jiki\.io/test/images/\d+/[\w-]+\.jpg$}, result[:url]
+    assert_equal "#{Jiki.config.assets_cdn_url}/#{result[:r2_key]}", result[:url]
   end
 end
