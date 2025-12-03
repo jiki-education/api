@@ -93,17 +93,17 @@ second_level = Level.second
 if first_level && second_level
   # Create user_level records
   user_level_1 = UserLevel.find_or_create_by!(user: user, level: first_level) do |ul|
-    ul.started_at = 2.days.ago
+    ul.created_at = 2.days.ago
   end
 
   user_level_2 = UserLevel.find_or_create_by!(user: user, level: second_level) do |ul|
-    ul.started_at = 1.day.ago
+    ul.created_at = 1.day.ago
   end
 
   # Create user_lesson records for first level (mix of completed and started)
   first_level.lessons.limit(3).each_with_index do |lesson, index|
     UserLesson.find_or_create_by!(user: user, lesson: lesson) do |ul|
-      ul.started_at = 2.days.ago - index.hours
+      ul.created_at = 2.days.ago - index.hours
       ul.completed_at = index < 2 ? 2.days.ago - index.hours + 30.minutes : nil
     end
   end
@@ -111,7 +111,7 @@ if first_level && second_level
   # Create user_lesson records for second level (only started)
   second_level.lessons.limit(2).each_with_index do |lesson, index|
     UserLesson.find_or_create_by!(user: user, lesson: lesson) do |ul|
-      ul.started_at = 1.day.ago - index.hours
+      ul.created_at = 1.day.ago - index.hours
     end
   end
 
