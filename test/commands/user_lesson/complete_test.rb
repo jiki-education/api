@@ -3,8 +3,10 @@ require "test_helper"
 class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "completes existing user_lesson" do
     user = create(:user)
-    lesson = create(:lesson)
-    user_lesson = create(:user_lesson, user: user, lesson: lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    user_lesson = create(:user_lesson, user:, lesson:)
 
     result = UserLesson::Complete.(user, lesson)
 
@@ -12,22 +14,21 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert result.completed_at.present?
   end
 
-  test "creates and completes user_lesson if it doesn't exist" do
+  test "raises error if user_lesson doesn't exist" do
     user = create(:user)
     lesson = create(:lesson)
 
-    user_lesson = UserLesson::Complete.(user, lesson)
-
-    assert user_lesson.persisted?
-    assert_equal user.id, user_lesson.user_id
-    assert_equal lesson.id, user_lesson.lesson_id
-    assert user_lesson.started_at.present?
-    assert user_lesson.completed_at.present?
+    assert_raises(UserLessonNotFoundError) do
+      UserLesson::Complete.(user, lesson)
+    end
   end
 
   test "sets completed_at to current time" do
     user = create(:user)
-    lesson = create(:lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     time_before = Time.current
     user_lesson = UserLesson::Complete.(user, lesson)
@@ -39,8 +40,10 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "is idempotent when completing already completed lesson" do
     user = create(:user)
-    lesson = create(:lesson)
-    user_lesson = create(:user_lesson, user: user, lesson: lesson, completed_at: 1.day.ago)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    user_lesson = create(:user_lesson, user:, lesson:, completed_at: 1.day.ago)
     old_completed_at = user_lesson.completed_at
 
     result = UserLesson::Complete.(user, lesson)
@@ -49,19 +52,24 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal old_completed_at.to_i, result.completed_at.to_i
   end
 
-  test "delegates to UserLesson::FindOrCreate for find or create logic" do
+  test "delegates to UserLesson::Find for lookup" do
     user = create(:user)
-    lesson = create(:lesson)
-    user_lesson = create(:user_lesson, user: user, lesson: lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    user_lesson = create(:user_lesson, user:, lesson:)
 
-    UserLesson::FindOrCreate.expects(:call).with(user, lesson).returns(user_lesson)
+    UserLesson::Find.expects(:call).with(user, lesson).returns(user_lesson)
 
     UserLesson::Complete.(user, lesson)
   end
 
   test "returns the completed user_lesson" do
     user = create(:user)
-    lesson = create(:lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     result = UserLesson::Complete.(user, lesson)
 
@@ -69,45 +77,52 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert result.completed_at.present?
   end
 
-  test "preserves started_at when completing" do
+  test "preserves created_at when completing" do
     user = create(:user)
-    lesson = create(:lesson)
-    started_time = 2.days.ago
-    create(:user_lesson, user: user, lesson: lesson, started_at: started_time)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    created_time = 2.days.ago
+    user_lesson = create(:user_lesson, user:, lesson:)
+    user_lesson.update_column(:created_at, created_time)
 
     result = UserLesson::Complete.(user, lesson)
 
-    assert_equal started_time.to_i, result.started_at.to_i
+    assert_equal created_time.to_i, result.created_at.to_i
   end
 
   test "clears current_user_lesson on user_level when completing" do
     user = create(:user)
-    lesson = create(:lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    user_level = create(:user_level, user:, level:)
+    user_lesson = create(:user_lesson, user:, lesson:)
+    user_level.update!(current_user_lesson: user_lesson)
 
     UserLesson::Complete.(user, lesson)
 
-    user_level = UserLevel.find_by(user: user, level: lesson.level)
-    assert_nil user_level.current_user_lesson_id
+    assert_nil user_level.reload.current_user_lesson_id
   end
 
-  test "creates user_level if it doesn't exist when completing" do
+  test "raises error if user_level doesn't exist" do
     user = create(:user)
-    lesson = create(:lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_lesson, user:, lesson:)
 
-    UserLesson::Complete.(user, lesson)
-
-    user_level = UserLevel.find_by(user: user, level: lesson.level)
-    assert user_level.present?
-    assert_nil user_level.current_user_lesson_id
+    assert_raises(UserLevelNotFoundError) do
+      UserLesson::Complete.(user, lesson)
+    end
   end
 
   test "clears existing current_user_lesson on user_level" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level: level, slug: "first-lesson")
-    lesson2 = create(:lesson, level: level, slug: "second-lesson")
-    user_lesson1 = create(:user_lesson, user: user, lesson: lesson1)
-    user_level = create(:user_level, user: user, level: level, current_user_lesson: user_lesson1)
+    lesson1 = create(:lesson, level:, slug: "first-lesson")
+    lesson2 = create(:lesson, level:, slug: "second-lesson")
+    user_lesson1 = create(:user_lesson, user:, lesson: lesson1)
+    create(:user_lesson, user:, lesson: lesson2)
+    user_level = create(:user_level, user:, level:, current_user_lesson: user_lesson1)
 
     UserLesson::Complete.(user, lesson2)
 
@@ -117,9 +132,12 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "unlocks concept when lesson has unlocked_concept" do
     user = create(:user)
+    level = create(:level)
     concept = create(:concept)
-    lesson = create(:lesson)
+    lesson = create(:lesson, level:)
     concept.update!(unlocked_by_lesson: lesson)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     assert_difference -> { user.data.reload.unlocked_concept_ids.length }, 1 do
       UserLesson::Complete.(user, lesson)
@@ -130,7 +148,10 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "does not unlock concept when lesson has no unlocked_concept" do
     user = create(:user)
-    lesson = create(:lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     assert_no_difference -> { user.data.reload.unlocked_concept_ids.length } do
       UserLesson::Complete.(user, lesson)
@@ -139,9 +160,12 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "concept unlocking is idempotent" do
     user = create(:user)
+    level = create(:level)
     concept = create(:concept)
-    lesson = create(:lesson)
+    lesson = create(:lesson, level:)
     concept.update!(unlocked_by_lesson: lesson)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     # Complete lesson twice
     UserLesson::Complete.(user, lesson)
@@ -156,9 +180,12 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "unlocks project when lesson has unlocked_project" do
     user = create(:user)
+    level = create(:level)
     project = create(:project)
-    lesson = create(:lesson)
+    lesson = create(:lesson, level:)
     project.update!(unlocked_by_lesson: lesson)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     assert_difference -> { user.user_projects.count }, 1 do
       UserLesson::Complete.(user, lesson)
@@ -169,7 +196,10 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "does not unlock project when lesson has no unlocked_project" do
     user = create(:user)
-    lesson = create(:lesson)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     assert_no_difference -> { user.user_projects.count } do
       UserLesson::Complete.(user, lesson)
@@ -178,9 +208,12 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "project unlocking is idempotent" do
     user = create(:user)
+    level = create(:level)
     project = create(:project)
-    lesson = create(:lesson)
+    lesson = create(:lesson, level:)
     project.update!(unlocked_by_lesson: lesson)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     # Complete lesson twice
     UserLesson::Complete.(user, lesson)

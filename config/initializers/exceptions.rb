@@ -23,3 +23,10 @@ end
 
 # Google OAuth errors
 class InvalidGoogleTokenError < RuntimeError; end
+
+# User progression errors
+class UserLevelNotFoundError < RuntimeError; end
+class UserLessonNotFoundError < RuntimeError; end
+class LessonInProgressError < RuntimeError; end
+class LevelNotCompletedError < RuntimeError; end
+class LessonIncompleteError < RuntimeError; end

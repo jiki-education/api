@@ -1,9 +1,12 @@
 require "test_helper"
 
 class UserLevel::CompleteTest < ActiveSupport::TestCase
-  test "finds or creates user_level" do
+  test "completes existing user_level" do
     user = create(:user)
     level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     result = UserLevel::Complete.(user, level)
 
@@ -15,19 +18,23 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "returns existing user_level if it exists" do
     user = create(:user)
     level = create(:level)
+    lesson = create(:lesson, level:)
     user_level = create(:user_level, user: user, level: level)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     result = UserLevel::Complete.(user, level)
 
     assert_equal user_level.id, result.id
   end
 
-  test "delegates to UserLevel::FindOrCreate for find or create logic" do
+  test "delegates to UserLevel::Find for lookup" do
     user = create(:user)
     level = create(:level)
+    lesson = create(:lesson, level:)
     user_level = create(:user_level, user: user, level: level)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
-    UserLevel::FindOrCreate.expects(:call).with(user, level).returns(user_level)
+    UserLevel::Find.expects(:call).with(user, level).returns(user_level)
 
     UserLevel::Complete.(user, level)
   end
@@ -35,6 +42,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "returns the user_level" do
     user = create(:user)
     level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     result = UserLevel::Complete.(user, level)
 
@@ -44,6 +54,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "sets completed_at to current time" do
     user = create(:user)
     level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     time_before = Time.current
     user_level = UserLevel::Complete.(user, level)
@@ -56,7 +69,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "is idempotent when completing already completed level" do
     user = create(:user)
     level = create(:level)
+    lesson = create(:lesson, level:)
     user_level = create(:user_level, user: user, level: level, completed_at: 1.day.ago)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
     old_completed_at = user_level.completed_at
 
     result = UserLevel::Complete.(user, level)
@@ -65,33 +80,42 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     assert_equal old_completed_at.to_i, result.completed_at.to_i
   end
 
-  test "preserves started_at when completing" do
+  test "preserves created_at when completing" do
     user = create(:user)
     level = create(:level)
-    started_time = 2.days.ago
-    create(:user_level, user: user, level: level, started_at: started_time)
+    lesson = create(:lesson, level:)
+    created_time = 2.days.ago
+    user_level = create(:user_level, user:, level:)
+    user_level.update_column(:created_at, created_time)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     result = UserLevel::Complete.(user, level)
 
-    assert_equal started_time.to_i, result.started_at.to_i
+    assert_equal created_time.to_i, result.created_at.to_i
   end
 
   test "creates user_level for next level when next level exists" do
     user = create(:user)
     level1 = create(:level, position: 1)
     level2 = create(:level, position: 2)
+    lesson = create(:lesson, level: level1)
+    create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     UserLevel::Complete.(user, level1)
 
     next_user_level = UserLevel.find_by(user: user, level: level2)
     refute_nil next_user_level
-    refute_nil next_user_level.started_at
+    refute_nil next_user_level.created_at
     assert_nil next_user_level.completed_at
   end
 
   test "does not create next user_level when no next level exists" do
     user = create(:user)
     level = create(:level, position: 1)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     UserLevel::Complete.(user, level)
 
@@ -102,6 +126,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level, position: 1)
     level5 = create(:level, position: 5)
+    lesson = create(:lesson, level: level1)
+    create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     UserLevel::Complete.(user, level1)
 
@@ -114,22 +141,27 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level, position: 1)
     level2 = create(:level, position: 2)
+    lesson = create(:lesson, level: level1)
+    user_level = create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
     # Stub to raise an error during next level creation
-    UserLevel::FindOrCreate.stubs(:call).with(user, level1).returns(create(:user_level, user: user, level: level1))
-    UserLevel::FindOrCreate.stubs(:call).with(user, level2).raises(ActiveRecord::RecordInvalid)
+    UserLevel::Start.stubs(:call).with(user, level2).raises(ActiveRecord::RecordInvalid)
 
     assert_raises(ActiveRecord::RecordInvalid) do
       UserLevel::Complete.(user, level1)
     end
 
     # The completion should be rolled back
-    assert_nil UserLevel.find_by(user: user, level: level1)&.completed_at
+    assert_nil user_level.reload.completed_at
   end
 
   test "sends completion email when template exists" do
     user = create(:user, locale: "en")
     level = create(:level, slug: "level-1")
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
     create(:email_template, slug: "level-1", locale: "en")
 
     assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
@@ -140,6 +172,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "does not send email when template does not exist" do
     user = create(:user, locale: "en")
     level = create(:level, slug: "level-2")
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
     # No template created for level-2
 
     assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
@@ -163,6 +198,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "marks email as skipped when no template exists" do
     user = create(:user, locale: "en")
     level = create(:level, slug: "level-2")
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
     # No template for level-2
 
     user_level = UserLevel::Complete.(user, level)
@@ -173,6 +211,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user, locale: "en")
     level1 = create(:level, position: 1, slug: "level-1")
     level2 = create(:level, position: 2)
+    lesson = create(:lesson, level: level1)
+    create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson:, completed_at: Time.current)
     create(:email_template, slug: "level-1", locale: "en")
 
     # First completion

@@ -50,7 +50,11 @@ Rails.application.routes.draw do
     end
 
     resources :levels, only: [:index]
-    resources :user_levels, only: [:index]
+    resources :user_levels, only: [:index], param: :level_slug do
+      member do
+        patch :complete
+      end
+    end
 
     # Always have the param as lesson slug - auto-prefixed in the second
     resources :lessons, only: [:show], param: :lesson_slug

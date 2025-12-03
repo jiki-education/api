@@ -24,8 +24,8 @@ class UserLesson::Complete
   end
 
   memoize
-  def user_lesson = UserLesson::FindOrCreate.(user, lesson)
+  def user_lesson = UserLesson::Find.(user, lesson)
 
   memoize
-  def user_level = UserLevel::FindOrCreate.(user, lesson.level)
+  def user_level = UserLevel::Find.(user, lesson.level)
 end

@@ -11,7 +11,6 @@ class UserLevel < ApplicationRecord
     inverse_of: :current_user_level
 
   validates :user_id, uniqueness: { scope: :level_id }
-  validates :started_at, presence: true
 
   # Always send emails for level completion (no specific preference key)
   def email_communication_preferences_key
