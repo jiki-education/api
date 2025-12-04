@@ -6,17 +6,15 @@ class UserLesson::Start
   def call
     validate_can_start_lesson!
 
-    user_lesson = UserLesson.find_create_or_find_by!(user:, lesson:)
-
-    # Only update tracking pointers on first creation
-    if user_lesson.just_created?
-      ActiveRecord::Base.transaction do
-        user_level.update!(current_user_lesson: user_lesson)
-        user.update!(current_user_level: user_level)
+    ActiveRecord::Base.transaction do
+      UserLesson.find_create_or_find_by!(user:, lesson:).tap do |user_lesson|
+        # Only update tracking pointers on first creation
+        if user_lesson.just_created?
+          user_level.update!(current_user_lesson: user_lesson)
+          user.update!(current_user_level: user_level)
+        end
       end
     end
-
-    user_lesson
   end
 
   private

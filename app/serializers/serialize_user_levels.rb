@@ -9,11 +9,9 @@ class SerializeUserLevels
 
     # Serialize each level with its lessons
     grouped.map do |level_slug, rows|
-      # Get the user_level completion status from the first row (same for all lessons in level)
-      first_row = rows.first
       {
         level_slug: level_slug,
-        completed_at: first_row[:user_level_completed_at],
+        status: user_level_status(level_slug),
         user_lessons: rows.map do |row|
           {
             lesson_slug: row[:lesson_slug],
@@ -25,6 +23,13 @@ class SerializeUserLevels
   end
 
   private
+  def user_level_status(level_slug)
+    @user_level_statuses ||= {}
+    @user_level_statuses[level_slug] ||= results.find do |r|
+      r[:level_slug] == level_slug
+    end[:user_level_completed_at] ? "completed" : "started"
+  end
+
   memoize
   def results
     results = user_levels.

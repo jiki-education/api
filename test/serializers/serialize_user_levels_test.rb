@@ -10,7 +10,7 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     lesson2 = create(:lesson, level: level1, slug: "lesson-2", position: 2)
     lesson3 = create(:lesson, level: level2, slug: "lesson-3", position: 1)
 
-    create(:user_level, user: user, level: level1)
+    create(:user_level, user: user, level: level1, completed_at: Time.current)
     create(:user_level, user: user, level: level2)
 
     create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current)
@@ -20,6 +20,7 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     expected = [
       {
         level_slug: "basics",
+        status: "completed",
         user_lessons: [
           { lesson_slug: "lesson-1", status: "completed" },
           { lesson_slug: "lesson-2", status: "started" }
@@ -27,6 +28,7 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
       },
       {
         level_slug: "advanced",
+        status: "started",
         user_lessons: [
           { lesson_slug: "lesson-3", status: "completed" }
         ]
@@ -70,9 +72,9 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     create(:user_lesson, user: user, lesson: lesson3)
 
     expected = [
-      { level_slug: "level-a", user_lessons: [{ lesson_slug: "lesson-a", status: "started" }] },
-      { level_slug: "level-b", user_lessons: [{ lesson_slug: "lesson-b", status: "started" }] },
-      { level_slug: "level-c", user_lessons: [{ lesson_slug: "lesson-c", status: "started" }] }
+      { level_slug: "level-a", status: "started", user_lessons: [{ lesson_slug: "lesson-a", status: "started" }] },
+      { level_slug: "level-b", status: "started", user_lessons: [{ lesson_slug: "lesson-b", status: "started" }] },
+      { level_slug: "level-c", status: "started", user_lessons: [{ lesson_slug: "lesson-c", status: "started" }] }
     ]
 
     assert_equal(expected, SerializeUserLevels.(user.user_levels))
@@ -94,6 +96,7 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     expected = [
       {
         level_slug: "basics",
+        status: "started",
         user_lessons: [
           { lesson_slug: "lesson-a", status: "started" },
           { lesson_slug: "lesson-b", status: "started" },
