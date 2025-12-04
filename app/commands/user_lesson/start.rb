@@ -4,9 +4,9 @@ class UserLesson::Start
   initialize_with :user, :lesson
 
   def call
-    validate_can_start_lesson!
-
     ActiveRecord::Base.transaction do
+      validate_can_start_lesson!
+
       UserLesson.find_create_or_find_by!(user:, lesson:).tap do |user_lesson|
         # Only update tracking pointers on first creation
         if user_lesson.just_created?

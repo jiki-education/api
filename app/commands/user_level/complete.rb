@@ -30,12 +30,13 @@ class UserLevel::Complete
 
   private
   def validate_all_lessons_complete!
-    incomplete_lessons = level.lessons.left_joins(:user_lessons).
-      where('user_lessons.user_id IS NULL OR (user_lessons.user_id = ? AND user_lessons.completed_at IS NULL)', user.id)
+    total_lessons = level.lessons.count
+    completed_lessons = UserLesson.where(user: user, lesson: level.lessons).
+      where.not(completed_at: nil).count
+    return if total_lessons == completed_lessons
 
-    return unless incomplete_lessons.exists?
-
-    raise LessonIncompleteError, "Cannot complete level: #{incomplete_lessons.count} lesson(s) incomplete"
+    incomplete_count = total_lessons - completed_lessons
+    raise LessonIncompleteError, "Cannot complete level: #{incomplete_count} lesson(s) incomplete"
   end
 
   def create_next_user_level!
