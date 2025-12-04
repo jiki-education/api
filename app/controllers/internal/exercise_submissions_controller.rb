@@ -5,10 +5,13 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
   rescue_from FileTooLargeError, with: :render_file_too_large_error
   rescue_from TooManyFilesError, with: :render_too_many_files_error
   rescue_from InvalidSubmissionError, with: :render_invalid_submission_error
+  rescue_from UserLevelNotFoundError, with: :render_level_not_found_error
+  rescue_from LessonInProgressError, with: :render_lesson_in_progress_error
+  rescue_from LevelNotCompletedError, with: :render_level_not_completed_error
 
   def create
-    # Find or create UserLesson for current user and lesson
-    user_lesson = UserLesson::FindOrCreate.(current_user, @lesson)
+    # Start lesson for current user (idempotent if already started)
+    user_lesson = UserLesson::Start.(current_user, @lesson)
 
     # Create submission with UserLesson as context
     ExerciseSubmission::Create.(
@@ -58,5 +61,32 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
         message: exception.message
       }
     }, status: :unprocessable_entity
+  end
+
+  def render_level_not_found_error(exception)
+    render json: {
+      error: {
+        type: "level_not_found",
+        message: exception.message
+      }
+    }, status: :forbidden
+  end
+
+  def render_lesson_in_progress_error(exception)
+    render json: {
+      error: {
+        type: "lesson_in_progress",
+        message: exception.message
+      }
+    }, status: :forbidden
+  end
+
+  def render_level_not_completed_error(exception)
+    render json: {
+      error: {
+        type: "level_not_completed",
+        message: exception.message
+      }
+    }, status: :forbidden
   end
 end

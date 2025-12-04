@@ -11,6 +11,7 @@ class SerializeUserLevels
     grouped.map do |level_slug, rows|
       {
         level_slug: level_slug,
+        status: user_level_status(level_slug),
         user_lessons: rows.map do |row|
           {
             lesson_slug: row[:lesson_slug],
@@ -22,6 +23,13 @@ class SerializeUserLevels
   end
 
   private
+  def user_level_status(level_slug)
+    @user_level_statuses ||= {}
+    @user_level_statuses[level_slug] ||= results.find do |r|
+      r[:level_slug] == level_slug
+    end[:user_level_completed_at] ? "completed" : "started"
+  end
+
   memoize
   def results
     results = user_levels.
@@ -32,15 +40,17 @@ class SerializeUserLevels
       pluck(
         "levels.slug",
         "lessons.slug",
-        "user_lessons.completed_at"
+        "user_lessons.completed_at",
+        "user_levels.completed_at"
       )
 
     # Map pluck results (arrays) to hashes for easier access
-    results.map do |level_slug, lesson_slug, completed_at|
+    results.map do |level_slug, lesson_slug, lesson_completed_at, user_level_completed_at|
       {
         level_slug: level_slug,
         lesson_slug: lesson_slug,
-        completed_at: completed_at
+        completed_at: lesson_completed_at,
+        user_level_completed_at: user_level_completed_at
       }
     end
   end

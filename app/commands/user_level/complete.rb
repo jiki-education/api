@@ -8,8 +8,14 @@ class UserLevel::Complete
       # Guard: if already completed, return early (idempotent)
       return user_level if user_level.completed_at.present?
 
+      validate_all_lessons_complete!
+
       # with_lock already provides transactional semantics, no need for nested transaction
-      user_level.update!(completed_at: Time.current)
+      user_level.update!(
+        completed_at: Time.current,
+        current_user_lesson: nil
+      )
+
       create_next_user_level!
 
       # Send completion email asynchronously after transaction completes
@@ -20,14 +26,24 @@ class UserLevel::Complete
   end
 
   memoize
-  def user_level = UserLevel::FindOrCreate.(user, level)
+  def user_level = UserLevel::Find.(user, level)
 
   private
+  def validate_all_lessons_complete!
+    total_lessons = level.lessons.count
+    completed_lessons = UserLesson.where(user: user, lesson: level.lessons).
+      where.not(completed_at: nil).count
+    return if total_lessons == completed_lessons
+
+    incomplete_count = total_lessons - completed_lessons
+    raise LessonIncompleteError, "Cannot complete level: #{incomplete_count} lesson(s) incomplete"
+  end
+
   def create_next_user_level!
     next_level = Level::FindNext.(level)
     return unless next_level
 
-    UserLevel::FindOrCreate.(user, next_level)
+    UserLevel::Start.(user, next_level)
   end
 
   def send_completion_email!(user_level)

@@ -123,4 +123,21 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
       user_levels: SerializeUserLevels.(@current_user.user_levels)
     })
   end
+
+  # Error handler tests
+  test "PATCH complete returns 422 when lessons are incomplete" do
+    level = create(:level, slug: "test-level")
+    lesson1 = create(:lesson, level:)
+    create(:lesson, level:) # lesson2 not completed
+    create(:lesson, level:) # lesson3 not completed
+    create(:user_level, user: @current_user, level:)
+    create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
+
+    patch complete_internal_user_level_path(level_slug: level.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "Cannot complete level: 2 lesson(s) incomplete", response.parsed_body["error"]
+  end
 end

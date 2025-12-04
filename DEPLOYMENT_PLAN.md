@@ -33,7 +33,7 @@ Internet → Cloudflare (HTTPS) → ALB (port 443) → ECS Tasks (port 3000)
 - **Cache**: Memory store (no Redis)
 - **Jobs**: Solid Queue (database-backed, no Redis/Sidekiq)
 
-**Monthly Cost**: ~$70-100 (startup configuration)
+**Monthly Cost**: ~$95-134 (startup configuration)
 
 ---
 
@@ -154,7 +154,12 @@ All infrastructure is created and configured via Terraform:
 ### Monitoring
 - ✅ **CloudWatch Logs**: 7-day retention for ECS services
 - ✅ **CloudWatch Metrics**: SES email tracking
-- ⚠️ **Alarms**: Not yet configured (TODO)
+- ✅ **CloudWatch Alarms**: 3 critical alarms
+  - ALB no healthy targets (site down)
+  - RDS high CPU (database overloaded)
+  - Worker service no tasks (jobs stopped)
+- ✅ **CloudTrail**: Audit logging (management events + DynamoDB config)
+- ✅ **SNS Alerts**: Email + SMS notifications configured
 
 ---
 
@@ -464,16 +469,13 @@ terraform/terraform/
 - [x] Enable ALB deletion protection
 - [x] Enable RDS deletion protection
 - [x] Rotate database password from temporary value
+- [x] **Set up AWS CloudTrail** - ✅ Complete
+- [x] **Set up CloudWatch alarms** - ✅ Complete (3 critical alarms)
+- [x] **Configure SNS for alert notifications** - ✅ Complete
+- [ ] **Confirm SNS email subscription** (check email inbox)
+- [ ] **Subscribe SMS alerts** (see command above with your phone number)
 - [ ] Review all security group rules for least privilege
-- [ ] Set up CloudWatch alarms:
-  - CPU/memory high usage (ECS + RDS)
-  - 5xx error rate spike
-  - Database connection pool exhaustion
-  - Solid Queue job failures
-- [ ] Configure SNS for alert notifications
-- [ ] **Set up AWS CloudTrail** for audit logging (see CloudTrail section below)
 - [ ] Review IAM policies for least privilege
-- [ ] **Set up AWS Config** for compliance monitoring (see AWS Config section below)
 
 ### 3. Scalability (Before High Traffic)
 
@@ -520,12 +522,14 @@ terraform/terraform/
 | ECS Web | 1 task (512/1024) | ~$15 |
 | ECS Worker | 1 task (256/512) | ~$8 |
 | ALB | Standard | ~$20 |
-| S3 | Active Storage + Video | ~$5-10 |
+| S3 | Active Storage + Video + CloudTrail | ~$5-12 |
 | ECR | Image storage | ~$1 |
-| CloudWatch | 7-day logs | ~$3 |
+| CloudWatch | 7-day logs + 3 alarms | ~$3.30 |
+| CloudTrail | Audit logging | ~$2 |
 | DynamoDB | Config table | ~$0.01 |
 | SES | 3 domains + managed IPs | ~$20-30 |
-| **Total** | | **$92-127/month** |
+| SNS | Email + SMS (optional) | ~$0 (+$0.65/100 texts) |
+| **Total** | | **$95-134/month** |
 
 ### Production (Scaled Configuration)
 
@@ -550,12 +554,20 @@ terraform/terraform/
 
 ---
 
-## AWS CloudTrail & AWS Config
+## AWS CloudTrail & CloudWatch Alarms
 
-### AWS CloudTrail
+### ✅ AWS CloudTrail (DEPLOYED)
+
+**Deployed Configuration:**
+- **S3 Bucket**: `jiki-cloudtrail-logs`
+- **Trail**: `jiki-production-trail` (multi-region, log validation enabled)
+- **Events Logged**: All management events + DynamoDB `config` table data events
+- **Lifecycle**: 90 days → Glacier, 365 days → delete
+- **Cost**: ~$2.50/month
+- **File**: `../terraform/terraform/aws/cloudtrail.tf`
 
 **What it is:**
-AWS CloudTrail is an audit logging service that records all API calls made to AWS services in your account. It's essential for security, compliance, and operational troubleshooting.
+AWS CloudTrail is an audit logging service that records all AWS API calls made to AWS services in your account. It's essential for security, compliance, and operational troubleshooting.
 
 **Why you need it:**
 - **Security**: Detect unauthorized access attempts, unusual API activity, or compromised credentials
@@ -675,7 +687,51 @@ Once enabled, set up CloudWatch alarms for:
 
 ---
 
-### AWS Config
+### ✅ CloudWatch Alarms (DEPLOYED)
+
+**Deployed Configuration:**
+- **SNS Topic**: `jiki-critical-alerts`
+- **Email**: Configured (requires confirmation)
+- **SMS**: Manual subscription with command below
+- **Cost**: ~$0.30/month + SMS costs
+- **File**: `../terraform/terraform/aws/cloudwatch_alarms.tf`
+
+**3 Critical Alarms:**
+
+1. **jiki-api-no-healthy-targets**
+   - Metric: `HealthyHostCount` < 1 for 2 minutes
+   - Severity: CRITICAL
+   - Means: API is completely down (no healthy ECS tasks)
+
+2. **jiki-rds-high-cpu**
+   - Metric: `CPUUtilization` > 90% for 15 minutes
+   - Severity: CRITICAL
+   - Means: Database is overloaded, queries are slow
+
+3. **jiki-ecs-worker-no-running-tasks**
+   - Metric: `RunningTaskCount` < 1 for 2 minutes
+   - Severity: CRITICAL
+   - Means: Background job processing stopped
+
+All alarms notify on both alarm and OK (recovery) states.
+
+**Add SMS Alerts:**
+```bash
+# After terraform apply, get the SNS topic ARN
+cd ../terraform/terraform
+terraform output critical_alerts_topic_arn
+
+# Subscribe your phone
+aws sns subscribe \
+  --topic-arn <arn-from-output> \
+  --protocol sms \
+  --notification-endpoint +447743078349 \
+  --region eu-west-1 --profile jiki
+```
+
+---
+
+### ⏸️ AWS Config (SKIPPED FOR NOW)
 
 **What it is:**
 AWS Config continuously monitors and records your AWS resource configurations. It tracks changes over time and evaluates compliance against rules.

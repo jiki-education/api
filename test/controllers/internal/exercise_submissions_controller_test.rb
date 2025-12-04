@@ -3,7 +3,9 @@ require "test_helper"
 class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @lesson = create(:lesson)
+    @level = create(:level)
+    @lesson = create(:lesson, level: @level)
+    @user_level = create(:user_level, user: @current_user, level: @level)
   end
 
   guard_incorrect_token! :internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :post
@@ -25,10 +27,10 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     assert_json_response({})
   end
 
-  test "POST create finds or creates UserLesson" do
+  test "POST create starts UserLesson" do
     files = [{ filename: "solution.rb", code: "# code" }]
 
-    UserLesson::FindOrCreate.expects(:call).with(
+    UserLesson::Start.expects(:call).with(
       @current_user,
       @lesson
     ).returns(create(:user_lesson))
@@ -45,7 +47,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
     files = [{ filename: "test.rb", code: "puts 'test'" }]
 
-    UserLesson::FindOrCreate.stubs(:call).returns(user_lesson)
+    UserLesson::Start.stubs(:call).returns(user_lesson)
 
     ExerciseSubmission::Create.expects(:call).with do |ul, file_params|
       ul == user_lesson &&

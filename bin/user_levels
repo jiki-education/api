@@ -1,0 +1,206 @@
+#!/usr/bin/env ruby
+
+require_relative '../config/environment'
+
+TARGET_USER_EMAIL = 'demaaron88@gmail.com'
+
+def show_usage
+  puts <<~USAGE
+    Usage: bin/user_levels <command> [options] (Target: #{TARGET_USER_EMAIL})
+    
+    Commands:
+      list, complete_level <id>, complete_lessons <id>, complete_lesson <slug>
+      complete_all, reset_level <id>, reset_lesson <slug>, reset_all
+      delete_all, create_all, create_levels
+  USAGE
+end
+
+def get_target_user
+  User.find_by!(email: TARGET_USER_EMAIL)
+rescue ActiveRecord::RecordNotFound
+  puts "ERROR: User #{TARGET_USER_EMAIL} not found"
+  exit 1
+end
+
+def list_user_levels
+  user = get_target_user
+  user_levels = user.user_levels.includes(:level, level: :lessons)
+  
+  return puts "No user levels found" if user_levels.empty?
+  
+  user_levels.each do |ul|
+    status = ul.completed_at ? "COMPLETED" : "Not completed"
+    puts "UserLevel ##{ul.id}: #{ul.level.title} - #{status}"
+    
+    ul.level.lessons.order(:position).each do |lesson|
+      user_lesson = UserLesson.find_by(user: user, lesson: lesson)
+      status = if user_lesson&.completed_at
+        "[DONE] #{user_lesson.completed_at.strftime('%m-%d %H:%M')}"
+      else
+        user_lesson ? "[STARTED]" : "[NOT STARTED]"
+      end
+      puts "  #{status} #{lesson.slug}"
+    end
+    
+    completed = UserLesson.joins(:lesson).where(user: user, lesson: ul.level.lessons).where.not(completed_at: nil).count
+    puts "  #{completed}/#{ul.level.lessons.count} lessons completed\n"
+  end
+end
+
+def find_user_level(user, id)
+  user.user_levels.find(id)
+rescue ActiveRecord::RecordNotFound
+  puts "ERROR: UserLevel #{id} not found"
+  exit 1
+end
+
+def complete_user_level(id)
+  user = get_target_user
+  ul = find_user_level(user, id)
+  count = UserLesson.where(user: user, lesson: ul.level.lessons).update_all(completed_at: Time.current)
+  puts "Completed #{count} lessons for UserLevel ##{ul.id}"
+end
+
+def complete_lessons_only(id)
+  user = get_target_user
+  ul = find_user_level(user, id)
+  
+  count = ul.level.lessons.count { |lesson|
+    UserLesson.find_or_create_by(user: user, lesson: lesson).update!(completed_at: Time.current)
+  }
+  ul.update!(completed_at: nil)
+  
+  puts "Completed #{count} lessons for UserLevel ##{ul.id} (level remains incomplete)"
+end
+
+def complete_lesson(slug)
+  user = get_target_user
+  lesson = Lesson.find_by!(slug: slug)
+  UserLesson.find_or_create_by(user: user, lesson: lesson).update!(completed_at: Time.current)
+  puts "Completed lesson #{slug}"
+rescue ActiveRecord::RecordNotFound
+  puts "ERROR: Lesson '#{slug}' not found"
+end
+
+def complete_all_user_levels
+  user = get_target_user
+  user.user_levels.includes(:level, level: :lessons).each do |ul|
+    count = UserLesson.where(user: user, lesson: ul.level.lessons).update_all(completed_at: Time.current)
+    puts "Completed #{count} lessons for UserLevel ##{ul.id}"
+  end
+end
+
+def reset_user_level(id)
+  user = get_target_user
+  ul = find_user_level(user, id)
+  count = UserLesson.where(user: user, lesson: ul.level.lessons).update_all(completed_at: nil)
+  ul.update!(completed_at: nil)
+  puts "Reset #{count} lessons for UserLevel ##{ul.id}"
+end
+
+def reset_lesson(slug)
+  user = get_target_user
+  lesson = Lesson.find_by!(slug: slug)
+  user_lesson = UserLesson.find_by(user: user, lesson: lesson)
+  
+  if user_lesson
+    user_lesson.update!(completed_at: nil)
+    puts "Reset lesson #{slug}"
+  else
+    puts "No user_lesson found for #{slug}"
+  end
+rescue ActiveRecord::RecordNotFound
+  puts "ERROR: Lesson '#{slug}' not found"
+end
+
+def reset_all_user_levels
+  user = get_target_user
+  user.user_levels.includes(:level, level: :lessons).each do |ul|
+    count = UserLesson.where(user: user, lesson: ul.level.lessons).count
+    UserLesson.where(user: user, lesson: ul.level.lessons).destroy_all
+    ul.update!(completed_at: nil)
+    puts "Reset #{count} lessons for UserLevel ##{ul.id}"
+  end
+end
+
+def delete_all_data
+  user = get_target_user
+  print "Delete ALL data for #{user.email}? (y/N): "
+  return puts "Cancelled" unless STDIN.gets.chomp.downcase.start_with?('y')
+  
+  lessons_count = user.user_lessons.count
+  levels_count = user.user_levels.count
+  user.user_lessons.destroy_all
+  user.user_levels.destroy_all
+  puts "Deleted #{lessons_count} user_lessons, #{levels_count} user_levels"
+end
+
+def create_all_progress
+  user = get_target_user
+  user.user_lessons.destroy_all
+  user.user_levels.destroy_all
+  
+  levels = [Level.first, Level.second].compact
+  return puts "ERROR: Need at least 2 levels" if levels.size < 2
+  
+  levels.each { |level| UserLevel.create!(user: user, level: level) }
+  
+  levels.each do |level|
+    level.lessons.each { |lesson| UserLesson.create!(user: user, lesson: lesson, completed_at: Time.current) }
+  end
+  
+  puts "Created #{user.user_levels.count} levels, #{user.user_lessons.count} completed lessons"
+end
+
+def create_user_levels
+  user = get_target_user
+  created = 0
+  
+  Level.order(:position).each do |level|
+    user_level = UserLevel::Start.(user, level)
+    if user_level.previously_new_record?
+      puts "Created UserLevel for #{level.title}"
+      created += 1
+    end
+  end
+  
+  puts "Created #{created} new levels (#{user.user_levels.count} total)"
+end
+
+def require_arg(cmd, arg, usage)
+  return if arg
+  puts "ERROR: #{usage}"
+  exit 1
+end
+
+case ARGV[0]
+when 'list' then list_user_levels
+when 'complete_level'
+  require_arg('complete_level', ARGV[1], 'Usage: complete_level <id>')
+  complete_user_level(ARGV[1].to_i)
+when 'complete_lessons'
+  require_arg('complete_lessons', ARGV[1], 'Usage: complete_lessons <id>')
+  complete_lessons_only(ARGV[1].to_i)
+when 'complete_lesson'
+  require_arg('complete_lesson', ARGV[1], 'Usage: complete_lesson <slug>')
+  complete_lesson(ARGV[1])
+when 'complete_all' then complete_all_user_levels
+when 'reset_level'
+  require_arg('reset_level', ARGV[1], 'Usage: reset_level <id>')
+  reset_user_level(ARGV[1].to_i)
+when 'reset_lesson'
+  require_arg('reset_lesson', ARGV[1], 'Usage: reset_lesson <slug>')
+  reset_lesson(ARGV[1])
+when 'reset_all' then reset_all_user_levels
+when 'delete_all' then delete_all_data
+when 'create_all' then create_all_progress
+when 'create_levels' then create_user_levels
+when 'complete'
+  puts "WARNING: Use 'complete_level' instead"
+  complete_user_level(ARGV[1].to_i) if ARGV[1]
+when 'reset'
+  puts "WARNING: Use 'reset_level' instead"
+  reset_user_level(ARGV[1].to_i) if ARGV[1]
+else
+  show_usage
+end
