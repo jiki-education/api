@@ -260,4 +260,51 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
       }
     })
   end
+
+  # Error handler tests
+  test "POST start returns 422 when lesson in progress" do
+    lesson1 = create(:lesson, level: @level)
+    lesson2 = create(:lesson, level: @level)
+    in_progress = create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: nil)
+    @user_level.update!(current_user_lesson: in_progress)
+
+    post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "Complete current lesson before starting a new one", response.parsed_body["error"]
+  end
+
+  test "POST start returns 403 when user level not found" do
+    other_level = create(:level, slug: "other-level", position: 999)
+    other_lesson = create(:lesson, level: other_level)
+    # No user_level created for this level
+
+    post start_internal_user_lesson_path(lesson_slug: other_lesson.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :forbidden
+    assert_equal "Level not available", response.parsed_body["error"]
+  end
+
+  test "POST start returns 422 when trying to start lesson in next level before completing current" do
+    level1 = create(:level, position: 100, slug: "level-100")
+    level2 = create(:level, position: 200, slug: "level-200")
+    lesson1 = create(:lesson, level: level1)
+    lesson2 = create(:lesson, level: level2)
+    user_level1 = create(:user_level, user: @current_user, level: level1)
+    create(:user_level, user: @current_user, level: level2)
+    @current_user.update!(current_user_level: user_level1)
+    create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
+    # level1 is not fully complete (only 1 lesson)
+
+    post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal "Complete the current level before starting lessons in the next level", response.parsed_body["error"]
+  end
 end
