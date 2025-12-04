@@ -43,7 +43,6 @@ class UserLevel::Complete
     return unless next_level
 
     UserLevel::Start.(user, next_level)
-    user.update!(current_user_level: UserLevel.find_by(user:, level: next_level))
   end
 
   def send_completion_email!(user_level)

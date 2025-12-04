@@ -76,4 +76,29 @@ class UserLevel::StartTest < ActiveSupport::TestCase
     assert result.created_at >= time_before
     assert result.created_at <= time_after
   end
+
+  test "updates user.current_user_level on first creation" do
+    user = create(:user)
+    level = create(:level)
+
+    result = UserLevel::Start.(user, level)
+
+    assert_equal result.id, user.reload.current_user_level_id
+  end
+
+  test "does not update user.current_user_level on subsequent calls" do
+    user = create(:user)
+    level = create(:level)
+    first_user_level = UserLevel::Start.(user, level)
+
+    # Verify tracking pointer was set on first call
+    assert_equal first_user_level.id, user.reload.current_user_level_id
+
+    # Call Start again (idempotent) - should return same user_level
+    second_user_level = UserLevel::Start.(user, level)
+    assert_equal first_user_level.id, second_user_level.id
+
+    # Tracking pointer should remain unchanged (not re-set)
+    assert_equal first_user_level.id, user.reload.current_user_level_id
+  end
 end
