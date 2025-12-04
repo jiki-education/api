@@ -235,4 +235,64 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
       end
     end
   end
+
+  # Validation tests
+  test "raises LessonIncompleteError when no user_lesson exists" do
+    user = create(:user)
+    level = create(:level)
+    create(:lesson, level:)
+    create(:user_level, user:, level:)
+
+    error = assert_raises(LessonIncompleteError) do
+      UserLevel::Complete.(user, level)
+    end
+
+    assert_equal "Cannot complete level: 1 lesson(s) incomplete", error.message
+  end
+
+  test "raises LessonIncompleteError when user_lesson exists but not completed" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: nil)
+
+    error = assert_raises(LessonIncompleteError) do
+      UserLevel::Complete.(user, level)
+    end
+
+    assert_equal "Cannot complete level: 1 lesson(s) incomplete", error.message
+  end
+
+  test "raises LessonIncompleteError with multiple incomplete lessons" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, level:)
+    lesson2 = create(:lesson, level:)
+    create(:lesson, level:) # lesson3 has no user_lesson
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
+    create(:user_lesson, user:, lesson: lesson2, completed_at: nil)
+
+    error = assert_raises(LessonIncompleteError) do
+      UserLevel::Complete.(user, level)
+    end
+
+    assert_equal "Cannot complete level: 2 lesson(s) incomplete", error.message
+  end
+
+  test "completes successfully when all lessons are completed" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, level:)
+    lesson2 = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
+    create(:user_lesson, user:, lesson: lesson2, completed_at: Time.current)
+
+    assert_nothing_raised do
+      result = UserLevel::Complete.(user, level)
+      assert result.completed_at.present?
+    end
+  end
 end

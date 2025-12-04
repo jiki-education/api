@@ -31,11 +31,7 @@ class UserLevel::Complete
   private
   def validate_all_lessons_complete!
     incomplete_lessons = level.lessons.left_joins(:user_lessons).
-      where(user_lessons: { user_id: nil }).
-      or(
-        level.lessons.left_joins(:user_lessons).
-          where(user_lessons: { user_id: user.id, completed_at: nil })
-      )
+      where('user_lessons.user_id IS NULL OR (user_lessons.user_id = ? AND user_lessons.completed_at IS NULL)', user.id)
 
     return unless incomplete_lessons.exists?
 

@@ -41,9 +41,9 @@ class UserLesson::Start
   end
 
   def all_lessons_complete?(level)
-    level.lessons.all? do |l|
-      ul = UserLesson.find_by(user:, lesson: l)
-      ul&.completed_at.present?
-    end
+    completed_count = UserLesson.where(user: user, lesson: level.lessons).
+      where.not(completed_at: nil).
+      count
+    completed_count == level.lessons.count
   end
 end
