@@ -4,6 +4,8 @@
       "slug": "your-first-program",
       "title": "Your First Program",
       "description": "Write your first program and understand how Jiki works!",
+      "milestone_summary": "Congratulations on completing your first level! You've learned how to call functions and started your coding journey.",
+      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to call functions to make things happen\n- How Jiki works and how to learn with us\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to learn about using numbers\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
       "lessons": [
         {
           "slug": "maze-solve-basic",
@@ -41,6 +43,8 @@
       "slug": "numbers",
       "title": "Using Numbers to Draw",
       "description": "Learn how to use ",
+      "milestone_summary": "Great work! You've learned how to use numbers as inputs to functions, unlocking a whole new level of programming power.",
+      "milestone_content": "# Excellent Progress! 🌟\n\nYou've mastered using numbers with functions - a fundamental skill in programming!\n\n## What you've learned:\n- How to think of functions as machines with inputs and outputs\n- How to use numbers to control what functions do\n- How to solve problems more effectively with parameters\n\n## Next steps:\n- Apply these concepts to more complex challenges\n- Keep building on your growing programming skills\n- Remember: every expert programmer started exactly where you are now!\n\nYou're making amazing progress. Keep it up!",
       "lessons": [
         {
           "slug": "functions-as-machines",

@@ -49,31 +49,10 @@ class Level::CreateAllFromJson
       level.update!(
         title: level_data["title"],
         description: level_data["description"],
-        milestone_summary: level_data["milestone_summary"] || default_milestone_summary(level_data["title"]),
-        milestone_content: level_data["milestone_content"] || default_milestone_content(level_data["title"])
+        milestone_summary: level_data["milestone_summary"],
+        milestone_content: level_data["milestone_content"]
       )
     end
-  end
-
-  def default_milestone_summary(title)
-    "You've completed #{title}! Great work on finishing this level."
-  end
-
-  def default_milestone_content(title)
-    <<~CONTENT
-      # Congratulations on completing #{title}!
-
-      You've successfully finished all lessons in this level. This is a significant milestone in your coding journey.
-
-      ## What you've learned:
-      - Review the lessons to see what concepts you mastered
-
-      ## Next steps:
-      - Continue to the next level to build on your skills
-      - Practice what you've learned with additional exercises
-
-      Keep up the great work!
-    CONTENT
   end
 
   def create_or_update_lesson!(level, lesson_data)
@@ -93,6 +72,8 @@ class Level::CreateAllFromJson
     raise InvalidJsonError, "Level missing required 'slug' field" unless data["slug"].present?
     raise InvalidJsonError, "Level missing required 'title' field" unless data["title"].present?
     raise InvalidJsonError, "Level missing required 'description' field" unless data["description"].present?
+    raise InvalidJsonError, "Level missing required 'milestone_summary' field" unless data["milestone_summary"].present?
+    raise InvalidJsonError, "Level missing required 'milestone_content' field" unless data["milestone_content"].present?
   end
 
   def validate_lesson_data!(data)
