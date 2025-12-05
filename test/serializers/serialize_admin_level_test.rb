@@ -13,7 +13,9 @@ class SerializeAdminLevelTest < ActiveSupport::TestCase
       slug: "ruby-basics",
       title: "Ruby Basics",
       description: "Learn the basics of Ruby",
-      position: 1
+      position: 1,
+      milestone_summary: level.milestone_summary,
+      milestone_content: level.milestone_content
     }
 
     assert_equal expected, SerializeAdminLevel.(level)
@@ -29,5 +31,7 @@ class SerializeAdminLevelTest < ActiveSupport::TestCase
     assert result.key?(:title)
     assert result.key?(:description)
     assert result.key?(:position)
+    assert result.key?(:milestone_summary)
+    assert result.key?(:milestone_content)
   end
 end

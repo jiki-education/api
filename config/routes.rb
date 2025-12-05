@@ -49,7 +49,11 @@ Rails.application.routes.draw do
       resource :handle, only: [:update]
     end
 
-    resources :levels, only: [:index]
+    resources :levels, only: [:index] do
+      member do
+        get :milestone
+      end
+    end
     resources :user_levels, only: [:index], param: :level_slug do
       member do
         patch :complete
@@ -111,6 +115,13 @@ Rails.application.routes.draw do
     resources :users, only: %i[index show update destroy]
     resources :levels, only: %i[index create update] do
       resources :lessons, only: %i[index create update], controller: "levels/lessons"
+      scope module: :level do
+        resources :translations, only: [] do
+          collection do
+            post :translate
+          end
+        end
+      end
     end
     resources :images, only: [:create]
 

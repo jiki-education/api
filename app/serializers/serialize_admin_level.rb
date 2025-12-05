@@ -9,7 +9,9 @@ class SerializeAdminLevel
       slug: level.slug,
       title: level.title,
       description: level.description,
-      position: level.position
+      position: level.position,
+      milestone_summary: level.milestone_summary,
+      milestone_content: level.milestone_content
     }
   end
 end
