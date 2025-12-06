@@ -9,7 +9,7 @@ class Level::Translation::TranslateToLocale
     validate!
 
     # Call Gemini API for translation
-    translated = Gemini::TranslateMilestone.(translation_prompt, model: :flash)
+    translated = Gemini::Translate.(translation_prompt, model: :flash, schema: translation_schema)
 
     # Upsert pattern: delete existing, create new
     Level::Translation.find_for(level, target_locale)&.destroy
@@ -45,6 +45,20 @@ class Level::Translation::TranslateToLocale
   memoize
   def locale_display_name
     I18n.t("locales.#{target_locale}", default: target_locale.upcase)
+  end
+
+  memoize
+  def translation_schema
+    {
+      type: "object",
+      properties: {
+        title: { type: "string" },
+        description: { type: "string" },
+        milestone_summary: { type: "string" },
+        milestone_content: { type: "string" }
+      },
+      required: %w[title description milestone_summary milestone_content]
+    }
   end
 
   memoize
