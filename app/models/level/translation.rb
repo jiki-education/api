@@ -1,8 +1,4 @@
 class Level::Translation < ApplicationRecord
-  disable_sti!
-
-  self.table_name = 'level_translations'
-
   belongs_to :level
 
   validates :locale, presence: true
