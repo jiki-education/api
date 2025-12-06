@@ -4,7 +4,7 @@ class Gemini::Translate
 
   base_uri 'https://generativelanguage.googleapis.com'
 
-  initialize_with :prompt, schema: nil, model: :flash
+  initialize_with :prompt, :schema, model: :flash
 
   def call
     validate!

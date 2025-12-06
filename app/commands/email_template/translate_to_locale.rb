@@ -9,7 +9,7 @@ class EmailTemplate::TranslateToLocale
     validate!
 
     # Call Gemini API directly for translation
-    translated = Gemini::Translate.(translation_prompt, model: :flash, schema: translation_schema)
+    translated = Gemini::Translate.(translation_prompt, translation_schema, model: :flash)
 
     # Delete existing template if present (upsert pattern)
     EmailTemplate.find_for(source_template.type, source_template.slug, target_locale)&.destroy

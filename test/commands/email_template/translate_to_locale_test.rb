@@ -34,7 +34,7 @@ class EmailTemplate::TranslateToLocaleTest < ActiveSupport::TestCase
     # Verify Gemini::Translate is called with correct params
     Gemini::Translate.expects(:call).with(
       instance_of(String), # The full prompt
-      schema: instance_of(Hash),
+      instance_of(Hash), # schema
       model: :flash
     ).returns(translation)
 

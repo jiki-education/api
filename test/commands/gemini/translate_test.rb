@@ -37,7 +37,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
         headers: { 'Content-Type' => 'application/json' }
       )
 
-    result = Gemini::Translate.(@prompt, schema: @schema, model: :flash)
+    result = Gemini::Translate.(@prompt, @schema, model: :flash)
 
     assert_equal "Translated Subject", result[:subject]
     assert_equal "<mj-text>Translated MJML</mj-text>", result[:body_mjml]
@@ -55,7 +55,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
         }.to_json
       )
 
-    Gemini::Translate.(@prompt, schema: @schema, model: :flash)
+    Gemini::Translate.(@prompt, @schema, model: :flash)
 
     assert_requested :post, /gemini-2.5-flash:generateContent/
   end
@@ -71,7 +71,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
         }.to_json
       )
 
-    Gemini::Translate.(@prompt, schema: @schema, model: :pro)
+    Gemini::Translate.(@prompt, @schema, model: :pro)
 
     assert_requested :post, /gemini-2.5-pro:generateContent/
   end
@@ -94,7 +94,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
         }.to_json
       )
 
-    Gemini::Translate.(@prompt, schema: @schema, model: :flash)
+    Gemini::Translate.(@prompt, @schema, model: :flash)
 
     assert_requested :post, %r{https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent},
       body: hash_including({
@@ -118,7 +118,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
         }.to_json
       )
 
-    Gemini::Translate.(@prompt, schema: @schema, model: :flash)
+    Gemini::Translate.(@prompt, @schema, model: :flash)
 
     assert_requested :post, %r{https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent},
       headers: { 'x-goog-api-key' => Jiki.secrets.google_api_key }
@@ -149,7 +149,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
         }.to_json
       )
 
-    Gemini::Translate.(@prompt, schema: @schema, model: :flash)
+    Gemini::Translate.(@prompt, @schema, model: :flash)
 
     assert_requested :post, %r{https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent},
       body: hash_including({
@@ -173,7 +173,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
       to_return(status: 429, body: { error: "Rate limit exceeded" }.to_json)
 
     error = assert_raises Gemini::RateLimitError do
-      Gemini::Translate.(@prompt, schema: @schema)
+      Gemini::Translate.(@prompt, @schema)
     end
 
     assert_includes error.message, "Rate limit exceeded"
@@ -184,7 +184,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
       to_return(status: 400, body: { error: "Invalid request" }.to_json)
 
     error = assert_raises Gemini::InvalidRequestError do
-      Gemini::Translate.(@prompt, schema: @schema)
+      Gemini::Translate.(@prompt, @schema)
     end
 
     assert_includes error.message, "Invalid request"
@@ -195,7 +195,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
       to_return(status: 500, body: { error: "Internal server error" }.to_json)
 
     error = assert_raises Gemini::APIError do
-      Gemini::Translate.(@prompt, schema: @schema)
+      Gemini::Translate.(@prompt, @schema)
     end
 
     assert_includes error.message, "API request failed with status 500"
@@ -213,7 +213,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
       )
 
     error = assert_raises Gemini::InvalidRequestError do
-      Gemini::Translate.(@prompt, schema: @schema)
+      Gemini::Translate.(@prompt, @schema)
     end
 
     assert_includes error.message, "Failed to parse LLM response as JSON"
@@ -227,7 +227,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
       )
 
     error = assert_raises Gemini::APIError do
-      Gemini::Translate.(@prompt, schema: @schema)
+      Gemini::Translate.(@prompt, @schema)
     end
 
     assert_includes error.message, "No text in response"
@@ -235,7 +235,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
 
   test "raises ArgumentError if prompt is blank" do
     error = assert_raises ArgumentError do
-      Gemini::Translate.("", schema: @schema, model: :flash)
+      Gemini::Translate.("", @schema, model: :flash)
     end
 
     assert_equal "prompt is required", error.message
@@ -245,7 +245,7 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
     Jiki.secrets.expects(:google_api_key).returns(nil).at_least_once
 
     error = assert_raises ArgumentError do
-      Gemini::Translate.(@prompt, schema: @schema, model: :flash)
+      Gemini::Translate.(@prompt, @schema, model: :flash)
     end
 
     assert_equal "google_api_key secret is required", error.message
@@ -253,9 +253,17 @@ class Gemini::TranslateTest < ActiveSupport::TestCase
 
   test "raises ArgumentError if model is invalid" do
     error = assert_raises ArgumentError do
-      Gemini::Translate.(@prompt, schema: @schema, model: :invalid)
+      Gemini::Translate.(@prompt, @schema, model: :invalid)
     end
 
     assert_equal "model must be :flash or :pro", error.message
+  end
+
+  test "raises ArgumentError if schema is nil" do
+    error = assert_raises ArgumentError do
+      Gemini::Translate.(@prompt, nil, model: :flash)
+    end
+
+    assert_equal "schema is required", error.message
   end
 end

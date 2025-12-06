@@ -15,9 +15,7 @@ class Level::Translation::TranslateToAllLocales
 
   private
   memoize
-  def target_locales
-    supported_locales - ["en"]
-  end
+  def target_locales = supported_locales - ["en"]
 
   memoize
   def supported_locales

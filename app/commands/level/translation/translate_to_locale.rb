@@ -9,7 +9,7 @@ class Level::Translation::TranslateToLocale
     validate!
 
     # Call Gemini API for translation
-    translated = Gemini::Translate.(translation_prompt, model: :flash, schema: translation_schema)
+    translated = Gemini::Translate.(translation_prompt, translation_schema, model: :flash)
 
     # Upsert pattern: delete existing, create new
     Level::Translation.find_for(level, target_locale)&.destroy
