@@ -66,4 +66,119 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     assert_response :success
     assert_json_response({ levels: serialized_data })
   end
+
+  # GET milestone tests
+
+  guard_incorrect_token! :milestone_internal_level_path, args: ["ruby-basics"], method: :get
+
+  test "GET milestone returns milestone for English (default locale)" do
+    level = create(:level,
+      slug: "ruby-basics",
+      title: "Ruby Basics",
+      description: "Learn Ruby",
+      milestone_summary: "Great!",
+      milestone_content: "# Done!")
+
+    get milestone_internal_level_path(level.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+
+    I18n.with_locale(:en) do
+      assert_json_response({
+        milestone: SerializeLevelMilestone.(level)
+      })
+    end
+  end
+
+  test "GET milestone returns milestone for specific locale via param" do
+    level = create(:level,
+      slug: "ruby-basics",
+      title: "Ruby Basics",
+      description: "Learn Ruby",
+      milestone_summary: "Great!",
+      milestone_content: "# Done!")
+
+    create(:level_translation,
+      level:,
+      locale: "hu",
+      title: "Ruby Alapok",
+      description: "Tanuld meg",
+      milestone_summary: "Szuper!",
+      milestone_content: "# Kész!")
+
+    get milestone_internal_level_path(level.slug, locale: "hu"),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+
+    I18n.with_locale(:hu) do
+      assert_json_response({
+        milestone: SerializeLevelMilestone.(level)
+      })
+    end
+  end
+
+  test "GET milestone falls back to English when translation missing" do
+    level = create(:level,
+      slug: "ruby-basics",
+      title: "Ruby Basics",
+      description: "Learn Ruby",
+      milestone_summary: "Great!",
+      milestone_content: "# Done!")
+
+    get milestone_internal_level_path(level.slug, locale: "fr"),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+
+    json = response.parsed_body
+    assert_equal "Ruby Basics", json["milestone"]["title"] # Fallback to English
+  end
+
+  test "GET milestone returns milestone for user's locale when no param provided" do
+    @current_user.update!(locale: "hu")
+    level = create(:level)
+    create(:level_translation, level:, locale: "hu", title: "Magyar cím")
+
+    SerializeLevelMilestone.expects(:call).with(level).returns({ level_slug: "test" })
+
+    get milestone_internal_level_path(level.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    assert_equal "hu", I18n.locale.to_s
+  end
+
+  test "GET milestone returns 404 for non-existent level" do
+    get milestone_internal_level_path("non-existent"),
+      headers: @headers,
+      as: :json
+
+    assert_response :not_found
+    assert_json_response({
+      error: {
+        type: "not_found",
+        message: "Level not found"
+      }
+    })
+  end
+
+  test "GET milestone uses SerializeLevelMilestone" do
+    level = create(:level, slug: "ruby-basics")
+    serialized_data = { level_slug: "ruby-basics" }
+
+    SerializeLevelMilestone.expects(:call).with(level).returns(serialized_data)
+
+    get milestone_internal_level_path(level.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    assert_json_response({ milestone: serialized_data })
+  end
 end

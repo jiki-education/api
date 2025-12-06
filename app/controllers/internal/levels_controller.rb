@@ -8,10 +8,8 @@ class Internal::LevelsController < Internal::BaseController
   end
 
   def milestone
-    locale = params[:locale] || current_user&.locale || "en"
-
     render json: {
-      milestone: SerializeLevelMilestone.(@level, locale)
+      milestone: SerializeLevelMilestone.(@level)
     }
   end
 
