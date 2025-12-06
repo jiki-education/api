@@ -6,6 +6,7 @@ class Lesson < ApplicationRecord
   has_many :users, through: :user_lessons
   has_one :unlocked_concept, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_one :unlocked_project, class_name: 'Project', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
+  has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
 
   serialize :data, coder: JSONWithIndifferentAccess
 
@@ -23,6 +24,23 @@ class Lesson < ApplicationRecord
   default_scope { order(:position) }
 
   def to_param = slug
+
+  # Get content for any locale (English from main model, others from translations with fallback)
+  def content_for_locale(locale)
+    model = locale.to_s == 'en' ? self : (translations.find_by(locale:) || self)
+
+    {
+      title: model.title,
+      description: model.description
+    }
+  end
+
+  # Get translation for a specific locale (returns nil for English since it's on main model)
+  def translation_for(locale)
+    return nil if locale.to_s == 'en'
+
+    translations.find_by(locale:)
+  end
 
   private
   def set_position
