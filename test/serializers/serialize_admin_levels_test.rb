@@ -11,14 +11,18 @@ class SerializeAdminLevelsTest < ActiveSupport::TestCase
         slug: "level-1",
         title: "Level 1",
         description: level_1.description,
-        position: level_1.position
+        position: level_1.position,
+        milestone_summary: level_1.milestone_summary,
+        milestone_content: level_1.milestone_content
       },
       {
         id: level_2.id,
         slug: "level-2",
         title: "Level 2",
         description: level_2.description,
-        position: level_2.position
+        position: level_2.position,
+        milestone_summary: level_2.milestone_summary,
+        milestone_content: level_2.milestone_content
       }
     ]
 

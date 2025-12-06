@@ -15,7 +15,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
   test "POST create calls Level::Create command with correct params" do
     Level::Create.expects(:call).with(
-      { "slug" => "ruby-basics", "title" => "Ruby Basics", "description" => "Learn Ruby" }
+      { "slug" => "ruby-basics", "title" => "Ruby Basics", "description" => "Learn Ruby", "milestone_summary" => "Great!", "milestone_content" => "# Done!" }
     ).returns(create(:level))
 
     post admin_levels_path,
@@ -23,7 +23,9 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
         level: {
           slug: "ruby-basics",
           title: "Ruby Basics",
-          description: "Learn Ruby"
+          description: "Learn Ruby",
+          milestone_summary: "Great!",
+          milestone_content: "# Done!"
         }
       },
       headers: @headers,
@@ -38,7 +40,9 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
         level: {
           slug: "ruby-basics",
           title: "Ruby Basics",
-          description: "Learn the fundamentals of Ruby"
+          description: "Learn the fundamentals of Ruby",
+          milestone_summary: "Great job!",
+          milestone_content: "# Congratulations!"
         }
       },
       headers: @headers,
@@ -62,7 +66,9 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
         level: {
           slug: "new-level",
           title: "New Level",
-          description: "Description"
+          description: "Description",
+          milestone_summary: "Great job!",
+          milestone_content: "# Congratulations!"
         }
       },
       headers: @headers,
@@ -80,6 +86,8 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           slug: "ruby-basics",
           title: "Ruby Basics",
           description: "Description",
+          milestone_summary: "Great job!",
+          milestone_content: "# Congratulations!",
           position: 5
         }
       },

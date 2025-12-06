@@ -41,7 +41,7 @@ As you work through the plan, add new checkboxes if new tasks are added, and che
 Always perform these checks before committing code:
 
 1. **Run Tests**: `bin/rails test`
-2. **Run Linting**: `bin/rubocop`
+2. **Run Linting**: `bin/rubocop -a`
 3. **TypeScript Generation**: Automatically handled by pre-commit hook if schemas changed
 4. **Security Check**: `bin/brakeman`
 5. **Update Context Files**: Review if any `.context/` files need updating based on your changes

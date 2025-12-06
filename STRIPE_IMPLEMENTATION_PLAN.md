@@ -849,7 +849,7 @@ After implementing all changes:
 
 3. **Run linting:**
    ```bash
-   bin/rubocop
+   bin/rubocop -a
    ```
 
 4. **Test manually in development:**

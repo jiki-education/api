@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_081540) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_05_060952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -129,9 +129,24 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_081540) do
     t.index ["type"], name: "index_lessons_on_type"
   end
 
+  create_table "level_translations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.bigint "level_id", null: false
+    t.string "locale", null: false
+    t.text "milestone_content", null: false
+    t.text "milestone_summary", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["level_id", "locale"], name: "index_level_translations_on_level_id_and_locale", unique: true
+    t.index ["level_id"], name: "index_level_translations_on_level_id"
+  end
+
   create_table "levels", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.text "milestone_content", null: false
+    t.text "milestone_summary", null: false
     t.integer "position", null: false
     t.string "slug", null: false
     t.string "title", null: false
@@ -428,6 +443,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_081540) do
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
   add_foreign_key "lessons", "levels"
+  add_foreign_key "level_translations", "levels"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

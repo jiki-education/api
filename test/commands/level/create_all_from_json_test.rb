@@ -130,6 +130,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
         "slug": "fundamentals",
         "title": "New Title",
         "description": "New description",
+        "milestone_summary": "Great job!",
+        "milestone_content": "# Congratulations!",
         "lessons": []
       }]
     }')
@@ -155,6 +157,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
         "slug": "new-level",
         "title": "New Level",
         "description": "This is a new level",
+        "milestone_summary": "Great job!",
+        "milestone_content": "# Congratulations!",
         "lessons": []
       }]
     }')
@@ -183,6 +187,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
         "slug": "new-level",
         "title": "New Level",
         "description": "This is a new level",
+        "milestone_summary": "Great job!",
+        "milestone_content": "# Congratulations!",
         "lessons": []
       }]
     }')
@@ -209,6 +215,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
         "slug": "level-1",
         "title": "Level 1",
         "description": "First level",
+        "milestone_summary": "Great job!",
+        "milestone_content": "# Congratulations!",
         "lessons": []
       }]
     }')
@@ -241,6 +249,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
           "slug": "valid-level",
           "title": "Valid Level",
           "description": "This is valid",
+          "milestone_summary": "Great job!",
+          "milestone_content": "# Congratulations!",
           "lessons": []
         },
         {

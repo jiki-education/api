@@ -1603,7 +1603,7 @@ Access via CloudWatch:
 ## Before Committing
 
 - [ ] Run `bin/rails test` - All tests pass
-- [ ] Run `bin/rubocop` - No linting errors
+- [ ] Run `bin/rubocop -a` - No linting errors
 - [ ] Run `bin/brakeman` - No security issues
 - [ ] Update `.context/` files if patterns changed
 - [ ] Update `README.md` with new API endpoints

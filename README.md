@@ -963,7 +963,7 @@ bin/rails test
 ### Linting
 
 ```bash
-bin/rubocop
+bin/rubocop -a
 ```
 
 ### Security Checks

@@ -2,10 +2,15 @@ class ApplicationController < ActionController::API
   include MetaResponseWrapper
 
   before_action :set_current_user_agent
+  before_action :set_locale
 
   private
   def set_current_user_agent
     Current.user_agent = request.headers["User-Agent"]
+  end
+
+  def set_locale
+    I18n.locale = params[:locale] || current_user&.locale || I18n.default_locale
   end
 
   def authenticate_user!

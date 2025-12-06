@@ -4,7 +4,7 @@ class Gemini::Translate
 
   base_uri 'https://generativelanguage.googleapis.com'
 
-  initialize_with :prompt, model: :flash
+  initialize_with :prompt, :schema, model: :flash
 
   def call
     validate!
@@ -25,6 +25,7 @@ class Gemini::Translate
   private
   def validate!
     raise ArgumentError, "prompt is required" if prompt.blank?
+    raise ArgumentError, "schema is required" if schema.nil?
     raise ArgumentError, "google_api_key secret is required" if api_key.blank?
     raise ArgumentError, "model must be :flash or :pro" unless %i[flash pro].include?(model)
   end
@@ -51,15 +52,7 @@ class Gemini::Translate
       }],
       generationConfig: {
         responseMimeType: "application/json",
-        responseSchema: {
-          type: "object",
-          properties: {
-            subject: { type: "string" },
-            body_mjml: { type: "string" },
-            body_text: { type: "string" }
-          },
-          required: %w[subject body_mjml body_text]
-        },
+        responseSchema: schema,
         thinkingConfig: {
           thinkingBudget: 0 # Disable thinking for faster responses
         }

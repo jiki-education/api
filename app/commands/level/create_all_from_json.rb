@@ -48,7 +48,9 @@ class Level::CreateAllFromJson
     Level.find_or_initialize_by(slug: level_data["slug"]).tap do |level|
       level.update!(
         title: level_data["title"],
-        description: level_data["description"]
+        description: level_data["description"],
+        milestone_summary: level_data["milestone_summary"],
+        milestone_content: level_data["milestone_content"]
       )
     end
   end
@@ -70,6 +72,8 @@ class Level::CreateAllFromJson
     raise InvalidJsonError, "Level missing required 'slug' field" unless data["slug"].present?
     raise InvalidJsonError, "Level missing required 'title' field" unless data["title"].present?
     raise InvalidJsonError, "Level missing required 'description' field" unless data["description"].present?
+    raise InvalidJsonError, "Level missing required 'milestone_summary' field" unless data["milestone_summary"].present?
+    raise InvalidJsonError, "Level missing required 'milestone_content' field" unless data["milestone_content"].present?
   end
 
   def validate_lesson_data!(data)

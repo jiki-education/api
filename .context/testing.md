@@ -1046,7 +1046,7 @@ end
 ### Before Committing
 Always run these commands to ensure test quality:
 1. **All tests pass**: `bin/rails test`
-2. **Linting passes**: `bin/rubocop`
+2. **Linting passes**: `bin/rubocop -a`
 3. **Security scan clean**: `bin/brakeman`
 
 ### Test Coverage Goals

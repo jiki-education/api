@@ -5,7 +5,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "ruby-basics",
       title: "Ruby Basics",
-      description: "Learn the fundamentals of Ruby"
+      description: "Learn the fundamentals of Ruby",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     level = Level::Create.(params)
@@ -23,7 +25,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "new-level",
       title: "New Level",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     level = Level::Create.(params)
@@ -36,6 +40,8 @@ class Level::CreateTest < ActiveSupport::TestCase
       slug: "ruby-basics",
       title: "Ruby Basics",
       description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!",
       position: 5
     }
 
@@ -47,7 +53,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   test "raises error when slug is missing" do
     params = {
       title: "Ruby Basics",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -58,7 +66,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   test "raises error when title is missing" do
     params = {
       slug: "ruby-basics",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -69,7 +79,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   test "raises error when description is missing" do
     params = {
       slug: "ruby-basics",
-      title: "Ruby Basics"
+      title: "Ruby Basics",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -81,7 +93,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "",
       title: "Ruby Basics",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -93,7 +107,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "ruby-basics",
       title: "",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -105,7 +121,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "ruby-basics",
       title: "Ruby Basics",
-      description: ""
+      description: "",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -119,7 +137,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "ruby-basics",
       title: "Another Level",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     assert_raises ActiveRecord::RecordInvalid do
@@ -134,6 +154,8 @@ class Level::CreateTest < ActiveSupport::TestCase
       slug: "new-level",
       title: "New Level",
       description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!",
       position: 1
     }
 
@@ -146,7 +168,9 @@ class Level::CreateTest < ActiveSupport::TestCase
     params = {
       slug: "ruby-basics",
       title: "Ruby Basics",
-      description: "Description"
+      description: "Description",
+      milestone_summary: "Great job!",
+      milestone_content: "# Congratulations!"
     }
 
     result = Level::Create.(params)
