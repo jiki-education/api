@@ -14,8 +14,7 @@ class SerializeLevels
   end
 
   def levels_with_includes
-    # Include lessons and translations to avoid N+1 queries
-    # translations.find_by will use the preloaded association
+    # Include lessons to avoid N+1 queries
     levels.to_active_relation.includes(:lessons)
   end
 
