@@ -140,7 +140,7 @@ config.time_zone = 'UTC'
 ### RuboCop
 - File: `.rubocop.yml`
 - Rails Omakase style guide
-- Run with `bin/rubocop`
+- Run with `bin/rubocop -a`
 
 ### Brakeman
 - Security scanner for Rails

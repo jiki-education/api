@@ -445,7 +445,7 @@ end
 
 Before committing:
 - [ ] Run all tests: `bin/rails test`
-- [ ] Run linting: `bin/rubocop`
+- [ ] Run linting: `bin/rubocop -a`
 - [ ] Run security check: `bin/brakeman`
 - [ ] Test OAuth flow manually:
   - [ ] New user signup via Google

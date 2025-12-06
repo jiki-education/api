@@ -80,7 +80,7 @@ When you learn something important or encounter a pattern worth documenting, upd
 ### Before Committing
 Always run these checks before committing code:
 1. **Tests**: `bin/rails test`
-2. **Linting**: `bin/rubocop`
+2. **Linting**: `bin/rubocop -a`
 3. **TypeScript Generation**: `bundle exec rake typescript:generate` (if schemas changed)
 4. **Security**: `bin/brakeman`
 
