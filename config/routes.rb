@@ -123,6 +123,15 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :lessons, only: [] do
+      scope module: :lesson do
+        resources :translations, only: [] do
+          collection do
+            post :translate
+          end
+        end
+      end
+    end
     resources :images, only: [:create]
 
     namespace :video_production do

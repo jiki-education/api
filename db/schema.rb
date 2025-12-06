@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_060952) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_06_091613) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -111,6 +111,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_060952) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "lesson_translations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.bigint "lesson_id", null: false
+    t.string "locale", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id", "locale"], name: "index_lesson_translations_on_lesson_id_and_locale", unique: true
+    t.index ["lesson_id"], name: "index_lesson_translations_on_lesson_id"
   end
 
   create_table "lessons", force: :cascade do |t|
@@ -442,6 +453,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_060952) do
   add_foreign_key "assistant_conversations", "users"
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
+  add_foreign_key "lesson_translations", "lessons"
   add_foreign_key "lessons", "levels"
   add_foreign_key "level_translations", "levels"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
