@@ -1,4 +1,6 @@
 class Lesson < ApplicationRecord
+  include Translatable
+
   disable_sti!
 
   belongs_to :level
@@ -6,6 +8,9 @@ class Lesson < ApplicationRecord
   has_many :users, through: :user_lessons
   has_one :unlocked_concept, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_one :unlocked_project, class_name: 'Project', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
+  has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
+
+  self.translatable_fields = %i[title description]
 
   serialize :data, coder: JSONWithIndifferentAccess
 
