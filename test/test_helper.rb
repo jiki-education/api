@@ -159,6 +159,8 @@ module JsonAssertions
       end
     when Regexp
       assert_match expected, actual.to_s, "Regex mismatch at #{path}"
+    when nil
+      assert_nil actual, "Value mismatch at #{path}"
     else
       assert_equal expected, actual, "Value mismatch at #{path}"
     end
