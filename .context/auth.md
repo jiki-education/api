@@ -44,10 +44,28 @@ This document describes the authentication system for the Jiki API and its integ
 
 ### Technology Stack
 - **Backend**: Devise + devise-jwt for Rails API
-- **Frontend**: React Query + Zustand for state management
 - **Token Format**: JWT (JSON Web Tokens)
-- **Token Storage**: localStorage (with XSS considerations)
+- **Token Delivery**: Accepts JWT from httpOnly cookies OR Authorization header
 - **OAuth Ready**: Database schema includes provider ID fields
+
+### JWT Token Delivery
+
+The API accepts JWT access tokens via two methods (checked in this order):
+
+1. **Authorization Header** (Primary)
+   - Format: `Authorization: Bearer <jwt_token>`
+   - Checked FIRST - explicit authentication intent
+   - Standard HTTP authentication method
+
+2. **httpOnly Cookie** (Fallback)
+   - Cookie name: `jiki_access_token`
+   - Domain: `.jiki.io`
+   - Secure: true (production)
+   - SameSite: lax
+   - Checked if Authorization header is not present
+   - Provides XSS protection through httpOnly flag
+
+**Implementation**: Custom Warden strategy (`config/initializers/warden_jwt_cookie_strategy.rb`) extends `Warden::JWTAuth::Strategy` to check Authorization header first, then falls back to the cookie.
 
 ### Authentication Flow
 
@@ -631,15 +649,12 @@ add_index :user_refresh_tokens, :crypted_token, unique: true
 - Reset tokens expire after 2 hours
 - Reset tokens are single-use
 
-### Frontend Security
-- **XSS Protection**: Sanitize all user input
-- **Token Storage Strategy**:
-  - Access tokens: sessionStorage or memory (short-lived, less critical)
-  - Refresh tokens: localStorage (long-lived, enables persistence)
+### API Request Security
 - **HTTPS Required**: Always use HTTPS in production
-- **CORS**: Restrict to known frontend domains
-- **Token Refresh**: Automatic refresh on 401 minimizes exposure window
-- **Request Queueing**: Multiple concurrent 401s handled gracefully
+- **CORS**: Restrict to known frontend domains with credentials support
+- **Cookie Security**: httpOnly, Secure, SameSite=lax for XSS protection
+- **Token Validation**: All tokens validated against allowlist before authentication
+- **Backward Compatibility**: Supports both cookie and Authorization header during migration
 
 ### API Security
 - Rate limiting on auth endpoints (implement with rack-attack)
