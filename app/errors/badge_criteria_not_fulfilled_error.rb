@@ -1,2 +1,0 @@
-class BadgeCriteriaNotFulfilledError < StandardError
-end

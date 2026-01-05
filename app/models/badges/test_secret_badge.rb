@@ -1,5 +1,5 @@
 module Badges
-  class TestSecret1Badge < Badge
+  class TestSecretBadge < Badge
     seed "Secret Badge", "lock", "Test secret badge", secret: true
 
     def award_to?(_user)

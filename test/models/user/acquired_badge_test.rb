@@ -29,7 +29,7 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
 
   test "counter cache decrements badge num_awardees on destroy" do
     user = create(:user)
-    badge = create(:test_public_1_badge)
+    badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, user:, badge:)
     count_before_destroy = badge.reload.num_awardees
 
@@ -72,8 +72,8 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
 
   test "unrevealed scope returns only unrevealed badges" do
     user = create(:user)
-    badge1 = create(:test_public_1_badge)
-    badge2 = create(:test_public_2_badge)
+    badge1 = create(:member_badge)
+    badge2 = create(:maze_navigator_badge)
     unrevealed = create(:user_acquired_badge, user:, badge: badge1, revealed: false)
     create(:user_acquired_badge, :revealed, user:, badge: badge2)
 
@@ -82,8 +82,8 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
 
   test "revealed scope returns only revealed badges" do
     user = create(:user)
-    badge1 = create(:test_public_3_badge)
-    badge2 = create(:test_public_4_badge)
+    badge1 = create(:member_badge)
+    badge2 = create(:maze_navigator_badge)
     create(:user_acquired_badge, user:, badge: badge1, revealed: false)
     revealed = create(:user_acquired_badge, :revealed, user:, badge: badge2)
 
@@ -91,28 +91,28 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
   end
 
   test "delegates name to badge" do
-    badge = create(:test_public_1_badge)
+    badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
-    assert_equal "Public Badge 1", acquired_badge.name
+    assert_equal "Member", acquired_badge.name
   end
 
   test "delegates icon to badge" do
-    badge = create(:test_public_1_badge)
+    badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
-    assert_equal "star", acquired_badge.icon
+    assert_equal "logo", acquired_badge.icon
   end
 
   test "delegates description to badge" do
-    badge = create(:test_public_1_badge)
+    badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
-    assert_equal "Test public badge 1", acquired_badge.description
+    assert_equal "Joined Jiki", acquired_badge.description
   end
 
   test "delegates secret to badge" do
-    badge = create(:test_secret_1_badge)
+    badge = create(:test_secret_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
     assert acquired_badge.secret

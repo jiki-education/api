@@ -12,16 +12,10 @@ class User::AcquiredBadge::Create
     raise BadgeCriteriaNotFulfilledError unless badge.award_to?(user)
 
     # Create acquired badge with race condition handling
-    begin
-      User::AcquiredBadge.create!(user:, badge:)
-    rescue ActiveRecord::RecordNotUnique
-      User::AcquiredBadge.find_by!(user:, badge:)
-    end
+    User::AcquiredBadge.create_or_find!(user:, badge:)
   end
 
   private
   memoize
-  def badge
-    Badge.find_by_slug!(badge_slug) # rubocop:disable Rails/DynamicFindBy
-  end
+  def badge = Badge.find_by_slug!(badge_slug) # rubocop:disable Rails/DynamicFindBy
 end

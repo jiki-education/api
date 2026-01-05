@@ -10,6 +10,12 @@ class ActiveRecord::Base
   rescue ActiveRecord::RecordNotFound
     create_or_find_by!(*args, &block)
   end
+
+  def self.create_or_find!(attributes, &block)
+    create!(attributes, &block)
+  rescue ActiveRecord::RecordNotUnique
+    find_by!(attributes)
+  end
 end
 
 class ActiveRecord::Relation
