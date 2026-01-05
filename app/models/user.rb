@@ -16,6 +16,8 @@ class User < ApplicationRecord
   has_many :refresh_tokens, class_name: "User::RefreshToken", dependent: :destroy
   has_many :user_projects, dependent: :destroy
   has_many :projects, through: :user_projects
+  has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
+  has_many :badges, through: :acquired_badges
 
   belongs_to :current_user_level, class_name: "UserLevel", optional: true
 

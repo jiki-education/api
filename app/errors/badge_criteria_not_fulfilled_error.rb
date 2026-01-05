@@ -1,0 +1,2 @@
+class BadgeCriteriaNotFulfilledError < StandardError
+end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_06_091613) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_154822) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,6 +52,19 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_091613) do
     t.index ["context_type", "context_id"], name: "index_assistant_conversations_on_context"
     t.index ["user_id", "context_type", "context_id"], name: "index_assistant_conversations_on_user_and_context", unique: true
     t.index ["user_id"], name: "index_assistant_conversations_on_user_id"
+  end
+
+  create_table "badges", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "icon", null: false
+    t.string "name", null: false
+    t.integer "num_awardees", default: 0, null: false
+    t.boolean "secret", default: false, null: false
+    t.string "type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_badges_on_name", unique: true
+    t.index ["type"], name: "index_badges_on_type", unique: true
   end
 
   create_table "concepts", force: :cascade do |t|
@@ -299,6 +312,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_091613) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "user_acquired_badges", force: :cascade do |t|
+    t.bigint "badge_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "revealed", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["badge_id"], name: "index_user_acquired_badges_on_badge_id"
+    t.index ["user_id", "badge_id"], name: "index_user_acquired_badges_on_user_id_and_badge_id", unique: true
+    t.index ["user_id"], name: "index_user_acquired_badges_on_user_id"
+  end
+
   create_table "user_data", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_bounce_reason"
@@ -463,6 +487,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_06_091613) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "user_acquired_badges", "badges"
+  add_foreign_key "user_acquired_badges", "users"
   add_foreign_key "user_data", "users"
   add_foreign_key "user_jwt_tokens", "user_refresh_tokens", column: "refresh_token_id"
   add_foreign_key "user_jwt_tokens", "users"

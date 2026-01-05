@@ -69,4 +69,23 @@ class User::BootstrapTest < ActiveSupport::TestCase
     assert_nil UserLevel.find_by(user:, level: level5)
     assert_nil UserLevel.find_by(user:, level: level10)
   end
+
+  # Badge tests
+  test "enqueues member badge award job" do
+    user = create(:user)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'member']) do
+      User::Bootstrap.(user)
+    end
+  end
+
+  test "awards member badge to new user" do
+    user = create(:user)
+
+    perform_enqueued_jobs do
+      User::Bootstrap.(user)
+    end
+
+    assert user.acquired_badges.joins(:badge).where(badges: { type: 'Badges::MemberBadge' }).exists?
+  end
 end

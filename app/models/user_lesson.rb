@@ -10,6 +10,8 @@ class UserLesson < ApplicationRecord
 
   validates :user_id, uniqueness: { scope: :lesson_id }
 
+  scope :completed, -> { where.not(completed_at: nil) }
+
   def assistant_conversation
     AssistantConversation.find_by(
       user: user,

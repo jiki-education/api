@@ -83,6 +83,12 @@ Rails.application.routes.draw do
 
     resources :concepts, only: %i[index show], param: :concept_slug
 
+    resources :badges, only: [:index] do
+      member do
+        patch :reveal
+      end
+    end
+
     resource :assistant_conversations, only: [] do
       post :user_messages, action: :create_user_message
       post :assistant_messages, action: :create_assistant_message

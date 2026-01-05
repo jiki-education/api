@@ -19,6 +19,9 @@ class UserLesson::Complete
       # Unlock project if this lesson unlocks one
       UserProject::Create.(user, lesson.unlocked_project) if lesson.unlocked_project
 
+      # Check for badges that might be awarded (badge's award_to? determines eligibility)
+      AwardBadgeJob.perform_later(user, 'maze_navigator')
+
       user_lesson
     end
   end
