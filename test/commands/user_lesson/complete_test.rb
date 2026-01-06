@@ -225,4 +225,45 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
     assert_equal initial_count, user.user_projects.count
   end
+
+  # Badge tests
+  test "enqueues maze navigator badge job on lesson completion" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'maze_navigator']) do
+      UserLesson::Complete.(user, lesson)
+    end
+  end
+
+  test "awards maze navigator badge only when criteria is met" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, level:, slug: 'maze-solve-basic')
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    perform_enqueued_jobs do
+      UserLesson::Complete.(user, lesson)
+    end
+
+    assert user.acquired_badges.joins(:badge).where(badges: { type: 'Badges::MazeNavigatorBadge' }).exists?
+  end
+
+  test "does not award maze navigator badge when criteria is not met" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, level:, slug: 'some-other-lesson')
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    perform_enqueued_jobs do
+      UserLesson::Complete.(user, lesson)
+    end
+
+    refute user.acquired_badges.joins(:badge).where(badges: { type: 'Badges::MazeNavigatorBadge' }).exists?
+  end
 end
