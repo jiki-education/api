@@ -19,7 +19,7 @@ class VideoProduction::Node::ExecutionSucceeded
   private
   def new_metadata
     (node.metadata || {}).merge(
-      completed_at: Time.current.iso8601
+      'completed_at' => Time.current.iso8601
     )
   end
 end

@@ -17,9 +17,9 @@ class VideoProduction::Node::ExecutionStarted
 
   def new_metadata
     (node.metadata || {}).merge(
-      metadata.merge(
-        started_at: Time.current.iso8601,
-        process_uuid: process_uuid
+      metadata.deep_stringify_keys.merge(
+        'started_at' => Time.current.iso8601,
+        'process_uuid' => process_uuid
       )
     )
   end
