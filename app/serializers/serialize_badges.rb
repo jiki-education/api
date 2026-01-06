@@ -18,7 +18,7 @@ class SerializeBadges
   # - Secret badges that the user has acquired
   memoize
   def visible_badges
-    Badge.where("secret = ? OR id IN (?)", false, acquired_badge_ids).
+    Badge.where(secret: false).or(Badge.where(id: acquired_badge_ids)).
       order(:id)
   end
 

@@ -14,7 +14,11 @@ class Badge < ApplicationRecord
 
   # Find badge by slug and create on-demand
   def self.find_by_slug!(slug)
-    klass = "badges/#{slug}_badge".camelize.constantize
+    # Validate slug format (only lowercase letters and underscores)
+    raise ArgumentError, "Invalid badge slug: #{slug}" unless slug.match?(/\A[a-z_]+\z/)
+
+    klass = "badges/#{slug}_badge".camelize.safe_constantize
+    raise ArgumentError, "Badge class not found for slug: #{slug}" unless klass
 
     # Race condition safe
     begin
