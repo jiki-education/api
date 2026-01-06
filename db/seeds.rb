@@ -367,3 +367,89 @@ if Dir.exist?(video_production_seeds_dir)
 else
   puts "⚠ No video production seeds directory found at #{video_production_seeds_dir}"
 end
+
+# Create badges
+puts "\nCreating badges..."
+
+# Create all available badges using their STI classes
+badge_classes = [
+  Badges::MemberBadge,
+  Badges::MazeNavigatorBadge,
+  Badges::TestSecretBadge,
+  Badges::FirstLessonBadge,
+  Badges::EarlyBirdBadge,
+  Badges::LevelCompletionistBadge,
+  Badges::RapidLearnerBadge
+]
+
+badge_classes.each do |badge_class|
+  badge = badge_class.find_or_create_by!(type: badge_class.name) do |b|
+    # Trigger before_create callback to set attributes from seed data
+  end
+  puts "  ✓ Created badge: #{badge.name} (#{badge.secret? ? 'secret' : 'public'})"
+end
+
+puts "✓ Successfully created #{badge_classes.count} badges!"
+
+# Create user badge acquisitions to demonstrate all possible states
+puts "\nCreating user badge acquisitions (all states)..."
+
+# Get admin user (the one you're probably logged in as)
+admin_user = User.find_by(email: "ihid@jiki.io")
+
+member_badge = Badges::MemberBadge.first
+maze_badge = Badges::MazeNavigatorBadge.first  
+secret_badge = Badges::TestSecretBadge.first
+first_lesson_badge = Badges::FirstLessonBadge.first
+early_bird_badge = Badges::EarlyBirdBadge.first
+level_completionist_badge = Badges::LevelCompletionistBadge.first
+rapid_learner_badge = Badges::RapidLearnerBadge.first
+
+if admin_user
+  # State 1: LOCKED badges (no User::AcquiredBadge record exists)
+  # maze_badge and rapid_learner_badge are locked for test user
+  puts "  ✓ Maze Navigator badge: LOCKED (hasn't completed maze lesson)"
+  puts "  ✓ Rapid Learner badge: LOCKED (hasn't completed 3 lessons in one day)"
+  puts "  ✓ Level Completionist badge: LOCKED (hasn't completed a full level)"
+  
+  # State 2: NEW/UNREVEALED badges (earned but not seen - revealed: false)
+  User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: member_badge) do |ab|
+    ab.revealed = false
+    ab.created_at = 1.day.ago
+  end
+  puts "  ✓ Member badge: NEW/UNREVEALED (earned but not seen)"
+  
+  User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: first_lesson_badge) do |ab|
+    ab.revealed = false
+    ab.created_at = 1.hour.ago
+  end
+  puts "  ✓ First Steps badge: NEW/UNREVEALED (just earned)"
+  
+  # State 3: SEEN/REVEALED badges (earned and seen - revealed: true)  
+  User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: secret_badge) do |ab|
+    ab.revealed = true
+    ab.created_at = 2.days.ago
+  end
+  puts "  ✓ Test Secret badge: SEEN/REVEALED (secret badge, earned and seen)"
+  
+  User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: early_bird_badge) do |ab|
+    ab.revealed = true
+    ab.created_at = 3.days.ago
+  end
+  puts "  ✓ Early Bird badge: SEEN/REVEALED (secret early access badge)"
+  
+  puts "✓ Successfully created badge acquisitions demonstrating all states!"
+  puts "\n  Badge States Summary for user #{admin_user.email}:"
+  puts "    LOCKED (not earned):"
+  puts "       - Maze Navigator (needs to complete maze lesson)"
+  puts "       - Rapid Learner (needs 3 lessons in one day)"
+  puts "       - Level Completionist (needs to complete full level)"
+  puts "    NEW/UNREVEALED (earned, not seen):"
+  puts "       - Member (just joined)"
+  puts "       - First Steps (just completed first lesson)"
+  puts "    SEEN/REVEALED (earned and seen):"
+  puts "       - Test Secret (secret badge, revealed)"
+  puts "       - Early Bird (secret early access badge, revealed)"
+else
+  puts "⚠ Could not create badge acquisitions - missing admin user"
+end
