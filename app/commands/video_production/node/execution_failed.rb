@@ -16,8 +16,8 @@ class VideoProduction::Node::ExecutionFailed
   private
   def new_metadata
     (node.metadata || {}).merge(
-      error: error_message,
-      completed_at: Time.current.iso8601
+      'error' => error_message,
+      'completed_at' => Time.current.iso8601
     )
   end
 end

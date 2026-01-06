@@ -14,6 +14,6 @@ class VideoProduction::Node::ExecutionUpdated
 
   private
   def new_metadata
-    (node.metadata || {}).merge(metadata)
+    (node.metadata || {}).merge(metadata.deep_stringify_keys)
   end
 end
