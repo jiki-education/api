@@ -40,6 +40,15 @@ module ActiveSupport
       ActiveJob::Base.queue_adapter = @original_adapter
     end
 
+    # Reset I18n locale before each test to prevent locale leakage
+    setup do
+      I18n.locale = I18n.default_locale
+    end
+
+    teardown do
+      I18n.locale = I18n.default_locale
+    end
+
     # Setup Prosopite to scan each test for N+1 queries
     setup do
       Prosopite.scan
