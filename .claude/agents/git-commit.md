@@ -66,6 +66,7 @@ Scan all changed code files against these project-specific rules. **Report viola
 - ✓ No data formatting in controllers
 
 #### Controller Tests (`test/controllers/**/*.rb`)
+- ✓ Follows the rules in `.context/testing.md`
 - ✓ Uses `assert_json_response` with serializers for ALL data responses (index, show, create, update)
 - ✓ **ALWAYS** uses serializers in assertions (e.g., `assert_json_response({ users: SerializeAdminUsers.([...]) })`)
 - ✓ Uses `response.parsed_body` ONLY when assert_json_response cannot work (e.g. for non-serialized values, error messages **with regex**, implementation details)
@@ -78,6 +79,7 @@ Scan all changed code files against these project-specific rules. **Report viola
 - ✓ Tests pagination, filtering, and combinations in search commands
 
 #### Command Tests (`test/commands/**/*.rb`)
+- ✓ Follows the rules in `.context/testing.md`
 - ✓ 1-1 mapping between commands and tests (critical coverage requirement)
 - ✓ Uses Mocha for mocking and stubbing
 - ✓ Tests all error scenarios
@@ -126,19 +128,20 @@ EOF
 
 Follow this step-by-step workflow:
 
-1. **Check branch**: Get current branch name
-2. **Branch protection check**: If on `main`, request explicit authorization or STOP
-3. **Check for --no-verify**: If detected in user request, request explicit authorization or STOP
-4. **Review changes**:
+1. **Read the .context/testing.md file and any other context files relevant for the changes on this branch (e.g. commands, controllers, etc).
+2. **Check branch**: Get current branch name
+3. **Branch protection check**: If on `main`, request explicit authorization or STOP
+4. **Check for --no-verify**: If detected in user request, request explicit authorization or STOP
+5. **Review changes**:
    - Get list of changed files
    - Read the actual diff
    - Infer branch purpose from branch name
    - Check alignment with branch purpose
-5. **Code quality review**: Scan changes against all project rules
-6. **Draft commit message**: Based on changes and recent commit style
-7. **Report findings**: Show user what you found (violations, alignment issues)
-8. **Execute commit**: Stage and commit with the drafted message
-9. **Confirm success**: Show the commit that was created
+6. **Code quality review**: Scan changes against all project rules
+7. **Draft commit message**: Based on changes and recent commit style
+8. **Report findings**: Show user what you found (violations, alignment issues)
+9. **Execute commit**: Stage and commit with the drafted message
+10. **Confirm success**: Show the commit that was created
 
 ## Output Format
 

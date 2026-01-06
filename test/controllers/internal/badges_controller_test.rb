@@ -10,7 +10,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   guard_incorrect_token! :reveal_internal_badge_path, args: [1], method: :patch
 
   # Index action tests
-  test "GET index returns all non-secret badges" do
+  test "GET index returns all non-secret badges and excludes secret badges" do
     create(:member_badge)
     create(:maze_navigator_badge)
     create(:test_secret_badge)
@@ -18,11 +18,10 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     get internal_badges_path, headers: @headers, as: :json
 
     assert_response :success
-    json = response.parsed_body
-    badge_names = json["badges"].map { |b| b["name"] }
-    assert_includes badge_names, "Member"
-    assert_includes badge_names, "Maze Navigator"
-    refute_includes badge_names, "Secret Badge"
+    assert_json_response({
+      badges: SerializeBadges.(@current_user),
+      num_locked_secret_badges: 1
+    })
   end
 
   test "GET index includes acquired secret badges" do
@@ -32,57 +31,27 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     get internal_badges_path, headers: @headers, as: :json
 
     assert_response :success
-    json = response.parsed_body
-    badge_names = json["badges"].map { |b| b["name"] }
-    assert_includes badge_names, "Secret Badge"
+    assert_json_response({
+      badges: SerializeBadges.(@current_user),
+      num_locked_secret_badges: 0
+    })
   end
 
-  test "GET index shows correct state for locked badge" do
+  test "GET index returns badges with correct states" do
     create(:member_badge)
+    unrevealed_badge = create(:maze_navigator_badge)
+    revealed_badge = create(:test_secret_badge)
+
+    create(:user_acquired_badge, user: @current_user, badge: unrevealed_badge, revealed: false)
+    create(:user_acquired_badge, :revealed, user: @current_user, badge: revealed_badge)
 
     get internal_badges_path, headers: @headers, as: :json
 
     assert_response :success
-    json = response.parsed_body
-    locked_badge = json["badges"].find { |b| b["name"] == "Member" }
-    assert_equal "locked", locked_badge["state"]
-    assert_nil locked_badge["unlocked_at"]
-  end
-
-  test "GET index shows correct state for unrevealed badge" do
-    badge = create(:member_badge)
-    create(:user_acquired_badge, user: @current_user, badge:, revealed: false)
-
-    get internal_badges_path, headers: @headers, as: :json
-
-    assert_response :success
-    json = response.parsed_body
-    unrevealed_badge = json["badges"].find { |b| b["name"] == "Member" }
-    assert_equal "unrevealed", unrevealed_badge["state"]
-    refute_nil unrevealed_badge["unlocked_at"]
-  end
-
-  test "GET index shows correct state for revealed badge" do
-    badge = create(:maze_navigator_badge)
-    create(:user_acquired_badge, :revealed, user: @current_user, badge:)
-
-    get internal_badges_path, headers: @headers, as: :json
-
-    assert_response :success
-    json = response.parsed_body
-    revealed_badge = json["badges"].find { |b| b["name"] == "Maze Navigator" }
-    assert_equal "revealed", revealed_badge["state"]
-    refute_nil revealed_badge["unlocked_at"]
-  end
-
-  test "GET index returns correct count of locked secret badges" do
-    create(:test_secret_badge)
-
-    get internal_badges_path, headers: @headers, as: :json
-
-    assert_response :success
-    json = response.parsed_body
-    assert_equal 1, json["num_locked_secret_badges"]
+    assert_json_response({
+      badges: SerializeBadges.(@current_user),
+      num_locked_secret_badges: 0
+    })
   end
 
   test "GET index uses SerializeBadges" do
@@ -106,16 +75,14 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
 
   test "PATCH reveal returns serialized badge" do
     badge = create(:member_badge)
-    create(:user_acquired_badge, user: @current_user, badge:, revealed: false)
+    acquired_badge = create(:user_acquired_badge, user: @current_user, badge:, revealed: false)
 
     patch reveal_internal_badge_path(badge.id), headers: @headers, as: :json
 
     assert_response :success
-    json = response.parsed_body
-    assert_equal badge.id, json["badge"]["id"]
-    assert_equal "Member", json["badge"]["name"]
-    assert_equal "logo", json["badge"]["icon"]
-    assert json["badge"]["revealed"]
+    assert_json_response({
+      badge: SerializeAcquiredBadge.(acquired_badge.reload)
+    })
   end
 
   test "PATCH reveal returns 404 when badge not found" do
