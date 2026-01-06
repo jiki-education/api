@@ -113,6 +113,9 @@ group :development do
 end
 
 group :test do
+  # Pin minitest to 5.x until Rails supports 6.0
+  gem "minitest", "~> 5.0"
+
   # Mocking and stubbing framework
   gem "mocha"
 
