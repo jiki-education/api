@@ -1,30 +1,9 @@
 [
   {
-    "slug": "pocket-calculator",
-    "title": "Pocket Calculator",
-    "description": "Create a simple yet powerful calculator for everyday arithmetic. Perfect for quick calculations on the go!",
-    "exercise_slug": "acronym",
-    "unlocked_by_lesson_slug": "maze-solve-basic"
-  },
-  {
-    "slug": "scientific-calculator",
-    "title": "Scientific Calculator",
-    "description": "Build an advanced calculator with scientific functions like powers, roots, and trigonometry. Time to tackle complex equations!",
-    "exercise_slug": "acronym",
-    "unlocked_by_lesson_slug": "maze-solve-basic"
-  },
-  {
-    "slug": "currency-converter",
-    "title": "Currency Converter",
-    "description": "Design a calculator that converts between different currencies. Help travelers and traders calculate exchange rates in real-time!",
-    "exercise_slug": "acronym",
-    "unlocked_by_lesson_slug": "maze-solve-basic"
-  },
-  {
-    "slug": "programmer-calculator",
-    "title": "Programmer's Calculator",
-    "description": "Craft a specialized calculator for developers with binary, hexadecimal, and bitwise operations. Switch between number systems like a pro!",
-    "exercise_slug": "acronym",
-    "unlocked_by_lesson_slug": "maze-solve-basic"
+    "slug": "sprouting-flower",
+    "title": "Sprouting Flower",
+    "description": "Create a beautiful animation of a flower sprouting and growing using state and colors. Bring nature to life with code!",
+    "exercise_slug": "sprouting-flower",
+    "unlocked_by_lesson_slug": "sunset"
   }
 ]
