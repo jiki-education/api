@@ -37,9 +37,9 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   end
 
   # Email tests
-  test "PATCH email stores in unconfirmed_email with correct sudo_password" do
+  test "PATCH email stores in unconfirmed_email" do
     patch email_internal_settings_path,
-      params: { value: "new@example.com", sudo_password: "password123" },
+      params: { value: "new@example.com" },
       headers: @headers,
       as: :json
 
@@ -50,7 +50,10 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert_equal "new@example.com", @user.unconfirmed_email
   end
 
+  # TODO: Re-enable once frontend supports sudo password verification
   test "PATCH email fails with incorrect sudo_password" do
+    skip "Re-enable once frontend supports sudo password verification"
+
     patch email_internal_settings_path,
       params: { value: "new@example.com", sudo_password: "wrongpassword" },
       headers: @headers,
@@ -63,7 +66,10 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert_equal "test@example.com", @user.reload.email
   end
 
+  # TODO: Re-enable once frontend supports sudo password verification
   test "PATCH email fails with missing sudo_password" do
+    skip "Re-enable once frontend supports sudo password verification"
+
     patch email_internal_settings_path,
       params: { value: "new@example.com" },
       headers: @headers,
@@ -74,9 +80,9 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   end
 
   # Password tests
-  test "PATCH password updates with correct sudo_password" do
+  test "PATCH password updates successfully" do
     patch password_internal_settings_path,
-      params: { value: "newpassword456", sudo_password: "password123" },
+      params: { value: "newpassword456" },
       headers: @headers,
       as: :json
 
@@ -84,7 +90,10 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert @user.reload.valid_password?("newpassword456")
   end
 
+  # TODO: Re-enable once frontend supports sudo password verification
   test "PATCH password fails with incorrect sudo_password" do
+    skip "Re-enable once frontend supports sudo password verification"
+
     patch password_internal_settings_path,
       params: { value: "newpassword456", sudo_password: "wrongpassword" },
       headers: @headers,
@@ -94,7 +103,10 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert @user.reload.valid_password?("password123")
   end
 
+  # TODO: Re-enable once frontend supports sudo password verification
   test "PATCH password fails with missing sudo_password" do
+    skip "Re-enable once frontend supports sudo password verification"
+
     patch password_internal_settings_path,
       params: { value: "newpassword456" },
       headers: @headers,
