@@ -45,8 +45,13 @@ Rails.application.routes.draw do
   namespace :internal do
     resource :me, only: [:show]
 
-    namespace :settings do
-      resource :handle, only: [:update]
+    resource :settings, only: [:show] do
+      patch :name
+      patch :email
+      patch :password
+      patch :locale
+      patch :handle
+      patch 'notifications/:slug', action: :notification, as: :notification
     end
 
     resources :levels, only: [:index] do

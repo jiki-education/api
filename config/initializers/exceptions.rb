@@ -33,3 +33,6 @@ class LessonIncompleteError < RuntimeError; end
 
 # Badge errors
 class BadgeCriteriaNotFulfilledError < RuntimeError; end
+
+# Settings errors
+class InvalidNotificationSlugError < RuntimeError; end
