@@ -2,9 +2,9 @@ class User < ApplicationRecord
   include Devise::JwtStrategy
 
   # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-    :recoverable, :validatable,
+    :recoverable, :validatable, :confirmable,
     :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true

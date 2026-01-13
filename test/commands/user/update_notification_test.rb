@@ -22,7 +22,7 @@ class User::UpdateNotificationTest < ActiveSupport::TestCase
   test "raises on invalid slug" do
     user = create(:user)
 
-    assert_raises User::UpdateNotification::InvalidNotificationSlugError do
+    assert_raises InvalidNotificationSlugError do
       User::UpdateNotification.(user, "invalid_slug", false)
     end
   end

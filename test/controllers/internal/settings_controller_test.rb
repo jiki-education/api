@@ -37,15 +37,17 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   end
 
   # Email tests
-  test "PATCH email updates with correct sudo_password" do
+  test "PATCH email stores in unconfirmed_email with correct sudo_password" do
     patch email_internal_settings_path,
       params: { value: "new@example.com", sudo_password: "password123" },
       headers: @headers,
       as: :json
 
     assert_response :success
-    assert_equal "new@example.com", @user.reload.email
-    refute @user.email_verified
+    @user.reload
+    # With reconfirmable, new email goes to unconfirmed_email
+    assert_equal "test@example.com", @user.email
+    assert_equal "new@example.com", @user.unconfirmed_email
   end
 
   test "PATCH email fails with incorrect sudo_password" do

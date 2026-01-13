@@ -22,7 +22,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     refute_nil user
     assert_equal 'google-user-id-123', user.google_id
     assert_equal 'google', user.provider
-    assert user.email_verified
+    assert user.confirmed?
     assert_equal 'newuser', user.handle
 
     # Check JWT token was created and linked to refresh token
@@ -36,7 +36,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert_equal 'newuser@gmail.com', json['user']['email']
     assert_equal 'New User', json['user']['name']
     assert_equal 'google', json['user']['provider']
-    assert json['user']['email_verified']
+    assert json['user']['email_confirmed']
     assert json['refresh_token'].present?
 
     # Check JWT token in header
@@ -50,7 +50,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
       email: 'existing@gmail.com',
       google_id: 'google-user-id-456',
       provider: 'google',
-      email_verified: true)
+      confirmed_at: Time.current)
 
     google_payload = {
       'sub' => 'google-user-id-456',
@@ -103,7 +103,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     existing_user.reload
     assert_equal 'google-user-id-789', existing_user.google_id
     assert_equal 'google', existing_user.provider
-    assert existing_user.email_verified
+    assert existing_user.confirmed?
 
     json = response.parsed_body
     assert_equal existing_user.handle, json['user']['handle']

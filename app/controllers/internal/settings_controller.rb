@@ -43,7 +43,7 @@ class Internal::SettingsController < Internal::BaseController
   def notification
     User::UpdateNotification.(current_user, params[:slug], params[:value])
     render json: { settings: SerializeSettings.(current_user) }
-  rescue User::UpdateNotification::InvalidNotificationSlugError
+  rescue InvalidNotificationSlugError
     render_not_found("Unknown notification type")
   rescue ActiveRecord::RecordInvalid => e
     render_settings_error("Notification update failed", e)

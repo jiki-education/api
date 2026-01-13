@@ -6,7 +6,7 @@ class SerializeSettingsTest < ActiveSupport::TestCase
       name: "Test User",
       handle: "test-handle",
       email: "test@example.com",
-      email_verified: true,
+      confirmed_at: Time.current,
       locale: "en")
 
     result = SerializeSettings.(user)
@@ -15,7 +15,8 @@ class SerializeSettingsTest < ActiveSupport::TestCase
       name: "Test User",
       handle: "test-handle",
       email: "test@example.com",
-      email_verified: true,
+      unconfirmed_email: nil,
+      email_confirmed: true,
       locale: "en",
       receive_product_updates: true,
       receive_event_emails: true,
@@ -43,12 +44,21 @@ class SerializeSettingsTest < ActiveSupport::TestCase
     refute result[:receive_activity_emails]
   end
 
-  test "serializes user with unverified email" do
-    user = create(:user, email_verified: false)
+  test "serializes user with unconfirmed email" do
+    user = create(:user, confirmed_at: nil)
 
     result = SerializeSettings.(user)
 
-    refute result[:email_verified]
+    refute result[:email_confirmed]
+  end
+
+  test "serializes user with pending email change" do
+    user = create(:user, confirmed_at: Time.current, unconfirmed_email: "new@example.com")
+
+    result = SerializeSettings.(user)
+
+    assert result[:email_confirmed]
+    assert_equal "new@example.com", result[:unconfirmed_email]
   end
 
   test "serializes user with different locale" do

@@ -16,7 +16,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
       assert_equal 'New User', user.name
       assert_equal 'google-123', user.google_id
       assert_equal 'google', user.provider
-      assert user.email_verified
+      assert user.confirmed?
       assert_equal 'newuser', user.handle
     end
   end
@@ -47,7 +47,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
       email: 'existing@gmail.com',
       google_id: nil,
       provider: nil,
-      email_verified: false)
+      confirmed_at: nil)
 
     google_payload = {
       'sub' => 'google-789',
@@ -62,7 +62,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
       assert_equal existing_user.id, user.id
       assert_equal 'google-789', user.google_id
       assert_equal 'google', user.provider
-      assert user.email_verified
+      assert user.confirmed?
     end
   end
 

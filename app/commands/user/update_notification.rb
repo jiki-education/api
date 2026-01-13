@@ -10,7 +10,5 @@ class User
       column = User::Data.notification_column_for(slug)
       user.data.update!(column => value)
     end
-
-    class InvalidNotificationSlugError < StandardError; end
   end
 end

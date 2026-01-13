@@ -10,7 +10,7 @@ class SerializeUser
       email: user.email,
       name: user.name,
       provider: user.provider,
-      email_verified: user.email_verified,
+      email_confirmed: user.confirmed?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data
     }
