@@ -141,4 +141,59 @@ class Concept::SearchTest < ActiveSupport::TestCase
     assert_equal [concept_a, concept_b, concept_m, concept_z], result
     assert_equal %w[Alpha Bravo Mike Zulu], result.map(&:title)
   end
+
+  test "slugs: filters by single slug" do
+    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
+    create :concept, title: "Bravo", slug: "bravo-concept"
+
+    result = Concept::Search.(slugs: "alpha-concept").to_a
+    assert_equal [concept_1], result
+  end
+
+  test "slugs: filters by multiple slugs (comma-separated)" do
+    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
+    create :concept, title: "Bravo", slug: "bravo-concept"
+    concept_3 = create :concept, title: "Charlie", slug: "charlie-concept"
+
+    result = Concept::Search.(slugs: "alpha-concept,charlie-concept").to_a
+    assert_equal [concept_1, concept_3], result
+  end
+
+  test "slugs: handles whitespace around slugs" do
+    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
+    concept_2 = create :concept, title: "Bravo", slug: "bravo-concept"
+
+    result = Concept::Search.(slugs: " alpha-concept , bravo-concept ").to_a
+    assert_equal [concept_1, concept_2], result
+  end
+
+  test "slugs: returns empty for non-existent slugs" do
+    create :concept, title: "Alpha", slug: "alpha-concept"
+
+    result = Concept::Search.(slugs: "non-existent").to_a
+    assert_empty result
+  end
+
+  test "slugs: combined with user filter" do
+    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
+    create :concept, title: "Bravo", slug: "bravo-concept"
+    user = create :user
+
+    Concept::UnlockForUser.(concept_1, user)
+    # concept_2 is NOT unlocked
+
+    # Both slugs requested, but only concept_1 is unlocked
+    result = Concept::Search.(slugs: "alpha-concept,bravo-concept", user:).to_a
+    assert_equal [concept_1], result
+  end
+
+  test "slugs: combined with title filter" do
+    concept_1 = create :concept, title: "String Basics", slug: "string-basics"
+    create :concept, title: "Array Basics", slug: "array-basics"
+    create :concept, title: "String Advanced", slug: "string-advanced"
+
+    # Filter by slugs AND title - only string-basics matches both
+    result = Concept::Search.(slugs: "string-basics,array-basics", title: "String").to_a
+    assert_equal [concept_1], result
+  end
 end

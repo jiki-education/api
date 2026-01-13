@@ -6,8 +6,9 @@ class Concept::Search
 
   def self.default_per = DEFAULT_PER
 
-  def initialize(title: nil, page: nil, per: nil, user: nil)
+  def initialize(title: nil, slugs: nil, page: nil, per: nil, user: nil)
     @title = title
+    @slugs = slugs
     @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
     @per = per.present? && per.to_i.positive? ? per.to_i : self.class.default_per
     @user = user
@@ -17,18 +18,28 @@ class Concept::Search
     @concepts = Concept.order(:title)
 
     apply_title_filter!
+    apply_slugs_filter!
     apply_user_filter!
 
     @concepts.page(page).per(per)
   end
 
   private
-  attr_reader :title, :page, :per, :user
+  attr_reader :title, :slugs, :page, :per, :user
 
   def apply_title_filter!
     return if title.blank?
 
     @concepts = @concepts.where("title ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(title)}%")
+  end
+
+  def apply_slugs_filter!
+    return if slugs.blank?
+
+    slug_array = slugs.split(',').map(&:strip).reject(&:blank?)
+    return if slug_array.empty?
+
+    @concepts = @concepts.where(slug: slug_array)
   end
 
   def apply_user_filter!
