@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_154822) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_13_172507) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -333,6 +333,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_154822) do
     t.datetime "last_email_opened_at"
     t.string "membership_type", default: "standard", null: false
     t.boolean "notifications_enabled", default: true, null: false
+    t.boolean "receive_activity_emails", default: true, null: false
+    t.boolean "receive_event_emails", default: true, null: false
+    t.boolean "receive_milestone_emails", default: true, null: false
+    t.boolean "receive_product_updates", default: true, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "stripe_subscription_status"

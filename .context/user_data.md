@@ -34,6 +34,27 @@ has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true
 ## Current Fields
 
 - **unlocked_concept_ids**: Array of concept IDs user has unlocked (see `.context/concept_unlocking.md`)
+- **receive_product_updates**: Boolean, default true - Emails about new features or content
+- **receive_event_emails**: Boolean, default true - Emails about livestreams
+- **receive_milestone_emails**: Boolean, default true - Emails when reaching new milestones
+- **receive_activity_emails**: Boolean, default true - Other emails in response to user actions
+
+## Notification Preferences
+
+The model includes a `NOTIFICATION_SLUGS` constant mapping URL slugs to column names:
+
+```ruby
+NOTIFICATION_SLUGS = {
+  "product_updates" => :receive_product_updates,
+  "event_emails" => :receive_event_emails,
+  "milestone_emails" => :receive_milestone_emails,
+  "activity_emails" => :receive_activity_emails
+}
+```
+
+Helper methods:
+- `User::Data.valid_notification_slug?(slug)` - Check if a slug is valid
+- `User::Data.notification_column_for(slug)` - Get the column name for a slug
 
 ## Extensibility
 

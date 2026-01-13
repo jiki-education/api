@@ -4,6 +4,22 @@ class User::Data < ApplicationRecord
   # Generate unsubscribe token for new records
   before_create :generate_unsubscribe_token
 
+  # Notification preference slugs mapped to column names
+  NOTIFICATION_SLUGS = {
+    "product_updates" => :receive_product_updates,
+    "event_emails" => :receive_event_emails,
+    "milestone_emails" => :receive_milestone_emails,
+    "activity_emails" => :receive_activity_emails
+  }.freeze
+
+  def self.valid_notification_slug?(slug)
+    NOTIFICATION_SLUGS.key?(slug)
+  end
+
+  def self.notification_column_for(slug)
+    NOTIFICATION_SLUGS[slug]
+  end
+
   # Subscription status enum
   enum :subscription_status, {
     never_subscribed: 0,
