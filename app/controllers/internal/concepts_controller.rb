@@ -4,6 +4,7 @@ class Internal::ConceptsController < Internal::BaseController
   def index
     concepts = Concept::Search.(
       title: params[:title],
+      slugs: params[:slugs],
       page: params[:page],
       per: params[:per],
       user: current_user

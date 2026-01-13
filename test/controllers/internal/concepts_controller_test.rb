@@ -80,6 +80,51 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "GET index filters by slugs parameter" do
+    Prosopite.finish
+    concept_1 = create(:concept, title: "Arrays", slug: "arrays")
+    concept_2 = create(:concept, title: "Hashes", slug: "hashes")
+    create(:concept, title: "Strings", slug: "strings")
+
+    Concept::UnlockForUser.(concept_1, @current_user)
+    Concept::UnlockForUser.(concept_2, @current_user)
+
+    get internal_concepts_path(slugs: "arrays,hashes"), headers: @headers, as: :json
+
+    assert_response :success
+    assert_json_response({
+      results: SerializeConcepts.([concept_1, concept_2]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 2,
+        events: []
+      }
+    })
+  end
+
+  test "GET index slugs filter only returns unlocked concepts" do
+    Prosopite.finish
+    concept_1 = create(:concept, title: "Arrays", slug: "arrays")
+    create(:concept, title: "Hashes", slug: "hashes")
+
+    Concept::UnlockForUser.(concept_1, @current_user)
+    # concept_2 is locked
+
+    get internal_concepts_path(slugs: "arrays,hashes"), headers: @headers, as: :json
+
+    assert_response :success
+    assert_json_response({
+      results: SerializeConcepts.([concept_1]),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
+  end
+
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
     concept_1 = create(:concept, title: "Concept A")
