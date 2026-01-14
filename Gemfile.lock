@@ -169,8 +169,8 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
-    devise-jwt (0.12.1)
-      devise (~> 4.0)
+    devise-jwt (0.13.0)
+      devise (>= 4.0.0, < 6.0.0)
       warden-jwt_auth (~> 0.10)
     drb (2.2.3)
     dry-auto_inject (1.1.0)
@@ -413,7 +413,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.1)
-    rdoc (7.0.3)
+    rdoc (7.1.0)
       erb
       psych (>= 4.0.0)
       tsort
@@ -530,7 +530,7 @@ DEPENDENCIES
   commonmarker
   debug
   devise (~> 4.9)
-  devise-jwt (~> 0.12.0)
+  devise-jwt (~> 0.13.0)
   factory_bot_rails
   faker
   friendly_id
