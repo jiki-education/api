@@ -1,6 +1,13 @@
 en:
   devise:
     mailer:
+      confirmation_instructions:
+        subject: "Confirm Your Email Address"
+        preview: "Confirm your email address for your Jiki account"
+        greeting: "Hi %{name},"
+        intro: "Please confirm your email address by clicking the link below:"
+        cta: "Confirm My Email"
+        no_request: "If you didn't create a Jiki account, you can safely ignore this email."
       reset_password_instructions:
         subject: "Reset Your Password"
         preview: "Reset your password for your Jiki account"

@@ -1,0 +1,9 @@
+<%= t('devise.mailer.confirmation_instructions.greeting', name: @user.name || @user.email) %>
+
+<%= t('devise.mailer.confirmation_instructions.intro') %>
+
+<%= t('devise.mailer.confirmation_instructions.cta') %>: <%= @confirmation_url %>
+
+---
+
+<%= t('devise.mailer.confirmation_instructions.no_request') %>
