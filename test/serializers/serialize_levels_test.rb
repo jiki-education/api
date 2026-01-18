@@ -1,7 +1,7 @@
 require "test_helper"
 
 class SerializeLevelsTest < ActiveSupport::TestCase
-  test "serializes multiple levels with lessons including title and description" do
+  test "serializes multiple levels with lessons including title and description but not data" do
     level1 = create(:level, slug: "level-1", milestone_summary: "Summary 1")
     level2 = create(:level, slug: "level-2", milestone_summary: "Summary 2")
     create(:lesson, level: level1, slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise", data: { slug: "ex1" })
@@ -12,14 +12,14 @@ class SerializeLevelsTest < ActiveSupport::TestCase
         slug: "level-1",
         milestone_summary: "Summary 1",
         lessons: [
-          { slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise", data: { slug: "ex1" } }
+          { slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise" }
         ]
       },
       {
         slug: "level-2",
         milestone_summary: "Summary 2",
         lessons: [
-          { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "tutorial", data: { slug: "ex2" } }
+          { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "tutorial" }
         ]
       }
     ]
@@ -40,7 +40,7 @@ class SerializeLevelsTest < ActiveSupport::TestCase
         slug: "solo",
         milestone_summary: "Solo summary",
         lessons: [
-          { slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", type: "exercise", data: { slug: "test" } }
+          { slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", type: "exercise" }
         ]
       }
     ]

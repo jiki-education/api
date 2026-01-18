@@ -72,4 +72,20 @@ class SerializeLessonTest < ActiveSupport::TestCase
       assert_equal "Injected description", result[:description]
     end
   end
+
+  test "includes data by default" do
+    lesson = create(:lesson, slug: "intro", title: "Title", description: "Desc",
+      type: "exercise", data: { slug: "test-ex" })
+
+    result = SerializeLesson.(lesson)
+    assert_equal({ slug: "test-ex" }, result[:data])
+  end
+
+  test "excludes data when include_data is false" do
+    lesson = create(:lesson, slug: "intro", title: "Title", description: "Desc",
+      type: "exercise", data: { slug: "test-ex" })
+
+    result = SerializeLesson.(lesson, include_data: false)
+    refute result.key?(:data)
+  end
 end
