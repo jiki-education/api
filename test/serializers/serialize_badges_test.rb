@@ -79,7 +79,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     serialized_badge = result.find { |b| b[:name] == "Member" }
     assert_equal badge.id, serialized_badge[:id]
-    assert_equal "logo", serialized_badge[:icon]
+    assert_equal "member", serialized_badge[:slug]
     assert_equal "Joined Jiki", serialized_badge[:description]
   end
 
