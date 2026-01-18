@@ -1,7 +1,7 @@
 class SerializeLesson
   include Mandate
 
-  initialize_with :lesson, content: nil, include_data: true
+  initialize_with :lesson, content: nil, include_data: false
 
   def call
     content_data = content || lesson.content_for_locale(I18n.locale)

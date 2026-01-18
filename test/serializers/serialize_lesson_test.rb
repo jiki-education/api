@@ -1,7 +1,7 @@
 require "test_helper"
 
 class SerializeLessonTest < ActiveSupport::TestCase
-  test "serializes lesson with all fields including title and description" do
+  test "serializes lesson with core fields by default (without data)" do
     lesson = create(:lesson, slug: "hello-world", title: "Hello World", description: "Learn the basics",
       type: "exercise", data: { slug: "basic-movement" })
 
@@ -9,14 +9,13 @@ class SerializeLessonTest < ActiveSupport::TestCase
       slug: "hello-world",
       title: "Hello World",
       description: "Learn the basics",
-      type: "exercise",
-      data: { slug: "basic-movement" }
+      type: "exercise"
     }
 
     assert_equal(expected, SerializeLesson.(lesson))
   end
 
-  test "serializes complex data hash" do
+  test "serializes lesson with data when include_data is true" do
     lesson = create(:lesson, slug: "test", title: "Test Lesson", description: "A test lesson",
       type: "tutorial", data: { slug: "test-exercise", difficulty: "easy", points: 10 })
 
@@ -28,7 +27,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
       data: { slug: "test-exercise", difficulty: "easy", points: 10 }
     }
 
-    assert_equal(expected, SerializeLesson.(lesson))
+    assert_equal(expected, SerializeLesson.(lesson, include_data: true))
   end
 
   test "uses translated content for non-English locale" do
@@ -73,19 +72,19 @@ class SerializeLessonTest < ActiveSupport::TestCase
     end
   end
 
-  test "includes data by default" do
+  test "excludes data by default" do
     lesson = create(:lesson, slug: "intro", title: "Title", description: "Desc",
       type: "exercise", data: { slug: "test-ex" })
 
     result = SerializeLesson.(lesson)
-    assert_equal({ slug: "test-ex" }, result[:data])
+    refute result.key?(:data)
   end
 
-  test "excludes data when include_data is false" do
+  test "includes data when include_data is true" do
     lesson = create(:lesson, slug: "intro", title: "Title", description: "Desc",
       type: "exercise", data: { slug: "test-ex" })
 
-    result = SerializeLesson.(lesson, include_data: false)
-    refute result.key?(:data)
+    result = SerializeLesson.(lesson, include_data: true)
+    assert_equal({ slug: "test-ex" }, result[:data])
   end
 end

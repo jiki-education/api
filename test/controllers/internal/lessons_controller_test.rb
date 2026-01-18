@@ -16,7 +16,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
 
     assert_response :success
     assert_json_response({
-      lesson: SerializeLesson.(lesson)
+      lesson: SerializeLesson.(lesson, include_data: true)
     })
   end
 
@@ -32,7 +32,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
     lesson = create(:lesson, level: level, slug: "test-lesson")
     serialized_data = { slug: "test", type: "exercise", data: {} }
 
-    SerializeLesson.expects(:call).with(lesson).returns(serialized_data)
+    SerializeLesson.expects(:call).with(lesson, include_data: true).returns(serialized_data)
 
     Prosopite.scan # Resume scan for the actual request
     get internal_lesson_path(lesson_slug: "test-lesson"), headers: @headers, as: :json
