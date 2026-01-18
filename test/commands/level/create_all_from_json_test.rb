@@ -9,24 +9,24 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     assert result
 
     # Verify levels were created
-    first_program = Level.find_by(slug: "your-first-program")
-    assert first_program
-    assert_equal "Your First Program", first_program.title
-    assert_equal 1, first_program.position
+    using_functions = Level.find_by(slug: "using-functions")
+    assert using_functions
+    assert_equal "Using Functions", using_functions.title
+    assert_equal 1, using_functions.position
 
-    numbers = Level.find_by(slug: "numbers")
-    assert numbers
-    assert_equal "Using Numbers to Draw", numbers.title
-    assert_equal 2, numbers.position
+    strings_and_colors = Level.find_by(slug: "strings-and-colors")
+    assert strings_and_colors
+    assert_equal "Strings and Colors", strings_and_colors.title
+    assert_equal 2, strings_and_colors.position
 
     # Verify lessons were created
-    assert_equal 3, first_program.lessons.count
-    first_lesson = first_program.lessons.find_by(slug: "maze-solve-basic")
+    assert_equal 7, using_functions.lessons.count
+    first_lesson = using_functions.lessons.find_by(slug: "maze-solve-basic")
     assert first_lesson
-    assert_equal "Your First Function Call", first_lesson.title
+    assert_equal "Solve the Maze", first_lesson.title
     assert_equal "exercise", first_lesson.type
     assert_equal({ slug: "maze-solve-basic" }, first_lesson.data)
-    assert_equal 1, first_lesson.position
+    assert_equal 2, first_lesson.position
   end
 
   test "is idempotent - running twice updates existing records" do
@@ -38,9 +38,9 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     # Second run
     Level::CreateAllFromJson.(file_path.to_s)
 
-    # Verify counts haven't changed (2 levels, 5 lessons total: 3 + 2)
-    assert_equal 2, Level.count
-    assert_equal 5, Lesson.count
+    # Verify counts haven't changed (5 levels, 25 lessons total: 7 + 5 + 3 + 4 + 6)
+    assert_equal 5, Level.count
+    assert_equal 25, Lesson.count
   end
 
   test "raises error for non-existent file" do

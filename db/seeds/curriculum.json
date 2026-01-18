@@ -1,70 +1,295 @@
 {
   "levels": [
     {
-      "slug": "your-first-program",
-      "title": "Your First Program",
-      "description": "Write your first program and understand how Jiki works!",
-      "milestone_summary": "Congratulations on completing your first level! You've learned how to call functions and started your coding journey.",
-      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to call functions to make things happen\n- How Jiki works and how to learn with us\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to learn about using numbers\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
+      "slug": "using-functions",
+      "title": "Using Functions",
+      "description": "Learn how to use functions with and without inputs.",
+      "milestone_summary": "Congratulations! You've completed your first level and learned how to use functions with and without inputs.",
+      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to call functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
       "lessons": [
         {
+          "slug": "welcome-to-jiki",
+          "title": "Welcome to Jiki",
+          "description": "Get started with your coding journey",
+          "type": "video",
+          "data": {
+            "sources": [{
+              "host": "mux",
+              "id": "TODO"
+            }]
+          }
+        },
+        {
           "slug": "maze-solve-basic",
-          "title": "Your First Function Call",
-          "description": "Learn how to call functions to make things happen",
+          "title": "Solve the Maze",
+          "description": "Learn how to call functions to solve a maze",
           "type": "exercise",
           "data": {
             "slug": "maze-solve-basic"
           }
         },
         {
-          "slug": "welcome-to-jiki",
-          "title": "Welcome To Jiki",
-          "description": "Meet your instructor, Jeremy, and your friendly helper, Jiki!",
+          "slug": "introduction-to-functions",
+          "title": "Introduction to Functions",
+          "description": "Learn what functions are and how they work",
           "type": "video",
           "data": {
             "sources": [{
               "host": "mux",
-              "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              "id": "TODO"
             }]
           }
         },
         {
-          "slug": "win-space-invaders",
-          "title": "Welcome to Space Invaders",
-          "description": "Use Functions to shoot down some Aliens",
+          "slug": "space-invaders-solve-basic",
+          "title": "Space Invaders",
+          "description": "Use functions to defeat aliens in Space Invaders",
           "type": "exercise",
           "data": {
-            "slug": "win-space-invaders"
+            "slug": "space-invaders-solve-basic"
+          }
+        },
+        {
+          "slug": "functions-with-inputs",
+          "title": "Functions with Inputs",
+          "description": "Learn how to use functions that take inputs",
+          "type": "video",
+          "data": {
+            "sources": [{
+              "host": "mux",
+              "id": "TODO"
+            }]
+          }
+        },
+        {
+          "slug": "fix-the-wall",
+          "title": "Fix the Wall",
+          "description": "Use functions with inputs to draw and fix a wall",
+          "type": "exercise",
+          "data": {
+            "slug": "fix-the-wall"
+          }
+        },
+        {
+          "slug": "sunshine",
+          "title": "Sunshine",
+          "description": "Draw a sunny scene using functions with inputs",
+          "type": "exercise",
+          "data": {
+            "slug": "sunshine"
           }
         }
       ]
     },
     {
-      "slug": "numbers",
-      "title": "Using Numbers to Draw",
-      "description": "Learn how to use ",
-      "milestone_summary": "Great work! You've learned how to use numbers as inputs to functions, unlocking a whole new level of programming power.",
-      "milestone_content": "# Excellent Progress! 🌟\n\nYou've mastered using numbers with functions - a fundamental skill in programming!\n\n## What you've learned:\n- How to think of functions as machines with inputs and outputs\n- How to use numbers to control what functions do\n- How to solve problems more effectively with parameters\n\n## Next steps:\n- Apply these concepts to more complex challenges\n- Keep building on your growing programming skills\n- Remember: every expert programmer started exactly where you are now!\n\nYou're making amazing progress. Keep it up!",
+      "slug": "strings-and-colors",
+      "title": "Strings and Colors",
+      "description": "Learn how to use strings and colors to make your programs more colorful and expressive.",
+      "milestone_summary": "Excellent work! You've learned how to use strings and colors to create colorful drawings.",
+      "milestone_content": "# Great Progress! 🎨\n\nYou've mastered using strings and colors in your programs!\n\n## What you've learned:\n- How to use strings to work with text and names\n- How to use colors to make your drawings more vibrant\n- How to combine shapes and colors to create complex images\n\n## Next steps:\n- Continue building on these skills\n- Create even more complex and colorful programs\n- Keep experimenting with different combinations!\n\nYou're becoming a skilled programmer. Keep it up!",
       "lessons": [
         {
-          "slug": "functions-as-machines",
-          "title": "Functions are Machines",
-          "description": "Learn about how to think about functions as machines, and how to use numbers as their inputs",
+          "slug": "strings-and-colors-intro",
+          "title": "Strings and Colors",
+          "description": "Learn how to use strings and colors in your programs",
           "type": "video",
           "data": {
             "sources": [{
               "host": "mux",
-              "id": "fVihIfKhBJaHQ2cekC00TQEnRJjCEzttdVHtBCbMfhKQ"
+              "id": "TODO"
             }]
           }
         },
         {
-          "slug": "solve-a-maze-with-numbers",
-          "title": "Solve the Maze with Numbers",
-          "description": "Use your ability to use functions with inputs to solve the maze more effectively.",
+          "slug": "foxy-face",
+          "title": "Foxy Face",
+          "description": "Draw a fox face using triangles and colors",
           "type": "exercise",
           "data": {
-            "slug": "solve-a-maze-with-numbers"
+            "slug": "foxy-face"
+          }
+        },
+        {
+          "slug": "sun-and-rain",
+          "title": "Sun and Rain",
+          "description": "Create a weather scene using ellipses and colors",
+          "type": "exercise",
+          "data": {
+            "slug": "sun-and-rain"
+          }
+        },
+        {
+          "slug": "jumbled-house",
+          "title": "Jumbled House",
+          "description": "Fix a mixed-up house drawing using shapes and colors",
+          "type": "exercise",
+          "data": {
+            "slug": "jumbled-house"
+          }
+        },
+        {
+          "slug": "penguin",
+          "title": "Penguin",
+          "description": "Draw a cute penguin using different shapes and colors",
+          "type": "exercise",
+          "data": {
+            "slug": "penguin"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "repeat-loop",
+      "title": "Repeat Loop",
+      "description": "Learn how to repeat actions using loops to make your code more efficient.",
+      "milestone_summary": "Great job! You've learned how to use repeat loops to make your programs more powerful and efficient.",
+      "milestone_content": "# Fantastic Work! 🔁\n\nYou've mastered the repeat loop - one of the most powerful tools in programming!\n\n## What you've learned:\n- How to use loops to repeat actions\n- How to write more efficient code with less repetition\n- How to solve problems that require doing the same thing multiple times\n\n## Next steps:\n- Apply loops to more complex challenges\n- Combine loops with everything else you've learned\n- Keep building your programming skills!\n\nYou're making excellent progress. Keep going!",
+      "lessons": [
+        {
+          "slug": "introducing-repeat-loop",
+          "title": "Introducing the Repeat Loop",
+          "description": "Learn how to use loops to repeat actions in your programs",
+          "type": "video",
+          "data": {
+            "sources": [{
+              "host": "mux",
+              "id": "TODO"
+            }]
+          }
+        },
+        {
+          "slug": "golf-rolling-ball-loop",
+          "title": "Golf Rolling Ball Loop",
+          "description": "Use a repeat loop to animate a rolling golf ball",
+          "type": "exercise",
+          "data": {
+            "slug": "golf-rolling-ball-loop"
+          }
+        },
+        {
+          "slug": "space-invaders-loop",
+          "title": "Space Invaders Loop",
+          "description": "Use loops to defeat waves of aliens more efficiently",
+          "type": "exercise",
+          "data": {
+            "slug": "space-invaders-loop"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "variables",
+      "title": "Variables",
+      "description": "Learn how to store and reuse values using variables.",
+      "milestone_summary": "Excellent! You've learned how to use variables to store and reuse values in your programs.",
+      "milestone_content": "# Outstanding Work! 📦\n\nYou've mastered variables - a fundamental building block of programming!\n\n## What you've learned:\n- How to create and use variables to store values\n- How to make your code more flexible and reusable\n- How to change values in one place and see results everywhere\n- How variables make complex programs easier to manage\n\n## Next steps:\n- Use variables in more complex programs\n- Combine variables with loops and functions\n- Keep building your programming toolkit!\n\nYou're becoming a real programmer now. Keep going!",
+      "lessons": [
+        {
+          "slug": "creating-and-using-variables",
+          "title": "Creating and Using Variables",
+          "description": "Learn how to create variables and use them to store values",
+          "type": "video",
+          "data": {
+            "sources": [{
+              "host": "mux",
+              "id": "TODO"
+            }]
+          }
+        },
+        {
+          "slug": "cloud-rain-sun-variables",
+          "title": "Cloud Rain Sun with Variables",
+          "description": "Improve your weather scene by using variables to control values",
+          "type": "exercise",
+          "data": {
+            "slug": "cloud-rain-sun-variables"
+          }
+        },
+        {
+          "slug": "structured-house",
+          "title": "Structured House",
+          "description": "Build a house using variables to make your code more organized",
+          "type": "exercise",
+          "data": {
+            "slug": "structured-house"
+          }
+        },
+        {
+          "slug": "maze-variables",
+          "title": "Maze with Variables",
+          "description": "Set variable values to solve the maze efficiently",
+          "type": "exercise",
+          "data": {
+            "slug": "maze-variables"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "basic-state",
+      "title": "Basic State",
+      "description": "Learn how to update variables and track changing values over time.",
+      "milestone_summary": "Amazing! You've learned how to use variables to track state and create dynamic programs.",
+      "milestone_content": "# Incredible Progress! 📈\n\nYou've mastered using variables to track state - a crucial programming skill!\n\n## What you've learned:\n- How to update variables to track changing values\n- How to use state to make your programs dynamic\n- How to work with HSL colors for beautiful effects\n- How to combine all your skills to create complex programs\n\n## Next steps:\n- Apply state management to more complex challenges\n- Keep experimenting with colors and animations\n- You're ready for your first project!\n\nYou're well on your way to mastering programming. Keep it up!",
+      "lessons": [
+        {
+          "slug": "updating-variables",
+          "title": "Updating Variables",
+          "description": "Learn how to update variables to track changing values",
+          "type": "video",
+          "data": {
+            "sources": [{
+              "host": "mux",
+              "id": "TODO"
+            }]
+          }
+        },
+        {
+          "slug": "finish-the-wall",
+          "title": "Finish the Wall",
+          "description": "Use updating variables to complete the wall drawing",
+          "type": "exercise",
+          "data": {
+            "slug": "finish-the-wall"
+          }
+        },
+        {
+          "slug": "golf-rolling-ball",
+          "title": "Golf Rolling Ball",
+          "description": "Animate a rolling golf ball using state",
+          "type": "exercise",
+          "data": {
+            "slug": "golf-rolling-ball"
+          }
+        },
+        {
+          "slug": "colors-hsl",
+          "title": "Colors (HSL)",
+          "description": "Learn about HSL color model for creating beautiful color effects",
+          "type": "video",
+          "data": {
+            "sources": [{
+              "host": "mux",
+              "id": "TODO"
+            }]
+          }
+        },
+        {
+          "slug": "rainbow",
+          "title": "Rainbow",
+          "description": "Create a colorful rainbow using HSL colors",
+          "type": "exercise",
+          "data": {
+            "slug": "rainbow"
+          }
+        },
+        {
+          "slug": "sunset",
+          "title": "Sunset",
+          "description": "Draw a beautiful sunset scene with HSL color gradients",
+          "type": "exercise",
+          "data": {
+            "slug": "sunset"
           }
         }
       ]
