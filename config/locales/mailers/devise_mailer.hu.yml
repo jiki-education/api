@@ -1,6 +1,13 @@
 hu:
   devise:
     mailer:
+      confirmation_instructions:
+        subject: "Erősítsd meg az e-mail címedet"
+        preview: "Erősítsd meg az e-mail címedet a Jiki fiókodhoz"
+        greeting: "Szia %{name},"
+        intro: "Kérjük, erősítsd meg az e-mail címedet az alábbi linkre kattintva:"
+        cta: "E-mail cím megerősítése"
+        no_request: "Ha nem hoztál létre Jiki fiókot, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt."
       reset_password_instructions:
         subject: "Jelszó visszaállítása"
         preview: "Állítsd vissza jelszavadat a Jiki fiókodhoz"
