@@ -3,14 +3,14 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
 # Create an admin user
-User.find_or_create_by!(email: "ihid@jiki.io") do |u|
+admin_user = User.find_or_create_by!(email: "ihid@jiki.io") do |u|
   u.admin = true
   u.handle = "iHiD"
   u.name = "Jeremy Walker"
   u.password = "password"
   u.password_confirmation = "password"
 end
-puts "Created admin user"
+puts "Created admin user: #{admin_user.email}"
 
 # Create a test user
 user = User.find_or_create_by!(email: "test@example.com") do |u|
@@ -28,6 +28,13 @@ puts "Loading levels from #{curriculum_file}..."
 Level::CreateAllFromJson.call(curriculum_file, delete_existing: false)
 
 puts "✓ Successfully loaded levels and lessons!"
+
+# Bootstrap users (creates initial UserLevel for first level)
+puts "\nBootstrapping users..."
+User::Bootstrap.(admin_user)
+puts "  ✓ Bootstrapped admin user"
+User::Bootstrap.(user)
+puts "  ✓ Bootstrapped test user"
 
 # Load concepts
 puts "\nLoading concepts..."
