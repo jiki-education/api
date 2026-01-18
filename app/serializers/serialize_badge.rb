@@ -7,7 +7,7 @@ class SerializeBadge
     {
       id: badge.id,
       name: badge.name,
-      icon: badge.icon,
+      slug: badge.slug,
       description: badge.description,
       state:,
       num_awardees: badge.num_awardees

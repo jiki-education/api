@@ -44,6 +44,11 @@ class Badge < ApplicationRecord
     raise NotImplementedError, "Subclasses must implement award_to?"
   end
 
+  # Derive slug from class name (e.g., Badges::MemberBadge -> "member")
+  def slug
+    self.class.name.demodulize.underscore.delete_suffix('_badge')
+  end
+
   # Calculate percentage of users who have this badge
   def percentage_awardees
     return 0 if num_awardees.zero?

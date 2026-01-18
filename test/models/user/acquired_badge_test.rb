@@ -97,11 +97,11 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
     assert_equal "Member", acquired_badge.name
   end
 
-  test "delegates icon to badge" do
+  test "delegates slug to badge" do
     badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
-    assert_equal "logo", acquired_badge.icon
+    assert_equal "member", acquired_badge.slug
   end
 
   test "delegates description to badge" do
