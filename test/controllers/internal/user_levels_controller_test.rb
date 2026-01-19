@@ -140,4 +140,49 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     assert_equal "Cannot complete level: 2 lesson(s) incomplete", response.parsed_body["error"]
   end
+
+  test "PATCH complete emits lesson_unlocked event for first lesson of next level" do
+    level1 = create(:level, slug: "level-1", position: 1)
+    level2 = create(:level, slug: "level-2", position: 2)
+    lesson1 = create(:lesson, level: level1, slug: "level1-lesson", position: 1)
+    create(:lesson, level: level2, slug: "level2-first-lesson", position: 1)
+    create(:user_level, user: @current_user, level: level1)
+    create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
+
+    patch complete_internal_user_level_path(level_slug: level1.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    assert_json_response({
+      meta: {
+        events: [
+          {
+            type: "lesson_unlocked",
+            data: {
+              lesson_slug: "level2-first-lesson"
+            }
+          }
+        ]
+      }
+    })
+  end
+
+  test "PATCH complete does not emit lesson_unlocked event when no next level exists" do
+    level = create(:level, slug: "last-level", position: 1)
+    lesson = create(:lesson, level:, slug: "last-lesson", position: 1)
+    create(:user_level, user: @current_user, level:)
+    create(:user_lesson, user: @current_user, lesson:, completed_at: Time.current)
+
+    patch complete_internal_user_level_path(level_slug: level.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    assert_json_response({
+      meta: {
+        events: []
+      }
+    })
+  end
 end

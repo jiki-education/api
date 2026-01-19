@@ -266,4 +266,71 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
     refute user.acquired_badges.joins(:badge).where(badges: { type: 'Badges::MazeNavigatorBadge' }).exists?
   end
+
+  # Lesson unlocked event tests
+  test "emits lesson_unlocked event when there is a next lesson in the level" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, level:, slug: "first-lesson", position: 1)
+    create(:lesson, level:, slug: "second-lesson", position: 2)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson1)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson1)
+
+    events = Current.events
+    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
+    assert_equal 1, lesson_unlocked_events.length
+    assert_equal "second-lesson", lesson_unlocked_events.first[:data][:lesson_slug]
+  end
+
+  test "does not emit lesson_unlocked event when it is the last lesson in the level" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, level:, slug: "only-lesson", position: 1)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson)
+
+    events = Current.events || []
+    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
+    assert_equal 0, lesson_unlocked_events.length
+  end
+
+  test "lesson_unlocked event contains correct slug for next lesson by position" do
+    user = create(:user)
+    level = create(:level)
+    create(:lesson, level:, slug: "lesson-one", position: 1)
+    lesson2 = create(:lesson, level:, slug: "lesson-two", position: 2)
+    create(:lesson, level:, slug: "lesson-three", position: 3)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson2)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson2)
+
+    events = Current.events
+    lesson_unlocked_event = events.find { |e| e[:type] == "lesson_unlocked" }
+    assert_equal "lesson-three", lesson_unlocked_event[:data][:lesson_slug]
+  end
+
+  test "does not emit lesson_unlocked event for next level's lessons" do
+    user = create(:user)
+    level1 = create(:level, position: 1, slug: "level-one")
+    level2 = create(:level, position: 2, slug: "level-two")
+    lesson1 = create(:lesson, level: level1, slug: "level1-lesson", position: 1)
+    create(:lesson, level: level2, slug: "level2-lesson", position: 1)
+    create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson: lesson1)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson1)
+
+    events = Current.events || []
+    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
+    assert_equal 0, lesson_unlocked_events.length
+  end
 end

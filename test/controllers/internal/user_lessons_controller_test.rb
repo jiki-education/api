@@ -261,6 +261,50 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "PATCH complete emits lesson_unlocked event when there is a next lesson" do
+    level = create(:level)
+    lesson1 = create(:lesson, level:, slug: "first-lesson", position: 1)
+    create(:lesson, level:, slug: "second-lesson", position: 2)
+    create(:user_level, user: @current_user, level:)
+    create(:user_lesson, user: @current_user, lesson: lesson1)
+
+    patch complete_internal_user_lesson_path(lesson_slug: lesson1.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    assert_json_response({
+      meta: {
+        events: [
+          {
+            type: "lesson_unlocked",
+            data: {
+              lesson_slug: "second-lesson"
+            }
+          }
+        ]
+      }
+    })
+  end
+
+  test "PATCH complete does not emit lesson_unlocked event for last lesson in level" do
+    level = create(:level)
+    lesson = create(:lesson, level:, slug: "only-lesson", position: 1)
+    create(:user_level, user: @current_user, level:)
+    create(:user_lesson, user: @current_user, lesson:)
+
+    patch complete_internal_user_lesson_path(lesson_slug: lesson.slug),
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    assert_json_response({
+      meta: {
+        events: []
+      }
+    })
+  end
+
   # Error handler tests
   test "POST start returns 422 when lesson in progress" do
     lesson1 = create(:lesson, level: @level)
