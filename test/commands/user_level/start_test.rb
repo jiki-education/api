@@ -101,4 +101,50 @@ class UserLevel::StartTest < ActiveSupport::TestCase
     # Tracking pointer should remain unchanged (not re-set)
     assert_equal first_user_level.id, user.reload.current_user_level_id
   end
+
+  # Lesson unlocked event tests
+  test "emits lesson_unlocked event for first lesson when level is started" do
+    user = create(:user)
+    level = create(:level)
+    create(:lesson, level:, slug: "first-lesson", position: 1)
+    create(:lesson, level:, slug: "second-lesson", position: 2)
+
+    Current.reset
+    UserLevel::Start.(user, level)
+
+    events = Current.events
+    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
+    assert_equal 1, lesson_unlocked_events.length
+    assert_equal "first-lesson", lesson_unlocked_events.first[:data][:lesson_slug]
+  end
+
+  test "does not emit lesson_unlocked event when level has no lessons" do
+    user = create(:user)
+    level = create(:level)
+
+    Current.reset
+    UserLevel::Start.(user, level)
+
+    events = Current.events || []
+    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
+    assert_equal 0, lesson_unlocked_events.length
+  end
+
+  test "does not emit lesson_unlocked event on subsequent calls (idempotent)" do
+    user = create(:user)
+    level = create(:level)
+    create(:lesson, level:, slug: "first-lesson", position: 1)
+
+    # First call - should emit event
+    Current.reset
+    UserLevel::Start.(user, level)
+    events = Current.events
+    assert_equal(1, events.count { |e| e[:type] == "lesson_unlocked" })
+
+    # Second call - should not emit event (idempotent)
+    Current.reset
+    UserLevel::Start.(user, level)
+    events = Current.events || []
+    assert_equal(0, events.count { |e| e[:type] == "lesson_unlocked" })
+  end
 end
