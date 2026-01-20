@@ -10,7 +10,7 @@ class AssistantConversationTest < ActiveSupport::TestCase
 
   test "belongs_to context polymorphically" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     conversation = create(:assistant_conversation, user:, context: lesson)
 
     assert_equal lesson, conversation.context
@@ -26,7 +26,7 @@ class AssistantConversationTest < ActiveSupport::TestCase
 
   test "enforces unique index on user_id, context_type, context_id" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     create(:assistant_conversation, user:, context: lesson)
 
     error = assert_raises ActiveRecord::RecordNotUnique do

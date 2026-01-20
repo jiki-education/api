@@ -12,9 +12,9 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     level1 = create(:level, slug: "basics", position: 1)
     level2 = create(:level, slug: "advanced", position: 2)
 
-    lesson1 = create(:lesson, level: level1, slug: "lesson-1", position: 1)
-    lesson2 = create(:lesson, level: level1, slug: "lesson-2", position: 2)
-    lesson3 = create(:lesson, level: level2, slug: "lesson-3", position: 1)
+    lesson1 = create(:lesson, :exercise, level: level1, slug: "lesson-1", position: 1)
+    lesson2 = create(:lesson, :exercise, level: level1, slug: "lesson-2", position: 2)
+    lesson3 = create(:lesson, :exercise, level: level2, slug: "lesson-3", position: 1)
 
     create(:user_level, user: @current_user, level: level1)
     create(:user_level, user: @current_user, level: level2)
@@ -43,8 +43,8 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     level1 = create(:level, slug: "my-level")
     level2 = create(:level, slug: "other-level")
 
-    lesson1 = create(:lesson, level: level1, slug: "my-lesson")
-    lesson2 = create(:lesson, level: level2, slug: "other-lesson")
+    lesson1 = create(:lesson, :exercise, level: level1, slug: "my-lesson")
+    lesson2 = create(:lesson, :exercise, level: level2, slug: "other-lesson")
 
     create(:user_level, user: @current_user, level: level1)
     create(:user_level, user: other_user, level: level2)
@@ -62,7 +62,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
 
   test "GET index returns correct JSON structure" do
     level = create(:level)
-    lesson = create(:lesson, level: level)
+    lesson = create(:lesson, :exercise, level: level)
     create(:user_level, user: @current_user, level: level)
     create(:user_lesson, user: @current_user, lesson: lesson)
 
@@ -104,9 +104,9 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     level2 = create(:level, slug: "level-a", position: 1)
     level3 = create(:level, slug: "level-b", position: 2)
 
-    lesson1 = create(:lesson, level: level1, slug: "lesson-c")
-    lesson2 = create(:lesson, level: level2, slug: "lesson-a")
-    lesson3 = create(:lesson, level: level3, slug: "lesson-b")
+    lesson1 = create(:lesson, :exercise, level: level1, slug: "lesson-c")
+    lesson2 = create(:lesson, :exercise, level: level2, slug: "lesson-a")
+    lesson3 = create(:lesson, :exercise, level: level3, slug: "lesson-b")
 
     create(:user_level, user: @current_user, level: level1)
     create(:user_level, user: @current_user, level: level2)
@@ -127,9 +127,9 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
   # Error handler tests
   test "PATCH complete returns 422 when lessons are incomplete" do
     level = create(:level, slug: "test-level")
-    lesson1 = create(:lesson, level:)
-    create(:lesson, level:) # lesson2 not completed
-    create(:lesson, level:) # lesson3 not completed
+    lesson1 = create(:lesson, :exercise, level:)
+    create(:lesson, :exercise, level:) # lesson2 not completed
+    create(:lesson, :exercise, level:) # lesson3 not completed
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
 
@@ -144,8 +144,8 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
   test "PATCH complete emits lesson_unlocked event for first lesson of next level" do
     level1 = create(:level, slug: "level-1", position: 1)
     level2 = create(:level, slug: "level-2", position: 2)
-    lesson1 = create(:lesson, level: level1, slug: "level1-lesson", position: 1)
-    create(:lesson, level: level2, slug: "level2-first-lesson", position: 1)
+    lesson1 = create(:lesson, :exercise, level: level1, slug: "level1-lesson", position: 1)
+    create(:lesson, :exercise, level: level2, slug: "level2-first-lesson", position: 1)
     create(:user_level, user: @current_user, level: level1)
     create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
 
@@ -170,7 +170,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
 
   test "PATCH complete does not emit lesson_unlocked event when no next level exists" do
     level = create(:level, slug: "last-level", position: 1)
-    lesson = create(:lesson, level:, slug: "last-lesson", position: 1)
+    lesson = create(:lesson, :exercise, level:, slug: "last-lesson", position: 1)
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson:, completed_at: Time.current)
 

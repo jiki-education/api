@@ -22,6 +22,7 @@ class Lesson < ApplicationRecord
   validates :type, presence: true
   validates :data, presence: true
   validates :position, presence: true, uniqueness: { scope: :level_id }
+  validate :validate_data!
 
   before_validation :set_position, on: :create
 
@@ -34,5 +35,24 @@ class Lesson < ApplicationRecord
     return if position.present?
 
     self.position = (level.lessons.maximum(:position) || 0) + 1 if level
+  end
+
+  def validate_data!
+    case type
+    when 'exercise' then validate_exercise_data!
+    when 'video' then validate_video_data!
+    end
+  end
+
+  def validate_exercise_data!
+    return if data[:slug].present?
+
+    errors.add(:data, 'must contain slug for exercise lessons')
+  end
+
+  def validate_video_data!
+    return if data[:sources].present?
+
+    errors.add(:data, 'must contain sources for video lessons')
   end
 end

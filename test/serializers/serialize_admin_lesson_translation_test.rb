@@ -2,7 +2,7 @@ require "test_helper"
 
 class SerializeAdminLessonTranslationTest < ActiveSupport::TestCase
   test "returns correct structure with all fields" do
-    lesson = create(:lesson, slug: "variables-intro")
+    lesson = create(:lesson, :exercise, slug: "variables-intro")
     translation = create(:lesson_translation,
       lesson:,
       locale: "hu",
@@ -19,7 +19,7 @@ class SerializeAdminLessonTranslationTest < ActiveSupport::TestCase
   end
 
   test "includes lesson slug from association" do
-    lesson = create(:lesson, slug: "unique-slug")
+    lesson = create(:lesson, :exercise, slug: "unique-slug")
     translation = create(:lesson_translation, lesson:)
 
     result = SerializeAdminLessonTranslation.(translation)

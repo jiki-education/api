@@ -4,7 +4,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "completes existing user_lesson" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)
 
@@ -16,7 +16,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "raises error if user_lesson doesn't exist" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     assert_raises(UserLessonNotFoundError) do
       UserLesson::Complete.(user, lesson)
@@ -26,7 +26,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "sets completed_at to current time" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -41,7 +41,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "is idempotent when completing already completed lesson" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:, completed_at: 1.day.ago)
     old_completed_at = user_lesson.completed_at
@@ -55,7 +55,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "delegates to UserLesson::Find for lookup" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)
 
@@ -67,7 +67,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "returns the completed user_lesson" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -80,7 +80,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "preserves created_at when completing" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     created_time = 2.days.ago
     user_lesson = create(:user_lesson, user:, lesson:)
@@ -94,7 +94,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "clears current_user_lesson on user_level when completing" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)
     user_level.update!(current_user_lesson: user_lesson)
@@ -107,7 +107,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "raises error if user_level doesn't exist" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_lesson, user:, lesson:)
 
     assert_raises(UserLevelNotFoundError) do
@@ -118,8 +118,8 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "clears existing current_user_lesson on user_level" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level:, slug: "first-lesson")
-    lesson2 = create(:lesson, level:, slug: "second-lesson")
+    lesson1 = create(:lesson, :exercise, level:, slug: "first-lesson")
+    lesson2 = create(:lesson, :exercise, level:, slug: "second-lesson")
     user_lesson1 = create(:user_lesson, user:, lesson: lesson1)
     create(:user_lesson, user:, lesson: lesson2)
     user_level = create(:user_level, user:, level:, current_user_lesson: user_lesson1)
@@ -134,7 +134,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level = create(:level)
     concept = create(:concept)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     concept.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
@@ -149,7 +149,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "does not unlock concept when lesson has no unlocked_concept" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -162,7 +162,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level = create(:level)
     concept = create(:concept)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     concept.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
@@ -182,7 +182,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level = create(:level)
     project = create(:project)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     project.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
@@ -197,7 +197,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "does not unlock project when lesson has no unlocked_project" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -210,7 +210,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level = create(:level)
     project = create(:project)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     project.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
@@ -230,7 +230,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "enqueues maze navigator badge job on lesson completion" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -242,7 +242,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "awards maze navigator badge only when criteria is met" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:, slug: 'maze-solve-basic')
+    lesson = create(:lesson, :exercise, level:, slug: 'maze-solve-basic')
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -256,7 +256,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "does not award maze navigator badge when criteria is not met" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:, slug: 'some-other-lesson')
+    lesson = create(:lesson, :exercise, level:, slug: 'some-other-lesson')
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -271,8 +271,8 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "emits lesson_unlocked event when there is a next lesson in the level" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level:, slug: "first-lesson", position: 1)
-    create(:lesson, level:, slug: "second-lesson", position: 2)
+    lesson1 = create(:lesson, :exercise, level:, slug: "first-lesson", position: 1)
+    create(:lesson, :exercise, level:, slug: "second-lesson", position: 2)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson: lesson1)
 
@@ -288,7 +288,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "does not emit lesson_unlocked event when it is the last lesson in the level" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:, slug: "only-lesson", position: 1)
+    lesson = create(:lesson, :exercise, level:, slug: "only-lesson", position: 1)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
@@ -303,9 +303,9 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "lesson_unlocked event contains correct slug for next lesson by position" do
     user = create(:user)
     level = create(:level)
-    create(:lesson, level:, slug: "lesson-one", position: 1)
-    lesson2 = create(:lesson, level:, slug: "lesson-two", position: 2)
-    create(:lesson, level:, slug: "lesson-three", position: 3)
+    create(:lesson, :exercise, level:, slug: "lesson-one", position: 1)
+    lesson2 = create(:lesson, :exercise, level:, slug: "lesson-two", position: 2)
+    create(:lesson, :exercise, level:, slug: "lesson-three", position: 3)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson: lesson2)
 
@@ -321,8 +321,8 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level, position: 1, slug: "level-one")
     level2 = create(:level, position: 2, slug: "level-two")
-    lesson1 = create(:lesson, level: level1, slug: "level1-lesson", position: 1)
-    create(:lesson, level: level2, slug: "level2-lesson", position: 1)
+    lesson1 = create(:lesson, :exercise, level: level1, slug: "level1-lesson", position: 1)
+    create(:lesson, :exercise, level: level2, slug: "level2-lesson", position: 1)
     create(:user_level, user:, level: level1)
     create(:user_lesson, user:, lesson: lesson1)
 

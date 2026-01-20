@@ -106,8 +106,8 @@ class UserLevel::StartTest < ActiveSupport::TestCase
   test "emits lesson_unlocked event for first lesson when level is started" do
     user = create(:user)
     level = create(:level)
-    create(:lesson, level:, slug: "first-lesson", position: 1)
-    create(:lesson, level:, slug: "second-lesson", position: 2)
+    create(:lesson, :exercise, level:, slug: "first-lesson", position: 1)
+    create(:lesson, :exercise, level:, slug: "second-lesson", position: 2)
 
     Current.reset
     UserLevel::Start.(user, level)
@@ -133,7 +133,7 @@ class UserLevel::StartTest < ActiveSupport::TestCase
   test "does not emit lesson_unlocked event on subsequent calls (idempotent)" do
     user = create(:user)
     level = create(:level)
-    create(:lesson, level:, slug: "first-lesson", position: 1)
+    create(:lesson, :exercise, level:, slug: "first-lesson", position: 1)
 
     # First call - should emit event
     Current.reset

@@ -4,7 +4,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "completes existing user_level" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -18,7 +18,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "returns existing user_level if it exists" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user: user, level: level)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -30,7 +30,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "delegates to UserLevel::Find for lookup" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user: user, level: level)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -42,7 +42,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "returns the user_level" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -54,7 +54,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "sets completed_at to current time" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -69,7 +69,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "is idempotent when completing already completed level" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user: user, level: level, completed_at: 1.day.ago)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
     old_completed_at = user_level.completed_at
@@ -83,7 +83,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "preserves created_at when completing" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     created_time = 2.days.ago
     user_level = create(:user_level, user:, level:)
     user_level.update_column(:created_at, created_time)
@@ -98,7 +98,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level, position: 1)
     level2 = create(:level, position: 2)
-    lesson = create(:lesson, level: level1)
+    lesson = create(:lesson, :exercise, level: level1)
     create(:user_level, user:, level: level1)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -113,7 +113,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "does not create next user_level when no next level exists" do
     user = create(:user)
     level = create(:level, position: 1)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -126,7 +126,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level, position: 1)
     level5 = create(:level, position: 5)
-    lesson = create(:lesson, level: level1)
+    lesson = create(:lesson, :exercise, level: level1)
     create(:user_level, user:, level: level1)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -141,7 +141,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level, position: 1)
     level2 = create(:level, position: 2)
-    lesson = create(:lesson, level: level1)
+    lesson = create(:lesson, :exercise, level: level1)
     user_level = create(:user_level, user:, level: level1)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
 
@@ -159,7 +159,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "sends completion email when template exists" do
     user = create(:user, locale: "en")
     level = create(:level, slug: "level-1")
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
     create(:email_template, slug: "level-1", locale: "en")
@@ -172,7 +172,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "does not send email when template does not exist" do
     user = create(:user, locale: "en")
     level = create(:level, slug: "level-2")
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
     # No template created for level-2
@@ -198,7 +198,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "marks email as skipped when no template exists" do
     user = create(:user, locale: "en")
     level = create(:level, slug: "level-2")
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
     # No template for level-2
@@ -211,7 +211,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user = create(:user, locale: "en")
     level1 = create(:level, position: 1, slug: "level-1")
     level2 = create(:level, position: 2)
-    lesson = create(:lesson, level: level1)
+    lesson = create(:lesson, :exercise, level: level1)
     create(:user_level, user:, level: level1)
     create(:user_lesson, user:, lesson:, completed_at: Time.current)
     create(:email_template, slug: "level-1", locale: "en")
@@ -240,7 +240,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "raises LessonIncompleteError when no user_lesson exists" do
     user = create(:user)
     level = create(:level)
-    create(:lesson, level:)
+    create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
 
     error = assert_raises(LessonIncompleteError) do
@@ -253,7 +253,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "raises LessonIncompleteError when user_lesson exists but not completed" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:, completed_at: nil)
 
@@ -267,9 +267,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "raises LessonIncompleteError with multiple incomplete lessons" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level:)
-    lesson2 = create(:lesson, level:)
-    create(:lesson, level:) # lesson3 has no user_lesson
+    lesson1 = create(:lesson, :exercise, level:)
+    lesson2 = create(:lesson, :exercise, level:)
+    create(:lesson, :exercise, level:) # lesson3 has no user_lesson
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
     create(:user_lesson, user:, lesson: lesson2, completed_at: nil)
@@ -284,8 +284,8 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
   test "completes successfully when all lessons are completed" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level:)
-    lesson2 = create(:lesson, level:)
+    lesson1 = create(:lesson, :exercise, level:)
+    lesson2 = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
     create(:user_lesson, user:, lesson: lesson2, completed_at: Time.current)

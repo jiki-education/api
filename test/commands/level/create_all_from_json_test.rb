@@ -178,7 +178,7 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
   test "delete_existing: true removes all existing levels before import" do
     # Create some existing levels with lessons
     existing_level1 = create(:level, slug: "existing-1", title: "Existing 1")
-    create(:lesson, level: existing_level1, slug: "existing-lesson-1", title: "Existing Lesson 1", type: "exercise")
+    create(:lesson, :exercise, level: existing_level1, slug: "existing-lesson-1", title: "Existing Lesson 1")
     create(:level, slug: "existing-2", title: "Existing 2")
 
     file = Tempfile.new(['clean', '.json'])

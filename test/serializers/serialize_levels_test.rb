@@ -4,8 +4,8 @@ class SerializeLevelsTest < ActiveSupport::TestCase
   test "serializes multiple levels with lessons including title and description but not data" do
     level1 = create(:level, slug: "level-1", milestone_summary: "Summary 1")
     level2 = create(:level, slug: "level-2", milestone_summary: "Summary 2")
-    create(:lesson, level: level1, slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise", data: { slug: "ex1" })
-    create(:lesson, level: level2, slug: "l2", title: "Lesson 2", description: "Desc 2", type: "tutorial", data: { slug: "ex2" })
+    create(:lesson, :exercise, level: level1, slug: "l1", title: "Lesson 1", description: "Desc 1", data: { slug: "ex1" })
+    create(:lesson, :video, level: level2, slug: "l2", title: "Lesson 2", description: "Desc 2")
 
     expected = [
       {
@@ -19,7 +19,7 @@ class SerializeLevelsTest < ActiveSupport::TestCase
         slug: "level-2",
         milestone_summary: "Summary 2",
         lessons: [
-          { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "tutorial" }
+          { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "video" }
         ]
       }
     ]
@@ -33,7 +33,7 @@ class SerializeLevelsTest < ActiveSupport::TestCase
 
   test "serializes single level" do
     level = create(:level, slug: "solo", milestone_summary: "Solo summary")
-    create(:lesson, level: level, slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", type: "exercise", data: { slug: "test" })
+    create(:lesson, :exercise, level: level, slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", data: { slug: "test" })
 
     expected = [
       {
@@ -62,7 +62,7 @@ class SerializeLevelsTest < ActiveSupport::TestCase
 
   test "lessons include translated title and description for non-English locale" do
     level = create(:level, slug: "level-1", milestone_summary: "Summary")
-    lesson = create(:lesson, level: level, slug: "l1", title: "English Title", description: "English desc", type: "exercise", data: { slug: "ex1" })
+    lesson = create(:lesson, :exercise, level: level, slug: "l1", title: "English Title", description: "English desc", data: { slug: "ex1" })
     create(:lesson_translation, lesson: lesson, locale: "hu", title: "Magyar cím", description: "Magyar leírás")
 
     I18n.with_locale(:hu) do
@@ -74,8 +74,8 @@ class SerializeLevelsTest < ActiveSupport::TestCase
 
   test "lessons fall back to English for missing translations" do
     level = create(:level, slug: "level-1", milestone_summary: "Summary")
-    lesson1 = create(:lesson, level: level, slug: "l1", title: "Translated Title", description: "Translated desc", type: "exercise", data: { slug: "ex1" })
-    create(:lesson, level: level, slug: "l2", title: "English Only", description: "No translation", type: "tutorial", data: { slug: "ex2" })
+    lesson1 = create(:lesson, :exercise, level: level, slug: "l1", title: "Translated Title", description: "Translated desc", data: { slug: "ex1" })
+    create(:lesson, :video, level: level, slug: "l2", title: "English Only", description: "No translation")
     create(:lesson_translation, lesson: lesson1, locale: "hu", title: "Magyar cím", description: "Magyar leírás")
     # No translation for lesson2
 

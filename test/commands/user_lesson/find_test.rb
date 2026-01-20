@@ -3,7 +3,7 @@ require "test_helper"
 class UserLesson::FindTest < ActiveSupport::TestCase
   test "finds existing user_lesson" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     user_lesson = create(:user_lesson, user:, lesson:)
 
     result = UserLesson::Find.(user, lesson)
@@ -13,7 +13,7 @@ class UserLesson::FindTest < ActiveSupport::TestCase
 
   test "raises UserLessonNotFoundError when user_lesson doesn't exist" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     error = assert_raises(UserLessonNotFoundError) do
       UserLesson::Find.(user, lesson)
@@ -25,7 +25,7 @@ class UserLesson::FindTest < ActiveSupport::TestCase
   test "finds correct user_lesson for user" do
     user1 = create(:user)
     user2 = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     user_lesson1 = create(:user_lesson, user: user1, lesson:)
     create(:user_lesson, user: user2, lesson:)
 
@@ -36,8 +36,8 @@ class UserLesson::FindTest < ActiveSupport::TestCase
 
   test "finds correct user_lesson for lesson" do
     user = create(:user)
-    lesson1 = create(:lesson)
-    lesson2 = create(:lesson)
+    lesson1 = create(:lesson, :exercise)
+    lesson2 = create(:lesson, :exercise)
     user_lesson1 = create(:user_lesson, user:, lesson: lesson1)
     create(:user_lesson, user:, lesson: lesson2)
 

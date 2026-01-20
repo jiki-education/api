@@ -3,7 +3,7 @@ require "test_helper"
 class AssistantConversation::AddUserMessageTest < ActiveSupport::TestCase
   test "delegates to FindOrCreate and AddMessage" do
     user = create(:user)
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
     content = "How do I solve this problem?"
     timestamp = "2025-10-31T08:15:30.000Z"
 

@@ -2,29 +2,28 @@ require "test_helper"
 
 class SerializeAdminLessonTest < ActiveSupport::TestCase
   test "serializes lesson with all attributes" do
-    lesson = create(:lesson,
+    lesson = create(:lesson, :exercise,
       slug: "hello-world",
       title: "Hello World",
       description: "Your first lesson",
-      type: "coding",
       position: 1,
-      data: { "key" => "value" })
+      data: { slug: "some-exercise", key: "value" })
 
     expected = {
       id: lesson.id,
       slug: "hello-world",
       title: "Hello World",
       description: "Your first lesson",
-      type: "coding",
+      type: "exercise",
       position: 1,
-      data: { key: "value" }
+      data: { slug: "some-exercise", key: "value" }
     }
 
     assert_equal expected, SerializeAdminLesson.(lesson)
   end
 
   test "includes all required fields" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     result = SerializeAdminLesson.(lesson)
 
@@ -38,7 +37,7 @@ class SerializeAdminLessonTest < ActiveSupport::TestCase
   end
 
   test "serializes data with string keys" do
-    lesson = create(:lesson, data: { foo: "bar" })
+    lesson = create(:lesson, :exercise, data: { slug: "test", foo: "bar" })
 
     result = SerializeAdminLesson.(lesson)
 

@@ -2,7 +2,7 @@ require "test_helper"
 
 class SerializeUserLessonTest < ActiveSupport::TestCase
   test "serializes user_lesson with completed status" do
-    lesson = create(:lesson, slug: "hello-world", type: "tutorial")
+    lesson = create(:lesson, :video, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson: lesson, completed_at: Time.current)
 
     expected = {
@@ -16,7 +16,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "serializes user_lesson with started status" do
-    lesson = create(:lesson, slug: "hello-world", type: "tutorial")
+    lesson = create(:lesson, :video, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson: lesson, completed_at: nil)
 
     expected = {
@@ -30,7 +30,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "includes last_submission for exercise lesson with submission" do
-    lesson = create(:lesson, slug: "hello-world", type: "exercise")
+    lesson = create(:lesson, :exercise, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
     submission = create(:exercise_submission, context: user_lesson)
     file = create(:exercise_submission_file, exercise_submission: submission, filename: "solution.rb")
@@ -49,7 +49,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "includes last_submission as nil for exercise lesson without submission" do
-    lesson = create(:lesson, slug: "hello-world", type: "exercise")
+    lesson = create(:lesson, :exercise, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
 
     result = SerializeUserLesson.(user_lesson)
@@ -62,7 +62,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "does not include last_submission for non-exercise lesson" do
-    lesson = create(:lesson, slug: "hello-world", type: "tutorial")
+    lesson = create(:lesson, :video, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
 
     result = SerializeUserLesson.(user_lesson)
@@ -74,7 +74,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "includes most recent submission when multiple exist" do
-    lesson = create(:lesson, slug: "hello-world", type: "exercise")
+    lesson = create(:lesson, :exercise, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
 
     # Create older submission
@@ -96,7 +96,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "serializes multiple files in submission" do
-    lesson = create(:lesson, slug: "hello-world", type: "exercise")
+    lesson = create(:lesson, :exercise, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
     submission = create(:exercise_submission, context: user_lesson)
 
@@ -117,7 +117,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "includes conversation messages when conversation exists" do
-    lesson = create(:lesson, slug: "hello-world", type: "tutorial")
+    lesson = create(:lesson, :video, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
 
     messages = [
@@ -138,7 +138,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
   end
 
   test "includes conversation for exercise lesson with both conversation and submission" do
-    lesson = create(:lesson, slug: "hello-world", type: "exercise")
+    lesson = create(:lesson, :exercise, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)
     submission = create(:exercise_submission, context: user_lesson)
     file = create(:exercise_submission_file, exercise_submission: submission, filename: "solution.rb")

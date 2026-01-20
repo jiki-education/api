@@ -13,7 +13,7 @@ class Badges::MazeNavigatorBadgeTest < ActiveSupport::TestCase
   test "award_to? returns true when user completed maze-solve-basic lesson" do
     badge = Badge.find_by_slug!('maze_navigator') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
-    lesson = create(:lesson, slug: 'maze-solve-basic')
+    lesson = create(:lesson, :exercise, slug: 'maze-solve-basic')
     create(:user_lesson, :completed, user:, lesson:)
 
     assert badge.award_to?(user)
@@ -29,7 +29,7 @@ class Badges::MazeNavigatorBadgeTest < ActiveSupport::TestCase
   test "award_to? returns false when user completed different lesson" do
     badge = Badge.find_by_slug!('maze_navigator') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
-    lesson = create(:lesson, slug: 'different-lesson')
+    lesson = create(:lesson, :exercise, slug: 'different-lesson')
     create(:user_lesson, :completed, user:, lesson:)
 
     refute badge.award_to?(user)
@@ -38,7 +38,7 @@ class Badges::MazeNavigatorBadgeTest < ActiveSupport::TestCase
   test "award_to? returns false when user started but not completed maze-solve-basic" do
     badge = Badge.find_by_slug!('maze_navigator') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
-    lesson = create(:lesson, slug: 'maze-solve-basic')
+    lesson = create(:lesson, :exercise, slug: 'maze-solve-basic')
     create(:user_lesson, user:, lesson:) # Not completed
 
     refute badge.award_to?(user)

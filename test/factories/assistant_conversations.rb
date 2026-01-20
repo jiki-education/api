@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :assistant_conversation do
     user
-    association :context, factory: :lesson
+    association :context, factory: %i[lesson exercise]
     messages { [] }
 
     trait :with_messages do

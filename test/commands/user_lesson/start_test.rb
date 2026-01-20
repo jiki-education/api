@@ -4,7 +4,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "creates user_lesson when level exists" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
 
     assert_difference -> { UserLesson.count }, 1 do
@@ -15,7 +15,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "returns created user_lesson" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
 
     result = UserLesson::Start.(user, lesson)
@@ -28,7 +28,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "is idempotent - returns existing user_lesson on duplicate" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     first_result = UserLesson::Start.(user, lesson)
 
@@ -41,7 +41,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "raises UserLevelNotFoundError when user_level doesn't exist" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
 
     error = assert_raises(UserLevelNotFoundError) do
       UserLesson::Start.(user, lesson)
@@ -53,8 +53,8 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "raises LessonInProgressError when lesson is in progress" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level:)
-    lesson2 = create(:lesson, level:)
+    lesson1 = create(:lesson, :exercise, level:)
+    lesson2 = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
     in_progress_lesson = create(:user_lesson, user:, lesson: lesson1, completed_at: nil)
     user_level.update!(current_user_lesson: in_progress_lesson)
@@ -69,8 +69,8 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "allows starting new lesson when previous is completed" do
     user = create(:user)
     level = create(:level)
-    lesson1 = create(:lesson, level:)
-    lesson2 = create(:lesson, level:)
+    lesson1 = create(:lesson, :exercise, level:)
+    lesson2 = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
     user_level.update!(current_user_lesson: nil)
@@ -84,8 +84,8 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     user = create(:user)
     level1 = create(:level)
     level2 = create(:level)
-    lesson1 = create(:lesson, level: level1)
-    lesson2 = create(:lesson, level: level2)
+    lesson1 = create(:lesson, :exercise, level: level1)
+    lesson2 = create(:lesson, :exercise, level: level2)
     user_level1 = create(:user_level, user:, level: level1)
     user.update!(current_user_level: user_level1)
     create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
@@ -101,7 +101,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "allows starting lesson in current level" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
     user.update!(current_user_level: user_level)
 
@@ -113,7 +113,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "updates user_level.current_user_lesson on first creation" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
 
     result = UserLesson::Start.(user, lesson)
@@ -124,7 +124,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "updates user.current_user_level on first creation" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
 
     UserLesson::Start.(user, lesson)
@@ -135,7 +135,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "does not update tracking pointers on subsequent calls" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     user_level = create(:user_level, user:, level:)
     first_user_lesson = UserLesson::Start.(user, lesson)
 
@@ -155,7 +155,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "initializes with nil completed_at" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
 
     result = UserLesson::Start.(user, lesson)
@@ -166,7 +166,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
   test "sets created_at on creation" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
 
     time_before = Time.current

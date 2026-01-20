@@ -4,7 +4,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   setup do
     setup_user
     @level = create(:level)
-    @lesson = create(:lesson, level: @level)
+    @lesson = create(:lesson, :exercise, level: @level)
     @user_level = create(:user_level, user: @current_user, level: @level)
   end
 
@@ -232,7 +232,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     concept = create(:concept, slug: "variables", title: "Variables")
     project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
     level = create(:level)
-    lesson = create(:lesson, level:, unlocked_concept: concept, unlocked_project: project)
+    lesson = create(:lesson, :exercise, level:, unlocked_concept: concept, unlocked_project: project)
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson:)
 
@@ -263,8 +263,8 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "PATCH complete emits lesson_unlocked event when there is a next lesson" do
     level = create(:level)
-    lesson1 = create(:lesson, level:, slug: "first-lesson", position: 1)
-    create(:lesson, level:, slug: "second-lesson", position: 2)
+    lesson1 = create(:lesson, :exercise, level:, slug: "first-lesson", position: 1)
+    create(:lesson, :exercise, level:, slug: "second-lesson", position: 2)
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson: lesson1)
 
@@ -289,7 +289,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "PATCH complete does not emit lesson_unlocked event for last lesson in level" do
     level = create(:level)
-    lesson = create(:lesson, level:, slug: "only-lesson", position: 1)
+    lesson = create(:lesson, :exercise, level:, slug: "only-lesson", position: 1)
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson:)
 
@@ -307,8 +307,8 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   # Error handler tests
   test "POST start returns 422 when lesson in progress" do
-    lesson1 = create(:lesson, level: @level)
-    lesson2 = create(:lesson, level: @level)
+    lesson1 = create(:lesson, :exercise, level: @level)
+    lesson2 = create(:lesson, :exercise, level: @level)
     in_progress = create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: nil)
     @user_level.update!(current_user_lesson: in_progress)
 
@@ -322,7 +322,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "POST start returns 403 when user level not found" do
     other_level = create(:level, slug: "other-level", position: 999)
-    other_lesson = create(:lesson, level: other_level)
+    other_lesson = create(:lesson, :exercise, level: other_level)
     # No user_level created for this level
 
     post start_internal_user_lesson_path(lesson_slug: other_lesson.slug),
@@ -336,8 +336,8 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "POST start returns 422 when trying to start lesson in next level before completing current" do
     level1 = create(:level, position: 100, slug: "level-100")
     level2 = create(:level, position: 200, slug: "level-200")
-    lesson1 = create(:lesson, level: level1)
-    lesson2 = create(:lesson, level: level2)
+    lesson1 = create(:lesson, :exercise, level: level1)
+    lesson2 = create(:lesson, :exercise, level: level2)
     user_level1 = create(:user_level, user: @current_user, level: level1)
     create(:user_level, user: @current_user, level: level2)
     @current_user.update!(current_user_level: user_level1)

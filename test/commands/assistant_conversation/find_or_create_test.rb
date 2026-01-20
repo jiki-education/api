@@ -3,7 +3,7 @@ require "test_helper"
 class AssistantConversation::FindOrCreateTest < ActiveSupport::TestCase
   test "creates new conversation if none exists" do
     user = create(:user)
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
 
     assert_difference 'AssistantConversation.count', 1 do
       conversation = AssistantConversation::FindOrCreate.(user, lesson)
@@ -18,7 +18,7 @@ class AssistantConversation::FindOrCreateTest < ActiveSupport::TestCase
 
   test "finds existing conversation" do
     user = create(:user)
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
     existing_conversation = create(:assistant_conversation, user:, context: lesson)
 
     assert_no_difference 'AssistantConversation.count' do
@@ -32,7 +32,7 @@ class AssistantConversation::FindOrCreateTest < ActiveSupport::TestCase
 
   test "enforces uniqueness constraint" do
     user = create(:user)
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
 
     create(:assistant_conversation, user:, context: lesson)
 
