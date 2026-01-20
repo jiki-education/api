@@ -25,7 +25,7 @@ class JwtAuthenticationTest < ApplicationControllerTest
       scp: "user",
       exp: exp,
       jti: SecureRandom.uuid,
-      membershipType: "standard"
+      membership_type: "standard"
     }
 
     token = JWT.encode(payload, Jiki.secrets.jwt_secret, "HS256")

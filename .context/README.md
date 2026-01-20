@@ -33,6 +33,8 @@ Context files help AI assistants:
 
 ### For AI Assistants
 
+Look at what the human has asked. Do you need to know about any of these things? If so, read the files.
+
 1. **Start here** - Read this README first to understand available documentation
 2. **Commands** - Check `commands.md` for how to run tests, lint, and perform common tasks
 3. **Architecture** - Review `architecture.md` before making structural changes
@@ -47,6 +49,8 @@ Context files help AI assistants:
 12. **Video Production** - Reference `video_production.md` for video pipeline system implementation
 13. **SPI** - Reference `spi.md` for service-to-service communication patterns and network-guarded endpoints
 14. **TypeScript Generation** - Reference `typescript_generation.md` for type generation from Rails schemas
+15. **Premium or Membership Levels**: Read `premium.md`.
+16. **Authentication or JWT**: Read `authentication.md`.
 
 ### When to Update
 
