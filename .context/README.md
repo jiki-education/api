@@ -49,8 +49,8 @@ Look at what the human has asked. Do you need to know about any of these things?
 12. **Video Production** - Reference `video_production.md` for video pipeline system implementation
 13. **SPI** - Reference `spi.md` for service-to-service communication patterns and network-guarded endpoints
 14. **TypeScript Generation** - Reference `typescript_generation.md` for type generation from Rails schemas
-15. **Premium or Membership Levels**: Read `premium.md`.
-16. **Authentication or JWT**: Read `authentication.md`.
+15. **Premium or Membership Levels**: Read `premium.md`
+16. **Authentication or JWT**: Read `auth.md`
 
 ### When to Update
 
