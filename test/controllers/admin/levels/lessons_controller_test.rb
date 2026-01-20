@@ -18,7 +18,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     Lesson::Create.expects(:call).with(
       @level,
       { "title" => "New Lesson", "description" => "New description", "type" => "exercise" }
-    ).returns(create(:lesson, level: @level))
+    ).returns(create(:lesson, :exercise, level: @level))
 
     post admin_level_lessons_path(@level),
       params: {
@@ -41,7 +41,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "New Lesson",
           description: "A great lesson",
           type: "exercise",
-          data: { foo: "bar" }
+          data: { slug: "test-exercise", foo: "bar" }
         }
       },
       headers: @headers,
@@ -53,7 +53,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     assert_equal "New Lesson", json["lesson"]["title"]
     assert_equal "A great lesson", json["lesson"]["description"]
     assert_equal "exercise", json["lesson"]["type"]
-    assert_equal({ "foo" => "bar" }, json["lesson"]["data"])
+    assert_equal({ "slug" => "test-exercise", "foo" => "bar" }, json["lesson"]["data"])
     assert json["lesson"]["id"].present?
   end
 
@@ -64,7 +64,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "Hello World Lesson",
           description: "Description",
           type: "exercise",
-          data: { key: "value" }
+          data: { slug: "some-exercise", key: "value" }
         }
       },
       headers: @headers,
@@ -83,7 +83,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "Some Title",
           description: "Description",
           type: "exercise",
-          data: { key: "value" }
+          data: { slug: "some-exercise", key: "value" }
         }
       },
       headers: @headers,
@@ -95,8 +95,8 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create auto-sets position to next available" do
-    create(:lesson, level: @level, position: 1)
-    create(:lesson, level: @level, position: 2)
+    create(:lesson, :exercise, level: @level, position: 1)
+    create(:lesson, :exercise, level: @level, position: 2)
 
     post admin_level_lessons_path(@level),
       params: {
@@ -104,7 +104,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "New Lesson",
           description: "Description",
           type: "exercise",
-          data: { key: "value" }
+          data: { slug: "some-exercise", key: "value" }
         }
       },
       headers: @headers,
@@ -123,7 +123,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           description: "Description",
           type: "exercise",
           position: 10,
-          data: { key: "value" }
+          data: { slug: "some-exercise", key: "value" }
         }
       },
       headers: @headers,
@@ -136,6 +136,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
   test "POST create handles nested JSON data structure" do
     complex_data = {
+      slug: "some-exercise",
       nested: {
         deeply: {
           nested: {
@@ -184,7 +185,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns 422 for validation errors - duplicate slug" do
-    create(:lesson, level: @level, slug: "duplicate-slug")
+    create(:lesson, :exercise, level: @level, slug: "duplicate-slug")
 
     post admin_level_lessons_path(@level),
       params: {
@@ -225,7 +226,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create uses SerializeAdminLesson" do
-    lesson = build(:lesson, level: @level)
+    lesson = build(:lesson, :exercise, level: @level)
     Lesson::Create.stubs(:call).returns(lesson)
 
     SerializeAdminLesson.expects(:call).with(lesson).returns({ id: lesson.id })
@@ -248,11 +249,11 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
   test "GET index returns all lessons for a level" do
     Prosopite.finish
-    lesson_1 = create(:lesson, level: @level, title: "Lesson 1", slug: "lesson-1")
-    lesson_2 = create(:lesson, level: @level, title: "Lesson 2", slug: "lesson-2")
+    lesson_1 = create(:lesson, :exercise, level: @level, title: "Lesson 1", slug: "lesson-1")
+    lesson_2 = create(:lesson, :exercise, level: @level, title: "Lesson 2", slug: "lesson-2")
     # Create lesson in different level to ensure filtering
-    other_level = create(:level, slug: "other-level")
-    create(:lesson, level: other_level, slug: "other-lesson", title: "Other Lesson")
+    other_level = create(:level)
+    create(:lesson, :exercise, level: other_level)
 
     Prosopite.scan
     get admin_level_lessons_path(@level), headers: @headers, as: :json
@@ -284,7 +285,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
   test "GET index uses SerializeAdminLessons" do
     Prosopite.finish
-    lessons = create_list(:lesson, 2, level: @level)
+    lessons = create_list(:lesson, 2, :exercise, level: @level)
     Prosopite.scan
 
     SerializeAdminLessons.expects(:call).with do |arg|
@@ -299,7 +300,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "GET index does not paginate results" do
     Prosopite.finish
     # Create more than default page size to verify no pagination
-    26.times { |i| create(:lesson, level: @level, slug: "lesson-#{i}") }
+    26.times { |i| create(:lesson, :exercise, level: @level, slug: "lesson-#{i}") }
     Prosopite.scan
 
     get admin_level_lessons_path(@level), headers: @headers, as: :json
@@ -313,7 +314,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   # UPDATE tests
 
   test "PATCH update calls Lesson::Update command with correct params" do
-    lesson = create(:lesson, level: @level, slug: "update-command-test")
+    lesson = create(:lesson, :exercise, level: @level)
     Lesson::Update.expects(:call).with(
       lesson,
       { "title" => "New Title", "description" => "New description" }
@@ -333,7 +334,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update returns updated lesson" do
-    lesson = create(:lesson, level: @level, slug: "update-returns-test", title: "Old Title")
+    lesson = create(:lesson, :exercise, level: @level)
 
     patch admin_level_lesson_path(@level, lesson.id),
       params: {
@@ -353,20 +354,20 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update can update type" do
-    lesson = create(:lesson, level: @level, slug: "update-type-test", type: "coding")
+    lesson = create(:lesson, :exercise, level: @level)
 
     patch admin_level_lesson_path(@level, lesson.id),
-      params: { lesson: { type: "reading" } },
+      params: { lesson: { type: "video", data: { sources: [{ id: "abc123" }] } } },
       headers: @headers,
       as: :json
 
     assert_response :success
     json = response.parsed_body
-    assert_equal "reading", json["lesson"]["type"]
+    assert_equal "video", json["lesson"]["type"]
   end
 
   test "PATCH update can update position" do
-    lesson = create(:lesson, level: @level, slug: "update-position-test", position: 1)
+    lesson = create(:lesson, :exercise, level: @level, position: 1)
 
     patch admin_level_lesson_path(@level, lesson.id),
       params: { lesson: { position: 5 } },
@@ -379,20 +380,20 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update can update data" do
-    lesson = create(:lesson, level: @level, slug: "update-data-test", data: { key: "old" })
+    lesson = create(:lesson, :exercise, level: @level, data: { slug: "some-exercise", key: "old" })
 
     patch admin_level_lesson_path(@level, lesson.id),
-      params: { lesson: { data: { key: "new", foo: "bar" } } },
+      params: { lesson: { data: { slug: "some-exercise", key: "new", foo: "bar" } } },
       headers: @headers,
       as: :json
 
     assert_response :success
     json = response.parsed_body
-    assert_equal({ "key" => "new", "foo" => "bar" }, json["lesson"]["data"])
+    assert_equal({ "slug" => "some-exercise", "key" => "new", "foo" => "bar" }, json["lesson"]["data"])
   end
 
   test "PATCH update returns 422 for validation errors" do
-    lesson = create(:lesson, level: @level, slug: "update-validation-test")
+    lesson = create(:lesson, :exercise, level: @level)
 
     patch admin_level_lesson_path(@level, lesson.id),
       params: {
@@ -410,7 +411,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update returns 404 for non-existent level" do
-    lesson = create(:lesson, level: @level)
+    lesson = create(:lesson, :exercise, level: @level)
 
     patch admin_level_lesson_path(level_id: 99_999, id: lesson.id),
       params: { lesson: { title: "New" } },
@@ -443,7 +444,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
   test "PATCH update returns 404 for lesson in different level" do
     other_level = create(:level, slug: "other-level")
-    lesson = create(:lesson, level: other_level)
+    lesson = create(:lesson, :exercise, level: other_level)
 
     patch admin_level_lesson_path(@level, lesson.id),
       params: { lesson: { title: "New" } },
@@ -460,7 +461,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update uses SerializeAdminLesson" do
-    lesson = create(:lesson, level: @level, slug: "serialize-test")
+    lesson = create(:lesson, :exercise, level: @level)
     Lesson::Update.stubs(:call).returns(lesson)
 
     SerializeAdminLesson.expects(:call).with(lesson).returns({ id: lesson.id })
@@ -474,9 +475,10 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update can handle nested JSON data structure" do
-    lesson = create(:lesson, level: @level, slug: "nested-data-test", data: { simple: "value" })
+    lesson = create(:lesson, :exercise, level: @level, data: { slug: "some-exercise", simple: "value" })
 
     complex_data = {
+      slug: "some-exercise",
       nested: {
         deeply: {
           nested: {

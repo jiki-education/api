@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @lesson = create(:lesson, slug: "basic-movement")
+    @lesson = create(:lesson, :exercise, slug: "basic-movement")
   end
 
   # Auth guards
@@ -48,7 +48,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
   test "POST create returns 403 for standard user on different lesson" do
     @current_user.data.update!(membership_type: "standard")
-    other_lesson = create(:lesson, slug: "other-lesson")
+    other_lesson = create(:lesson, :exercise, slug: "other-lesson")
     create(:assistant_conversation, user: @current_user, context: other_lesson)
 
     post internal_assistant_conversations_path,

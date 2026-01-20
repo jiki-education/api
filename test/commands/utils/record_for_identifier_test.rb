@@ -2,7 +2,7 @@ require "test_helper"
 
 class Utils::RecordForIdentifierTest < ActiveSupport::TestCase
   test "finds lesson by slug" do
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
 
     result = Utils::RecordForIdentifier.("lesson", "basic-movement")
 

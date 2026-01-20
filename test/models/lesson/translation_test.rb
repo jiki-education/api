@@ -27,7 +27,7 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test "validates uniqueness of locale scoped to lesson_id" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     create(:lesson_translation, lesson:, locale: "hu")
     duplicate = build(:lesson_translation, lesson:, locale: "hu")
 
@@ -36,8 +36,8 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test "allows same locale for different lessons" do
-    lesson1 = create(:lesson)
-    lesson2 = create(:lesson)
+    lesson1 = create(:lesson, :exercise)
+    lesson2 = create(:lesson, :exercise)
     create(:lesson_translation, lesson: lesson1, locale: "hu")
     duplicate = build(:lesson_translation, lesson: lesson2, locale: "hu")
 
@@ -66,7 +66,7 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test ".find_for returns translation for lesson and locale" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     translation = create(:lesson_translation, lesson:, locale: "hu")
 
     result = Lesson::Translation.find_for(lesson, "hu")
@@ -75,7 +75,7 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test ".find_for returns nil when translation doesn't exist" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     result = Lesson::Translation.find_for(lesson, "fr")
 
@@ -83,7 +83,7 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test ".find_for returns nil for English locale" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     result = Lesson::Translation.find_for(lesson, "en")
 
@@ -91,7 +91,7 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test "belongs to lesson" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     translation = create(:lesson_translation, lesson:)
 
     assert_equal lesson, translation.lesson

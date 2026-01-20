@@ -51,7 +51,7 @@ class ProjectTest < ActiveSupport::TestCase
   end
 
   test "can be unlocked by a lesson" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     project = create(:project, unlocked_by_lesson: lesson)
     assert_equal lesson, project.unlocked_by_lesson
   end

@@ -47,6 +47,20 @@ When creating factories, follow these conventions:
 - **Associations** properly defined between related models
 - **Realistic test data** that matches business domain
 
+#### Lesson Factory - Required Traits
+**IMPORTANT**: Always include `:exercise` or `:video` trait when using the lesson factory. The lesson model validates that exercise lessons have a `slug` in data and video lessons have `sources` in data.
+
+```ruby
+# CORRECT: Always specify a trait
+create(:lesson, :exercise)
+create(:lesson, :video)
+create(:lesson, :exercise, level: @level, title: "My Lesson")
+
+# INCORRECT: Will fail validation - type and data are blank
+create(:lesson)
+create(:lesson, level: @level)
+```
+
 Example factory structure:
 ```ruby
 FactoryBot.define do

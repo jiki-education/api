@@ -20,7 +20,7 @@ class AssistantConversation::CreateConversationToken
     payload = {
       sub: user.id,
       lesson_slug: lesson.slug,
-      exercise_slug: lesson.data[:exercise_slug],
+      exercise_slug: lesson.data[:slug],
       exp: 1.hour.from_now.to_i,
       iat: Time.current.to_i
     }

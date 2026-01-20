@@ -2,7 +2,7 @@ require "test_helper"
 
 class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   test "creates translated lesson with correct attributes" do
-    lesson = create(:lesson,
+    lesson = create(:lesson, :exercise,
       slug: "variables-intro",
       title: "Introduction to Variables",
       description: "Learn about variables in programming")
@@ -23,7 +23,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "calls Gemini::Translate with correct parameters" do
-    lesson = create(:lesson,
+    lesson = create(:lesson, :exercise,
       slug: "variables-intro",
       title: "Variables",
       description: "Learn variables")
@@ -45,7 +45,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "raises error if target locale is English" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     error = assert_raises ArgumentError do
       Lesson::Translation::TranslateToLocale.(lesson, "en")
@@ -55,7 +55,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "raises error if target locale is not supported" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     error = assert_raises ArgumentError do
       Lesson::Translation::TranslateToLocale.(lesson, "unsupported")
@@ -65,7 +65,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "deletes existing translation before creating new one (upsert)" do
-    lesson = create(:lesson,
+    lesson = create(:lesson, :exercise,
       slug: "variables-intro",
       title: "Variables",
       description: "Learn variables")
@@ -89,11 +89,10 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "translation prompt includes lesson context" do
-    lesson = create(:lesson,
+    lesson = create(:lesson, :exercise,
       slug: "variables-intro",
       title: "Variables",
-      description: "Learn variables",
-      type: "exercise")
+      description: "Learn variables")
 
     translation = {
       title: "Test",
@@ -112,7 +111,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "translation prompt includes both source fields" do
-    lesson = create(:lesson,
+    lesson = create(:lesson, :exercise,
       title: "Unique Lesson Title",
       description: "Unique lesson description text")
 
@@ -124,7 +123,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "translation prompt has localization expert instructions" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     command = Lesson::Translation::TranslateToLocale.new(lesson, "hu")
     prompt = command.send(:translation_prompt)
@@ -136,7 +135,7 @@ class Lesson::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
   end
 
   test "raises Gemini::RateLimitError when rate limited" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     Gemini::Translate.stubs(:call).raises(Gemini::RateLimitError, "Rate limit exceeded")
 

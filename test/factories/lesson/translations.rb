@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :lesson_translation, class: 'Lesson::Translation' do
-    lesson
+    association :lesson, factory: %i[lesson exercise]
     locale { "hu" }
     title { "Magyar leckecím" }
     description { "Magyar leckeleírás" }

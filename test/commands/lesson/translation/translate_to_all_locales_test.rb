@@ -2,7 +2,7 @@ require "test_helper"
 
 class Lesson::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
   test "enqueues background jobs for all non-English locales" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     # Get all supported locales (excluding English)
     expected_locales = (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq - ["en"]
@@ -18,7 +18,7 @@ class Lesson::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
   end
 
   test "excludes English from target locales" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     # Ensure .defer is never called with "en"
     Lesson::Translation::TranslateToLocale.expects(:defer).never.with(lesson, "en")
@@ -32,7 +32,7 @@ class Lesson::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
   end
 
   test "includes both SUPPORTED_LOCALES and WIP_LOCALES" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     # Get all non-English locales from both constants
     (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
@@ -53,7 +53,7 @@ class Lesson::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
   end
 
   test "uses .defer() for background job execution" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     # Get first non-English locale
     (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).find { |l| l != "en" }
@@ -66,7 +66,7 @@ class Lesson::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
   end
 
   test "returns array of locale strings" do
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     Lesson::Translation::TranslateToLocale.stubs(:defer)
 

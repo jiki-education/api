@@ -7,7 +7,7 @@ class UserLessonTest < ActiveSupport::TestCase
 
   test "unique user and lesson combination" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     create(:user_lesson, user:, lesson:)
     duplicate = build(:user_lesson, user:, lesson:)
@@ -18,7 +18,7 @@ class UserLessonTest < ActiveSupport::TestCase
   test "deleting user_lesson nullifies current_user_lesson reference in user_level" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson, level:)
+    lesson = create(:lesson, :exercise, level:)
 
     user_level = create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)
@@ -38,7 +38,7 @@ class UserLessonTest < ActiveSupport::TestCase
 
   test "deleting user_lesson cascades to delete exercise_submissions" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     user_lesson = create(:user_lesson, user:, lesson:)
 
     # Create exercise submissions for this user_lesson
@@ -60,7 +60,7 @@ class UserLessonTest < ActiveSupport::TestCase
 
   test "assistant_conversation returns conversation when one exists" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     user_lesson = create(:user_lesson, user:, lesson:)
     conversation = create(:assistant_conversation, user:, context: lesson)
 
@@ -69,7 +69,7 @@ class UserLessonTest < ActiveSupport::TestCase
 
   test "assistant_conversation returns nil when no conversation exists" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     user_lesson = create(:user_lesson, user:, lesson:)
 
     assert_nil user_lesson.assistant_conversation

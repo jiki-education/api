@@ -25,7 +25,7 @@ class ExerciseSubmissionTest < ActiveSupport::TestCase
 
   test "delegates user to context for user_lesson" do
     user = create(:user)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
     user_lesson = create(:user_lesson, user:, lesson:)
     submission = create(:exercise_submission, context: user_lesson)
 

@@ -10,7 +10,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
 
   test "GET show returns lesson with data" do
     level = create(:level)
-    lesson = create(:lesson, level: level, slug: "test-lesson", type: "exercise", data: { slug: "ex1", title: "Test Exercise" })
+    lesson = create(:lesson, :exercise, level: level, slug: "test-lesson", data: { slug: "ex1", title: "Test Exercise" })
 
     get internal_lesson_path(lesson_slug: "test-lesson"), headers: @headers, as: :json
 
@@ -29,7 +29,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
   test "GET show uses SerializeLesson" do
     Prosopite.finish # Stop scan before creating test data
     level = create(:level)
-    lesson = create(:lesson, level: level, slug: "test-lesson")
+    lesson = create(:lesson, :exercise, level: level, slug: "test-lesson")
     serialized_data = { slug: "test", type: "exercise", data: {} }
 
     SerializeLesson.expects(:call).with(lesson, include_data: true).returns(serialized_data)

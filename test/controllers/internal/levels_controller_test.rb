@@ -11,9 +11,9 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
   test "GET index returns all levels with nested lessons" do
     level1 = create(:level, slug: "level-1")
     level2 = create(:level, slug: "level-2")
-    create(:lesson, level: level1, slug: "lesson-1", type: "exercise", data: { slug: :ex1 })
-    create(:lesson, level: level1, slug: "lesson-2", type: "tutorial", data: { slug: :ex2 })
-    create(:lesson, level: level2, slug: "lesson-3", type: "exercise", data: { slug: :ex3 })
+    create(:lesson, :exercise, level: level1, slug: "lesson-1", data: { slug: :ex1 })
+    create(:lesson, :video, level: level1, slug: "lesson-2")
+    create(:lesson, :exercise, level: level2, slug: "lesson-3", data: { slug: :ex3 })
 
     get internal_levels_path, headers: @headers, as: :json
 
@@ -32,7 +32,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
 
   test "GET index returns correct JSON structure" do
     level = create(:level)
-    create(:lesson, level: level)
+    create(:lesson, :exercise, level: level)
 
     get internal_levels_path, headers: @headers, as: :json
 

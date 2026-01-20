@@ -84,7 +84,7 @@ class UserTest < ActiveSupport::TestCase
   test "deleting user cascades to delete user_lessons and user_levels" do
     user = create(:user)
     level = create(:level)
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     user_level = create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)

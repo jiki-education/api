@@ -4,7 +4,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
     @level = create(:level)
-    @lesson = create(:lesson, level: @level)
+    @lesson = create(:lesson, :exercise, level: @level)
     @user_level = create(:user_level, user: @current_user, level: @level)
   end
 

@@ -3,7 +3,7 @@ require "test_helper"
 class AssistantConversation::AddAssistantMessageTest < ActiveSupport::TestCase
   test "delegates to VerifyHMAC, FindOrCreate and AddMessage" do
     user = create(:user)
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
     content = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
     signature = "test_signature"
@@ -25,7 +25,7 @@ class AssistantConversation::AddAssistantMessageTest < ActiveSupport::TestCase
 
   test "raises InvalidHMACSignatureError with invalid signature" do
     user = create(:user)
-    lesson = create(:lesson, slug: "basic-movement")
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
     content = "Try breaking it down step by step."
     timestamp = "2025-10-31T08:15:35.000Z"
     invalid_signature = "invalid_signature"

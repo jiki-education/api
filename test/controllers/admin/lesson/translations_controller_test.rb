@@ -4,7 +4,7 @@ class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
     @headers = auth_headers_for(@admin)
-    @lesson = create(:lesson, slug: "variables-intro")
+    @lesson = create(:lesson, :exercise, slug: "variables-intro")
   end
 
   # Authentication and authorization guards

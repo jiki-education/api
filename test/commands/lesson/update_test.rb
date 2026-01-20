@@ -2,7 +2,7 @@ require "test_helper"
 
 class Lesson::UpdateTest < ActiveSupport::TestCase
   test "updates lesson attributes" do
-    lesson = create :lesson, title: "Old Title", description: "Old description"
+    lesson = create :lesson, :exercise, title: "Old Title", description: "Old description"
 
     updated_lesson = Lesson::Update.(lesson, { title: "New Title", description: "New description" })
 
@@ -12,7 +12,7 @@ class Lesson::UpdateTest < ActiveSupport::TestCase
   end
 
   test "updates position" do
-    lesson = create :lesson, position: 1
+    lesson = create :lesson, :exercise, position: 1
 
     updated_lesson = Lesson::Update.(lesson, { position: 5 })
 
@@ -20,23 +20,23 @@ class Lesson::UpdateTest < ActiveSupport::TestCase
   end
 
   test "updates type" do
-    lesson = create :lesson, type: "coding"
+    lesson = create :lesson, :exercise
 
-    updated_lesson = Lesson::Update.(lesson, { type: "reading" })
+    updated_lesson = Lesson::Update.(lesson, { type: "video", data: { sources: [{ id: "abc123" }] } })
 
-    assert_equal "reading", updated_lesson.type
+    assert_equal "video", updated_lesson.type
   end
 
   test "updates data" do
-    lesson = create :lesson, data: { key: "old_value" }
+    lesson = create :lesson, :exercise, data: { slug: "test", key: "old_value" }
 
-    updated_lesson = Lesson::Update.(lesson, { data: { key: "new_value", foo: "bar" } })
+    updated_lesson = Lesson::Update.(lesson, { data: { slug: "test", key: "new_value", foo: "bar" } })
 
-    assert_equal({ key: "new_value", foo: "bar" }, updated_lesson.data)
+    assert_equal({ slug: "test", key: "new_value", foo: "bar" }, updated_lesson.data)
   end
 
   test "raises error on invalid attributes" do
-    lesson = create :lesson
+    lesson = create :lesson, :exercise
 
     assert_raises ActiveRecord::RecordInvalid do
       Lesson::Update.(lesson, { title: "" })
@@ -44,7 +44,7 @@ class Lesson::UpdateTest < ActiveSupport::TestCase
   end
 
   test "returns updated lesson" do
-    lesson = create :lesson
+    lesson = create :lesson, :exercise
 
     result = Lesson::Update.(lesson, { title: "Updated" })
 

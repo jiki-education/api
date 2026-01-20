@@ -4,7 +4,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
   test "creates conversation token for premium user" do
     user = create(:user)
     user.data.update!(membership_type: "premium")
-    lesson = create(:lesson, slug: "test-lesson", data: { exercise_slug: 'jiki/intro/test' })
+    lesson = create(:lesson, :exercise, slug: "test-lesson", data: { slug: 'jiki/intro/test' })
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
 
@@ -22,7 +22,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
   test "creates conversation token for standard user first lesson" do
     user = create(:user)
     user.data.update!(membership_type: "standard")
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
 
@@ -32,8 +32,8 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
   test "raises error for standard user on different lesson" do
     user = create(:user)
     user.data.update!(membership_type: "standard")
-    lesson1 = create(:lesson)
-    lesson2 = create(:lesson)
+    lesson1 = create(:lesson, :exercise)
+    lesson2 = create(:lesson, :exercise)
     create(:assistant_conversation, user:, context: lesson1)
 
     assert_raises(AssistantConversationAccessDeniedError) do
@@ -44,7 +44,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
   test "creates or finds existing conversation" do
     user = create(:user)
     user.data.update!(membership_type: "premium")
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     assert_difference 'AssistantConversation.count', 1 do
       AssistantConversation::CreateConversationToken.(user, lesson)
@@ -58,7 +58,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
   test "token expires in 1 hour" do
     user = create(:user)
     user.data.update!(membership_type: "premium")
-    lesson = create(:lesson)
+    lesson = create(:lesson, :exercise)
 
     freeze_time do
       token = AssistantConversation::CreateConversationToken.(user, lesson)
@@ -70,14 +70,14 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
     end
   end
 
-  test "handles nil exercise_slug in lesson data" do
+  test "uses slug from lesson data for exercise_slug" do
     user = create(:user)
     user.data.update!(membership_type: "premium")
-    lesson = create(:lesson, data: { slug: "some-exercise" })
+    lesson = create(:lesson, :exercise, data: { slug: "my-exercise-slug" })
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
 
     payload = JWT.decode(token, Jiki.secrets.jwt_secret, true, { algorithm: 'HS256' }).first
-    assert_nil payload['exercise_slug']
+    assert_equal "my-exercise-slug", payload['exercise_slug']
   end
 end
