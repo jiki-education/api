@@ -94,7 +94,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resource :assistant_conversations, only: [] do
+    resource :assistant_conversations, only: [:create] do
       post :user_messages, action: :create_user_message
       post :assistant_messages, action: :create_assistant_message
     end

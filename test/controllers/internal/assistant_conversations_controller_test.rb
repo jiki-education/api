@@ -7,8 +7,84 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   end
 
   # Auth guards
+  guard_incorrect_token! :internal_assistant_conversations_path, method: :post
   guard_incorrect_token! :user_messages_internal_assistant_conversations_path, method: :post
   guard_incorrect_token! :assistant_messages_internal_assistant_conversations_path, method: :post
+
+  # POST create
+  test "POST create returns conversation token for premium user" do
+    @current_user.data.update!(membership_type: "premium")
+
+    post internal_assistant_conversations_path,
+      headers: @headers,
+      params: { lesson_slug: "basic-movement" },
+      as: :json
+
+    assert_response :success
+    assert response.parsed_body["token"].present?
+
+    # Verify token is valid JWT
+    payload = JWT.decode(
+      response.parsed_body["token"],
+      Jiki.secrets.jwt_secret,
+      true,
+      { algorithm: 'HS256' }
+    ).first
+    assert_equal @current_user.id, payload['sub']
+    assert_equal "basic-movement", payload['lesson_slug']
+  end
+
+  test "POST create returns conversation token for standard user first lesson" do
+    @current_user.data.update!(membership_type: "standard")
+
+    post internal_assistant_conversations_path,
+      headers: @headers,
+      params: { lesson_slug: "basic-movement" },
+      as: :json
+
+    assert_response :success
+    assert response.parsed_body["token"].present?
+  end
+
+  test "POST create returns 403 for standard user on different lesson" do
+    @current_user.data.update!(membership_type: "standard")
+    other_lesson = create(:lesson, slug: "other-lesson")
+    create(:assistant_conversation, user: @current_user, context: other_lesson)
+
+    post internal_assistant_conversations_path,
+      headers: @headers,
+      params: { lesson_slug: "basic-movement" },
+      as: :json
+
+    assert_response :forbidden
+    assert_equal "forbidden", response.parsed_body["error"]["type"]
+    assert_equal "Assistant access not allowed for this lesson", response.parsed_body["error"]["message"]
+  end
+
+  test "POST create returns 404 for non-existent lesson" do
+    post internal_assistant_conversations_path,
+      headers: @headers,
+      params: { lesson_slug: "non-existent" },
+      as: :json
+
+    assert_response :not_found
+    assert_equal "not_found", response.parsed_body["error"]["type"]
+  end
+
+  test "POST create creates assistant conversation record" do
+    @current_user.data.update!(membership_type: "premium")
+
+    assert_difference 'AssistantConversation.count', 1 do
+      post internal_assistant_conversations_path,
+        headers: @headers,
+        params: { lesson_slug: "basic-movement" },
+        as: :json
+    end
+
+    conversation = AssistantConversation.last
+    assert_equal @current_user, conversation.user
+    assert_equal @lesson, conversation.context
+  end
 
   # POST user_messages
   test "POST user_messages successfully adds user message" do

@@ -46,14 +46,14 @@ class User::Jwt::ExtractPayloadTest < ActiveSupport::TestCase
       scp: "user",
       exp: exp,
       jti: jti,
-      membershipType: "premium",
+      membership_type: "premium",
       aud: "Custom Browser"
     }
     token = JWT.encode(payload, secret, "HS256")
 
     extracted = User::Jwt::ExtractPayload.(token)
 
-    assert_equal "premium", extracted["membershipType"]
+    assert_equal "premium", extracted["membership_type"]
     assert_equal "Custom Browser", extracted["aud"]
     assert_equal jti, extracted["jti"]
   end

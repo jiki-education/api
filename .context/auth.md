@@ -328,6 +328,64 @@ Reset password with token.
 }
 ```
 
+### Conversation Tokens (AI Assistant)
+
+Separate from the main auth JWT, conversation tokens are stateless JWTs used by an external LLM proxy to validate AI assistant chat requests.
+
+#### POST /internal/assistant_conversations
+Create or validate an assistant conversation and get a conversation token.
+
+**Request:**
+```json
+{
+  "lesson_slug": "basic-movement"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "token": "<conversation_jwt>"
+}
+```
+
+**Conversation Token Payload:**
+```json
+{
+  "sub": 123,
+  "lesson_slug": "basic-movement",
+  "exercise_slug": "jiki/intro/basic-movement",
+  "exp": 1705778723,
+  "iat": 1705775123
+}
+```
+
+**Error Response (403 - Access Denied):**
+```json
+{
+  "error": {
+    "type": "forbidden",
+    "message": "Assistant access not allowed for this lesson"
+  }
+}
+```
+
+**Key Differences from Auth JWT:**
+- 1-hour expiry (same as auth JWT)
+- Stateless - NOT stored in allowlist database
+- Contains lesson/exercise context instead of user profile
+- Used only for LLM proxy authentication
+
+**Access Control:**
+- Premium/Max users: Can get token for any lesson
+- Standard users: Can only get token for their "free" lesson (most recent conversation)
+
+**Related Commands:**
+- `AssistantConversation::CreateConversationToken`
+- `AssistantConversation::CheckUserAccess`
+
+See `.context/premium.md` for detailed access control logic.
+
 ### Future OAuth Endpoints
 
 #### POST /auth/google

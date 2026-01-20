@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :projects, through: :user_projects
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
   has_many :badges, through: :acquired_badges
+  has_many :assistant_conversations, dependent: :destroy
 
   belongs_to :current_user_level, class_name: "UserLevel", optional: true
 
@@ -35,7 +36,7 @@ class User < ApplicationRecord
   # This method is called by Warden::JWTAuth::PayloadUserHelper
   # and merged with the base payload (sub, scp, etc)
   def jwt_payload
-    { 'membershipType' => data&.membership_type || 'standard' }
+    { 'membership_type' => membership_type }
   end
 
   # Placeholder for email preferences - always allow emails for now

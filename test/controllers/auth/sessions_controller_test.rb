@@ -133,7 +133,7 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_equal "unauthorized", json["error"]["type"]
   end
 
-  test "POST login includes membershipType in JWT payload" do
+  test "POST login includes membership_type in JWT payload" do
     post user_session_path, params: {
       user: {
         email: "test@example.com",
@@ -147,8 +147,8 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     token = response.headers["Authorization"].sub("Bearer ", "")
     payload, _header = JWT.decode(token, Jiki.secrets.jwt_secret, true, { verify_expiration: false, algorithm: 'HS256' })
 
-    # Verify membershipType is included in the JWT payload
-    assert_equal "standard", payload["membershipType"]
+    # Verify membership_type is included in the JWT payload
+    assert_equal "standard", payload["membership_type"]
     assert payload["sub"].present? # User ID
     assert payload["scp"].present? # Scope
     assert payload["jti"].present? # JWT ID
