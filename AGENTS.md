@@ -1,4 +1,4 @@
-# AGENTS.md
+# CLAUDE.md
 
 This file provides guidance to Agents (e.g. Claude Code) when working with code in this repository.
 
@@ -7,36 +7,50 @@ This file provides guidance to Agents (e.g. Claude Code) when working with code 
 ALWAYS use subagents in the following situation:
 - `git commit ...` or `git add ... && git commit ...`: Use the Task tool with `subagent_type: git-commit`.
 
-## How to work in this project
+## Context Files
 
-### Context for Agents
+The `.context/` directory contains detailed documentation for this codebase. **Read any files relevant to the task you are working on.**
 
-There is a `.context` folder, which contains files explaining how everything in this project works.
-You should read any files relevant to the task you are asked to work on.
-Start by running:
+| File | When to Read |
+|------|--------------|
+| `commands.md` | Running tests, linting, deployment commands |
+| `architecture.md` | Understanding project structure, making structural changes |
+| `controllers.md` | Adding or modifying API endpoints |
+| `configuration.md` | Setting up services, environment config, CORS |
+| `testing.md` | Writing tests, using FactoryBot |
+| `serializers.md` | JSON response formatting |
+| `mailers.md` | Email templates, MJML/HAML |
+| `jobs.md` | Background job processing with Sidekiq |
+| `llm.md` | AI-powered translation, Gemini API |
+| `i18n.md` | Internationalization, translations, avoiding N+1 queries |
+| `concepts.md` | Educational content model |
+| `video_production.md` | Video pipeline system |
+| `spi.md` | Service-to-service communication |
+| `typescript_generation.md` | Type generation from schemas |
+| `auth.md` | Authentication, JWT |
+| `premium.md` | Premium/membership features |
+| `stripe.md` | Payment integration |
+| `api.md` | API endpoint documentation |
+| `user_data.md` | User data model |
+| `concept_unlocking.md` | Concept progression system |
 
-```bash
-cat .context/README.md
-ls .context/
-```
+## How to Complete a Task
 
-### How to complex a task
+### 1. Determine a plan and get sign off
 
-#### 1. Determine a plan and get sign off.
-
-Work with the user to come up with a clear plan. Ask clarifying questions. Minimise assumptions. 
+Work with the user to come up with a clear plan. Ask clarifying questions. Minimise assumptions.
 
 Only continue to (2) once the user has given signoff on the plan.
 
-#### 2. Write a PLAN.md 
+### 2. Write a PLAN.md
 
-Write a PLAN.md document that lists the plan with checkboxes to tick off. 
+Write a PLAN.md document that lists the plan with checkboxes to tick off.
 
-#### 3. Work through the plan
+### 3. Work through the plan
 
 As you work through the plan, add new checkboxes if new tasks are added, and check off checkboxes as needed.
 
-## 4. Before Committing
+## Before Committing
 
 Always perform these checks before committing code:
 
@@ -72,7 +86,7 @@ If you bypass the pre-commit hook or forget to regenerate types, the CI pipeline
 
 This ensures types are always in sync with schemas on the `main` branch.
 
-## 5. Git Workflow for Agents (Committing)
+## Git Workflow for Agents (Committing)
 
 **REQUIRED**: When completing any task, agents MUST follow this workflow:
 
@@ -85,6 +99,19 @@ This ensures types are always in sync with schemas on the `main` branch.
 
 This ensures proper code review, maintains git history, and follows professional development practices.
 
+## Project Context
+
+This is the Jiki API - a Rails 8 API-only application that serves as the backend for Jiki, a Learn to Code platform. Jiki provides structured, linear learning pathways for coding beginners through problem-solving and interactive exercises.
+
+### Core Business Requirements
+
+Based on `/overview/tech/backend.md`:
+- **Linear Learning Path**: Users progress through lessons sequentially
+- **Exercise State Management**: Server stores all exercise submissions and progress
+- **PPP Pricing**: Geographic-based pricing with Stripe integration
+- **Internationalization**: Database-stored translations generated to i18n files
+- **Integration with Exercism**: Shares infrastructure patterns but different user journey
+
 ### Related Repositories
 
 This repo is part of a set of repos:
@@ -95,39 +122,70 @@ This repo is part of a set of repos:
 
 You can look into those repos if you need to understand how they integrate with this API.
 
-## Project Context
+## Key Principles
 
-This is the Jiki API - a Rails 8 API-only application that serves as the backend for Jiki, a Learn to Code platform. Jiki provides structured, linear learning pathways for coding beginners through problem-solving and interactive exercises.
+### Documentation is Current State
 
-## Core Business Requirements
+All documentation should reflect the current state of the codebase. Never use changelog format or document iterative changes. Focus on what IS, not what WAS.
 
-Based on `/overview/tech/backend.md`:
-- **Linear Learning Path**: Users progress through lessons sequentially
-- **Exercise State Management**: Server stores all exercise submissions and progress
-- **PPP Pricing**: Geographic-based pricing with Stripe integration
-- **Internationalization**: Database-stored translations generated to i18n files
-- **Integration with Exercism**: Shares infrastructure patterns but different user journey
+### Keep It Relevant
 
-## Quick Reference
+Don't duplicate code that's easily accessible. Reference file paths and describe functionality instead of copying large code blocks.
 
-For detailed information, see the context files:
-- **Commands**: `.context/commands.md` - All development, testing, and deployment commands
-- **Architecture**: `.context/architecture.md` - Rails API structure and design patterns
-- **Controllers**: `.context/controllers.md` - Controller patterns and helper methods
-- **Configuration**: `.context/configuration.md` - Jiki config gem pattern, CORS, storage setup
-- **Testing**: `.context/testing.md` - Testing framework and patterns
-- **Serializers**: `.context/serializers.md` - JSON serialization patterns using Mandate
+### Continuous Improvement
+
+When you learn something important or encounter a pattern worth documenting, update the relevant context file immediately.
+
+## Rails Guidelines
+
+### API-Only Considerations
+
+- No views or asset pipeline
+- JSON responses only
+- Middleware optimized for APIs
+- CORS configuration required
+
+### Testing with Minitest and FactoryBot
+
+- Parallel execution by default
+- FactoryBot for test data generation (no fixtures)
+- Test files in `test/` directory with factories in `test/factories/`
+- Run specific tests with `-n` flag
+
+### Background Jobs
+
+- Use Sidekiq 8.0 with ActiveJob for async processing
+- Integrate with Mandate using `.defer()` method
+- Queue priorities: critical > default > mailers > translations > background > low
+- See `.context/jobs.md` for comprehensive patterns and testing
+
+## Security Notes
+
+### Sensitive Information
+
+- Never commit `config/master.key`
+- Use Rails credentials for secrets
+- Filter sensitive parameters from logs
+- Validate all input data
+
+### API Security
+
+- Implement rate limiting
+- Use strong authentication (JWT)
+- Validate CORS origins
+- Sanitize error messages in production
 
 ## AWS Deployment Status
 
 ### Completed Infrastructure (Terraform)
-- ✅ **VPC & Networking**: VPC, subnets, internet gateway (`terraform/terraform/aws/vpc.tf`)
-- ✅ **S3 Video Production**: Bucket and IAM user for video generation (`terraform/terraform/aws/video-production.tf`)
-- ✅ **DynamoDB Config**: Configuration table with 14 items populated from Terraform (`terraform/terraform/aws/dynamodb.tf`)
+
+- **VPC & Networking**: VPC, subnets, internet gateway (`terraform/terraform/aws/vpc.tf`)
+- **S3 Video Production**: Bucket and IAM user for video generation (`terraform/terraform/aws/video-production.tf`)
+- **DynamoDB Config**: Configuration table with 14 items populated from Terraform (`terraform/terraform/aws/dynamodb.tf`)
   - Includes: domains, Cloudflare R2 config, database config, Stripe placeholders
   - Cost: ~$0.01/month
   - IAM policy for ECS task access included
-- ✅ **Cloudflare R2**: Assets bucket with CDN (`terraform/terraform/cloudflare/r2.tf`)
+- **Cloudflare R2**: Assets bucket with CDN (`terraform/terraform/cloudflare/r2.tf`)
 
 ### Next Implementation Priorities
 
