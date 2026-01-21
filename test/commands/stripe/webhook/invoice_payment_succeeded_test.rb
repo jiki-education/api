@@ -1,42 +1,56 @@
 require "test_helper"
 
 class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
-  test "clears payment failure when payment succeeds" do
+  test "calls UpdateSubscriptionsFromInvoice with correct args" do
+    user = create(:user)
+    period_end = 1.month.from_now
+    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
+
+    invoice = mock_invoice
+    subscription = mock_subscription(period_end:)
+    event = mock_event(invoice)
+
+    Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
+    Stripe::UpdateSubscriptionsFromInvoice.expects(:call).with(user, invoice, subscription)
+    Stripe::CreatePaymentFromInvoice.expects(:call).with(user, invoice, subscription)
+
+    Stripe::Webhook::InvoicePaymentSucceeded.(event)
+  end
+
+  test "calls CreatePaymentFromInvoice with correct args" do
+    user = create(:user)
+    period_end = 1.month.from_now
+    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
+
+    invoice = mock_invoice
+    subscription = mock_subscription(period_end:)
+    event = mock_event(invoice)
+
+    Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
+    Stripe::UpdateSubscriptionsFromInvoice.stubs(:call)
+    Stripe::CreatePaymentFromInvoice.expects(:call).with(user, invoice, subscription)
+
+    Stripe::Webhook::InvoicePaymentSucceeded.(event)
+  end
+
+  test "updates user data to active status" do
     user = create(:user)
     period_end = 1.month.from_now
     user.data.update!(
       stripe_customer_id: "cus_123",
-      stripe_subscription_id: "sub_123",
       stripe_subscription_status: "past_due",
       subscription_status: "payment_failed",
       subscription_valid_until: 1.week.ago,
-      subscriptions: [{
-        stripe_subscription_id: "sub_123",
-        tier: "premium",
-        started_at: 1.month.ago.iso8601,
-        ended_at: nil,
-        end_reason: nil,
-        payment_failed_at: 3.days.ago.iso8601
-      }]
+      membership_type: "premium"
     )
 
-    item = mock
-    item.stubs(:current_period_end).returns(period_end.to_i)
-
-    items = mock
-    items.stubs(:data).returns([item])
-
-    subscription = mock
-    subscription.stubs(:items).returns(items)
-
-    invoice = mock
-    invoice.stubs(:customer).returns("cus_123")
-    invoice.stubs(:subscription).returns("sub_123")
-
-    event = mock
-    event.stubs(:data).returns(mock(object: invoice))
+    invoice = mock_invoice
+    subscription = mock_subscription(period_end:)
+    event = mock_event(invoice)
 
     Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
+    Stripe::UpdateSubscriptionsFromInvoice.stubs(:call)
+    Stripe::CreatePaymentFromInvoice.stubs(:call)
 
     Stripe::Webhook::InvoicePaymentSucceeded.(event)
 
@@ -44,24 +58,80 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
     assert_equal "active", user.data.stripe_subscription_status
     assert_equal "active", user.data.subscription_status
     assert_in_delta period_end.to_i, user.data.subscription_valid_until.to_i, 1
-
-    # Check payment_failed_at cleared in subscriptions array
-    sub_entry = user.data.subscriptions.first
-    assert_nil sub_entry["payment_failed_at"]
   end
 
-  test "creates subscription entry for incomplete subscription on first payment" do
+  test "returns early if user not found" do
+    invoice = mock
+    invoice.stubs(:customer).returns("cus_nonexistent")
+    event = mock_event(invoice)
+
+    Stripe::UpdateSubscriptionsFromInvoice.expects(:call).never
+    Stripe::CreatePaymentFromInvoice.expects(:call).never
+
+    Stripe::Webhook::InvoicePaymentSucceeded.(event)
+  end
+
+  test "returns early if invoice has no subscription" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    invoice = mock
+    invoice.stubs(:customer).returns("cus_123")
+    invoice.stubs(:subscription).returns(nil)
+    event = mock_event(invoice)
+
+    Stripe::UpdateSubscriptionsFromInvoice.expects(:call).never
+    Stripe::CreatePaymentFromInvoice.expects(:call).never
+
+    Stripe::Webhook::InvoicePaymentSucceeded.(event)
+  end
+
+  test "returns early if subscription item has no period end" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    invoice = mock_invoice
+    subscription = mock_subscription_without_period_end
+    event = mock_event(invoice)
+
+    Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
+    Stripe::UpdateSubscriptionsFromInvoice.expects(:call).never
+    Stripe::CreatePaymentFromInvoice.expects(:call).never
+
+    Stripe::Webhook::InvoicePaymentSucceeded.(event)
+  end
+
+  test "wraps operations in transaction" do
     user = create(:user)
     period_end = 1.month.from_now
-    user.data.update!(
-      stripe_customer_id: "cus_123",
-      stripe_subscription_id: "sub_123",
-      stripe_subscription_status: "incomplete",
-      subscription_status: "incomplete",
-      membership_type: "premium",
-      subscriptions: []
-    )
+    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
 
+    invoice = mock_invoice
+    subscription = mock_subscription(period_end:)
+    event = mock_event(invoice)
+
+    Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription)
+    Stripe::UpdateSubscriptionsFromInvoice.stubs(:call)
+    Stripe::CreatePaymentFromInvoice.stubs(:call).raises(StandardError.new("Payment creation failed"))
+
+    assert_raises(StandardError) do
+      Stripe::Webhook::InvoicePaymentSucceeded.(event)
+    end
+
+    # User data should not be updated due to transaction rollback
+    user.data.reload
+    refute_equal "active", user.data.subscription_status
+  end
+
+  private
+  def mock_invoice
+    invoice = mock
+    invoice.stubs(:customer).returns("cus_123")
+    invoice.stubs(:subscription).returns("sub_123")
+    invoice
+  end
+
+  def mock_subscription(period_end: 1.month.from_now)
     item = mock
     item.stubs(:current_period_end).returns(period_end.to_i)
 
@@ -69,48 +139,25 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
     items.stubs(:data).returns([item])
 
     subscription = mock
-    subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:items).returns(items)
-
-    invoice = mock
-    invoice.stubs(:customer).returns("cus_123")
-    invoice.stubs(:subscription).returns("sub_123")
-
-    event = mock
-    event.stubs(:data).returns(mock(object: invoice))
-
-    Stripe::Subscription.expects(:retrieve).with("sub_123").returns(subscription).once
-
-    Stripe::Webhook::InvoicePaymentSucceeded.(event)
-
-    user.data.reload
-    assert_equal "active", user.data.subscription_status
-
-    # Should create subscription entry
-    assert_equal 1, user.data.subscriptions.length
-    sub_entry = user.data.subscriptions.first
-    assert_equal "sub_123", sub_entry["stripe_subscription_id"]
-    assert_equal "premium", sub_entry["tier"]
+    subscription
   end
 
-  test "returns early if invoice has no subscription" do
-    user = create(:user)
-    user.data.update!(
-      stripe_customer_id: "cus_123",
-      subscription_status: "payment_failed"
-    )
+  def mock_subscription_without_period_end
+    item = mock
+    item.stubs(:current_period_end).returns(nil)
 
-    invoice = mock
-    invoice.stubs(:customer).returns("cus_123")
-    invoice.stubs(:subscription).returns(nil)
+    items = mock
+    items.stubs(:data).returns([item])
 
+    subscription = mock
+    subscription.stubs(:items).returns(items)
+    subscription
+  end
+
+  def mock_event(invoice)
     event = mock
     event.stubs(:data).returns(mock(object: invoice))
-
-    Stripe::Webhook::InvoicePaymentSucceeded.(event)
-
-    user.data.reload
-    # Should not change status if no subscription
-    assert_equal "payment_failed", user.data.subscription_status
+    event
   end
 end
