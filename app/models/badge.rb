@@ -1,13 +1,20 @@
 class Badge < ApplicationRecord
+  include Translatable
+
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
+  has_many :translations, class_name: "Badge::Translation", dependent: :destroy
+
   scope :secret, -> { where(secret: true) }
 
+  self.translatable_fields = %i[name description fun_fact]
+
   # Class method to store badge metadata
-  def self.seed(name, icon, description, secret: false)
+  def self.seed(name, icon, description, fun_fact: nil, secret: false)
     @seed_data = {
       name:,
       icon:,
       description:,
+      fun_fact:,
       secret:
     }
   end
@@ -36,6 +43,7 @@ class Badge < ApplicationRecord
     self.name = seed_data[:name]
     self.icon = seed_data[:icon]
     self.description = seed_data[:description]
+    self.fun_fact = seed_data[:fun_fact]
     self.secret = seed_data[:secret]
   end
 

@@ -8,7 +8,7 @@ class SerializeBadges
       acquired_badge = acquired_badges_by_badge_id[badge.id]
       state = determine_state(acquired_badge)
 
-      SerializeBadge.(badge, state, acquired_badge:)
+      SerializeBadge.(badge, state, acquired_badge:, content: badge_contents[badge.id])
     end
   end
 
@@ -38,5 +38,23 @@ class SerializeBadges
     return 'locked' unless acquired_badge
 
     acquired_badge.revealed? ? 'revealed' : 'unrevealed'
+  end
+
+  # N+1 avoidance: preload all badge content for the current locale
+  memoize
+  def badge_contents
+    # Build English content hash (used directly for :en, or as fallback)
+    english_content = visible_badges.to_h do |b|
+      [b.id, { name: b.name, description: b.description, fun_fact: b.fun_fact }]
+    end
+
+    return english_content if I18n.locale.to_s == "en"
+
+    # Get translations, merge with English fallback
+    translated = Badge::Translation.where(locale: I18n.locale, badge: visible_badges).
+      pluck(:badge_id, :name, :description, :fun_fact).
+      to_h { |id, name, desc, fun_fact| [id, { name: name, description: desc, fun_fact: fun_fact }] }
+
+    english_content.merge(translated)
   end
 end
