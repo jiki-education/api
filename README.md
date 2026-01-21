@@ -1015,14 +1015,13 @@ See `DEPLOYMENT_PLAN.md` for detailed bastion documentation.
 ## Additional Documentation
 
 For detailed development guidelines, architecture decisions, and patterns, see the `.context/` directory:
-- `.context/README.md` - Overview and index of all context files
 - `.context/commands.md` - Development commands reference
 - `.context/architecture.md` - Rails API structure and patterns
 - `.context/controllers.md` - Controller patterns and helper methods
 - `.context/testing.md` - Testing guidelines and FactoryBot usage
 - `.context/video_production.md` - Video production pipeline implementation guide
 
-See `CLAUDE.md` for AI assistant guidelines.
+See `CLAUDE.md` for AI assistant guidelines and a full index of context files.
 
 ---
 
