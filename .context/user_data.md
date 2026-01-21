@@ -9,7 +9,13 @@ The `User::Data` model stores extended user metadata separate from core authenti
 ### Automatic Creation
 - Created automatically via `after_initialize { build_data if new_record? && !data }` in User model
 - Uses `autosave: true` so data saves when user saves
-- Always accessible via `user.data`
+- Always accessible via `user.data` (no need to guard against it missing)
+
+### References are directly through `user`
+
+In nearly all situations, it is idiomatic to call `user.some_method` and let the `method_missing` flow in `user` handle the delegation to `user.data`, rather than calling `user.data.some_method`. 
+
+Only call `user.data.some_method` if there is a specific reason that `method_missing` won't work (e.g. you want to get `user.data.id` and `user.id` would clash).
 
 ### Database Schema
 ```ruby
