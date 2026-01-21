@@ -1,6 +1,7 @@
 module Badges
   class LevelCompletionistBadge < Badge
-    seed "Level Completionist", "trophy", "Completed an entire level"
+    seed "Level Completionist", "trophy", "Completed an entire level",
+      fun_fact: "Completing a full level shows real dedication. You're building strong foundations!"
 
     def award_to?(user)
       user.user_levels.any? do |user_level|

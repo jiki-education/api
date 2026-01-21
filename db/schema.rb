@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_13_175102) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_21_124417) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -54,9 +54,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_175102) do
     t.index ["user_id"], name: "index_assistant_conversations_on_user_id"
   end
 
+  create_table "badge_translations", force: :cascade do |t|
+    t.bigint "badge_id", null: false
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.text "fun_fact", null: false
+    t.string "locale", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["badge_id", "locale"], name: "index_badge_translations_on_badge_id_and_locale", unique: true
+    t.index ["badge_id"], name: "index_badge_translations_on_badge_id"
+  end
+
   create_table "badges", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.text "fun_fact"
     t.string "icon", null: false
     t.string "name", null: false
     t.integer "num_awardees", default: 0, null: false
@@ -482,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_175102) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assistant_conversations", "users"
+  add_foreign_key "badge_translations", "badges"
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
   add_foreign_key "lesson_translations", "lessons"
