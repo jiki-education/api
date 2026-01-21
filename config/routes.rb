@@ -108,6 +108,9 @@ Rails.application.routes.draw do
       delete :cancel
       post :reactivate
     end
+
+    # Payment history
+    resources :payments, only: [:index]
   end
 
   # Admin routes

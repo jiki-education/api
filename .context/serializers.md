@@ -378,23 +378,4 @@ end
 
 ## Testing Serializers
 
-Test serializers in controller tests by asserting on the JSON response structure:
-
-```ruby
-test "GET show returns serialized lesson" do
-  lesson = create(:lesson, slug: "hello-world", type: "coding")
-
-  get v1_lesson_path(lesson_slug: lesson.slug),
-    headers: @headers,
-    as: :json
-
-  assert_response :success
-  assert_json_response({
-    slug: "hello-world",
-    type: "coding",
-    data: lesson.data
-  })
-end
-```
-
-Direct serializer unit tests are rarely needed as controller integration tests provide sufficient coverage.
+All serializers should have a corresponding serializer test file that tests all the logic in that serializer thoroughly.

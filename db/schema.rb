@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_21_124417) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -190,6 +190,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_124417) do
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_levels_on_position", unique: true
     t.index ["slug"], name: "index_levels_on_slug", unique: true
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.integer "amount_in_cents", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", null: false
+    t.jsonb "data", default: {}, null: false
+    t.string "external_receipt_url"
+    t.string "payment_processor_id", null: false
+    t.string "product", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["data"], name: "index_payments_on_data", using: :gin
+    t.index ["payment_processor_id"], name: "index_payments_on_payment_processor_id", unique: true
+    t.index ["user_id", "created_at"], name: "index_payments_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_payments_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -501,6 +517,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_124417) do
   add_foreign_key "lesson_translations", "lessons"
   add_foreign_key "lessons", "levels"
   add_foreign_key "level_translations", "levels"
+  add_foreign_key "payments", "users"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

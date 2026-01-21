@@ -19,6 +19,7 @@ class User < ApplicationRecord
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
   has_many :badges, through: :acquired_badges
   has_many :assistant_conversations, dependent: :destroy
+  has_many :payments, dependent: :destroy
 
   belongs_to :current_user_level, class_name: "UserLevel", optional: true
 
