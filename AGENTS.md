@@ -9,7 +9,9 @@ ALWAYS use subagents in the following situation:
 
 ## Context Files
 
-The `.context/` directory contains detailed documentation for this codebase. **Read any files relevant to the task you are working on.**
+The `.context/` directory contains detailed documentation for this codebase. **Read any files relevant to the task you are working on. Even if the file is only tangentally relevant, read it to be sure.**
+
+You can read these files at **any point during your work** - even in the middle of implementing a plan if appropriate.
 
 | File | When to Read |
 |------|--------------|
@@ -22,7 +24,7 @@ The `.context/` directory contains detailed documentation for this codebase. **R
 | `mailers.md` | Email templates, MJML/HAML |
 | `jobs.md` | Background job processing with Sidekiq |
 | `llm.md` | AI-powered translation, Gemini API |
-| `i18n.md` | Internationalization, translations, avoiding N+1 queries |
+| `i18n.md` | Internationalization, translations |
 | `concepts.md` | Educational content model |
 | `video_production.md` | Video pipeline system |
 | `spi.md` | Service-to-service communication |
