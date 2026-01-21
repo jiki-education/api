@@ -460,3 +460,43 @@ if admin_user
 else
   puts "⚠ Could not create badge acquisitions - missing admin user"
 end
+
+# Create sample payments for admin user
+puts "\nCreating sample payments..."
+
+if admin_user
+  # Create 4 payments for admin user spanning several months
+  [
+    { months_ago: 4, product: "premium", amount: 1999 },
+    { months_ago: 3, product: "premium", amount: 1999 },
+    { months_ago: 2, product: "max", amount: 4999 },
+    { months_ago: 1, product: "max", amount: 4999 }
+  ].each_with_index do |payment_data, index|
+    payment_date = payment_data[:months_ago].months.ago
+    Payment.find_or_create_by!(payment_processor_id: "in_seed_#{index + 1}") do |p|
+      p.user = admin_user
+      p.amount_in_cents = payment_data[:amount]
+      p.currency = "usd"
+      p.product = payment_data[:product]
+      p.external_receipt_url = "https://invoice.stripe.com/i/seed_receipt_#{index + 1}"
+      p.data = {
+        stripe_invoice_id: "in_seed_#{index + 1}",
+        stripe_charge_id: "ch_seed_#{index + 1}",
+        stripe_subscription_id: "sub_seed_admin",
+        stripe_customer_id: "cus_seed_admin",
+        billing_reason: index.zero? ? "subscription_create" : "subscription_cycle",
+        period_start: payment_date.iso8601,
+        period_end: (payment_date + 1.month).iso8601
+      }
+      p.created_at = payment_date
+    end
+  end
+
+  puts "  ✓ Created 4 payments for admin user (#{admin_user.email})"
+  puts "    - 2 premium payments ($19.99 each)"
+  puts "    - 2 max payments ($49.99 each)"
+else
+  puts "⚠ Could not create payments - missing admin user"
+end
+
+# Note: test user has no payments (deliberately left without payments for testing)
