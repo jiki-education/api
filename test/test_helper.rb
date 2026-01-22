@@ -73,29 +73,22 @@ end
 module AuthenticationHelper
   def setup_user(user = nil)
     @current_user = user || create(:user)
-    @headers = auth_headers_for(@current_user)
+    sign_in_user(@current_user)
   end
 
-  def auth_headers_for(user)
-    token, payload = Warden::JWTAuth::UserEncoder.new.(user, :user, nil)
-
-    # With Allowlist strategy, we need to manually add the token to the allowlist
-    # The on_jwt_dispatch callback is only triggered on actual login/signup requests
-    user.jwt_tokens.create!(
-      jti: payload["jti"],
-      aud: payload["aud"],
-      expires_at: Time.zone.at(payload["exp"].to_i)
-    )
-
-    { "Authorization" => "Bearer #{token}" }
-  end
-
-  def sign_in_as(user)
+  # Sign in a user by posting to the session endpoint
+  # This sets up the session cookie for subsequent requests
+  def sign_in_user(user)
     post user_session_path, params: {
-      user: { email: user.email, password: user.password }
+      user: { email: user.email, password: "password123" }
     }, as: :json
-    token = response.headers["Authorization"]&.split(" ")&.last
-    { "Authorization" => "Bearer #{token}" }
+  end
+
+  # For tests that need headers (compatibility with existing tests)
+  # With session-based auth, we don't need headers - cookies are automatic
+  def auth_headers_for(user)
+    sign_in_user(user)
+    {} # No headers needed - session cookie is handled automatically
   end
 end
 
@@ -200,15 +193,10 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # Macro for testing authentication requirements
   def self.guard_incorrect_token!(path_helper, args: [], method: :get)
-    test "#{method} #{path_helper} returns 401 with invalid token" do
-      path = send(path_helper, *args)
-      send(method, path, headers: { "Authorization" => "Bearer invalid" }, as: :json)
+    test "#{method} #{path_helper} returns 401 without authentication" do
+      # Reset session to ensure no authentication
+      reset!
 
-      assert_response :unauthorized
-      assert_equal "unauthorized", response.parsed_body["error"]["type"]
-    end
-
-    test "#{method} #{path_helper} returns 401 without token" do
       path = send(path_helper, *args)
       send(method, path, as: :json)
 
@@ -219,16 +207,18 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # Macro for testing admin-only endpoints (includes authentication + admin checks)
   def self.guard_admin!(path_helper, args: [], method: :get)
-    # First, guard against incorrect tokens (401 errors)
+    # First, guard against missing authentication (401 error)
     guard_incorrect_token!(path_helper, args:, method:)
 
     # Then, guard against non-admin users (403 error)
     test "#{method} #{path_helper} returns 403 for non-admin users" do
+      # Reset session and sign in as non-admin user
+      reset!
       user = create(:user, admin: false)
-      headers = auth_headers_for(user)
+      sign_in_user(user)
       path = send(path_helper, *args)
 
-      send(method, path, headers:, as: :json)
+      send(method, path, as: :json)
 
       assert_response :forbidden
       assert_json_response({

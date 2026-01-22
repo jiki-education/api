@@ -2,86 +2,44 @@
 
 This document describes the authentication system for the Jiki API and its integration with the frontend.
 
-## Implementation Todo List
-
-### Backend (API) Tasks
-- [x] Add Devise and devise-jwt gems to Gemfile
-- [x] Configure Devise for API-only mode
-- [x] Generate User model with Devise
-- [x] Add OAuth-ready fields to User model
-- [x] Configure JWT token handling
-- [x] Create custom Devise controllers for JSON responses
-- [x] Configure CORS for frontend
-- [x] Set up API routes under `/api/v1/auth`
-- [x] Configure mailer for frontend URLs
-- [x] Create User factory for testing
-- [x] Write unit tests for User model
-- [x] Write API controller tests for auth endpoints
-
-### Frontend (React/Next.js) Tasks
-- [ ] Install auth dependencies (@tanstack/react-query, zustand)
-- [ ] Create auth store/context for state management
-- [ ] Build login form component
-- [ ] Build registration form component
-- [ ] Build password reset request form
-- [ ] Build password reset form (with token)
-- [ ] Create API client with JWT interceptor
-- [ ] Add protected route wrapper
-- [ ] Handle token storage (localStorage/memory)
-- [ ] Implement auto-refresh for expiring tokens
-- [ ] Add logout functionality
-- [ ] Create auth hooks (useAuth, useCurrentUser, etc.)
-
-### OAuth Integration (Future)
-- [ ] Frontend: Add @react-oauth/google package
-- [ ] Frontend: Implement Google OAuth button
-- [ ] Backend: Add google-id-token gem for verification
-- [ ] Backend: Add OAuth endpoint to accept Google tokens
-- [ ] Backend: Find or create user from Google profile
-- [ ] Test OAuth flow end-to-end
-
 ## Architecture Overview
 
 ### Technology Stack
-- **Backend**: Devise + devise-jwt for Rails API
-- **Token Format**: JWT (JSON Web Tokens)
-- **Token Delivery**: Accepts JWT from httpOnly cookies OR Authorization header
+- **Backend**: Devise for Rails API with session-based authentication
+- **Session Storage**: Encrypted cookies (`jiki_session`)
 - **OAuth Ready**: Database schema includes provider ID fields
 
-### JWT Token Delivery
+### How Session-Based Authentication Works
 
-The API accepts JWT access tokens via two methods (checked in this order):
+The API uses traditional Rails session cookies for authentication:
 
-1. **Authorization Header** (Primary)
-   - Format: `Authorization: Bearer <jwt_token>`
-   - Checked FIRST - explicit authentication intent
-   - Standard HTTP authentication method
+```
+# Request with session cookie (automatic with credentials: 'include')
+Request: Cookie: jiki_session=encrypted_session_data
+```
 
-2. **httpOnly Cookie** (Fallback)
-   - Cookie name: `jiki_access_token`
-   - Domain: `.jiki.io`
-   - Secure: true (production)
-   - SameSite: lax
-   - Checked if Authorization header is not present
-   - Provides XSS protection through httpOnly flag
-
-**Implementation**: Custom Warden strategy (`config/initializers/warden_jwt_cookie_strategy.rb`) extends `Warden::JWTAuth::Strategy` to check Authorization header first, then falls back to the cookie.
+Rails encrypts the session data (including `user_id`) into an httpOnly, secure cookie. The cookie is automatically sent with every request when `credentials: 'include'` is set on fetch calls.
 
 ### Authentication Flow
 
 #### Registration
 1. User fills registration form on frontend
 2. Frontend POSTs to `/auth/signup`
-3. API creates user, generates JWT
-4. API returns JWT + user data
-5. Frontend stores JWT, updates auth state
+3. API creates user, establishes session
+4. API returns user data (session cookie set automatically)
+5. Frontend updates auth state
 
 #### Login
 1. User enters credentials on frontend
 2. Frontend POSTs to `/auth/login`
-3. API validates credentials, generates JWT
-4. API returns JWT + user data
-5. Frontend stores JWT, updates auth state
+3. API validates credentials, establishes session
+4. API returns user data (session cookie set automatically)
+5. Frontend updates auth state
+
+#### Logout
+1. Frontend DELETEs to `/auth/logout`
+2. API clears the session
+3. Frontend clears auth state
 
 #### Password Reset
 1. User requests reset on frontend
@@ -90,17 +48,6 @@ The API accepts JWT access tokens via two methods (checked in this order):
 4. User clicks link, lands on frontend reset form
 5. Frontend PATCHes new password + token to `/auth/password`
 6. API validates token, updates password
-7. Frontend can auto-login or redirect to login
-
-#### JWT Token Lifecycle
-- **Generation**: On login/registration (dual-token system)
-- **Access Token Expiry**: 1 hour (short-lived for security)
-- **Refresh Token Expiry**: 30 days (long-lived for UX)
-- **Revocation**: On logout (using Allowlist strategy)
-- **Refresh**: POST /auth/refresh with refresh token to get new access token
-- **Multi-Device Support**: Users can have multiple active sessions across devices
-- **Per-Device Logout**: `/auth/logout` logs out current device only
-- **Global Logout**: `/auth/logout/all` logs out all devices
 
 ## API Endpoints
 
@@ -129,13 +76,8 @@ Register a new user account.
     "email": "user@example.com",
     "name": "John Doe",
     "created_at": "2024-01-01T00:00:00Z"
-  },
-  "refresh_token": "long_lived_refresh_token_here"
+  }
 }
-```
-**Headers:**
-```
-Authorization: Bearer <short_lived_access_token>
 ```
 
 **Error Response (422):**
@@ -153,7 +95,7 @@ Authorization: Bearer <short_lived_access_token>
 ```
 
 #### POST /auth/login
-Authenticate and receive JWT token.
+Authenticate and establish session.
 
 **Request:**
 ```json
@@ -173,13 +115,8 @@ Authenticate and receive JWT token.
     "email": "user@example.com",
     "name": "John Doe",
     "created_at": "2024-01-01T00:00:00Z"
-  },
-  "refresh_token": "long_lived_refresh_token_here"
+  }
 }
-```
-**Headers:**
-```
-Authorization: Bearer <short_lived_access_token>
 ```
 
 **Error Response (401):**
@@ -193,90 +130,10 @@ Authorization: Bearer <short_lived_access_token>
 ```
 
 #### DELETE /auth/logout
-Logout from the current device only. Revokes JWT access tokens and refresh tokens for the device making the request, identified by User-Agent header.
-
-**Headers Required:**
-```
-Authorization: Bearer <jwt_token>
-User-Agent: <device_identifier>
-```
+Logout and clear session.
 
 **Success Response (204):**
 No content
-
-**Behavior:**
-- Identifies the current device using the User-Agent from the JWT's `aud` field
-- Deletes all JWT tokens with matching `aud` for this user
-- Deletes all refresh tokens with matching `aud` for this user
-- Other devices remain logged in and functional
-
-#### DELETE /auth/logout/all
-Logout from ALL devices. Revokes all JWT access tokens and refresh tokens for the user across all devices.
-
-**Headers Required:**
-```
-Authorization: Bearer <jwt_token>
-```
-
-**Success Response (204):**
-No content
-
-**Behavior:**
-- Deletes ALL JWT tokens for this user
-- Deletes ALL refresh tokens for this user
-- User is logged out from every device
-- Useful for security scenarios (e.g., "I lost my phone")
-
-#### POST /auth/refresh
-Refresh an expired access token using a refresh token.
-
-**Request:**
-```json
-{
-  "refresh_token": "long_lived_refresh_token_here"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "message": "Access token refreshed successfully"
-}
-```
-**Headers:**
-```
-Authorization: Bearer <new_short_lived_access_token>
-```
-
-**Error Response (401 - Invalid):**
-```json
-{
-  "error": {
-    "type": "invalid_token",
-    "message": "Invalid refresh token"
-  }
-}
-```
-
-**Error Response (401 - Expired):**
-```json
-{
-  "error": {
-    "type": "expired_token",
-    "message": "Refresh token has expired"
-  }
-}
-```
-
-**Error Response (400 - Missing):**
-```json
-{
-  "error": {
-    "type": "invalid_request",
-    "message": "Refresh token is required"
-  }
-}
-```
 
 #### POST /auth/password
 Request password reset email.
@@ -318,19 +175,9 @@ Reset password with token.
 }
 ```
 
-**Error Response (422):**
-```json
-{
-  "error": {
-    "type": "invalid_token",
-    "message": "Reset token is invalid or has expired"
-  }
-}
-```
-
 ### Conversation Tokens (AI Assistant)
 
-Separate from the main auth JWT, conversation tokens are stateless JWTs used by an external LLM proxy to validate AI assistant chat requests.
+Separate from the main session auth, conversation tokens are stateless JWTs used by an external LLM proxy to validate AI assistant chat requests.
 
 #### POST /internal/assistant_conversations
 Create or validate an assistant conversation and get a conversation token.
@@ -360,41 +207,22 @@ Create or validate an assistant conversation and get a conversation token.
 }
 ```
 
-**Error Response (403 - Access Denied):**
-```json
-{
-  "error": {
-    "type": "forbidden",
-    "message": "Assistant access not allowed for this lesson"
-  }
-}
-```
-
-**Key Differences from Auth JWT:**
-- 1-hour expiry (same as auth JWT)
-- Stateless - NOT stored in allowlist database
-- Contains lesson/exercise context instead of user profile
+**Key Points:**
+- 1-hour expiry
+- Stateless - NOT stored in database
+- Contains lesson/exercise context
 - Used only for LLM proxy authentication
-
-**Access Control:**
-- Premium/Max users: Can get token for any lesson
-- Standard users: Can only get token for their "free" lesson (most recent conversation)
-
-**Related Commands:**
-- `AssistantConversation::CreateConversationToken`
-- `AssistantConversation::CheckUserAccess`
-
-See `.context/premium.md` for detailed access control logic.
+- Generated using raw JWT gem (independent of Devise)
 
 ### Future OAuth Endpoints
 
 #### POST /auth/google
-Authenticate with Google OAuth token.
+Authenticate with Google OAuth.
 
 **Request:**
 ```json
 {
-  "token": "google_jwt_token_here"
+  "code": "google_auth_code_here"
 }
 ```
 
@@ -409,22 +237,19 @@ Authenticate with Google OAuth token.
   }
 }
 ```
-**Headers:**
-```
-Authorization: Bearer <jwt_token>
-```
 
 ## Frontend Integration
 
-### Required Packages
-```json
-{
-  "dependencies": {
-    "@tanstack/react-query": "^5.0.0",
-    "zustand": "^4.4.0",
-    "axios": "^1.6.0"
+### Required Configuration
+
+```javascript
+// All API calls should include credentials
+fetch('/api/endpoint', {
+  credentials: 'include',  // Sends cookies automatically
+  headers: {
+    'Content-Type': 'application/json'
   }
-}
+})
 ```
 
 ### Auth Store Example (Zustand)
@@ -435,33 +260,15 @@ import { persist } from 'zustand/middleware';
 const useAuthStore = create(
   persist(
     (set, get) => ({
-      accessToken: null,      // Short-lived (1 hour), stored in memory/sessionStorage
-      refreshToken: null,     // Long-lived (30 days), stored in localStorage
       user: null,
 
-      setAuth: (accessToken, refreshToken, user) => set({
-        accessToken,
-        refreshToken,
-        user
-      }),
-
-      setAccessToken: (accessToken) => set({ accessToken }),
-
-      clearAuth: () => set({
-        accessToken: null,
-        refreshToken: null,
-        user: null
-      }),
-
-      isAuthenticated: () => !!get().accessToken,
+      setUser: (user) => set({ user }),
+      clearAuth: () => set({ user: null }),
+      isAuthenticated: () => !!get().user,
     }),
     {
       name: 'auth-storage',
-      // Only persist refreshToken and user, not accessToken
-      partialize: (state) => ({
-        refreshToken: state.refreshToken,
-        user: state.user
-      }),
+      partialize: (state) => ({ user: state.user }),
     }
   )
 );
@@ -473,164 +280,30 @@ import axios from 'axios';
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+  withCredentials: true,  // Send cookies with every request
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-let isRefreshing = false;
-let failedQueue = [];
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach(prom => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-  failedQueue = [];
-};
-
-// Request interceptor to add access token
-apiClient.interceptors.request.use(
-  (config) => {
-    const accessToken = useAuthStore.getState().accessToken;
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor to handle token refresh
+// Response interceptor to handle auth state
 apiClient.interceptors.response.use(
   (response) => {
-    // Extract access token from login/signup responses
-    const accessToken = response.headers.authorization?.replace('Bearer ', '');
-    if (accessToken && response.data.user) {
-      const { user, refresh_token } = response.data;
-      useAuthStore.getState().setAuth(accessToken, refresh_token, user);
+    // Update user from login/signup responses
+    if (response.data.user) {
+      useAuthStore.getState().setUser(response.data.user);
     }
     return response;
   },
-  async (error) => {
-    const originalRequest = error.config;
-
-    // If 401 and we haven't tried to refresh yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // Queue this request to retry after refresh completes
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(token => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return apiClient(originalRequest);
-        });
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      const refreshToken = useAuthStore.getState().refreshToken;
-      if (!refreshToken) {
-        useAuthStore.getState().clearAuth();
-        window.location.href = '/login';
-        return Promise.reject(error);
-      }
-
-      try {
-        const response = await apiClient.post('/auth/refresh', {
-          refresh_token: refreshToken
-        });
-
-        const newAccessToken = response.headers.authorization?.replace('Bearer ', '');
-        useAuthStore.getState().setAccessToken(newAccessToken);
-
-        processQueue(null, newAccessToken);
-
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError, null);
-        useAuthStore.getState().clearAuth();
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+  (error) => {
+    // Handle 401 - redirect to login
+    if (error.response?.status === 401) {
+      useAuthStore.getState().clearAuth();
+      window.location.href = '/login';
     }
-
     return Promise.reject(error);
   }
 );
-```
-
-### Auth Hooks
-```jsx
-// useAuth hook
-export const useAuth = () => {
-  const { token, user, isAuthenticated, clearAuth } = useAuthStore();
-
-  const login = useMutation({
-    mutationFn: async ({ email, password }) => {
-      const response = await apiClient.post('/auth/login', {
-        user: { email, password }
-      });
-      return response.data;
-    },
-  });
-
-  const register = useMutation({
-    mutationFn: async ({ email, password, name }) => {
-      const response = await apiClient.post('/auth/signup', {
-        user: { email, password, password_confirmation: password, name }
-      });
-      return response.data;
-    },
-  });
-
-  const logout = useMutation({
-    mutationFn: async () => {
-      await apiClient.delete('/auth/logout');
-      clearAuth();
-    },
-  });
-
-  const logoutAll = useMutation({
-    mutationFn: async () => {
-      await apiClient.delete('/auth/logout/all');
-      clearAuth();
-    },
-  });
-
-  return {
-    user,
-    token,
-    isAuthenticated: isAuthenticated(),
-    login,
-    register,
-    logout,
-    logoutAll,
-  };
-};
-```
-
-### Protected Route Component
-```jsx
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-
-export const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
 ```
 
 ## Database Schema
@@ -644,15 +317,22 @@ create_table :users do |t|
 
   # User profile
   t.string :name
+  t.string :handle
 
   # Devise recoverable
   t.string   :reset_password_token
   t.datetime :reset_password_sent_at
 
-  # User profile
+  # Devise confirmable
+  t.string   :confirmation_token
+  t.datetime :confirmed_at
+  t.datetime :confirmation_sent_at
+  t.string   :unconfirmed_email
+
+  # User settings
   t.string :locale, null: false, default: "en"
 
-  # OAuth ready fields (for future)
+  # OAuth ready fields
   t.string :google_id
   t.string :github_id
   t.string :provider
@@ -662,97 +342,68 @@ end
 
 add_index :users, :email, unique: true
 add_index :users, :reset_password_token, unique: true
+add_index :users, :handle, unique: true
 add_index :users, :google_id, unique: true
 add_index :users, :github_id, unique: true
-
-# JWT Allowlist - stores active access tokens (1 hour expiry)
-create_table :user_jwt_tokens do |t|
-  t.references :user, null: false, foreign_key: true
-  t.string :jti, null: false         # JWT ID from token payload
-  t.string :aud                      # Device identifier (User-Agent)
-  t.datetime :exp, null: false       # Expiration time
-  t.timestamps
-end
-
-add_index :user_jwt_tokens, :jti, unique: true
-
-# Refresh Tokens - stores long-lived refresh tokens (30 days)
-create_table :user_refresh_tokens do |t|
-  t.references :user, null: false, foreign_key: true
-  t.string :crypted_token, null: false  # SHA256 hash of refresh token
-  t.string :aud                         # Device identifier (User-Agent)
-  t.datetime :exp, null: false          # Expiration time
-  t.timestamps
-end
-
-add_index :user_refresh_tokens, :crypted_token, unique: true
 ```
 
 ## Security Considerations
 
-### JWT Token Security
-- **Dual-Token System**: Access tokens (1hr) + Refresh tokens (30 days)
-- **Access Tokens**: Signed with Rails secret key, stored in Allowlist table
-- **Refresh Tokens**: SHA256 hashed before storage (like passwords)
-- **JTI (JWT ID)**: Used for tracking and revoking individual access tokens
-- **Multi-Device Support**: Users can have multiple active sessions
-- **Revocation**: Allowlist strategy - tokens must exist in db to be valid
-- **Device Tracking**: User-Agent stored in `aud` field for session management
-- **Automated Token Cleanup**: Hourly Sidekiq job removes tokens expired >1 hour ago
-- **Database Indexes**: `expires_at` indexed on both tables for efficient cleanup queries
+### Session Security
+- **Cookie Settings**: httpOnly, Secure (in production), SameSite: lax
+- **Session Expiry**: 30 days
+
+### CSRF Protection
+
+The API uses `SameSite: Lax` cookies as the primary CSRF protection mechanism:
+
+**How it works:**
+- `SameSite: Lax` prevents the session cookie from being sent on cross-site POST/PUT/DELETE requests
+- Only top-level GET navigations from external sites include the cookie
+- Combined with CORS (which restricts allowed origins), this provides robust protection
+
+**Why we don't use explicit CSRF tokens:**
+- Traditional CSRF tokens require a server-rendered HTML page to embed the token
+- In API-only apps with SPA frontends, there's no HTML page
+- `SameSite: Lax` + CORS is the modern standard for API CSRF protection
+- Supported by all modern browsers (Chrome 51+, Firefox 60+, Safari 12+)
+
+**When explicit CSRF tokens would be needed:**
+- Supporting pre-2020 browsers without SameSite support
+- If the API had state-changing GET endpoints (bad practice)
+- Extra defense-in-depth for high-security applications
+
+**Note:** If explicit CSRF protection is ever needed, it would require:
+1. An endpoint to fetch the CSRF token
+2. Frontend storing and sending `X-CSRF-Token` header with mutations
+3. Adding `ActionController::RequestForgeryProtection` to ApplicationController
 
 ### Password Security
 - Minimum 6 characters required
 - Encrypted using bcrypt
-- Reset tokens expire after 2 hours
+- Reset tokens expire after 6 hours
 - Reset tokens are single-use
 
-### API Request Security
+### API Security
 - **HTTPS Required**: Always use HTTPS in production
 - **CORS**: Restrict to known frontend domains with credentials support
-- **Cookie Security**: httpOnly, Secure, SameSite=lax for XSS protection
-- **Token Validation**: All tokens validated against allowlist before authentication
-- **Backward Compatibility**: Supports both cookie and Authorization header during migration
-
-### API Security
-- Rate limiting on auth endpoints (implement with rack-attack)
-- Strong parameter filtering
-- SQL injection prevention via Active Record
-- Timing attack prevention in password comparison
-
-## Testing Strategy
-
-### Unit Tests (User Model)
-- Validation tests (email format, password length)
-- Authentication tests (password verification)
-- Token generation tests
-- Password reset flow tests
-
-### Controller Tests (API Endpoints)
-- Registration with valid/invalid params
-- Login with correct/incorrect credentials
-- Password reset request
-- Password reset with valid/invalid token
-- Logout and token revocation
-- Authentication required for protected endpoints
-
-### Integration Tests
-- Full registration → login → logout flow
-- Complete password reset flow
-- Token expiration handling
-- OAuth flow (when implemented)
+- **Cookie Security**: httpOnly prevents XSS access to session
 
 ## Configuration Files
 
-### Devise Initializer
-Key settings for API-only mode:
-- `config.navigational_formats = []` (disable redirects)
-- `config.jwt` configuration block
-- JWT secret from Rails credentials
-- Token expiration settings
+### Session Configuration (`config/application.rb`)
+```ruby
+# Session-based authentication via cookies
+config.middleware.use ActionDispatch::Flash
+config.middleware.use ActionDispatch::Cookies
+config.middleware.use ActionDispatch::Session::CookieStore,
+  key: 'jiki_session',
+  expire_after: 30.days,
+  same_site: :lax,
+  secure: Rails.env.production?
+```
 
 ### CORS Configuration
-Allow frontend domain with credentials:
 ```ruby
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
@@ -760,70 +411,37 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     resource '*',
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
-      expose: ['Authorization'],
       credentials: true
   end
 end
 ```
 
-**Note**: Uses `Jiki.config.frontend_base_url` from `../config/settings/*.yml` files.
+## Testing Strategy
 
-## Background Jobs
+### Unit Tests (User Model)
+- Validation tests (email format, password length)
+- Authentication tests (password verification)
+- Password reset flow tests
 
-### Token Cleanup Job
+### Controller Tests (API Endpoints)
+- Registration with valid/invalid params
+- Login with correct/incorrect credentials
+- Password reset request
+- Password reset with valid/invalid token
+- Logout
+- Authentication required for protected endpoints
 
-**Purpose**: Automatically remove expired tokens to prevent database growth
+### Integration Tests
+- Full registration → login → logout flow
+- Complete password reset flow
+- OAuth flow (when implemented)
 
-**Schedule**: Runs hourly via `sidekiq-scheduler`
+## Common Issues & Solutions
 
-**Configuration**: `config/sidekiq-schedule.yml`
-```yaml
-cleanup_expired_auth_tokens:
-  interval: "1h"
-  class: "Auth::CleanupExpiredTokensJob"
-  queue: default
-```
-
-**Implementation**: `app/jobs/auth/cleanup_expired_tokens_job.rb`
-- Deletes JWT access tokens where `expires_at < 1.hour.ago`
-- Deletes refresh tokens where `expires_at < 1.hour.ago`
-- 1-hour buffer prevents edge cases during token validation
-- Logs deletion counts for monitoring
-
-**Manual Execution**:
-```ruby
-# In Rails console
-Auth::CleanupExpiredTokensJob.perform_now
-```
-
-**Database Impact**:
-- With 1M users, avg 2 devices, 30-day retention:
-  - Without cleanup: ~60M tokens/month (unbounded growth)
-  - With hourly cleanup: ~2M active tokens (bounded)
-- `expires_at` indexes enable efficient deletion queries
-
-## Monitoring & Debugging
-
-### Logging
-- Log all authentication attempts
-- Track failed login attempts
-- Monitor password reset requests
-- Log token revocations
-
-### Metrics to Track
-- Registration conversion rate
-- Login success/failure ratio
-- Password reset completion rate
-- Average session duration
-- Token refresh patterns
-- Expired tokens cleaned per hour (via `Auth::CleanupExpiredTokensJob` logs)
-
-### Common Issues & Solutions
-1. **CORS errors**: Check origins in cors.rb
-2. **Token not sent**: Verify Authorization header
-3. **Token expired**: Implement refresh or longer expiry
+1. **CORS errors**: Check origins in cors.rb, ensure credentials: true
+2. **Session not persisting**: Ensure credentials: 'include' on fetch calls
+3. **401 on every request**: Check cookie domain and SameSite settings
 4. **Password reset not working**: Check mailer configuration
-5. **OAuth failing**: Verify provider credentials
 
 ## Future Enhancements
 
@@ -831,12 +449,10 @@ Auth::CleanupExpiredTokensJob.perform_now
 - [ ] Email verification on registration
 - [ ] Account lockout after failed attempts
 - [ ] Two-factor authentication
-- [ ] Remember me functionality
-- [ ] Session management UI
+- [ ] Session management UI (view active sessions)
 
 ### Long Term
 - [ ] OAuth providers (Google, GitHub, Apple)
 - [ ] Magic link authentication
 - [ ] Biometric authentication (mobile)
 - [ ] Single Sign-On (SSO)
-- [x] Multi-device session management (✅ Implemented with Allowlist strategy)

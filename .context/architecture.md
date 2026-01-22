@@ -77,12 +77,12 @@ Based on business requirements:
 - Controllers in `app/controllers/api/v1/`
 - Backward compatibility considerations
 
-### Authentication Plan
-- JWT tokens for stateless auth
+### Authentication
+- Session-based authentication via encrypted cookies
+- `SameSite: Lax` cookies for CSRF protection
 - Suitable for:
-  - React frontend
-  - Mobile apps
-  - Horizontal scaling on ECS
+  - React frontend (with `credentials: 'include'`)
+  - Horizontal scaling on ECS (stateless - session stored in cookie)
 
 ### Error Handling
 - Consistent error response format

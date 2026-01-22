@@ -98,8 +98,8 @@ Devise.setup do |config|
   # Notice that if you are skipping storage for all authentication paths, you
   # may want to disable generating routes to Devise's sessions controller by
   # passing skip: :sessions to `devise_for` in your config/routes.rb
-  # Skip session storage for JWT authentication (stateless)
-  config.skip_session_storage = %i[http_auth jwt_authenticatable]
+  # Using session-based authentication (stored in encrypted cookie)
+  config.skip_session_storage = []
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
@@ -317,43 +317,8 @@ Devise.setup do |config|
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
 
-  # ==> JWT Configuration
-  # Configure JWT tokens for API authentication
-  config.jwt do |jwt|
-    # Use Jiki.secrets for JWT secret in all environments
-    jwt.secret = Jiki.secrets.jwt_secret
-
-    # Dispatch tokens in Authorization header
-    jwt.dispatch_requests = [
-      ['POST', %r{^/auth/login$}],
-      ['POST', %r{^/auth/signup$}],
-      ['POST', %r{^/auth/refresh$}]
-    ]
-
-    # Revoke tokens on logout (per-device logout only)
-    # Note: logout/all is handled manually in the controller
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/auth/logout$}]
-    ]
-
-    # Token expiration time (1 hour for security with refresh tokens)
-    jwt.expiration_time = 1.hour.to_i
-
-    # Handle requests with .json format suffix
-    jwt.request_formats = {
-      user: [:json]
-    }
-
-    # Disable aud (audience) claim validation
-    # We don't use aud for token validation, only jti (allowlist) for security
-    # User-Agent is tracked in the database for display purposes only
-    jwt.aud_header = nil
-  end
-
   # Warden configuration for API responses
   config.warden do |manager|
-    # Disable session storage for stateless JWT authentication
-    manager.scope_defaults :user, store: false
     # Use custom failure app for API responses
     manager.failure_app = CustomAuthFailure
   end

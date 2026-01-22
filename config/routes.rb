@@ -28,10 +28,8 @@ Rails.application.routes.draw do
     },
     skip: [:omniauth_callbacks]
 
-  # Refresh token endpoint (outside devise scope)
+  # Additional auth endpoints (outside devise scope)
   namespace :auth do
-    post "refresh", to: "refresh_tokens#create"
-    delete "logout/all", to: "logout_all#destroy"
     post "google", to: "google_oauth#create"
     post "unsubscribe/:token", to: "unsubscribe#create", as: :unsubscribe
   end
