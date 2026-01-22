@@ -12,7 +12,8 @@ class Internal::ConceptsController < Internal::BaseController
 
     render json: SerializePaginatedCollection.(
       concepts,
-      serializer: SerializeConcepts
+      serializer: SerializeConcepts,
+      serializer_kwargs: { for_user: current_user }
     )
   end
 

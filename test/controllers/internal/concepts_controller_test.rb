@@ -10,24 +10,25 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :internal_concept_path, args: ["some-concept"], method: :get
 
   # GET /v1/concepts (index) tests
-  test "GET index returns unlocked concepts by default (scoped)" do
+  test "GET index returns all concepts ordered by unlocked first" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "Arrays")
-    create(:concept, title: "Strings")
-    concept_3 = create(:concept, title: "Hashes")
+    concept_arrays = create(:concept, title: "Arrays")
+    concept_strings = create(:concept, title: "Strings")
+    concept_hashes = create(:concept, title: "Hashes")
 
-    Concept::UnlockForUser.(concept_1, @current_user)
-    Concept::UnlockForUser.(concept_3, @current_user)
+    Concept::UnlockForUser.(concept_arrays, @current_user)
+    Concept::UnlockForUser.(concept_hashes, @current_user)
 
     get internal_concepts_path, headers: @headers, as: :json
 
     assert_response :success
+    # Unlocked first (Arrays, Hashes alphabetically), then locked (Strings)
     assert_json_response({
-      results: SerializeConcepts.([concept_1, concept_3]),
+      results: SerializeConcepts.([concept_arrays, concept_hashes, concept_strings], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 1,
-        total_count: 2,
+        total_count: 3,
         events: []
       }
     })
@@ -35,20 +36,19 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index filters by title parameter" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "String Basics")
-    concept_2 = create(:concept, title: "Arrays")
-    concept_3 = create(:concept, title: "String Advanced")
+    concept_basics = create(:concept, title: "String Basics")
+    create(:concept, title: "Arrays")
+    concept_advanced = create(:concept, title: "String Advanced")
 
-    Concept::UnlockForUser.(concept_1, @current_user)
-    Concept::UnlockForUser.(concept_2, @current_user)
-    Concept::UnlockForUser.(concept_3, @current_user)
+    Concept::UnlockForUser.(concept_basics, @current_user)
+    Concept::UnlockForUser.(concept_advanced, @current_user)
 
     get internal_concepts_path(title: "String"), headers: @headers, as: :json
 
     assert_response :success
-    # Results ordered alphabetically by title
+    # All unlocked, ordered alphabetically by title
     assert_json_response({
-      results: SerializeConcepts.([concept_3, concept_1]),
+      results: SerializeConcepts.([concept_advanced, concept_basics], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 1,
@@ -58,23 +58,24 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index title filter only returns unlocked concepts" do
+  test "GET index title filter returns all matching with unlocked-first ordering" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "String Basics")
-    create(:concept, title: "String Advanced")
+    concept_basics = create(:concept, title: "String Basics")
+    concept_advanced = create(:concept, title: "String Advanced")
 
-    Concept::UnlockForUser.(concept_1, @current_user)
-    # concept_2 is locked
+    Concept::UnlockForUser.(concept_basics, @current_user)
+    # concept_advanced is locked
 
     get internal_concepts_path(title: "String"), headers: @headers, as: :json
 
     assert_response :success
+    # Unlocked first (String Basics), then locked (String Advanced)
     assert_json_response({
-      results: SerializeConcepts.([concept_1]),
+      results: SerializeConcepts.([concept_basics, concept_advanced], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 1,
-        total_count: 1,
+        total_count: 2,
         events: []
       }
     })
@@ -82,18 +83,18 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index filters by slugs parameter" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "Arrays", slug: "arrays")
-    concept_2 = create(:concept, title: "Hashes", slug: "hashes")
+    concept_arrays = create(:concept, title: "Arrays", slug: "arrays")
+    concept_hashes = create(:concept, title: "Hashes", slug: "hashes")
     create(:concept, title: "Strings", slug: "strings")
 
-    Concept::UnlockForUser.(concept_1, @current_user)
-    Concept::UnlockForUser.(concept_2, @current_user)
+    Concept::UnlockForUser.(concept_arrays, @current_user)
+    Concept::UnlockForUser.(concept_hashes, @current_user)
 
     get internal_concepts_path(slugs: "arrays,hashes"), headers: @headers, as: :json
 
     assert_response :success
     assert_json_response({
-      results: SerializeConcepts.([concept_1, concept_2]),
+      results: SerializeConcepts.([concept_arrays, concept_hashes], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 1,
@@ -103,23 +104,24 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index slugs filter only returns unlocked concepts" do
+  test "GET index slugs filter returns all matching with unlocked-first ordering" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "Arrays", slug: "arrays")
-    create(:concept, title: "Hashes", slug: "hashes")
+    concept_arrays = create(:concept, title: "Arrays", slug: "arrays")
+    concept_hashes = create(:concept, title: "Hashes", slug: "hashes")
 
-    Concept::UnlockForUser.(concept_1, @current_user)
-    # concept_2 is locked
+    Concept::UnlockForUser.(concept_arrays, @current_user)
+    # concept_hashes is locked
 
     get internal_concepts_path(slugs: "arrays,hashes"), headers: @headers, as: :json
 
     assert_response :success
+    # Unlocked first (Arrays), then locked (Hashes)
     assert_json_response({
-      results: SerializeConcepts.([concept_1]),
+      results: SerializeConcepts.([concept_arrays, concept_hashes], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 1,
-        total_count: 1,
+        total_count: 2,
         events: []
       }
     })
@@ -127,20 +129,20 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "Concept A")
-    concept_2 = create(:concept, title: "Concept B")
-    concept_3 = create(:concept, title: "Concept C")
+    concept_a = create(:concept, title: "Concept A")
+    concept_b = create(:concept, title: "Concept B")
+    concept_c = create(:concept, title: "Concept C")
 
-    Concept::UnlockForUser.(concept_1, @current_user)
-    Concept::UnlockForUser.(concept_2, @current_user)
-    Concept::UnlockForUser.(concept_3, @current_user)
+    Concept::UnlockForUser.(concept_a, @current_user)
+    Concept::UnlockForUser.(concept_b, @current_user)
+    Concept::UnlockForUser.(concept_c, @current_user)
 
     get internal_concepts_path(page: 1, per: 2), headers: @headers, as: :json
 
     assert_response :success
-    # Ordered alphabetically by title: A, B (first page)
+    # All unlocked, ordered alphabetically: A, B (first page)
     assert_json_response({
-      results: SerializeConcepts.([concept_1, concept_2]),
+      results: SerializeConcepts.([concept_a, concept_b], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 2,
@@ -157,9 +159,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concepts_path(per: 3), headers: @headers, as: :json
 
     assert_response :success
-    # Ordered alphabetically by title: Concept 0, 1, 2
+    # All unlocked, ordered alphabetically: Concept 0, 1, 2
     assert_json_response({
-      results: SerializeConcepts.([concepts[0], concepts[1], concepts[2]]),
+      results: SerializeConcepts.([concepts[0], concepts[1], concepts[2]], for_user: @current_user),
       meta: {
         current_page: 1,
         total_pages: 2,
@@ -169,19 +171,21 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index returns empty array when user has no unlocked concepts" do
-    create(:concept)
-    create(:concept)
+  test "GET index returns all concepts when user has no unlocked concepts" do
+    Prosopite.finish
+    concept_arrays = create(:concept, title: "Arrays")
+    concept_strings = create(:concept, title: "Strings")
 
     get internal_concepts_path, headers: @headers, as: :json
 
     assert_response :success
+    # All concepts returned (all locked), ordered alphabetically
     assert_json_response({
-      results: [],
+      results: SerializeConcepts.([concept_arrays, concept_strings], for_user: @current_user),
       meta: {
         current_page: 1,
-        total_pages: 0,
-        total_count: 0,
+        total_pages: 1,
+        total_count: 2,
         events: []
       }
     })
