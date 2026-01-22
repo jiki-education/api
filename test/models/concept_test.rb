@@ -225,4 +225,41 @@ class ConceptTest < ActiveSupport::TestCase
     assert_nil child.parent_concept_id
     assert child.root?
   end
+
+  # Foreign key constraint tests
+  test "rejects non-existent parent_concept_id" do
+    concept = create(:concept)
+
+    assert_raises ActiveRecord::InvalidForeignKey do
+      concept.update!(parent_concept_id: 999_999)
+    end
+  end
+
+  # Depth limit tests
+  test "rejects nesting deeper than 10 levels" do
+    Prosopite.finish
+    # Create chain of 10 concepts (depth 0-9)
+    concepts = [create(:concept)]
+    9.times do
+      concepts << create(:concept, parent: concepts.last)
+    end
+
+    # 11th level (depth 10) should fail
+    too_deep = build(:concept, parent: concepts.last)
+    refute too_deep.valid?
+    assert_includes too_deep.errors[:parent_concept_id], "would exceed maximum nesting depth of 10"
+  end
+
+  test "allows nesting up to 10 levels" do
+    Prosopite.finish
+    # Create chain of 9 concepts (depth 0-8)
+    concepts = [create(:concept)]
+    8.times do
+      concepts << create(:concept, parent: concepts.last)
+    end
+
+    # 10th level (depth 9) should succeed
+    tenth_level = build(:concept, parent: concepts.last)
+    assert tenth_level.valid?
+  end
 end

@@ -5,6 +5,7 @@ class Concept < ApplicationRecord
   friendly_id :slug, use: [:history]
 
   VIDEO_PROVIDERS = %w[youtube mux].freeze
+  MAX_DEPTH = 10
 
   belongs_to :unlocked_by_lesson, class_name: 'Lesson', optional: true
   belongs_to :parent,
@@ -21,7 +22,8 @@ class Concept < ApplicationRecord
   validates :content_markdown, presence: true
   validates :standard_video_provider, inclusion: { in: VIDEO_PROVIDERS, allow_nil: true }
   validates :premium_video_provider, inclusion: { in: VIDEO_PROVIDERS, allow_nil: true }
-  validate :parent_cannot_create_circular_reference, if: :parent_concept_id_changed?
+  validate :validate_no_circular_reference!, on: :update, if: :parent_concept_id_changed?
+  validate :validate_depth_within_limit!, if: :parent_concept_id_changed?
 
   before_validation :generate_slug, on: :create
   before_save :parse_markdown, if: :content_markdown_changed?
@@ -73,7 +75,7 @@ class Concept < ApplicationRecord
     self.content_html = Utils::Markdown::Parse.(content_markdown)
   end
 
-  def parent_cannot_create_circular_reference
+  def validate_no_circular_reference!
     return unless parent_concept_id
 
     if parent_concept_id == id
@@ -81,10 +83,16 @@ class Concept < ApplicationRecord
       return
     end
 
-    return unless persisted?
-
-    return unless parent.ancestor_ids.include?(id)
+    return unless parent&.ancestor_ids&.include?(id)
 
     errors.add(:parent_concept_id, "would create a circular reference")
+  end
+
+  def validate_depth_within_limit!
+    return unless parent_concept_id
+
+    return unless ancestors.length >= MAX_DEPTH
+
+    errors.add(:parent_concept_id, "would exceed maximum nesting depth of #{MAX_DEPTH}")
   end
 end
