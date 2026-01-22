@@ -151,7 +151,7 @@ EmailTemplate::TranslateToAllLocales.(source_template)
 **Request**:
 ```bash
 POST /admin/email_templates/:id/translate
-Authorization: Bearer <admin-jwt-token>
+# Requires admin session (cookie-based authentication)
 ```
 
 **Response (202 Accepted)**:

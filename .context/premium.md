@@ -45,20 +45,6 @@ else
 end
 ```
 
-## JWT Claims
-
-The user's membership type is included in JWT tokens:
-
-```json
-{
-  "sub": 123,
-  "membership_type": "standard",
-  ...
-}
-```
-
-**Note**: JWT claims use snake_case (e.g., `membership_type`, not `membershipType`).
-
 ## AI Assistant Access Control
 
 The AI assistant has tiered access based on membership:

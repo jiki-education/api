@@ -352,7 +352,31 @@ add_index :users, :github_id, unique: true
 ### Session Security
 - **Cookie Settings**: httpOnly, Secure (in production), SameSite: lax
 - **Session Expiry**: 30 days
-- **CSRF Protection**: SameSite cookie attribute protects against cross-site requests
+
+### CSRF Protection
+
+The API uses `SameSite: Lax` cookies as the primary CSRF protection mechanism:
+
+**How it works:**
+- `SameSite: Lax` prevents the session cookie from being sent on cross-site POST/PUT/DELETE requests
+- Only top-level GET navigations from external sites include the cookie
+- Combined with CORS (which restricts allowed origins), this provides robust protection
+
+**Why we don't use explicit CSRF tokens:**
+- Traditional CSRF tokens require a server-rendered HTML page to embed the token
+- In API-only apps with SPA frontends, there's no HTML page
+- `SameSite: Lax` + CORS is the modern standard for API CSRF protection
+- Supported by all modern browsers (Chrome 51+, Firefox 60+, Safari 12+)
+
+**When explicit CSRF tokens would be needed:**
+- Supporting pre-2020 browsers without SameSite support
+- If the API had state-changing GET endpoints (bad practice)
+- Extra defense-in-depth for high-security applications
+
+**Note:** If explicit CSRF protection is ever needed, it would require:
+1. An endpoint to fetch the CSRF token
+2. Frontend storing and sending `X-CSRF-Token` header with mutations
+3. Adding `ActionController::RequestForgeryProtection` to ApplicationController
 
 ### Password Security
 - Minimum 6 characters required
