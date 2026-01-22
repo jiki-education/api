@@ -3,23 +3,10 @@ module Auth
     def create
       user = Auth::AuthenticateWithGoogle.(params[:code])
 
-      # Generate JWT access token
-      # Since we're not going through Devise's dispatch_requests,
-      # we need to manually add the token to the allowlist
-      # Note: User-Agent is already set in Current.user_agent by ApplicationController
-      token, payload = Warden::JWTAuth::UserEncoder.new.(user, :user, nil)
+      # Sign in the user (creates session cookie automatically)
+      sign_in(user)
 
-      # Generate refresh token
-      refresh_token = User::Jwt::CreateRefreshToken.(user)
-
-      User::Jwt::CreateToken.(user, payload, refresh_token_id: refresh_token.id)
-
-      response.headers['Authorization'] = "Bearer #{token}"
-
-      render json: {
-        user: SerializeUser.(user),
-        refresh_token: refresh_token.token
-      }, status: :ok
+      render json: { user: SerializeUser.(user) }, status: :ok
     rescue InvalidGoogleTokenError => e
       render json: {
         error: {

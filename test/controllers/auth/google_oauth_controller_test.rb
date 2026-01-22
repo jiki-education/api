@@ -1,7 +1,7 @@
 require "test_helper"
 
 class Auth::GoogleOauthControllerTest < ApplicationControllerTest
-  test "POST google with valid code creates new user and returns JWT" do
+  test "POST google with valid code creates new user and signs them in" do
     google_payload = {
       'sub' => 'google-user-id-123',
       'email' => 'newuser@gmail.com',
@@ -11,7 +11,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
-    assert_difference ['User.count', 'User::JwtToken.count', 'User::RefreshToken.count'], 1 do
+    assert_difference 'User.count', 1 do
       post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
     end
 
@@ -25,11 +25,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert user.confirmed?
     assert_equal 'newuser', user.handle
 
-    # Check JWT token was created and linked to refresh token
-    jwt_token = user.jwt_tokens.last
-    refresh_token = user.refresh_tokens.last
-    assert_equal refresh_token.id, jwt_token.refresh_token_id
-
     # Check response
     json = response.parsed_body
     assert_equal 'newuser', json['user']['handle']
@@ -37,15 +32,9 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert_equal 'New User', json['user']['name']
     assert_equal 'google', json['user']['provider']
     assert json['user']['email_confirmed']
-    assert json['refresh_token'].present?
-
-    # Check JWT token in header
-    token = response.headers['Authorization']
-    assert token.present?
-    assert token.start_with?('Bearer ')
   end
 
-  test "POST google with valid code for existing google user returns JWT" do
+  test "POST google with valid code for existing google user signs them in" do
     existing_user = create(:user,
       email: 'existing@gmail.com',
       google_id: 'google-user-id-456',
@@ -62,9 +51,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
     assert_no_difference 'User.count' do
-      assert_difference ['User::JwtToken.count', 'User::RefreshToken.count'], 1 do
-        post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
-      end
+      post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
     end
 
     assert_response :ok
@@ -72,11 +59,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal existing_user.handle, json['user']['handle']
     assert_equal 'existing@gmail.com', json['user']['email']
-
-    # Check JWT token was created and linked to refresh token
-    jwt_token = existing_user.jwt_tokens.last
-    refresh_token = existing_user.refresh_tokens.last
-    assert_equal refresh_token.id, jwt_token.refresh_token_id
   end
 
   test "POST google links existing email user to Google account" do
@@ -92,9 +74,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
     assert_no_difference 'User.count' do
-      assert_difference ['User::JwtToken.count', 'User::RefreshToken.count'], 1 do
-        post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
-      end
+      post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
     end
 
     assert_response :ok
@@ -115,7 +95,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
       InvalidGoogleTokenError.new("Invalid Google token")
     )
 
-    assert_no_difference ['User.count', 'User::JwtToken.count', 'User::RefreshToken.count'] do
+    assert_no_difference 'User.count' do
       post auth_google_path, params: { code: 'invalid-code' }, as: :json
     end
 
@@ -124,9 +104,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal 'invalid_token', json['error']['type']
     assert_match(/Invalid Google token/, json['error']['message'])
-
-    # No JWT token should be present
-    assert_nil response.headers['Authorization']
   end
 
   test "POST google with expired code returns unauthorized" do
@@ -134,7 +111,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
       InvalidGoogleTokenError.new("Token expired")
     )
 
-    assert_no_difference ['User.count', 'User::JwtToken.count', 'User::RefreshToken.count'] do
+    assert_no_difference 'User.count' do
       post auth_google_path, params: { code: 'expired-code' }, as: :json
     end
 
@@ -174,7 +151,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
       InvalidGoogleTokenError.new("Invalid Google token")
     )
 
-    assert_no_difference ['User.count', 'User::JwtToken.count', 'User::RefreshToken.count'] do
+    assert_no_difference 'User.count' do
       post auth_google_path, params: {}, as: :json
     end
 

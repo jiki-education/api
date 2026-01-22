@@ -1,11 +1,8 @@
 class User < ApplicationRecord
-  include Devise::JwtStrategy
-
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-    :recoverable, :validatable, :confirmable,
-    :jwt_authenticatable, jwt_revocation_strategy: self
+    :recoverable, :validatable, :confirmable
 
   has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true
 
@@ -13,7 +10,6 @@ class User < ApplicationRecord
   has_many :lessons, through: :user_lessons
   has_many :user_levels, dependent: :destroy
   has_many :levels, through: :user_levels
-  has_many :refresh_tokens, class_name: "User::RefreshToken", dependent: :destroy
   has_many :user_projects, dependent: :destroy
   has_many :projects, through: :user_projects
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
@@ -32,13 +28,6 @@ class User < ApplicationRecord
 
   # OAuth users have random passwords, so skip password validation for them
   validates :password, presence: true, if: -> { new_record? && provider.nil? && encrypted_password.blank? }
-
-  # Add custom claims to JWT payload
-  # This method is called by Warden::JWTAuth::PayloadUserHelper
-  # and merged with the base payload (sub, scp, etc)
-  def jwt_payload
-    { 'membership_type' => membership_type }
-  end
 
   # Placeholder for email preferences - always allow emails for now
   # TODO: Implement actual email preferences when communication_preferences are built

@@ -21,11 +21,6 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert_equal "New User", json["user"]["name"]
     assert_equal "newuser", json["user"]["handle"]
     assert_equal "standard", json["user"]["membership_type"]
-
-    # Check JWT token in response header
-    token = response.headers["Authorization"]
-    assert token.present?
-    assert token.start_with?("Bearer ")
   end
 
   test "POST signup calls User::Bootstrap on successful registration" do

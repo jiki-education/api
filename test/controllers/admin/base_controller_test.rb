@@ -9,8 +9,14 @@ class Admin::BaseControllerTest < ApplicationControllerTest
   end
 
   setup do
-    # Add test route temporarily
+    # Add test route temporarily while keeping Devise routes
     Rails.application.routes.draw do
+      devise_for :users,
+        path: "auth",
+        path_names: { sign_in: "login", sign_out: "logout", registration: "signup" },
+        controllers: { sessions: "auth/sessions", registrations: "auth/registrations", passwords: "auth/passwords" },
+        skip: [:omniauth_callbacks]
+
       namespace :admin do
         get "test", to: "base_controller_test/test#test_action"
       end
