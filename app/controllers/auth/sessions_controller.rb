@@ -18,6 +18,9 @@ class Auth::SessionsController < Devise::SessionsController
   def respond_to_on_destroy
     # By the time this is called, Devise has already signed out the user
     # so current_user is nil. We just return success.
+    # Clear the jiki_user_id cookie explicitly since the ApplicationController's
+    # after_action doesn't run when Devise's verify_signed_out_user halts the chain.
+    cookies.delete(:jiki_user_id, domain: :all)
     render json: {}, status: :no_content
   end
 end
