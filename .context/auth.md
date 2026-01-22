@@ -25,16 +25,25 @@ Rails encrypts the session data (including `user_id`) into an httpOnly, secure c
 #### Registration
 1. User fills registration form on frontend
 2. Frontend POSTs to `/auth/signup`
-3. API creates user, establishes session
-4. API returns user data (session cookie set automatically)
-5. Frontend updates auth state
+3. API creates user, sends confirmation email
+4. API returns `{ user: { email, email_confirmed: false } }` (NO session)
+5. Frontend shows "check your email" message
+
+#### Email Confirmation
+1. User clicks confirmation link in email
+2. Link opens frontend at `/auth/confirm-email?token=xxx`
+3. Frontend GETs `/auth/confirmation?confirmation_token=xxx`
+4. API confirms user, establishes session
+5. API returns full user data (session cookie set)
+6. Frontend updates auth state (user is now logged in)
 
 #### Login
 1. User enters credentials on frontend
 2. Frontend POSTs to `/auth/login`
-3. API validates credentials, establishes session
-4. API returns user data (session cookie set automatically)
-5. Frontend updates auth state
+3. API validates credentials and confirmation status
+4. If unconfirmed: returns `{ error: { type: "unconfirmed", email } }` (401)
+5. If confirmed: establishes session, returns user data
+6. Frontend updates auth state
 
 #### Logout
 1. Frontend DELETEs to `/auth/logout`
@@ -54,7 +63,7 @@ Rails encrypts the session data (including `user_id`) into an httpOnly, secure c
 ### Authentication Endpoints
 
 #### POST /auth/signup
-Register a new user account.
+Register a new user account. User must confirm email before logging in.
 
 **Request:**
 ```json
@@ -72,13 +81,12 @@ Register a new user account.
 ```json
 {
   "user": {
-    "id": 123,
     "email": "user@example.com",
-    "name": "John Doe",
-    "created_at": "2024-01-01T00:00:00Z"
+    "email_confirmed": false
   }
 }
 ```
+Note: No session is established. User must confirm email first.
 
 **Error Response (422):**
 ```json
@@ -95,7 +103,7 @@ Register a new user account.
 ```
 
 #### POST /auth/login
-Authenticate and establish session.
+Authenticate and establish session. User must have confirmed email.
 
 **Request:**
 ```json
@@ -119,12 +127,22 @@ Authenticate and establish session.
 }
 ```
 
-**Error Response (401):**
+**Error Response (401 - Invalid Credentials):**
 ```json
 {
   "error": {
-    "type": "invalid_credentials",
+    "type": "unauthorized",
     "message": "Invalid email or password"
+  }
+}
+```
+
+**Error Response (401 - Unconfirmed Email):**
+```json
+{
+  "error": {
+    "type": "unconfirmed",
+    "email": "user@example.com"
   }
 }
 ```
@@ -174,6 +192,57 @@ Reset password with token.
   "message": "Password has been reset successfully"
 }
 ```
+
+#### GET /auth/confirmation
+Confirm email address and sign in user.
+
+**Query Parameters:**
+- `confirmation_token`: The token from the confirmation email
+
+**Success Response (200):**
+```json
+{
+  "user": {
+    "handle": "john-doe",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "email_confirmed": true,
+    "membership_type": "standard"
+  }
+}
+```
+Session cookie is set automatically.
+
+**Error Response (422 - Invalid/Expired Token):**
+```json
+{
+  "error": {
+    "type": "invalid_token"
+  }
+}
+```
+
+#### POST /auth/confirmation
+Resend confirmation email.
+
+**Request:**
+```json
+{
+  "user": {
+    "email": "user@example.com"
+  }
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "user": {
+    "email": "user@example.com"
+  }
+}
+```
+Note: Always returns success (doesn't reveal if email exists).
 
 ### Conversation Tokens (AI Assistant)
 
@@ -425,7 +494,13 @@ end
 
 ### Controller Tests (API Endpoints)
 - Registration with valid/invalid params
+- Registration does not create session (requires email confirmation)
+- Registration sends confirmation email
 - Login with correct/incorrect credentials
+- Login blocked for unconfirmed users (returns `type: "unconfirmed"`)
+- Email confirmation with valid token signs in user
+- Email confirmation with invalid/used token returns error
+- Resend confirmation email
 - Password reset request
 - Password reset with valid/invalid token
 - Logout
@@ -446,7 +521,7 @@ end
 ## Future Enhancements
 
 ### Short Term
-- [ ] Email verification on registration
+- [x] Email verification on registration
 - [ ] Account lockout after failed attempts
 - [ ] Two-factor authentication
 - [ ] Session management UI (view active sessions)

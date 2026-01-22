@@ -249,8 +249,8 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
   test "GET index returns all lessons for a level" do
     Prosopite.finish
-    lesson_1 = create(:lesson, :exercise, level: @level, title: "Lesson 1", slug: "lesson-1")
-    lesson_2 = create(:lesson, :exercise, level: @level, title: "Lesson 2", slug: "lesson-2")
+    lesson_1 = create(:lesson, :exercise, level: @level)
+    lesson_2 = create(:lesson, :exercise, level: @level)
     # Create lesson in different level to ensure filtering
     other_level = create(:level)
     create(:lesson, :exercise, level: other_level)
