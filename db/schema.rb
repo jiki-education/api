@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,10 +81,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
   end
 
   create_table "concepts", force: :cascade do |t|
+    t.integer "children_count", default: 0, null: false
     t.text "content_html", null: false
     t.text "content_markdown", null: false
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.bigint "parent_concept_id"
     t.string "premium_video_id"
     t.string "premium_video_provider"
     t.string "slug", null: false
@@ -93,6 +95,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
     t.string "title", null: false
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
+    t.index ["parent_concept_id"], name: "index_concepts_on_parent_concept_id"
     t.index ["slug"], name: "index_concepts_on_slug", unique: true
     t.index ["unlocked_by_lesson_id"], name: "index_concepts_on_unlocked_by_lesson_id"
   end
@@ -486,6 +489,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assistant_conversations", "users"
   add_foreign_key "badge_translations", "badges"
+  add_foreign_key "concepts", "concepts", column: "parent_concept_id", on_delete: :nullify
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
   add_foreign_key "lesson_translations", "lessons"

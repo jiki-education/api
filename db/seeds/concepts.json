@@ -1,9 +1,247 @@
 [
   {
+    "slug": "loops",
+    "title": "Loops",
+    "description": "Direct how your program runs and makes decisions. Use loops to repeat code and conditionals to choose paths.",
+    "content_markdown": "# Loops\n\nLoops are fundamental programming constructs that allow you to repeat a block of code multiple times. They're essential for processing collections of data, automating repetitive tasks, and implementing algorithms.\n\n## Why Use Loops?\n\n1. **Efficiency**: Execute code multiple times without writing it repeatedly\n2. **Automation**: Process large amounts of data automatically\n3. **Flexibility**: Control how many times code runs based on conditions",
+    "parent_slug": null
+  },
+  {
+    "slug": "for-loops",
+    "title": "For Loops",
+    "description": "Iterate through sequences with for loops. Learn basic iteration patterns and loop control.",
+    "content_markdown": "# For Loops\n\nFor loops are used when you know in advance how many times you want to execute a block of code. They're perfect for iterating over arrays, ranges of numbers, or any countable sequence.\n\n## Basic Syntax\n\n```javascript\nfor (let i = 0; i < 5; i++) {\n  console.log(i);\n}\n```\n\n## Common Use Cases\n\n- Iterating through array elements\n- Counting from one number to another\n- Repeating an action a specific number of times",
+    "parent_slug": "loops"
+  },
+  {
+    "slug": "while-loops",
+    "title": "While Loops",
+    "description": "Execute code while conditions are true. Master conditional iteration and loop termination.",
+    "content_markdown": "# While Loops\n\nWhile loops continue executing as long as a specified condition remains true. They're ideal when you don't know in advance how many iterations you'll need.\n\n## Basic Syntax\n\n```javascript\nlet count = 0;\nwhile (count < 5) {\n  console.log(count);\n  count++;\n}\n```\n\n## When to Use While Loops\n\n- Reading data until end of file\n- Waiting for user input\n- Processing until a condition is met",
+    "parent_slug": "loops"
+  },
+  {
+    "slug": "nested-loops",
+    "title": "Nested Loops",
+    "description": "Work with loops inside loops. Understand complexity and multi-dimensional iteration.",
+    "content_markdown": "# Nested Loops\n\nNested loops are loops inside other loops. They're essential for working with multi-dimensional data structures like matrices or grids.\n\n## Example\n\n```javascript\nfor (let i = 0; i < 3; i++) {\n  for (let j = 0; j < 3; j++) {\n    console.log(`Position: ${i}, ${j}`);\n  }\n}\n```\n\n## Common Applications\n\n- Processing 2D arrays/matrices\n- Generating combinations\n- Pattern printing",
+    "parent_slug": "loops"
+  },
+  {
+    "slug": "loop-control",
+    "title": "Loop Control",
+    "description": "Control loop execution with break and continue. Learn advanced loop manipulation techniques.",
+    "content_markdown": "# Loop Control\n\nLoop control statements let you alter the normal flow of loop execution. The two main control statements are `break` and `continue`.\n\n## Break Statement\n\nExits the loop immediately:\n\n```javascript\nfor (let i = 0; i < 10; i++) {\n  if (i === 5) break;\n  console.log(i);\n}\n```\n\n## Continue Statement\n\nSkips to the next iteration:\n\n```javascript\nfor (let i = 0; i < 5; i++) {\n  if (i === 2) continue;\n  console.log(i);\n}\n```",
+    "parent_slug": "loops"
+  },
+  {
+    "slug": "infinite-loops",
+    "title": "Infinite Loops",
+    "description": "Understand and avoid infinite loops. Learn debugging techniques and safe iteration patterns.",
+    "content_markdown": "# Infinite Loops\n\nAn infinite loop runs forever because its termination condition is never met. While usually unintentional bugs, they can be useful in certain situations like game loops or server processes.\n\n## Common Causes\n\n- Forgetting to update the loop variable\n- Condition that can never become false\n- Logic errors in loop conditions\n\n## Intentional Infinite Loops\n\n```javascript\nwhile (true) {\n  // Server listening for requests\n  if (shouldExit) break;\n}\n```",
+    "parent_slug": "loops"
+  },
+  {
+    "slug": "loop-optimization",
+    "title": "Loop Optimization",
+    "description": "Optimize loop performance and efficiency. Master advanced iteration techniques.",
+    "content_markdown": "# Loop Optimization\n\nOptimizing loops is crucial for performance, especially when processing large datasets. Small improvements in loops can lead to significant performance gains.\n\n## Optimization Techniques\n\n1. **Cache array length**: Store length in a variable\n2. **Minimize work inside loops**: Move invariant calculations outside\n3. **Use appropriate loop type**: Choose the right loop for the task\n4. **Consider early termination**: Use break when possible",
+    "parent_slug": "loops"
+  },
+  {
     "slug": "variables",
     "title": "Variables",
-    "description": "Understanding how to store and reuse values in your programs",
-    "content_markdown": "# Variables\n\nVariables are like labeled boxes where you can store information to use later in your program.\n\n## What are Variables?\n\nThink of a variable as a container with a name. You can put a value inside it, and then refer to that value by the container's name whenever you need it.\n\n```javascript\nlet age = 25;\nlet name = \"Alex\";\n```\n\n## Why Use Variables?\n\n1. **Reusability**: Store a value once and use it many times\n2. **Clarity**: Give meaningful names to values\n3. **Flexibility**: Change the value in one place, update everywhere\n\n## Examples\n\n```javascript\n// Store a number\nlet score = 100;\n\n// Store text\nlet greeting = \"Hello, world!\";\n\n// Use the variable\nconsole.log(greeting); // Outputs: Hello, world!\n\n// Update the variable\nscore = score + 10;\nconsole.log(score); // Outputs: 110\n```\n\nVariables are fundamental to programming and you'll use them in almost every program you write!",
-    "unlocked_by_lesson_slug": "maze-solve-basic"
+    "description": "Store and manipulate data in your programs. Learn about different data types and how to use them effectively.",
+    "content_markdown": "# Variables\n\nVariables are like labeled boxes where you can store information to use later in your program.\n\n## What are Variables?\n\nThink of a variable as a container with a name. You can put a value inside it, and then refer to that value by the container's name whenever you need it.\n\n```javascript\nlet age = 25;\nlet name = \"Alex\";\n```\n\n## Why Use Variables?\n\n1. **Reusability**: Store a value once and use it many times\n2. **Clarity**: Give meaningful names to values\n3. **Flexibility**: Change the value in one place, update everywhere",
+    "parent_slug": null
+  },
+  {
+    "slug": "functions",
+    "title": "Functions",
+    "description": "Organize your code into reusable blocks. Master parameters, return values, and function composition.",
+    "content_markdown": "# Functions\n\nFunctions are reusable blocks of code that perform specific tasks. They help organize code, reduce repetition, and make programs easier to understand and maintain.\n\n## Why Use Functions?\n\n1. **Reusability**: Write once, use many times\n2. **Organization**: Break complex problems into smaller pieces\n3. **Abstraction**: Hide implementation details\n4. **Testing**: Easier to test isolated pieces of code",
+    "parent_slug": null
+  },
+  {
+    "slug": "function-basics",
+    "title": "Function Basics",
+    "description": "Create and call functions. Learn parameters, return values, and function scope.",
+    "content_markdown": "# Function Basics\n\nA function is a named block of code that performs a specific task. You define it once and can call it whenever you need that task performed.\n\n## Defining a Function\n\n```javascript\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n```\n\n## Calling a Function\n\n```javascript\nconst message = greet(\"Alice\");\nconsole.log(message); // Hello, Alice!\n```",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "parameters-arguments",
+    "title": "Parameters & Arguments",
+    "description": "Pass data to functions effectively. Master parameter types and argument handling.",
+    "content_markdown": "# Parameters & Arguments\n\nParameters are variables listed in a function's definition. Arguments are the actual values passed to the function when it's called.\n\n## Parameters vs Arguments\n\n```javascript\n// name is a parameter\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\n// \"Alice\" is an argument\ngreet(\"Alice\");\n```\n\n## Default Parameters\n\n```javascript\nfunction greet(name = \"World\") {\n  return `Hello, ${name}!`;\n}\n```",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "return-values",
+    "title": "Return Values",
+    "description": "Return data from functions. Understand different return patterns and value types.",
+    "content_markdown": "# Return Values\n\nFunctions can send data back to the code that called them using the `return` statement. This allows functions to produce results that can be used elsewhere.\n\n## Basic Return\n\n```javascript\nfunction add(a, b) {\n  return a + b;\n}\n\nconst sum = add(3, 5); // sum is 8\n```\n\n## Multiple Return Points\n\n```javascript\nfunction getGrade(score) {\n  if (score >= 90) return \"A\";\n  if (score >= 80) return \"B\";\n  return \"C\";\n}\n```",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "function-scope",
+    "title": "Function Scope",
+    "description": "Understand variable scope in functions. Learn about local vs global variables.",
+    "content_markdown": "# Function Scope\n\nScope determines where variables are accessible in your code. Variables declared inside a function are local to that function and cannot be accessed outside.\n\n## Local vs Global Scope\n\n```javascript\nlet globalVar = \"I'm global\";\n\nfunction example() {\n  let localVar = \"I'm local\";\n  console.log(globalVar); // Works\n  console.log(localVar);  // Works\n}\n\nconsole.log(globalVar); // Works\nconsole.log(localVar);  // Error!\n```",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "higher-order-functions",
+    "title": "Higher-Order Functions",
+    "description": "Functions that work with other functions. Master callbacks and functional programming.",
+    "content_markdown": "# Higher-Order Functions\n\nHigher-order functions are functions that take other functions as arguments or return functions. They're a powerful tool for writing flexible, reusable code.\n\n## Functions as Arguments\n\n```javascript\nfunction doTwice(fn, value) {\n  return fn(fn(value));\n}\n\nfunction double(x) {\n  return x * 2;\n}\n\ndoTwice(double, 5); // 20\n```\n\n## Common Examples\n\n- `map()`, `filter()`, `reduce()`\n- Event handlers\n- Callbacks",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "recursion",
+    "title": "Recursion",
+    "description": "Functions that call themselves. Learn recursive patterns and problem solving.",
+    "content_markdown": "# Recursion\n\nRecursion is when a function calls itself to solve a problem. It's useful for problems that can be broken down into smaller, similar sub-problems.\n\n## Basic Example\n\n```javascript\nfunction factorial(n) {\n  if (n <= 1) return 1; // Base case\n  return n * factorial(n - 1); // Recursive case\n}\n\nfactorial(5); // 120\n```\n\n## Key Components\n\n1. **Base case**: Condition that stops recursion\n2. **Recursive case**: The function calling itself with modified input",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "arrow-functions",
+    "title": "Arrow Functions",
+    "description": "Modern function syntax and behavior. Understand lexical scoping and concise syntax.",
+    "content_markdown": "# Arrow Functions\n\nArrow functions provide a concise syntax for writing functions. They also have different behavior regarding the `this` keyword.\n\n## Syntax Comparison\n\n```javascript\n// Traditional function\nfunction add(a, b) {\n  return a + b;\n}\n\n// Arrow function\nconst add = (a, b) => a + b;\n```\n\n## Concise Body\n\n```javascript\n// Single expression - implicit return\nconst double = x => x * 2;\n\n// Multiple statements - need explicit return\nconst process = x => {\n  const result = x * 2;\n  return result + 1;\n};\n```",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "function-composition",
+    "title": "Function Composition",
+    "description": "Combine functions to create complex operations. Learn modular programming techniques.",
+    "content_markdown": "# Function Composition\n\nFunction composition is combining simple functions to build more complex ones. The output of one function becomes the input of the next.\n\n## Basic Composition\n\n```javascript\nconst add5 = x => x + 5;\nconst multiply2 = x => x * 2;\n\n// Manual composition\nconst result = multiply2(add5(10)); // 30\n\n// Compose function\nconst compose = (f, g) => x => f(g(x));\nconst add5ThenDouble = compose(multiply2, add5);\nadd5ThenDouble(10); // 30\n```",
+    "parent_slug": "functions"
+  },
+  {
+    "slug": "arrays",
+    "title": "Arrays",
+    "description": "Organize and store collections of data efficiently. Learn to manipulate lists and iterate through elements.",
+    "content_markdown": "# Arrays\n\nArrays are ordered collections of values. They're one of the most commonly used data structures for storing and organizing multiple pieces of data.\n\n## Creating Arrays\n\n```javascript\nconst numbers = [1, 2, 3, 4, 5];\nconst mixed = [\"hello\", 42, true];\nconst empty = [];\n```\n\n## Why Use Arrays?\n\n1. **Store multiple values**: Keep related data together\n2. **Ordered**: Elements maintain their position\n3. **Flexible**: Add, remove, and modify elements",
+    "parent_slug": null
+  },
+  {
+    "slug": "array-basics",
+    "title": "Array Basics",
+    "description": "Create and manipulate arrays. Learn indexing, length, and basic array operations.",
+    "content_markdown": "# Array Basics\n\nArrays store multiple values in a single variable. Each value has an index (position) starting from 0.\n\n## Accessing Elements\n\n```javascript\nconst fruits = [\"apple\", \"banana\", \"cherry\"];\nconsole.log(fruits[0]); // apple\nconsole.log(fruits[2]); // cherry\nconsole.log(fruits.length); // 3\n```\n\n## Modifying Arrays\n\n```javascript\nfruits[1] = \"blueberry\"; // Replace element\nfruits.push(\"date\"); // Add to end\nfruits.pop(); // Remove from end\n```",
+    "parent_slug": "arrays"
+  },
+  {
+    "slug": "array-methods",
+    "title": "Array Methods",
+    "description": "Use built-in array methods. Master map, filter, reduce, and other powerful operations.",
+    "content_markdown": "# Array Methods\n\nJavaScript arrays come with powerful built-in methods for transforming and processing data.\n\n## Map\n\nTransform each element:\n\n```javascript\nconst numbers = [1, 2, 3];\nconst doubled = numbers.map(n => n * 2); // [2, 4, 6]\n```\n\n## Filter\n\nSelect elements that match a condition:\n\n```javascript\nconst evens = numbers.filter(n => n % 2 === 0); // [2]\n```\n\n## Reduce\n\nCombine all elements into a single value:\n\n```javascript\nconst sum = numbers.reduce((acc, n) => acc + n, 0); // 6\n```",
+    "parent_slug": "arrays"
+  },
+  {
+    "slug": "multidimensional-arrays",
+    "title": "Multidimensional Arrays",
+    "description": "Work with arrays of arrays. Understand matrices and complex data structures.",
+    "content_markdown": "# Multidimensional Arrays\n\nMultidimensional arrays are arrays that contain other arrays. They're useful for representing grids, matrices, and hierarchical data.\n\n## 2D Arrays\n\n```javascript\nconst matrix = [\n  [1, 2, 3],\n  [4, 5, 6],\n  [7, 8, 9]\n];\n\nconsole.log(matrix[0][0]); // 1\nconsole.log(matrix[1][2]); // 6\n```\n\n## Common Uses\n\n- Game boards\n- Spreadsheet data\n- Image pixels",
+    "parent_slug": "arrays"
+  },
+  {
+    "slug": "array-iteration",
+    "title": "Array Iteration",
+    "description": "Loop through arrays efficiently. Learn different iteration patterns and techniques.",
+    "content_markdown": "# Array Iteration\n\nThere are several ways to loop through array elements, each with its own advantages.\n\n## For Loop\n\n```javascript\nconst arr = [1, 2, 3];\nfor (let i = 0; i < arr.length; i++) {\n  console.log(arr[i]);\n}\n```\n\n## For...of Loop\n\n```javascript\nfor (const item of arr) {\n  console.log(item);\n}\n```\n\n## forEach Method\n\n```javascript\narr.forEach(item => console.log(item));\n```",
+    "parent_slug": "arrays"
+  },
+  {
+    "slug": "array-sorting",
+    "title": "Array Sorting",
+    "description": "Sort arrays by different criteria. Understand sorting algorithms and custom comparisons.",
+    "content_markdown": "# Array Sorting\n\nThe `sort()` method arranges array elements in place. By default, it converts elements to strings and sorts alphabetically.\n\n## Basic Sorting\n\n```javascript\nconst fruits = [\"cherry\", \"apple\", \"banana\"];\nfruits.sort(); // [\"apple\", \"banana\", \"cherry\"]\n```\n\n## Numeric Sorting\n\n```javascript\nconst numbers = [10, 2, 5, 1];\nnumbers.sort((a, b) => a - b); // [1, 2, 5, 10]\n```\n\n## Custom Sorting\n\n```javascript\nconst users = [{name: \"Bob\"}, {name: \"Alice\"}];\nusers.sort((a, b) => a.name.localeCompare(b.name));\n```",
+    "parent_slug": "arrays"
+  },
+  {
+    "slug": "conditionals",
+    "title": "Conditionals",
+    "description": "Make decisions in your code based on different conditions. Learn if statements, switch cases, and logical operators.",
+    "content_markdown": "# Conditionals\n\nConditionals allow your program to make decisions and execute different code based on different conditions. They're essential for creating dynamic, responsive programs.\n\n## Why Use Conditionals?\n\n1. **Decision making**: Choose what code to run\n2. **Input validation**: Check if data is valid\n3. **Flow control**: Direct program execution\n4. **Error handling**: Respond to different situations",
+    "parent_slug": null
+  },
+  {
+    "slug": "if-statements",
+    "title": "If Statements",
+    "description": "Make decisions with if statements. Learn basic conditional logic and branching.",
+    "content_markdown": "# If Statements\n\nThe `if` statement executes code only when a condition is true. It's the most basic form of conditional logic.\n\n## Basic Syntax\n\n```javascript\nif (condition) {\n  // Code runs if condition is true\n}\n```\n\n## Example\n\n```javascript\nconst age = 18;\n\nif (age >= 18) {\n  console.log(\"You can vote!\");\n}\n```",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "else-statements",
+    "title": "Else Statements",
+    "description": "Handle alternative conditions. Master if-else chains and default behaviors.",
+    "content_markdown": "# Else Statements\n\nThe `else` clause provides an alternative path when the `if` condition is false.\n\n## If-Else\n\n```javascript\nif (age >= 18) {\n  console.log(\"Adult\");\n} else {\n  console.log(\"Minor\");\n}\n```\n\n## Else-If Chain\n\n```javascript\nif (score >= 90) {\n  console.log(\"A\");\n} else if (score >= 80) {\n  console.log(\"B\");\n} else if (score >= 70) {\n  console.log(\"C\");\n} else {\n  console.log(\"F\");\n}\n```",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "logical-operators",
+    "title": "Logical Operators",
+    "description": "Combine conditions with AND, OR, and NOT. Learn complex conditional expressions.",
+    "content_markdown": "# Logical Operators\n\nLogical operators combine multiple conditions into a single boolean expression.\n\n## AND (&&)\n\nBoth conditions must be true:\n\n```javascript\nif (age >= 18 && hasLicense) {\n  console.log(\"Can drive\");\n}\n```\n\n## OR (||)\n\nAt least one condition must be true:\n\n```javascript\nif (isStudent || isSenior) {\n  console.log(\"Discount applies\");\n}\n```\n\n## NOT (!)\n\nInverts the boolean value:\n\n```javascript\nif (!isLoggedIn) {\n  console.log(\"Please log in\");\n}\n```",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "switch-statements",
+    "title": "Switch Statements",
+    "description": "Handle multiple conditions elegantly. Learn when to use switch vs if-else.",
+    "content_markdown": "# Switch Statements\n\nSwitch statements provide a clean way to handle multiple possible values of a single variable.\n\n## Basic Syntax\n\n```javascript\nswitch (day) {\n  case \"Monday\":\n    console.log(\"Start of week\");\n    break;\n  case \"Friday\":\n    console.log(\"Almost weekend!\");\n    break;\n  default:\n    console.log(\"Regular day\");\n}\n```\n\n## When to Use Switch\n\n- Multiple conditions checking the same variable\n- Checking against specific values (not ranges)\n- Cleaner than long if-else chains",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "ternary-operators",
+    "title": "Ternary Operators",
+    "description": "Write concise conditional expressions. Master the conditional operator syntax.",
+    "content_markdown": "# Ternary Operators\n\nThe ternary operator is a concise way to write simple if-else statements in a single line.\n\n## Syntax\n\n```javascript\ncondition ? valueIfTrue : valueIfFalse\n```\n\n## Examples\n\n```javascript\nconst status = age >= 18 ? \"adult\" : \"minor\";\n\nconst message = isLoggedIn \n  ? \"Welcome back!\" \n  : \"Please log in\";\n```\n\n## When to Use\n\n- Simple true/false decisions\n- Assigning values based on conditions\n- Keep it simple - avoid nesting ternaries",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "comparison-operators",
+    "title": "Comparison Operators",
+    "description": "Compare values effectively. Understand equality, inequality, and relational operators.",
+    "content_markdown": "# Comparison Operators\n\nComparison operators compare two values and return a boolean (true or false).\n\n## Equality Operators\n\n```javascript\n5 === 5    // true (strict equality)\n5 == \"5\"   // true (loose equality)\n5 !== 3    // true (strict inequality)\n```\n\n## Relational Operators\n\n```javascript\n5 > 3      // true\n5 < 3      // false\n5 >= 5     // true\n5 <= 4     // false\n```\n\n## Best Practice\n\nAlways use strict equality (`===`) to avoid type coercion surprises.",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "conditional-logic",
+    "title": "Conditional Logic",
+    "description": "Design complex decision-making logic. Learn to structure conditional flows effectively.",
+    "content_markdown": "# Conditional Logic\n\nConditional logic involves combining and structuring conditions to make complex decisions in your programs.\n\n## Nested Conditions\n\n```javascript\nif (isLoggedIn) {\n  if (isAdmin) {\n    showAdminPanel();\n  } else {\n    showUserDashboard();\n  }\n}\n```\n\n## Guard Clauses\n\nReturn early to simplify logic:\n\n```javascript\nfunction processOrder(order) {\n  if (!order) return \"No order\";\n  if (!order.items.length) return \"Empty order\";\n  \n  // Main logic here\n  return processItems(order.items);\n}\n```",
+    "parent_slug": "conditionals"
+  },
+  {
+    "slug": "classes",
+    "title": "Classes",
+    "description": "Model real-world entities using classes and objects. Understand inheritance, encapsulation, and polymorphism.",
+    "content_markdown": "# Classes\n\nClasses are blueprints for creating objects with shared properties and methods. They're fundamental to object-oriented programming.\n\n## Basic Class\n\n```javascript\nclass Person {\n  constructor(name, age) {\n    this.name = name;\n    this.age = age;\n  }\n  \n  greet() {\n    return `Hello, I'm ${this.name}`;\n  }\n}\n\nconst alice = new Person(\"Alice\", 30);\nconsole.log(alice.greet());\n```",
+    "parent_slug": null
+  },
+  {
+    "slug": "strings",
+    "title": "Strings",
+    "description": "Work with text data in your programs. Learn string manipulation, formatting, and text processing techniques.",
+    "content_markdown": "# Strings\n\nStrings are sequences of characters used to represent text. They're one of the most commonly used data types in programming.\n\n## Creating Strings\n\n```javascript\nconst single = 'Hello';\nconst double = \"World\";\nconst template = `Hello, ${name}!`;\n```\n\n## Common Operations\n\n- Concatenation: joining strings together\n- Searching: finding text within strings\n- Manipulation: changing, splitting, replacing text",
+    "parent_slug": null
+  },
+  {
+    "slug": "objects",
+    "title": "Objects",
+    "description": "Create and work with complex data structures. Learn about object properties, methods, and data modeling.",
+    "content_markdown": "# Objects\n\nObjects are collections of key-value pairs. They're used to group related data and functionality together.\n\n## Creating Objects\n\n```javascript\nconst person = {\n  name: \"Alice\",\n  age: 30,\n  greet() {\n    return `Hello, I'm ${this.name}`;\n  }\n};\n```\n\n## Accessing Properties\n\n```javascript\nconsole.log(person.name);       // Alice\nconsole.log(person[\"age\"]);     // 30\nconsole.log(person.greet());    // Hello, I'm Alice\n```",
+    "parent_slug": null
+  },
+  {
+    "slug": "async",
+    "title": "Asynchronous Programming",
+    "description": "Handle time-dependent operations and concurrent execution. Master promises, async/await, and event handling.",
+    "content_markdown": "# Asynchronous Programming\n\nAsynchronous programming allows your code to start operations and continue running while waiting for results. It's essential for handling network requests, file operations, and user interactions.\n\n## Why Async?\n\n1. **Non-blocking**: Don't freeze the program while waiting\n2. **Efficiency**: Handle multiple operations concurrently\n3. **User experience**: Keep interfaces responsive\n\n## Key Concepts\n\n- Callbacks\n- Promises\n- Async/await",
+    "parent_slug": null
   }
 ]

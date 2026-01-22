@@ -42,6 +42,7 @@ concepts_file = File.join(Rails.root, "db", "seeds", "concepts.json")
 if File.exist?(concepts_file)
   concepts_data = JSON.parse(File.read(concepts_file), symbolize_names: true)
 
+  # First pass: Create all concepts without parents
   concepts_data.each do |concept_data|
     concept = Concept.find_or_initialize_by(slug: concept_data[:slug])
     concept.title = concept_data[:title]
@@ -56,6 +57,31 @@ if File.exist?(concepts_file)
 
     concept.save!
     puts "  ✓ Loaded concept: #{concept.title}"
+  end
+
+  # Second pass: Link parents (iterative until all resolved)
+  unresolved = concepts_data.select { |c| c[:parent_slug].present? }
+  while unresolved.any?
+    resolved_count = 0
+    unresolved.each do |concept_data|
+      parent = Concept.find_by(slug: concept_data[:parent_slug])
+      next unless parent
+
+      concept = Concept.find_by!(slug: concept_data[:slug])
+      next if concept.parent_concept_id.present?
+
+      concept.update!(parent: parent)
+      resolved_count += 1
+      puts "  ✓ Linked #{concept.title} → #{parent.title}"
+    end
+
+    unresolved.reject! { |c| Concept.find_by(slug: c[:slug])&.parent_concept_id.present? }
+    break if resolved_count.zero? && unresolved.any?
+  end
+
+  # Warn about any unresolved
+  unresolved.each do |c|
+    puts "  ⚠ Could not resolve parent '#{c[:parent_slug]}' for concept '#{c[:slug]}'"
   end
 
   puts "✓ Successfully loaded #{concepts_data.size} concept(s)!"

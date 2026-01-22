@@ -24,13 +24,23 @@ Concepts represent fundamental programming topics that students learn throughout
 | `standard_video_id` | string | NULL | Video ID for standard tier |
 | `premium_video_provider` | string | NULL | Video platform for premium users ("youtube" or "mux") |
 | `premium_video_id` | string | NULL | Video ID for premium tier |
+| `parent_concept_id` | bigint | NULL, FK | Reference to parent concept for hierarchy |
+| `children_count` | integer | NOT NULL, DEFAULT 0 | Counter cache for number of child concepts |
 | `created_at` | datetime | NOT NULL | Timestamp |
 | `updated_at` | datetime | NOT NULL | Timestamp |
 
 **Indexes**:
 - Unique index on `slug`
+- Index on `parent_concept_id`
+
+**Foreign Keys**:
+- `parent_concept_id` references `concepts(id)` with `ON DELETE SET NULL`
 
 ### Model: `app/models/concept.rb`
+
+**Associations**:
+- `belongs_to :parent` - Optional reference to parent concept (self-referential)
+- `has_many :children` - Child concepts (dependent: :nullify)
 
 **Validations**:
 - `title`: Required
@@ -39,13 +49,19 @@ Concepts represent fundamental programming topics that students learn throughout
 - `content_markdown`: Required
 - `standard_video_provider`: Must be "youtube" or "mux" (if present)
 - `premium_video_provider`: Must be "youtube" or "mux" (if present)
+- `parent_concept_id`: Cannot create circular references
 
 **Callbacks**:
 - `before_validation :generate_slug, on: :create` - Auto-generates kebab-case slug from title if not provided
 - `before_save :parse_markdown, if: :content_markdown_changed?` - Converts markdown to HTML when content changes
+- Counter cache automatically maintained for `children_count`
 
 **Methods**:
 - `to_param` - Returns slug for URL generation
+- `ancestors` - Returns array of ancestor concepts from root to immediate parent (single SQL query using recursive CTE)
+- `ancestor_ids` - Returns array of ancestor concept IDs
+- `root?` - Returns true if concept has no parent
+- `has_children?` - Returns true if concept has child concepts
 
 ## Markdown Processing
 
@@ -219,6 +235,8 @@ Concept::Search.(title: "String", user: nil)
 **Includes**:
 - All concept fields including `id`
 - `content_markdown` (for editing)
+- `children_count` - Number of child concepts
+- `ancestors` - Array of ancestor concepts with `id`, `title`, `slug` (ordered root to parent)
 - Does NOT include `content_html` (generated on save)
 
 #### SerializeAdminConcepts
@@ -228,7 +246,9 @@ Concept::Search.(title: "String", user: nil)
 **Includes**:
 - Basic fields (id, title, slug, description)
 - Video provider information
+- `children_count` - Number of child concepts
 - Does NOT include `content_markdown` (too large for lists)
+- Does NOT include `ancestors` (not needed in list view)
 
 ### User-Facing Serializers
 
@@ -240,6 +260,8 @@ Concept::Search.(title: "String", user: nil)
 - Basic fields (title, slug, description)
 - `content_html` (for display)
 - Video provider information
+- `children_count` - Number of child concepts
+- `ancestors` - Array of ancestor concepts with `title`, `slug` only (ordered root to parent)
 - Does NOT include `id` (uses slug for identification)
 - Does NOT include `content_markdown` (internal only)
 
@@ -250,9 +272,11 @@ Concept::Search.(title: "String", user: nil)
 **Includes**:
 - Basic fields (title, slug, description)
 - Video provider information
+- `children_count` - Number of child concepts
 - Does NOT include `id` (uses slug for identification)
 - Does NOT include `content_html` (too large for lists)
 - Does NOT include `content_markdown` (internal only)
+- Does NOT include `ancestors` (not needed in list view)
 
 ## Usage Examples
 
@@ -288,18 +312,53 @@ Concept::Update.(concept, {
 # content_html is automatically regenerated
 ```
 
+### Creating Hierarchical Concepts
+
+```ruby
+# Create a parent concept
+loops = Concept::Create.({
+  title: "Loops",
+  description: "Learn about iteration",
+  content_markdown: "# Loops\n\nLoops allow repetition..."
+})
+
+# Create a child concept
+for_loops = Concept::Create.({
+  title: "For Loops",
+  description: "Iterate with for loops",
+  content_markdown: "# For Loops\n\nFor loops...",
+  parent_concept_id: loops.id
+})
+
+# Query hierarchy
+for_loops.parent          # => loops concept
+for_loops.ancestors       # => [loops]
+for_loops.root?           # => false
+loops.children            # => [for_loops]
+loops.children_count      # => 1
+loops.has_children?       # => true
+```
+
 ## Testing
 
 **Test Coverage**: Complete 1-1 mapping for all components
 
-- Model: `test/models/concept_test.rb`
+- Model: `test/models/concept_test.rb` - Includes hierarchy tests
 - Commands: `test/commands/concept/*_test.rb`
   - `test/commands/concept/search_test.rb` - Includes user filtering tests
+  - `test/commands/concept/create_test.rb` - Includes parent assignment
+  - `test/commands/concept/update_test.rb` - Includes parent changes, circular reference
 - Markdown Parser: `test/commands/utils/markdown/parse_test.rb`
 - Controllers:
-  - Admin: `test/controllers/v1/admin/concepts_controller_test.rb`
-  - User: `test/controllers/v1/concepts_controller_test.rb`
-- Factory: `test/factories/concepts.rb`
+  - Admin: `test/controllers/admin/concepts_controller_test.rb`
+  - User: `test/controllers/internal/concepts_controller_test.rb`
+  - External: `test/controllers/external/concepts_controller_test.rb`
+- Serializers:
+  - `test/serializers/serialize_admin_concept_test.rb`
+  - `test/serializers/serialize_admin_concepts_test.rb`
+  - `test/serializers/serialize_concept_test.rb`
+  - `test/serializers/serialize_concepts_test.rb`
+- Factory: `test/factories/concepts.rb` - Includes `:with_parent`, `:with_children` traits
 
 ## Design Decisions
 
@@ -321,13 +380,46 @@ Concept::Update.(concept, {
 - **Flexibility**: Different videos can be used for different user tiers
 - **Quality Options**: Premium users might get higher quality or longer videos
 
+## Concept Hierarchy
+
+Concepts support parent-child relationships for hierarchical organization:
+
+```
+Loops (parent)
+├── For Loops
+├── While Loops
+├── Nested Loops
+└── Loop Control
+```
+
+### Key Features
+
+- **Unlimited nesting depth** - Concepts can have children at any level
+- **Circular reference prevention** - Validation prevents cycles (A → B → A)
+- **Counter cache** - `children_count` automatically maintained
+- **Efficient ancestor queries** - Single SQL query using recursive CTE
+- **Nullify on delete** - Deleting a parent makes children become root concepts
+
+### Seed Data
+
+Hierarchical concepts are loaded from `db/seeds/concepts.json` using `parent_slug`:
+
+```json
+{
+  "slug": "for-loops",
+  "title": "For Loops",
+  "parent_slug": "loops"
+}
+```
+
+The seed loader uses a multi-pass approach to resolve parent references regardless of ordering.
+
 ## Future Enhancements
 
 Potential additions to the Concept system:
 
-- **Prerequisites**: Link concepts to show learning dependencies
 - **Exercises**: Associate practice exercises with concepts
 - **User Progress**: Track which concepts users have completed
-- **Related Concepts**: Cross-reference related topics
+- **Related Concepts**: Cross-reference related topics (siblings, prerequisites)
 - **Difficulty Levels**: Categorize concepts by complexity
 - **Tags**: Flexible categorization beyond single title
