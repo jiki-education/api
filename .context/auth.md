@@ -419,8 +419,14 @@ add_index :users, :github_id, unique: true
 ## Security Considerations
 
 ### Session Security
-- **Cookie Settings**: httpOnly, Secure (in production), SameSite: lax
-- **Session Expiry**: 30 days
+- **Session Cookie** (`jiki_session`): httpOnly, Secure (in production), SameSite: lax, 30-day expiry
+- **User ID Cookie** (`jiki_user_id`): Signed httpOnly cookie set when user is authenticated
+  - Used by CloudFlare for cache decisions (vary on logged-in state)
+  - Used by Next.js for server-side auth checks
+  - Set via `after_action :set_user_id_cookie` in ApplicationController
+  - Cleared on logout
+  - Domain: `:all` (shared across subdomains)
+  - 10-year expiry
 
 ### CSRF Protection
 

@@ -1,11 +1,31 @@
 class ApplicationController < ActionController::API
+  include ActionController::Cookies
   include MetaResponseWrapper
 
   before_action :set_current_user_agent
   before_action :set_locale
   before_action :extend_session_cookie!
+  after_action :set_user_id_cookie
 
   private
+  # Sets a signed cookie to indicate the user is authenticated.
+  # This is used by CloudFlare for cache decisions and by the
+  # Next.js frontend for server-side auth checks.
+  def set_user_id_cookie
+    if user_signed_in?
+      cookies.signed[:jiki_user_id] = {
+        value: current_user.id,
+        domain: :all,
+        expires: 10.years,
+        httponly: true,
+        same_site: :lax,
+        secure: Rails.env.production?
+      }
+    else
+      cookies.delete(:jiki_user_id, domain: :all)
+    end
+  end
+
   def set_current_user_agent
     Current.user_agent = request.headers["User-Agent"]
   end
