@@ -52,6 +52,40 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert json["error"]["message"].present?
   end
 
+  test "POST login returns unconfirmed error for unconfirmed user" do
+    create(:user, :unconfirmed, email: "unconfirmed@example.com", password: "password123")
+
+    post user_session_path, params: {
+      user: {
+        email: "unconfirmed@example.com",
+        password: "password123"
+      }
+    }, as: :json
+
+    assert_response :unauthorized
+
+    json = response.parsed_body
+    assert_equal "unconfirmed", json["error"]["type"]
+    assert_equal "unconfirmed@example.com", json["error"]["email"]
+  end
+
+  test "POST login does not create session for unconfirmed user" do
+    create(:user, :unconfirmed, email: "unconfirmed@example.com", password: "password123")
+
+    post user_session_path, params: {
+      user: {
+        email: "unconfirmed@example.com",
+        password: "password123"
+      }
+    }, as: :json
+
+    assert_response :unauthorized
+
+    # Verify no session was created
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+  end
+
   test "DELETE logout clears session" do
     # Login first
     post user_session_path, params: {

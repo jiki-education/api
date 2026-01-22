@@ -18,9 +18,44 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "newuser@example.com", json["user"]["email"]
-    assert_equal "New User", json["user"]["name"]
-    assert_equal "newuser", json["user"]["handle"]
-    assert_equal "standard", json["user"]["membership_type"]
+    refute json["user"]["email_confirmed"]
+    # Unconfirmed users only get email and email_confirmed in response
+    assert_nil json["user"]["name"]
+    assert_nil json["user"]["handle"]
+  end
+
+  test "POST signup does not create a session for unconfirmed user" do
+    post user_registration_path, params: {
+      user: {
+        email: "newuser@example.com",
+        password: "password123",
+        password_confirmation: "password123"
+      }
+    }, as: :json
+
+    assert_response :created
+
+    # User should not be signed in - accessing authenticated endpoint should fail
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+  end
+
+  test "POST signup sends confirmation email" do
+    assert_difference "ActionMailer::Base.deliveries.size", 1 do
+      post user_registration_path, params: {
+        user: {
+          email: "newuser@example.com",
+          password: "password123",
+          password_confirmation: "password123"
+        }
+      }, as: :json
+    end
+
+    assert_response :created
+
+    email = ActionMailer::Base.deliveries.last
+    assert_equal ["newuser@example.com"], email.to
+    assert_includes email.subject.downcase, "confirm"
   end
 
   test "POST signup calls User::Bootstrap on successful registration" do
@@ -158,8 +193,10 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert_equal "john-doe", user.handle
     assert_nil user.name
 
+    # Response only includes email for unconfirmed users
     json = response.parsed_body
-    assert_equal "john-doe", json["user"]["handle"]
+    assert_equal "john.doe@example.com", json["user"]["email"]
+    refute json["user"]["email_confirmed"]
   end
 
   test "POST signup accepts user-provided handle when provided" do
@@ -175,6 +212,10 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
     user = User.last
     assert_equal "custom-handle", user.handle
+
+    # Response only includes email for unconfirmed users
+    json = response.parsed_body
+    refute json["user"]["email_confirmed"]
   end
 
   test "POST signup handles collision by appending random hex suffix" do
