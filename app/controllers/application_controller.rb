@@ -3,10 +3,19 @@ class ApplicationController < ActionController::API
 
   before_action :set_current_user_agent
   before_action :set_locale
+  before_action :extend_session_cookie!
 
   private
   def set_current_user_agent
     Current.user_agent = request.headers["User-Agent"]
+  end
+
+  # Touch the session on every request to implement sliding expiration.
+  # Without this, the session cookie expiry is only set when the session
+  # data changes, so active users could be logged out after 30 days even
+  # if they use the app daily.
+  def extend_session_cookie!
+    session[:_touched] = Time.current.to_i
   end
 
   def set_locale
