@@ -18,5 +18,19 @@ FactoryBot.define do
       with_standard_video
       with_premium_video
     end
+
+    trait :with_parent do
+      association :parent, factory: :concept
+    end
+
+    trait :with_children do
+      transient do
+        children_count { 2 }
+      end
+
+      after(:create) do |concept, evaluator|
+        create_list(:concept, evaluator.children_count, parent: concept)
+      end
+    end
   end
 end

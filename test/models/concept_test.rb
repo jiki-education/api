@@ -90,4 +90,176 @@ class ConceptTest < ActiveSupport::TestCase
     assert_equal "custom-slug", concept.reload.slug
     refute_equal "completely-different-title", concept.slug
   end
+
+  # Parent-child association tests
+  test "can have a parent concept" do
+    parent = create(:concept)
+    child = create(:concept, parent: parent)
+
+    assert_equal parent, child.parent
+  end
+
+  test "can have multiple children" do
+    parent = create(:concept)
+    child1 = create(:concept, parent: parent)
+    child2 = create(:concept, parent: parent)
+
+    assert_includes parent.children, child1
+    assert_includes parent.children, child2
+  end
+
+  test "root concept has no parent" do
+    concept = create(:concept)
+
+    assert_nil concept.parent
+    assert concept.root?
+  end
+
+  test "child concept is not root" do
+    parent = create(:concept)
+    child = create(:concept, parent: parent)
+
+    refute child.root?
+  end
+
+  test "children_count is maintained by counter cache" do
+    parent = create(:concept)
+    assert_equal 0, parent.children_count
+
+    child1 = create(:concept, parent: parent)
+    assert_equal 1, parent.reload.children_count
+
+    create(:concept, parent: parent)
+    assert_equal 2, parent.reload.children_count
+
+    child1.destroy!
+    assert_equal 1, parent.reload.children_count
+  end
+
+  test "has_children? returns true when concept has children" do
+    parent = create(:concept)
+    create(:concept, parent: parent)
+
+    assert parent.reload.has_children?
+  end
+
+  test "has_children? returns false when concept has no children" do
+    concept = create(:concept)
+
+    refute concept.has_children?
+  end
+
+  # Circular reference prevention tests
+  test "cannot set self as parent" do
+    concept = create(:concept)
+    concept.parent_concept_id = concept.id
+
+    refute concept.valid?
+    assert_includes concept.errors[:parent_concept_id], "cannot be the concept itself"
+  end
+
+  test "cannot create circular reference with direct cycle" do
+    parent = create(:concept)
+    child = create(:concept, parent: parent)
+
+    parent.parent = child
+
+    refute parent.valid?
+    assert_includes parent.errors[:parent_concept_id], "would create a circular reference"
+  end
+
+  test "cannot create circular reference with indirect cycle" do
+    grandparent = create(:concept)
+    parent = create(:concept, parent: grandparent)
+    child = create(:concept, parent: parent)
+
+    grandparent.parent = child
+
+    refute grandparent.valid?
+    assert_includes grandparent.errors[:parent_concept_id], "would create a circular reference"
+  end
+
+  # Ancestors tests
+  test "ancestors returns all ancestors ordered from root to parent" do
+    grandparent = create(:concept, title: "Grandparent")
+    parent = create(:concept, title: "Parent", parent: grandparent)
+    child = create(:concept, title: "Child", parent: parent)
+
+    ancestors = child.ancestors
+
+    assert_equal 2, ancestors.length
+    assert_equal grandparent.id, ancestors[0].id
+    assert_equal parent.id, ancestors[1].id
+  end
+
+  test "ancestors returns empty array for root concept" do
+    concept = create(:concept)
+
+    assert_empty concept.ancestors
+  end
+
+  test "ancestor_ids returns ancestor IDs ordered from root to parent" do
+    grandparent = create(:concept)
+    parent = create(:concept, parent: grandparent)
+    child = create(:concept, parent: parent)
+
+    ancestor_ids = child.ancestor_ids
+
+    assert_equal [grandparent.id, parent.id], ancestor_ids
+  end
+
+  test "ancestor_ids returns empty array for root concept" do
+    concept = create(:concept)
+
+    assert_empty concept.ancestor_ids
+  end
+
+  # Deletion behavior tests
+  test "deleting parent nullifies children parent_concept_id" do
+    parent = create(:concept)
+    child = create(:concept, parent: parent)
+
+    parent.destroy!
+
+    child.reload
+    assert_nil child.parent_concept_id
+    assert child.root?
+  end
+
+  # Foreign key constraint tests
+  test "rejects non-existent parent_concept_id" do
+    concept = create(:concept)
+
+    assert_raises ActiveRecord::InvalidForeignKey do
+      concept.update!(parent_concept_id: 999_999)
+    end
+  end
+
+  # Depth limit tests
+  test "rejects nesting deeper than 10 levels" do
+    Prosopite.finish
+    # Create chain of 10 concepts (depth 0-9)
+    concepts = [create(:concept)]
+    9.times do
+      concepts << create(:concept, parent: concepts.last)
+    end
+
+    # 11th level (depth 10) should fail
+    too_deep = build(:concept, parent: concepts.last)
+    refute too_deep.valid?
+    assert_includes too_deep.errors[:parent_concept_id], "would exceed maximum nesting depth of 10"
+  end
+
+  test "allows nesting up to 10 levels" do
+    Prosopite.finish
+    # Create chain of 9 concepts (depth 0-8)
+    concepts = [create(:concept)]
+    8.times do
+      concepts << create(:concept, parent: concepts.last)
+    end
+
+    # 10th level (depth 9) should succeed
+    tenth_level = build(:concept, parent: concepts.last)
+    assert tenth_level.valid?
+  end
 end

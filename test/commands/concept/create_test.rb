@@ -42,4 +42,19 @@ class Concept::CreateTest < ActiveSupport::TestCase
       Concept::Create.(attributes)
     end
   end
+
+  test "creates concept with parent" do
+    parent = create(:concept)
+    attributes = {
+      title: "Child Concept",
+      description: "A child concept",
+      content_markdown: "# Child",
+      parent_concept_id: parent.id
+    }
+
+    concept = Concept::Create.(attributes)
+
+    assert_equal parent, concept.parent
+    assert_equal 1, parent.reload.children_count
+  end
 end

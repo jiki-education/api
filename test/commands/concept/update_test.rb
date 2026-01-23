@@ -34,4 +34,33 @@ class Concept::UpdateTest < ActiveSupport::TestCase
     assert_equal concept, result
     assert_equal "New Title", result.title
   end
+
+  test "updates parent concept" do
+    parent = create(:concept)
+    concept = create(:concept)
+
+    Concept::Update.(concept, { parent_concept_id: parent.id })
+
+    assert_equal parent, concept.reload.parent
+    assert_equal 1, parent.reload.children_count
+  end
+
+  test "removes parent when set to nil" do
+    parent = create(:concept)
+    concept = create(:concept, parent: parent)
+
+    Concept::Update.(concept, { parent_concept_id: nil })
+
+    assert_nil concept.reload.parent
+    assert_equal 0, parent.reload.children_count
+  end
+
+  test "raises validation error for circular reference" do
+    parent = create(:concept)
+    child = create(:concept, parent: parent)
+
+    assert_raises ActiveRecord::RecordInvalid do
+      Concept::Update.(parent, { parent_concept_id: child.id })
+    end
+  end
 end
