@@ -14,9 +14,11 @@ class Stripe::Webhook::SubscriptionDeleted
     # Update subscriptions array
     update_subscriptions_array!
 
-    # Downgrade to standard tier
+    # Downgrade to standard tier via dedicated command (sends email)
+    User::DowngradeToStandard.(user)
+
+    # Update remaining subscription fields
     user.data.update!(
-      membership_type: 'standard',
       stripe_subscription_status: 'canceled',
       subscription_status: 'canceled',
       stripe_subscription_id: nil,
@@ -24,9 +26,6 @@ class Stripe::Webhook::SubscriptionDeleted
     )
 
     Rails.logger.info("Subscription deleted for user #{user.id}, downgraded from #{old_tier} to standard")
-
-    # TODO: Queue cancellation email when mailers are implemented
-    # SubscriptionMailer.defer(:cancelled, user.id)
   end
 
   private

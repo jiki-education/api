@@ -15,13 +15,17 @@ class Stripe::SyncSubscriptionToUser
   memoize
   def status = subscription.status == 'incomplete' ? 'incomplete' : 'active'
 
-  # Preserve current access for incomplete, grant new tier for active
-  memoize
-  def membership_type = status == 'incomplete' ? user.data.membership_type : tier
-
   def update_user_data!
+    # Handle membership changes via dedicated commands for active subscriptions
+    if status == 'active'
+      case tier
+      when 'premium' then User::UpgradeToPremium.(user)
+      when 'max' then User::UpgradeToMax.(user)
+      end
+    end
+    # For incomplete status, membership_type is unchanged (handled by commands' early return)
+
     user.data.update!(
-      membership_type: membership_type,
       stripe_subscription_id: subscription.id,
       stripe_subscription_status: subscription.status,
       subscription_status: status,

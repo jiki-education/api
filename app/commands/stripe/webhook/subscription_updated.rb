@@ -64,19 +64,25 @@ class Stripe::Webhook::SubscriptionUpdated
       }
     end
 
-    user.data.update!(
-      membership_type: new_tier,
-      subscriptions: user_subscriptions
-    )
+    # Update subscriptions array first
+    user.data.update!(subscriptions: user_subscriptions)
+
+    # Handle tier change via dedicated commands for upgrades (sends welcome emails)
+    # For downgrades, update membership_type directly (no welcome email)
+    tier_order = { 'standard' => 0, 'premium' => 1, 'max' => 2 }
+    is_upgrade = tier_order[new_tier] > tier_order[old_tier]
+
+    if is_upgrade
+      case new_tier
+      when 'premium' then User::UpgradeToPremium.(user)
+      when 'max' then User::UpgradeToMax.(user)
+      end
+    else
+      # Downgrade - set membership_type directly
+      user.data.update!(membership_type: new_tier)
+    end
 
     Rails.logger.info("User #{user.id} tier changed: #{old_tier} -> #{new_tier}")
-
-    # TODO: Queue appropriate email when mailers are implemented
-    # if new_tier > old_tier
-    #   SubscriptionMailer.defer(:upgraded, user.id, from_tier: old_tier, to_tier: new_tier)
-    # else
-    #   SubscriptionMailer.defer(:downgraded, user.id, from_tier: old_tier, to_tier: new_tier)
-    # end
   end
 
   def handle_cancellation_change
@@ -113,8 +119,8 @@ class Stripe::Webhook::SubscriptionUpdated
       )
     when 'unpaid'
       # Grace period expired, downgrade to standard
+      User::DowngradeToStandard.(user)
       user.data.update!(
-        membership_type: 'standard',
         stripe_subscription_status: 'unpaid',
         subscription_status: 'payment_failed'
       )
