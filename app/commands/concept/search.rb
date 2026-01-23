@@ -19,7 +19,7 @@ class Concept::Search
 
     apply_title_filter!
     apply_slugs_filter!
-    apply_user_filter!
+    apply_user_specific_ordering!
 
     @concepts.page(page).per(per)
   end
@@ -42,9 +42,14 @@ class Concept::Search
     @concepts = @concepts.where(slug: slug_array)
   end
 
-  def apply_user_filter!
-    return unless user
+  def apply_user_specific_ordering!
+    return unless user && user.unlocked_concept_ids.present?
 
-    @concepts = @concepts.where(id: user.unlocked_concept_ids)
+    sql = "concepts.*, CASE WHEN concepts.id = ANY(ARRAY[?]::bigint[]) THEN 0 ELSE 1 END as lock_order"
+    sanitized = ActiveRecord::Base.sanitize_sql_array([sql, user.unlocked_concept_ids])
+
+    @concepts = @concepts.
+      select(Arel.sql(sanitized)).
+      reorder(Arel.sql("lock_order ASC, concepts.title ASC"))
   end
 end
