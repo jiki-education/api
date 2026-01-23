@@ -23,38 +23,19 @@ class Stripe::VerifyCheckoutSession
     raise ArgumentError, "Subscription has no items" unless subscription_item
 
     # Get the tier based on price ID
-    price_id = subscription_item.price.id
-    tier = determine_tier(price_id)
+    tier = determine_tier(subscription_item.price.id)
 
-    # Validate we have required fields
-    raise ArgumentError, "Subscription item missing current_period_end" unless subscription_item.current_period_end
+    # Sync subscription to user (handles both active and incomplete states)
+    status = Stripe::SyncSubscriptionToUser.(user, subscription, tier)
 
-    # Update user's subscription data (same as webhook handlers)
-    user.data.update!(
-      membership_type: tier,
-      stripe_subscription_id: subscription.id,
-      stripe_subscription_status: subscription.status,
-      subscription_status: 'active',
-      subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
-    )
+    Rails.logger.info("Verified checkout session #{session_id} for user #{user.id}: #{tier} (#{subscription.id}), status: #{status}")
 
-    # Update subscriptions array (idempotent - only add if not already present)
-    subscriptions_array = user.data.subscriptions || []
-    unless subscriptions_array.any? { |s| s['stripe_subscription_id'] == subscription.id }
-      subscriptions_array << {
-        stripe_subscription_id: subscription.id,
-        tier: tier,
-        started_at: Time.current.iso8601,
-        ended_at: nil,
-        end_reason: nil,
-        payment_failed_at: nil
-      }
-      user.data.update!(subscriptions: subscriptions_array)
-    end
-
-    Rails.logger.info("Verified checkout session #{session_id} for user #{user.id}: #{tier} (#{subscription.id})")
-
-    { success: true, tier: tier }
+    {
+      success: true,
+      tier: tier,
+      payment_status: session.payment_status,
+      subscription_status: status
+    }
   end
 
   private

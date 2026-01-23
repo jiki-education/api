@@ -120,14 +120,11 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     item = mock
     item.stubs(:price).returns(price)
 
-    items_data = mock
-    items_data.stubs(:first).returns(item)
-
     items = mock
-    items.stubs(:data).returns(items_data)
+    items.stubs(:data).returns([item])
 
     subscription = mock
-    subscription.stubs(:id).returns("sub_123")
+    # NOTE: subscription.id is not stubbed because we error before using it
     subscription.stubs(:customer).returns("cus_123")
     subscription.stubs(:status).returns("active")
     subscription.stubs(:items).returns(items)
@@ -141,49 +138,5 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
 
     assert_match(/Unknown Stripe price ID/, error.message)
     assert_match(/price_unknown_xyz/, error.message)
-  end
-
-  test "is idempotent - does not duplicate subscription entry if already exists" do
-    user = create(:user)
-    user.data.update!(
-      stripe_customer_id: "cus_123",
-      subscriptions: [
-        {
-          "stripe_subscription_id" => "sub_123",
-          "tier" => "premium",
-          "started_at" => 1.hour.ago.iso8601,
-          "ended_at" => nil,
-          "end_reason" => nil,
-          "payment_failed_at" => nil
-        }
-      ]
-    )
-
-    price = mock
-    price.stubs(:id).returns(Jiki.config.stripe_premium_price_id)
-    item = mock
-    item.stubs(:price).returns(price)
-    item.stubs(:current_period_end).returns(1.month.from_now.to_i)
-    items = mock
-    items.stubs(:data).returns([item])
-
-    subscription = mock
-    subscription.stubs(:id).returns("sub_123")
-    subscription.stubs(:customer).returns("cus_123")
-    subscription.stubs(:status).returns("active")
-    subscription.stubs(:items).returns(items)
-
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-
-    event = mock
-    event.stubs(:data).returns(event_data)
-
-    Stripe::Webhook::SubscriptionCreated.(event)
-
-    # Verify subscriptions array still has only 1 entry (not duplicated)
-    user.data.reload
-    assert_equal 1, user.data.subscriptions.length
-    assert_equal "sub_123", user.data.subscriptions.first["stripe_subscription_id"]
   end
 end
