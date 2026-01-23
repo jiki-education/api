@@ -117,9 +117,9 @@ Based on `/overview/tech/backend.md`:
 ### Related Repositories
 
 This repo is part of a set of repos:
-- **Frontend** (`../fe`) - React/Next.js application
-- **Curriculum** (`../curriculum`) - Learning content and exercises
-- **Interpreters** (`../interpreters`) - Code execution engines
+- **Frontend** (`../front-end/app`) - React/Next.js application
+- **Curriculum** (`../front-end/curriculum`) - Learning content and exercises
+- **Interpreters** (`../front-end/interpreters`) - Code execution engines
 - **Overview** (`../overview`) - Business requirements and system design
 
 You can look into those repos if you need to understand how they integrate with this API.
@@ -165,15 +165,13 @@ When you learn something important or encounter a pattern worth documenting, upd
 
 ### Sensitive Information
 
-- Never commit `config/master.key`
-- Use Rails credentials for secrets
+- We use the jiki config gem for config (NOT rails credentials)
 - Filter sensitive parameters from logs
 - Validate all input data
 
 ### API Security
 
-- Implement rate limiting
-- Use strong authentication (JWT)
+- Rate limiting is implemented through Cloudflare
 - Validate CORS origins
 - Sanitize error messages in production
 
@@ -185,29 +183,5 @@ When you learn something important or encounter a pattern worth documenting, upd
 - **S3 Video Production**: Bucket and IAM user for video generation (`terraform/terraform/aws/video-production.tf`)
 - **DynamoDB Config**: Configuration table with 14 items populated from Terraform (`terraform/terraform/aws/dynamodb.tf`)
   - Includes: domains, Cloudflare R2 config, database config, Stripe placeholders
-  - Cost: ~$0.01/month
   - IAM policy for ECS task access included
 - **Cloudflare R2**: Assets bucket with CDN (`terraform/terraform/cloudflare/r2.tf`)
-
-### Next Implementation Priorities
-
-Based on business requirements and deployment needs:
-
-**AWS Infrastructure (see DEPLOYMENT_PLAN.md)**:
-1. Aurora PostgreSQL Serverless v2 (0-1 ACU) - Database + Solid Queue
-2. S3 bucket for Active Storage (exercise submission files)
-3. ECS cluster and services (web only - Solid Queue runs in same process)
-4. Application Load Balancer with ACM certificate
-5. Security groups and IAM roles
-6. CloudWatch logs and alarms
-
-**Note**: No ElastiCache/Redis needed - using Solid Queue (database-backed) for jobs and memory cache
-
-**Application Features**:
-1. User model with progression tracking
-2. Lesson/Exercise models with state management
-3. JWT authentication
-4. API versioning (controllers/api/v1/)
-5. CORS configuration for frontend
-6. Stripe integration for PPP pricing (update Stripe config values in DynamoDB)
-7. I18n database storage and file generation

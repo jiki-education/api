@@ -45,9 +45,11 @@ class Concept::Search
   def apply_user_specific_ordering!
     return unless user && user.unlocked_concept_ids.present?
 
-    unlocked_ids = user.unlocked_concept_ids
+    sql = "concepts.*, CASE WHEN concepts.id = ANY(ARRAY[?]::bigint[]) THEN 0 ELSE 1 END as lock_order"
+    sanitized = ActiveRecord::Base.sanitize_sql_array([sql, user.unlocked_concept_ids])
+
     @concepts = @concepts.
-      select("concepts.*, CASE WHEN concepts.id = ANY(ARRAY[#{unlocked_ids.join(',')}]::bigint[]) THEN 0 ELSE 1 END as lock_order").
+      select(Arel.sql(sanitized)).
       reorder(Arel.sql("lock_order ASC, concepts.title ASC"))
   end
 end
