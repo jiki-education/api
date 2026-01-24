@@ -21,7 +21,7 @@ You can read these files at **any point during your work** - even in the middle 
 | `configuration.md` | Setting up services, environment config, CORS |
 | `testing.md` | Writing tests, using FactoryBot |
 | `serializers.md` | JSON response formatting |
-| `mailers.md` | Email templates, MJML/HAML |
+| `mailers.md` | Email templates, MJML/HAML, production delivery (SES) |
 | `jobs.md` | Background job processing with Sidekiq |
 | `llm.md` | AI-powered translation, Gemini API |
 | `i18n.md` | Internationalization, translations |
