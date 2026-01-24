@@ -5,6 +5,7 @@ class ApplicationController < ActionController::API
   before_action :set_current_user_agent
   before_action :set_locale
   before_action :extend_session_cookie!
+  before_action :set_sentry_user
   after_action :set_user_id_cookie
 
   private
@@ -28,6 +29,10 @@ class ApplicationController < ActionController::API
 
   def set_current_user_agent
     Current.user_agent = request.headers["User-Agent"]
+  end
+
+  def set_sentry_user
+    Sentry.set_user(id: current_user.id) if user_signed_in?
   end
 
   # Implement sliding session expiration by touching the session periodically.
