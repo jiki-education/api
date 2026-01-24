@@ -2,6 +2,9 @@ source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.0.rc1"
+
+# Fix OpenSSL 3.5+ CRL checking issue (can remove after Ruby 3.4.8)
+gem "openssl", "~> 3.3.1"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -64,6 +67,10 @@ gem "httparty"
 
 # Stripe payment processing
 gem "stripe"
+
+# Error tracking
+gem "sentry-ruby"
+gem "sentry-rails"
 
 # AWS SDK for S3 storage
 gem "aws-sdk-s3"
