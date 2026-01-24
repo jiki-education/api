@@ -34,7 +34,42 @@ Located in `config/environments/development.rb`:
 - Emails automatically open in default browser
 
 ### Production Configuration
-Production email delivery not yet configured. Will use AWS SES.
+Located in `config/environments/production.rb`:
+
+**Delivery Method:** AWS SES v2 API (not SMTP)
+```ruby
+config.action_mailer.delivery_method = :ses_v2
+config.action_mailer.ses_v2_settings = { region: Jiki.config.ses_region }
+```
+
+**Authentication:** ECS task IAM role (no credentials needed in application)
+
+**Why SES v2 API instead of SMTP:**
+- API-level acknowledgment (more reliable than SMTP)
+- No credentials to manage (IAM role handles auth automatically)
+- Better integration with SES features (configuration sets, event notifications)
+- Simpler infrastructure (no SMTP ports to manage)
+
+**Config Values (via `Jiki.config`):**
+| Key | Purpose | Example |
+|-----|---------|---------|
+| `ses_region` | AWS region for SES | eu-west-1 |
+| `mail_from_email` | Transactional from address | hello@mail.jiki.io |
+| `notifications_from_email` | Notifications from address | hello@notifications.jiki.io |
+| `marketing_from_email` | Marketing from address | hello@hello.jiki.io |
+| `support_email` | Reply-to for marketing | hello@jiki.io |
+| `ses_mail_configuration_set` | SES config set for transactional | jiki-mail |
+| `ses_notifications_configuration_set` | SES config set for notifications | jiki-notifications |
+| `ses_marketing_configuration_set` | SES config set for marketing | jiki-marketing |
+
+**Mailer Types:**
+| Mailer | From Config | Configuration Set | Purpose |
+|--------|------------|-------------------|---------|
+| `TransactionalMailer` | mail_from_email | ses_mail_configuration_set | Critical: signups, password resets, receipts |
+| `NotificationsMailer` | notifications_from_email | ses_notifications_configuration_set | Learning: completions, achievements |
+| `MarketingMailer` | marketing_from_email | ses_marketing_configuration_set | Newsletters, announcements |
+
+**Asset Host:** `Jiki.config.assets_cdn_url` (Cloudflare R2 CDN) for email images
 
 ## File Structure
 
@@ -260,24 +295,24 @@ WelcomeMailer.welcome(user, login_url: "http://localhost:3000/login").deliver_no
 - Responsive by default
 - Valid HTML output
 
-## Production Considerations (Future)
+## Production Considerations
 
-### AWS SES Setup
-Will need to configure in `config/environments/production.rb`:
-- SMTP settings for AWS SES
-- Verified sender domain
-- Handle bounces and complaints
-- Monitor sending quotas
+### AWS SES Setup (Configured)
+Production uses SES v2 API with:
+- IAM role authentication (ECS task role)
+- Verified sender domains (mail.jiki.io, notifications.jiki.io, hello.jiki.io)
+- Configuration sets for tracking and dedicated IP routing
+- Region: eu-west-1
 
 ### Monitoring
-- Track email opens/clicks (future)
-- Monitor bounce rates
-- Log failed deliveries
-- Queue emails for retry
+- SES configuration sets enable event notifications
+- Monitor bounce rates via SES console
+- Log failed deliveries in Rails logs
+- Solid Queue handles retry for background jobs
 
 ### Performance
-- Use background jobs for sending (Active Job)
-- Cache compiled MJML templates
+- Use background jobs for sending (Solid Queue + Active Job)
+- MJML templates cached in production
 - Batch sends when appropriate
 
 ## Troubleshooting
