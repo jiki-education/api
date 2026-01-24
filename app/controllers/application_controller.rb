@@ -32,7 +32,9 @@ class ApplicationController < ActionController::API
   end
 
   def set_sentry_user
-    Sentry.set_user(id: current_user.id) if user_signed_in?
+    return unless Rails.env.production? && user_signed_in?
+
+    Sentry.set_user(id: current_user.id)
   end
 
   # Implement sliding session expiration by touching the session periodically.
