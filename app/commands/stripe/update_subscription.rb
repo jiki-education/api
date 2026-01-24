@@ -41,9 +41,20 @@ class Stripe::UpdateSubscription
     updated_subscription_item = updated_subscription.items.data.first
     raise ArgumentError, "Updated subscription has no items" unless updated_subscription_item
 
-    # Update user data immediately (for both upgrades and downgrades)
+    # Handle tier change via dedicated commands for upgrades (sends welcome emails)
+    # For downgrades, update membership_type directly (no welcome email)
+    if is_upgrade
+      case product
+      when 'premium' then User::UpgradeToPremium.(user)
+      when 'max' then User::UpgradeToMax.(user)
+      end
+    else
+      # Downgrade - set membership_type directly
+      user.data.update!(membership_type: product)
+    end
+
+    # Update subscription validity period
     user.data.update!(
-      membership_type: product,
       subscription_valid_until: Time.zone.at(updated_subscription_item.current_period_end)
     )
 

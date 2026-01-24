@@ -213,7 +213,9 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
       success: true,
-      tier: "premium"
+      tier: "premium",
+      payment_status: "paid",
+      subscription_status: "active"
     })
 
     post internal_subscriptions_verify_checkout_path,
@@ -225,6 +227,31 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert json["success"]
     assert_equal "premium", json["tier"]
+    assert_equal "paid", json["payment_status"]
+    assert_equal "active", json["subscription_status"]
+  end
+
+  test "POST verify_checkout returns incomplete status for async payments" do
+    session_id = "cs_test_123"
+
+    Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
+      success: true,
+      tier: "premium",
+      payment_status: "unpaid",
+      subscription_status: "incomplete"
+    })
+
+    post internal_subscriptions_verify_checkout_path,
+      params: { session_id: },
+      headers: @headers,
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert json["success"]
+    assert_equal "premium", json["tier"]
+    assert_equal "unpaid", json["payment_status"]
+    assert_equal "incomplete", json["subscription_status"]
   end
 
   test "POST verify_checkout returns error when session_id is missing" do

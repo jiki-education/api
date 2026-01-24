@@ -107,7 +107,9 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     render json: {
       success: result[:success],
-      tier: result[:tier]
+      tier: result[:tier],
+      payment_status: result[:payment_status],
+      subscription_status: result[:subscription_status]
     }
   rescue SecurityError => e
     Rails.logger.error("Security error verifying checkout: #{e.message}")

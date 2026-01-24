@@ -11,6 +11,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("complete")
     stripe_session.stubs(:subscription).returns("sub_123")
+    stripe_session.stubs(:payment_status).returns("paid")
 
     stripe_subscription = mock
     stripe_subscription.stubs(:id).returns("sub_123")
@@ -33,6 +34,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
 
     assert result[:success]
     assert_equal "premium", result[:tier]
+    assert_equal "paid", result[:payment_status]
+    assert_equal "active", result[:subscription_status]
 
     # Verify user data was updated
     user.data.reload
@@ -60,6 +63,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("complete")
     stripe_session.stubs(:subscription).returns("sub_123")
+    stripe_session.stubs(:payment_status).returns("paid")
 
     stripe_subscription = mock
     stripe_subscription.stubs(:id).returns("sub_123")
@@ -82,6 +86,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
 
     assert result[:success]
     assert_equal "max", result[:tier]
+    assert_equal "paid", result[:payment_status]
+    assert_equal "active", result[:subscription_status]
 
     user.data.reload
     assert_equal "max", user.data.membership_type
@@ -177,32 +183,21 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_match(/price_unknown_xyz/, error.message)
   end
 
-  test "is idempotent - does not duplicate subscription entry if already exists" do
+  test "handles incomplete subscription for async payments (e.g., bank transfer)" do
     user = create(:user)
-    user.data.update!(
-      stripe_customer_id: "cus_123",
-      subscriptions: [
-        {
-          "stripe_subscription_id" => "sub_123",
-          "tier" => "premium",
-          "started_at" => 1.hour.ago.iso8601,
-          "ended_at" => nil,
-          "end_reason" => nil,
-          "payment_failed_at" => nil
-        }
-      ]
-    )
+    user.data.update!(stripe_customer_id: "cus_123", membership_type: "standard")
     session_id = "cs_test_123"
 
-    # Mock Stripe responses
+    # Mock Stripe responses for async payment
     stripe_session = mock
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("complete")
     stripe_session.stubs(:subscription).returns("sub_123")
+    stripe_session.stubs(:payment_status).returns("unpaid") # Async payment still processing
 
     stripe_subscription = mock
     stripe_subscription.stubs(:id).returns("sub_123")
-    stripe_subscription.stubs(:status).returns("active")
+    stripe_subscription.stubs(:status).returns("incomplete") # Subscription is incomplete
 
     # Mock subscription items with premium price
     price = mock
@@ -221,10 +216,57 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
 
     assert result[:success]
     assert_equal "premium", result[:tier]
+    assert_equal "unpaid", result[:payment_status]
+    assert_equal "incomplete", result[:subscription_status]
 
-    # Verify subscriptions array still has only 1 entry (not duplicated)
+    # Verify user data was updated appropriately for incomplete subscription
     user.data.reload
-    assert_equal 1, user.data.subscriptions.length
-    assert_equal "sub_123", user.data.subscriptions.first["stripe_subscription_id"]
+    assert_equal "standard", user.data.membership_type # Preserved, not upgraded yet
+    assert_equal "sub_123", user.data.stripe_subscription_id
+    assert_equal "incomplete", user.data.stripe_subscription_status
+    assert_equal "incomplete", user.data.subscription_status
+  end
+
+  test "preserves existing membership_type for incomplete subscription during upgrade" do
+    user = create(:user)
+    # User already has premium and is upgrading to max via bank transfer
+    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
+    session_id = "cs_test_123"
+
+    # Mock Stripe responses for async payment
+    stripe_session = mock
+    stripe_session.stubs(:customer).returns("cus_123")
+    stripe_session.stubs(:status).returns("complete")
+    stripe_session.stubs(:subscription).returns("sub_123")
+    stripe_session.stubs(:payment_status).returns("unpaid")
+
+    stripe_subscription = mock
+    stripe_subscription.stubs(:id).returns("sub_123")
+    stripe_subscription.stubs(:status).returns("incomplete")
+
+    # Mock subscription items with MAX price (upgrade)
+    price = mock
+    price.stubs(:id).returns(Jiki.config.stripe_max_price_id)
+    item = mock
+    item.stubs(:price).returns(price)
+    item.stubs(:current_period_end).returns(1.month.from_now.to_i)
+    items_data = mock
+    items_data.stubs(:data).returns([item])
+    stripe_subscription.stubs(:items).returns(items_data)
+
+    ::Stripe::Checkout::Session.expects(:retrieve).with(session_id).returns(stripe_session)
+    ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
+
+    result = Stripe::VerifyCheckoutSession.(user, session_id)
+
+    assert result[:success]
+    assert_equal "max", result[:tier] # Tier they're subscribing to
+    assert_equal "unpaid", result[:payment_status]
+    assert_equal "incomplete", result[:subscription_status]
+
+    # User keeps premium access until payment confirms
+    user.data.reload
+    assert_equal "premium", user.data.membership_type
+    assert_equal "incomplete", user.data.subscription_status
   end
 end

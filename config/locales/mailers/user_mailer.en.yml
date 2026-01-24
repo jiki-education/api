@@ -1,0 +1,20 @@
+en:
+  user_mailer:
+    welcome_to_premium:
+      subject: "Welcome to Jiki Premium!"
+      greeting: "Hi %{name}!"
+      intro: "Welcome to Premium"
+      body: "Thank you for subscribing to Jiki Premium. You now have access to all Premium features."
+      footer: "If you have any questions, just reply to this email. We're here to help!"
+    welcome_to_max:
+      subject: "Welcome to Jiki Max!"
+      greeting: "Hi %{name}!"
+      intro: "Welcome to Max"
+      body: "Thank you for subscribing to Jiki Max. You now have access to all Max features."
+      footer: "If you have any questions, just reply to this email. We're here to help!"
+    subscription_ended:
+      subject: "Your Jiki subscription has ended"
+      greeting: "Hi %{name}!"
+      intro: "Subscription ended"
+      body: "Your subscription has ended. You can resubscribe at any time to regain access to premium features."
+      footer: "If you have any questions, just reply to this email. We're here to help!"
