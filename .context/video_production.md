@@ -477,8 +477,6 @@ services/video_production/
 
 ## Related Files
 
-- `VIDEO_PRODUCTION_PLAN.md` - Complete implementation roadmap
-- `tmp-video-production/README.md` - TypeScript reference code from Next.js
 - `.context/architecture.md` - Rails patterns and Mandate usage
 - `.context/controllers.md` - Controller patterns
 - `.context/testing.md` - Testing guidelines
