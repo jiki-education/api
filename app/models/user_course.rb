@@ -5,9 +5,6 @@ class UserCourse < ApplicationRecord
   belongs_to :course
   belongs_to :current_user_level, class_name: "UserLevel", optional: true
 
-  has_many :user_levels, through: :user, source: :user_levels
-  has_many :user_lessons, through: :user, source: :user_lessons
-
   validates :user_id, uniqueness: { scope: :course_id }
   validates :language, inclusion: { in: SUPPORTED_LANGUAGES }, allow_nil: true
 

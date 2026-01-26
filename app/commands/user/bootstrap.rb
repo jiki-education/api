@@ -15,7 +15,5 @@ class User::Bootstrap
 
   private
   memoize
-  def course
-    Course.find_by!(slug: "coding-fundamentals")
-  end
+  def course = Course.find_by!(slug: "coding-fundamentals")
 end
