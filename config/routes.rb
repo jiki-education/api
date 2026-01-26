@@ -62,16 +62,14 @@ Rails.application.routes.draw do
       end
     end
 
-    scope ':course_slug' do
-      resources :levels, only: [:index] do
-        member do
-          get :milestone
-        end
+    resources :levels, only: [:index] do
+      member do
+        get :milestone
       end
-      resources :user_levels, only: [:index], param: :level_slug do
-        member do
-          patch :complete
-        end
+    end
+    resources :user_levels, only: [:index], param: :level_slug do
+      member do
+        patch :complete
       end
     end
 

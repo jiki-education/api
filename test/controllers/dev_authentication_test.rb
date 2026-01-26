@@ -11,7 +11,7 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
   test "URL-based authentication works in development environment" do
     Rails.env.stubs(:development?).returns(true)
 
-    get "#{internal_levels_path(course_slug: @course.slug)}?user_id=#{@user.id}", as: :json
+    get internal_levels_path(course_slug: @course.slug, user_id: @user.id), as: :json
 
     assert_response :success
   end
@@ -19,7 +19,7 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
   test "URL-based authentication is blocked in production environment" do
     Rails.env.stubs(:development?).returns(false)
 
-    get "#{internal_levels_path(course_slug: @course.slug)}?user_id=#{@user.id}", as: :json
+    get internal_levels_path(course_slug: @course.slug, user_id: @user.id), as: :json
 
     assert_response :unauthorized
     assert_equal "unauthorized", response.parsed_body["error"]["type"]
@@ -27,7 +27,7 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
 
   test "URL-based authentication is blocked in test environment" do
     # Test environment is the default (development? returns false)
-    get "#{internal_levels_path(course_slug: @course.slug)}?user_id=#{@user.id}", as: :json
+    get internal_levels_path(course_slug: @course.slug, user_id: @user.id), as: :json
 
     assert_response :unauthorized
     assert_equal "unauthorized", response.parsed_body["error"]["type"]
@@ -54,7 +54,7 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
   test "returns 401 when user_id is invalid in development" do
     Rails.env.stubs(:development?).returns(true)
 
-    get "#{internal_levels_path(course_slug: @course.slug)}?user_id=99999", as: :json
+    get internal_levels_path(course_slug: @course.slug, user_id: 99_999), as: :json
 
     assert_response :unauthorized
     assert_equal "unauthorized", response.parsed_body["error"]["type"]
