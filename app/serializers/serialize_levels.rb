@@ -8,7 +8,7 @@ class SerializeLevels
       {
         slug: level.slug,
         milestone_summary: milestone_summaries[level.id],
-        lessons: level.lessons.map { |lesson| SerializeLesson.(lesson, content: lesson_contents[lesson.id]) }
+        lessons: level.lessons.map { |lesson| SerializeLesson.(lesson, nil, content: lesson_contents[lesson.id]) }
       }
     end
   end

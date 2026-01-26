@@ -1,7 +1,7 @@
 class SerializeLesson
   include Mandate
 
-  initialize_with :lesson, content: nil, include_data: false, language: nil
+  initialize_with :lesson, :user, content: nil, include_data: false
 
   def call
     content_data = content || lesson.content_for_locale(I18n.locale)
@@ -28,5 +28,12 @@ class SerializeLesson
       source[:language].nil? || source[:language] == language
     end
     data
+  end
+
+  def language
+    return nil unless user
+
+    user_course = user.user_courses.find_by(course: lesson.level.course)
+    user_course&.language
   end
 end
