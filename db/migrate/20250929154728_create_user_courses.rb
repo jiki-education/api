@@ -5,7 +5,6 @@ class CreateUserCourses < ActiveRecord::Migration[8.0]
       t.references :course, null: false, foreign_key: true
       t.references :current_user_level, null: true, foreign_key: { to_table: :user_levels }
       t.string :language
-      t.datetime :started_at, null: false
       t.datetime :completed_at
 
       t.timestamps

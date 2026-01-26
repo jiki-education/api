@@ -19,7 +19,7 @@ class UserLevel::StartTest < ActiveSupport::TestCase
     assert_instance_of UserLevel, result
     assert_equal user_course.user_id, result.user_id
     assert_equal level.id, result.level_id
-    assert_equal user_course.course_id, result.course_id
+    assert_equal user_course.course, result.course
   end
 
   test "is idempotent - returns existing user_level on duplicate" do

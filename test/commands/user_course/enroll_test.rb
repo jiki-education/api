@@ -21,7 +21,7 @@ class UserCourse::EnrollTest < ActiveSupport::TestCase
     assert_equal course.id, result.course_id
   end
 
-  test "sets started_at on creation" do
+  test "sets created_at on creation" do
     user = create(:user)
     course = create(:course)
 
@@ -29,8 +29,8 @@ class UserCourse::EnrollTest < ActiveSupport::TestCase
     result = UserCourse::Enroll.(user, course)
     time_after = Time.current
 
-    assert result.started_at >= time_before
-    assert result.started_at <= time_after
+    assert result.created_at >= time_before
+    assert result.created_at <= time_after
   end
 
   test "is idempotent - returns existing user_course on duplicate" do

@@ -7,7 +7,7 @@ class UserLesson::Start
     ActiveRecord::Base.transaction do
       validate_can_start_lesson!
 
-      UserLesson.find_create_or_find_by!(user:, lesson:, course:).tap do |user_lesson|
+      UserLesson.find_create_or_find_by!(user:, lesson:).tap do |user_lesson|
         # Only update tracking pointers on first creation
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
@@ -57,7 +57,7 @@ class UserLesson::Start
   end
 
   def all_lessons_complete?(level)
-    completed_count = UserLesson.where(user: user, lesson: level.lessons, course:).
+    completed_count = UserLesson.where(user:, lesson: level.lessons).
       where.not(completed_at: nil).
       count
     completed_count == level.lessons.count

@@ -19,7 +19,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     assert_instance_of UserLesson, result
     assert_equal user_level.user_id, result.user_id
     assert_equal lesson.id, result.lesson_id
-    assert_equal user_level.course_id, result.course_id
+    assert_equal user_level.course, result.course
   end
 
   test "is idempotent - returns existing user_lesson on duplicate" do

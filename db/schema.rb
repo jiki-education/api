@@ -374,7 +374,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.datetime "created_at", null: false
     t.bigint "current_user_level_id"
     t.string "language"
-    t.datetime "started_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["course_id"], name: "index_user_courses_on_course_id"
@@ -419,31 +418,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
 
   create_table "user_lessons", force: :cascade do |t|
     t.datetime "completed_at"
-    t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.bigint "lesson_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["course_id"], name: "index_user_lessons_on_course_id"
     t.index ["lesson_id"], name: "index_user_lessons_on_lesson_id"
-    t.index ["user_id", "course_id"], name: "index_user_lessons_on_user_id_and_course_id"
     t.index ["user_id", "lesson_id"], name: "index_user_lessons_on_user_id_and_lesson_id", unique: true
     t.index ["user_id"], name: "index_user_lessons_on_user_id"
   end
 
   create_table "user_levels", force: :cascade do |t|
     t.datetime "completed_at"
-    t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.bigint "current_user_lesson_id"
     t.integer "email_status", default: 0, null: false
     t.bigint "level_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["course_id"], name: "index_user_levels_on_course_id"
     t.index ["current_user_lesson_id"], name: "index_user_levels_on_current_user_lesson_id"
     t.index ["level_id"], name: "index_user_levels_on_level_id"
-    t.index ["user_id", "course_id"], name: "index_user_levels_on_user_id_and_course_id"
     t.index ["user_id", "level_id"], name: "index_user_levels_on_user_id_and_level_id", unique: true
     t.index ["user_id"], name: "index_user_levels_on_user_id"
   end
@@ -542,10 +535,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
   add_foreign_key "user_courses", "user_levels", column: "current_user_level_id"
   add_foreign_key "user_courses", "users"
   add_foreign_key "user_data", "users"
-  add_foreign_key "user_lessons", "courses"
   add_foreign_key "user_lessons", "lessons"
   add_foreign_key "user_lessons", "users"
-  add_foreign_key "user_levels", "courses"
   add_foreign_key "user_levels", "levels"
   add_foreign_key "user_levels", "user_lessons", column: "current_user_lesson_id"
   add_foreign_key "user_levels", "users"

@@ -2,6 +2,7 @@ require "test_helper"
 
 class User::BootstrapTest < ActiveSupport::TestCase
   test "enqueues welcome email" do
+    create(:course, slug: "coding-fundamentals")
     user = create(:user)
 
     assert_enqueued_with(
@@ -14,6 +15,7 @@ class User::BootstrapTest < ActiveSupport::TestCase
   end
 
   test "works with newly created user" do
+    create(:course, slug: "coding-fundamentals")
     user = build(:user)
     user.save!
 
@@ -22,15 +24,14 @@ class User::BootstrapTest < ActiveSupport::TestCase
     end
   end
 
-  # First level creation tests (when course is provided)
-  test "creates user_course and user_level when course is provided" do
-    course = create(:course)
+  test "creates user_course and user_level for coding-fundamentals" do
+    course = create(:course, slug: "coding-fundamentals")
     level1 = create(:level, course:, position: 1)
     create(:level, course:, position: 2)
     create(:level, course:, position: 3)
     user = create(:user)
 
-    User::Bootstrap.(user, course:)
+    User::Bootstrap.(user)
 
     user_course = UserCourse.find_by(user:, course:)
     refute_nil user_course
@@ -40,44 +41,31 @@ class User::BootstrapTest < ActiveSupport::TestCase
   end
 
   test "calls UserCourse::Enroll and UserLevel::Start with first level" do
-    user = create(:user)
-    course = create(:course)
+    course = create(:course, slug: "coding-fundamentals")
     level1 = create(:level, course:, position: 1)
+    user = create(:user)
 
-    User::Bootstrap.(user, course:)
+    User::Bootstrap.(user)
 
     assert UserCourse.exists?(user:, course:)
     assert UserLevel.exists?(user:, level: level1)
   end
 
-  test "handles no course provided gracefully" do
-    user = create(:user)
-
-    assert_nothing_raised do
-      User::Bootstrap.(user)
-    end
-
-    assert_equal 0, UserCourse.where(user:).count
-    assert_equal 0, UserLevel.where(user:).count
-  end
-
   test "uses lowest position level as first within course" do
-    course = create(:course)
-    level5 = create(:level, course:, position: 5)
-    level10 = create(:level, course:, position: 10)
+    course = create(:course, slug: "coding-fundamentals")
+    create(:level, course:, position: 5)
+    create(:level, course:, position: 10)
     level1 = create(:level, course:, position: 1)
     user = create(:user)
 
-    User::Bootstrap.(user, course:)
+    User::Bootstrap.(user)
 
     user_level = UserLevel.find_by(user:, level: level1)
     refute_nil user_level
-    assert_nil UserLevel.find_by(user:, level: level5)
-    assert_nil UserLevel.find_by(user:, level: level10)
   end
 
-  # Badge tests
   test "enqueues member badge award job" do
+    create(:course, slug: "coding-fundamentals")
     user = create(:user)
 
     assert_enqueued_with(job: AwardBadgeJob, args: [user, 'member']) do
@@ -86,6 +74,7 @@ class User::BootstrapTest < ActiveSupport::TestCase
   end
 
   test "awards member badge to new user" do
+    create(:course, slug: "coding-fundamentals")
     user = create(:user)
 
     perform_enqueued_jobs do

@@ -110,7 +110,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     # Manually create user_lesson without going through factory's after_build
     # which auto-creates user_level
     create(:user_course, user:, course: lesson.level.course)
-    UserLesson.create!(user:, lesson:, course: lesson.level.course)
+    UserLesson.create!(user:, lesson:)
 
     assert_raises(UserLevelNotFoundError) do
       UserLesson::Complete.(user, lesson)

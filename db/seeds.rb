@@ -36,11 +36,11 @@ Level::CreateAllFromJson.call(course, curriculum_file, delete_existing: false)
 
 puts "✓ Successfully loaded levels and lessons!"
 
-# Bootstrap users (enrolls them in the course and starts first level)
+# Bootstrap users (enrolls them in coding-fundamentals and starts first level)
 puts "\nBootstrapping users..."
-User::Bootstrap.(admin_user, course:)
+User::Bootstrap.(admin_user)
 puts "  ✓ Bootstrapped admin user"
-User::Bootstrap.(user, course:)
+User::Bootstrap.(user)
 puts "  ✓ Bootstrapped test user"
 
 # Load concepts
@@ -132,35 +132,25 @@ second_level = course.levels.second
 
 if first_level && second_level
   # Create user_course enrollment
-  user_course = UserCourse.find_or_create_by!(user: user, course: course) do |uc|
-    uc.started_at = 2.days.ago
-  end
+  user_course = UserCourse.find_or_create_by!(user: user, course: course)
 
   # Create user_level records
-  user_level_1 = UserLevel.find_or_create_by!(user: user, level: first_level, course: course) do |ul|
-    ul.created_at = 2.days.ago
-  end
-
-  user_level_2 = UserLevel.find_or_create_by!(user: user, level: second_level, course: course) do |ul|
-    ul.created_at = 1.day.ago
-  end
+  user_level_1 = UserLevel.find_or_create_by!(user: user, level: first_level)
+  user_level_2 = UserLevel.find_or_create_by!(user: user, level: second_level)
 
   # Update user_course to point to current level
   user_course.update!(current_user_level: user_level_2)
 
   # Create user_lesson records for first level (mix of completed and started)
   first_level.lessons.limit(3).each_with_index do |lesson, index|
-    UserLesson.find_or_create_by!(user: user, lesson: lesson, course: course) do |ul|
-      ul.created_at = 2.days.ago - index.hours
-      ul.completed_at = index < 2 ? 2.days.ago - index.hours + 30.minutes : nil
+    UserLesson.find_or_create_by!(user: user, lesson: lesson) do |ul|
+      ul.completed_at = index < 2 ? Time.current : nil
     end
   end
 
   # Create user_lesson records for second level (only started)
-  second_level.lessons.limit(2).each_with_index do |lesson, index|
-    UserLesson.find_or_create_by!(user: user, lesson: lesson, course: course) do |ul|
-      ul.created_at = 1.day.ago - index.hours
-    end
+  second_level.lessons.limit(2).each do |lesson|
+    UserLesson.find_or_create_by!(user: user, lesson: lesson)
   end
 
   puts "✓ Created sample progress for user #{user.email}"

@@ -2,11 +2,9 @@ FactoryBot.define do
   factory :user_lesson do
     user
     association :lesson, factory: %i[lesson exercise]
-    course { lesson.level.course }
 
     after(:build) do |user_lesson|
       level = user_lesson.lesson.level
-
       create(:user_level, user: user_lesson.user, level:) unless UserLevel.exists?(user: user_lesson.user, level:)
     end
 
