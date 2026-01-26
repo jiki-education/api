@@ -22,47 +22,53 @@ class User::BootstrapTest < ActiveSupport::TestCase
     end
   end
 
-  # First level creation tests
-  test "creates user_level for first level" do
-    level1 = create(:level, position: 1)
-    create(:level, position: 2)
-    create(:level, position: 3)
+  # First level creation tests (when course is provided)
+  test "creates user_course and user_level when course is provided" do
+    course = create(:course)
+    level1 = create(:level, course:, position: 1)
+    create(:level, course:, position: 2)
+    create(:level, course:, position: 3)
     user = create(:user)
 
-    User::Bootstrap.(user)
+    User::Bootstrap.(user, course:)
 
+    user_course = UserCourse.find_by(user:, course:)
+    refute_nil user_course
     user_level = UserLevel.find_by(user:, level: level1)
     refute_nil user_level
-    assert_equal level1.id, user.reload.current_user_level&.level_id
+    assert_equal user_level.id, user_course.reload.current_user_level_id
   end
 
-  test "calls UserLevel::Start with first level" do
+  test "calls UserCourse::Enroll and UserLevel::Start with first level" do
     user = create(:user)
-    level1 = create(:level, position: 1)
+    course = create(:course)
+    level1 = create(:level, course:, position: 1)
 
-    UserLevel::Start.expects(:call).with(user, level1)
+    User::Bootstrap.(user, course:)
 
-    User::Bootstrap.(user)
+    assert UserCourse.exists?(user:, course:)
+    assert UserLevel.exists?(user:, level: level1)
   end
 
-  test "handles missing levels gracefully" do
+  test "handles no course provided gracefully" do
     user = create(:user)
-    # No levels exist
 
     assert_nothing_raised do
       User::Bootstrap.(user)
     end
 
-    assert_nil UserLevel.find_by(user:)
+    assert_equal 0, UserCourse.where(user:).count
+    assert_equal 0, UserLevel.where(user:).count
   end
 
-  test "uses lowest position level as first" do
-    level5 = create(:level, position: 5)
-    level10 = create(:level, position: 10)
-    level1 = create(:level, position: 1)
+  test "uses lowest position level as first within course" do
+    course = create(:course)
+    level5 = create(:level, course:, position: 5)
+    level10 = create(:level, course:, position: 10)
+    level1 = create(:level, course:, position: 1)
     user = create(:user)
 
-    User::Bootstrap.(user)
+    User::Bootstrap.(user, course:)
 
     user_level = UserLevel.find_by(user:, level: level1)
     refute_nil user_level

@@ -7,17 +7,27 @@ class UserLesson::Start
     ActiveRecord::Base.transaction do
       validate_can_start_lesson!
 
-      UserLesson.find_create_or_find_by!(user:, lesson:).tap do |user_lesson|
+      UserLesson.find_create_or_find_by!(user:, lesson:, course:).tap do |user_lesson|
         # Only update tracking pointers on first creation
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
-          user.update!(current_user_level: user_level)
+          user_course.update!(current_user_level: user_level)
         end
       end
     end
   end
 
   private
+  memoize
+  def course = lesson.level.course
+
+  memoize
+  def user_course
+    user.user_courses.find_by!(course:)
+  rescue ActiveRecord::RecordNotFound
+    raise UserCourseNotFoundError, "Not enrolled in this course"
+  end
+
   memoize
   def user_level
     UserLevel::Find.(user, lesson.level)
@@ -26,6 +36,12 @@ class UserLesson::Start
   end
 
   def validate_can_start_lesson!
+    # Check enrollment first (most fundamental check)
+    user_course
+
+    # Check user has started this level
+    user_level
+
     # Check if there's a DIFFERENT lesson in progress on THIS level
     current_lesson = user_level.current_user_lesson
     if current_lesson.present? && current_lesson.completed_at.nil? && current_lesson.lesson_id != lesson.id
@@ -33,7 +49,7 @@ class UserLesson::Start
     end
 
     # Check if trying to start lesson in a different level
-    current_level = user.current_user_level&.level
+    current_level = user_course.current_user_level&.level
     return unless current_level && current_level.id != lesson.level_id
     return unless all_lessons_complete?(current_level)
 
@@ -41,7 +57,7 @@ class UserLesson::Start
   end
 
   def all_lessons_complete?(level)
-    completed_count = UserLesson.where(user: user, lesson: level.lessons).
+    completed_count = UserLesson.where(user: user, lesson: level.lessons, course:).
       where.not(completed_at: nil).
       count
     completed_count == level.lessons.count

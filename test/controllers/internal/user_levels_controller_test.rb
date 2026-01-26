@@ -142,10 +142,12 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH complete emits lesson_unlocked event for first lesson of next level" do
-    level1 = create(:level, slug: "level-1", position: 1)
-    level2 = create(:level, slug: "level-2", position: 2)
+    course = create(:course)
+    level1 = create(:level, course:, slug: "level-1", position: 1)
+    level2 = create(:level, course:, slug: "level-2", position: 2)
     lesson1 = create(:lesson, :exercise, level: level1, slug: "level1-lesson", position: 1)
     create(:lesson, :exercise, level: level2, slug: "level2-first-lesson", position: 1)
+    create(:user_course, user: @current_user, course:)
     create(:user_level, user: @current_user, level: level1)
     create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
 

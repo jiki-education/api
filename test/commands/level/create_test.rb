@@ -2,7 +2,9 @@ require "test_helper"
 
 class Level::CreateTest < ActiveSupport::TestCase
   test "creates level with valid attributes" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       title: "Ruby Basics",
       description: "Learn the fundamentals of Ruby",
@@ -19,10 +21,12 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "auto-assigns position when not provided" do
-    create(:level, position: 1)
-    create(:level, position: 2)
+    course = create(:course)
+    create(:level, course:, position: 1)
+    create(:level, course:, position: 2)
 
     params = {
+      course:,
       slug: "new-level",
       title: "New Level",
       description: "Description",
@@ -36,7 +40,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "accepts explicit position" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       title: "Ruby Basics",
       description: "Description",
@@ -51,7 +57,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "raises error when slug is missing" do
+    course = create(:course)
     params = {
+      course:,
       title: "Ruby Basics",
       description: "Description",
       milestone_summary: "Great job!",
@@ -64,7 +72,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "raises error when title is missing" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       description: "Description",
       milestone_summary: "Great job!",
@@ -77,7 +87,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "raises error when description is missing" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       title: "Ruby Basics",
       milestone_summary: "Great job!",
@@ -90,7 +102,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "raises error when slug is blank" do
+    course = create(:course)
     params = {
+      course:,
       slug: "",
       title: "Ruby Basics",
       description: "Description",
@@ -104,7 +118,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "raises error when title is blank" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       title: "",
       description: "Description",
@@ -118,7 +134,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "raises error when description is blank" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       title: "Ruby Basics",
       description: "",
@@ -133,8 +151,10 @@ class Level::CreateTest < ActiveSupport::TestCase
 
   test "raises error for duplicate slug" do
     create(:level, slug: "ruby-basics")
+    course = create(:course)
 
     params = {
+      course:,
       slug: "ruby-basics",
       title: "Another Level",
       description: "Description",
@@ -147,10 +167,12 @@ class Level::CreateTest < ActiveSupport::TestCase
     end
   end
 
-  test "raises error for duplicate position" do
-    create(:level, position: 1)
+  test "raises error for duplicate position within course" do
+    course = create(:course)
+    create(:level, course:, position: 1)
 
     params = {
+      course:,
       slug: "new-level",
       title: "New Level",
       description: "Description",
@@ -165,7 +187,9 @@ class Level::CreateTest < ActiveSupport::TestCase
   end
 
   test "returns created level" do
+    course = create(:course)
     params = {
+      course:,
       slug: "ruby-basics",
       title: "Ruby Basics",
       description: "Description",

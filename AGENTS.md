@@ -124,6 +124,11 @@ This repo is part of a set of repos:
 
 You can look into those repos if you need to understand how they integrate with this API.
 
+## Nomenclature
+
+- **language**: Always refers to programming language (e.g., JavaScript, Python)
+- **locale**: Always refers to natural/human language (e.g., English, Hungarian)
+
 ## Key Principles
 
 ### Documentation is Current State

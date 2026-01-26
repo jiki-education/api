@@ -1,7 +1,7 @@
 class Level::CreateAllFromJson
   include Mandate
 
-  initialize_with :file_path, delete_existing: false
+  initialize_with :course, :file_path, delete_existing: false
 
   def call
     ActiveRecord::Base.transaction do
@@ -24,7 +24,7 @@ class Level::CreateAllFromJson
 
   private
   def delete_all_levels!
-    Level.destroy_all
+    course.levels.destroy_all
   end
 
   def validate_file_exists!
@@ -45,7 +45,7 @@ class Level::CreateAllFromJson
   def create_or_update_level!(level_data)
     validate_level_data!(level_data)
 
-    Level.find_or_initialize_by(slug: level_data["slug"]).tap do |level|
+    course.levels.find_or_initialize_by(slug: level_data["slug"]).tap do |level|
       level.update!(
         title: level_data["title"],
         description: level_data["description"],

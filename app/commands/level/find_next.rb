@@ -4,6 +4,8 @@ class Level::FindNext
   initialize_with :current_level
 
   def call
-    Level.where("position > ?", current_level.position).order(:position).first
+    course.levels.where("position > ?", current_level.position).order(:position).first
   end
+
+  delegate :course, to: :current_level
 end

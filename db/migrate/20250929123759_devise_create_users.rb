@@ -48,9 +48,6 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
       ## JWT revocation
       t.string :jti, null: false
 
-      ## Current progress tracking
-      t.bigint :current_user_level_id
-
       t.timestamps null: false
     end
 

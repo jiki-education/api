@@ -1,6 +1,7 @@
 class UserLesson < ApplicationRecord
   belongs_to :user
   belongs_to :lesson
+  belongs_to :course
   has_many :exercise_submissions, as: :context, dependent: :destroy
   has_many :user_levels_as_current,
     class_name: "UserLevel",

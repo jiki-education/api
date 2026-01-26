@@ -3,9 +3,10 @@ class UserLevel < ApplicationRecord
 
   belongs_to :user
   belongs_to :level
+  belongs_to :course
   belongs_to :current_user_lesson, class_name: "UserLesson", optional: true
-  has_many :users_as_current,
-    class_name: "User",
+  has_many :user_courses_as_current,
+    class_name: "UserCourse",
     foreign_key: :current_user_level_id,
     dependent: :nullify,
     inverse_of: :current_user_level

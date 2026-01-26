@@ -323,7 +323,8 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "POST start returns 403 when user level not found" do
     other_level = create(:level, slug: "other-level", position: 999)
     other_lesson = create(:lesson, :exercise, level: other_level)
-    # No user_level created for this level
+    # User is enrolled in course but no user_level for this level
+    create(:user_course, user: @current_user, course: other_level.course)
 
     post start_internal_user_lesson_path(lesson_slug: other_lesson.slug),
       headers: @headers,
@@ -334,13 +335,15 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST start returns 422 when trying to start lesson in next level before completing current" do
-    level1 = create(:level, position: 100, slug: "level-100")
-    level2 = create(:level, position: 200, slug: "level-200")
+    course = create(:course)
+    level1 = create(:level, course:, position: 100, slug: "level-100")
+    level2 = create(:level, course:, position: 200, slug: "level-200")
     lesson1 = create(:lesson, :exercise, level: level1)
     lesson2 = create(:lesson, :exercise, level: level2)
+    user_course = create(:user_course, user: @current_user, course:)
     user_level1 = create(:user_level, user: @current_user, level: level1)
     create(:user_level, user: @current_user, level: level2)
-    @current_user.update!(current_user_level: user_level1)
+    user_course.update!(current_user_level: user_level1)
     create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
     # level1 is not fully complete (only 1 lesson)
 

@@ -21,19 +21,26 @@ user = User.find_or_create_by!(email: "test@example.com") do |u|
 end
 puts "Created user: #{user.email}"
 
+# Create the Coding Fundamentals course
+course = Course.find_or_create_by!(slug: "coding-fundamentals") do |c|
+  c.title = "Coding Fundamentals"
+  c.description = "Learn the fundamentals of programming through interactive exercises and videos."
+end
+puts "Created course: #{course.title}"
+
 # Bootstrap levels from curriculum.json
 curriculum_file = File.join(Rails.root, "db", "seeds", "curriculum.json")
 puts "Loading levels from #{curriculum_file}..."
 
-Level::CreateAllFromJson.call(curriculum_file, delete_existing: false)
+Level::CreateAllFromJson.call(course, curriculum_file, delete_existing: false)
 
 puts "✓ Successfully loaded levels and lessons!"
 
-# Bootstrap users (creates initial UserLevel for first level)
+# Bootstrap users (enrolls them in the course and starts first level)
 puts "\nBootstrapping users..."
-User::Bootstrap.(admin_user)
+User::Bootstrap.(admin_user, course:)
 puts "  ✓ Bootstrapped admin user"
-User::Bootstrap.(user)
+User::Bootstrap.(user, course:)
 puts "  ✓ Bootstrapped test user"
 
 # Load concepts
@@ -120,22 +127,30 @@ end
 puts "\nCreating sample user progress..."
 
 # Get first few levels and lessons
-first_level = Level.first
-second_level = Level.second
+first_level = course.levels.first
+second_level = course.levels.second
 
 if first_level && second_level
+  # Create user_course enrollment
+  user_course = UserCourse.find_or_create_by!(user: user, course: course) do |uc|
+    uc.started_at = 2.days.ago
+  end
+
   # Create user_level records
-  user_level_1 = UserLevel.find_or_create_by!(user: user, level: first_level) do |ul|
+  user_level_1 = UserLevel.find_or_create_by!(user: user, level: first_level, course: course) do |ul|
     ul.created_at = 2.days.ago
   end
 
-  user_level_2 = UserLevel.find_or_create_by!(user: user, level: second_level) do |ul|
+  user_level_2 = UserLevel.find_or_create_by!(user: user, level: second_level, course: course) do |ul|
     ul.created_at = 1.day.ago
   end
 
+  # Update user_course to point to current level
+  user_course.update!(current_user_level: user_level_2)
+
   # Create user_lesson records for first level (mix of completed and started)
   first_level.lessons.limit(3).each_with_index do |lesson, index|
-    UserLesson.find_or_create_by!(user: user, lesson: lesson) do |ul|
+    UserLesson.find_or_create_by!(user: user, lesson: lesson, course: course) do |ul|
       ul.created_at = 2.days.ago - index.hours
       ul.completed_at = index < 2 ? 2.days.ago - index.hours + 30.minutes : nil
     end
@@ -143,12 +158,13 @@ if first_level && second_level
 
   # Create user_lesson records for second level (only started)
   second_level.lessons.limit(2).each_with_index do |lesson, index|
-    UserLesson.find_or_create_by!(user: user, lesson: lesson) do |ul|
+    UserLesson.find_or_create_by!(user: user, lesson: lesson, course: course) do |ul|
       ul.created_at = 1.day.ago - index.hours
     end
   end
 
   puts "✓ Created sample progress for user #{user.email}"
+  puts "  - Enrolled in course: #{course.title}"
   puts "  - #{user.user_levels.count} user_levels"
   puts "  - #{user.user_lessons.count} user_lessons (#{user.user_lessons.where.not(completed_at: nil).count} completed)"
 end

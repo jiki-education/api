@@ -41,6 +41,7 @@ class Lesson < ApplicationRecord
     case type
     when 'exercise' then validate_exercise_data!
     when 'video' then validate_video_data!
+    when 'choose_language' then validate_choose_language_data!
     end
   end
 
@@ -54,5 +55,11 @@ class Lesson < ApplicationRecord
     return if data[:sources].present?
 
     errors.add(:data, 'must contain sources for video lessons')
+  end
+
+  def validate_choose_language_data!
+    return if data[:sources].present?
+
+    errors.add(:data, 'must contain sources for choose_language lessons')
   end
 end

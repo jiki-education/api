@@ -100,6 +100,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.index ["unlocked_by_lesson_id"], name: "index_concepts_on_unlocked_by_lesson_id"
   end
 
+  create_table "courses", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.integer "position", null: false
+    t.string "slug", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_courses_on_position", unique: true
+    t.index ["slug"], name: "index_courses_on_slug", unique: true
+  end
+
   create_table "email_templates", force: :cascade do |t|
     t.text "body_mjml", null: false
     t.text "body_text", null: false
@@ -183,6 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
   end
 
   create_table "levels", force: :cascade do |t|
+    t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.text "description", null: false
     t.text "milestone_content", null: false
@@ -191,7 +203,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.string "slug", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
-    t.index ["position"], name: "index_levels_on_position", unique: true
+    t.index ["course_id", "position"], name: "index_levels_on_course_id_and_position", unique: true
+    t.index ["course_id"], name: "index_levels_on_course_id"
     t.index ["slug"], name: "index_levels_on_slug", unique: true
   end
 
@@ -355,6 +368,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.index ["user_id"], name: "index_user_acquired_badges_on_user_id"
   end
 
+  create_table "user_courses", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "current_user_level_id"
+    t.string "language"
+    t.datetime "started_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["course_id"], name: "index_user_courses_on_course_id"
+    t.index ["current_user_level_id"], name: "index_user_courses_on_current_user_level_id"
+    t.index ["user_id", "course_id"], name: "index_user_courses_on_user_id_and_course_id", unique: true
+    t.index ["user_id"], name: "index_user_courses_on_user_id"
+  end
+
   create_table "user_data", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_bounce_reason"
@@ -391,25 +419,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
 
   create_table "user_lessons", force: :cascade do |t|
     t.datetime "completed_at"
+    t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.bigint "lesson_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["course_id"], name: "index_user_lessons_on_course_id"
     t.index ["lesson_id"], name: "index_user_lessons_on_lesson_id"
+    t.index ["user_id", "course_id"], name: "index_user_lessons_on_user_id_and_course_id"
     t.index ["user_id", "lesson_id"], name: "index_user_lessons_on_user_id_and_lesson_id", unique: true
     t.index ["user_id"], name: "index_user_lessons_on_user_id"
   end
 
   create_table "user_levels", force: :cascade do |t|
     t.datetime "completed_at"
+    t.bigint "course_id", null: false
     t.datetime "created_at", null: false
     t.bigint "current_user_lesson_id"
     t.integer "email_status", default: 0, null: false
     t.bigint "level_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["course_id"], name: "index_user_levels_on_course_id"
     t.index ["current_user_lesson_id"], name: "index_user_levels_on_current_user_lesson_id"
     t.index ["level_id"], name: "index_user_levels_on_level_id"
+    t.index ["user_id", "course_id"], name: "index_user_levels_on_user_id_and_course_id"
     t.index ["user_id", "level_id"], name: "index_user_levels_on_user_id_and_level_id", unique: true
     t.index ["user_id"], name: "index_user_levels_on_user_id"
   end
@@ -431,7 +465,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "created_at", null: false
-    t.bigint "current_user_level_id"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "google_id"
@@ -444,7 +477,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
-    t.index ["current_user_level_id"], name: "index_users_on_current_user_level_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["google_id"], name: "index_users_on_google_id", unique: true
     t.index ["handle"], name: "index_users_on_handle", unique: true
@@ -495,6 +527,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
   add_foreign_key "lesson_translations", "lessons"
   add_foreign_key "lessons", "levels"
   add_foreign_key "level_translations", "levels"
+  add_foreign_key "levels", "courses"
   add_foreign_key "payments", "users"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
@@ -505,14 +538,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "user_acquired_badges", "badges"
   add_foreign_key "user_acquired_badges", "users"
+  add_foreign_key "user_courses", "courses"
+  add_foreign_key "user_courses", "user_levels", column: "current_user_level_id"
+  add_foreign_key "user_courses", "users"
   add_foreign_key "user_data", "users"
+  add_foreign_key "user_lessons", "courses"
   add_foreign_key "user_lessons", "lessons"
   add_foreign_key "user_lessons", "users"
+  add_foreign_key "user_levels", "courses"
   add_foreign_key "user_levels", "levels"
   add_foreign_key "user_levels", "user_lessons", column: "current_user_lesson_id"
   add_foreign_key "user_levels", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
-  add_foreign_key "users", "user_levels", column: "current_user_level_id"
   add_foreign_key "video_production_nodes", "video_production_pipelines", column: "pipeline_id", on_delete: :cascade
 end
