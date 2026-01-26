@@ -1,6 +1,4 @@
 class Course < ApplicationRecord
-  disable_sti!
-
   has_many :levels, -> { order(:position) }, dependent: :destroy, inverse_of: :course
   has_many :user_courses, dependent: :destroy
   has_many :users, through: :user_courses

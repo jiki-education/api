@@ -8,11 +8,6 @@ class UserCourse < ApplicationRecord
   validates :user_id, uniqueness: { scope: :course_id }
   validates :language, inclusion: { in: SUPPORTED_LANGUAGES }, allow_nil: true
 
-  def language_chosen?
-    language.present?
-  end
-
-  def completed?
-    completed_at.present?
-  end
+  def language_chosen? = language.present?
+  def completed? = completed_at.present?
 end

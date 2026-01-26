@@ -33,15 +33,15 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     end
   end
 
-  test "raises UserCourseNotFoundError when not enrolled in course" do
+  test "raises UserLevelNotFoundError when not enrolled in course" do
     user = create(:user)
     lesson = create(:lesson, :exercise)
 
-    error = assert_raises(UserCourseNotFoundError) do
+    error = assert_raises(UserLevelNotFoundError) do
       UserLesson::Start.(user, lesson)
     end
 
-    assert_equal "Not enrolled in this course", error.message
+    assert_equal "Level not available", error.message
   end
 
   test "raises UserLevelNotFoundError when user_level doesn't exist" do

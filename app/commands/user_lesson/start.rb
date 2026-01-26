@@ -7,7 +7,7 @@ class UserLesson::Start
     ActiveRecord::Base.transaction do
       validate_can_start_lesson!
 
-      UserLesson.find_create_or_find_by!(user:, lesson:).tap do |user_lesson|
+      UserLesson.find_create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
         # Only update tracking pointers on first creation
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
@@ -36,15 +36,9 @@ class UserLesson::Start
   end
 
   def validate_can_start_lesson!
-    # Check enrollment first (most fundamental check)
-    user_course
-
-    # Check user has started this level
-    user_level
-
     # Check if there's a DIFFERENT lesson in progress on THIS level
     current_lesson = user_level.current_user_lesson
-    if current_lesson.present? && current_lesson.completed_at.nil? && current_lesson.lesson_id != lesson.id
+    if current_lesson && current_lesson.completed_at.nil? && current_lesson.lesson_id != lesson.id
       raise LessonInProgressError, "Complete current lesson before starting a new one"
     end
 

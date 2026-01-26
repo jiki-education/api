@@ -25,7 +25,8 @@ class Level < ApplicationRecord
   private
   def set_position
     return if position.present?
+    return unless course
 
-    self.position = (course.levels.maximum(:position) || 0) + 1 if course
+    self.position = (course.levels.maximum(:position) || 0) + 1
   end
 end

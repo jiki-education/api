@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :user_lesson do
     user
     association :lesson, factory: %i[lesson exercise]
+    started_at { Time.current }
 
     after(:build) do |user_lesson|
       level = user_lesson.lesson.level

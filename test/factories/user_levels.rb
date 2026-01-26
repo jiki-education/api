@@ -2,6 +2,7 @@ FactoryBot.define do
   factory :user_level do
     user
     level
+    started_at { Time.current }
 
     after(:build) do |user_level|
       course = user_level.level.course
