@@ -15,6 +15,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
   end
 
   test "serializes lesson with data when include_data is true" do
+    user = create(:user)
     lesson = create(:lesson, :video, slug: "test", title: "Test Lesson", description: "A test lesson",
       data: { sources: [{ id: "abc123" }], difficulty: "easy", points: 10 })
 
@@ -26,7 +27,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
       data: { sources: [{ id: "abc123" }], difficulty: "easy", points: 10 }
     }
 
-    assert_equal(expected, SerializeLesson.(lesson, nil, include_data: true))
+    assert_equal(expected, SerializeLesson.(lesson, user, include_data: true))
   end
 
   test "uses translated content for non-English locale" do
@@ -80,10 +81,11 @@ class SerializeLessonTest < ActiveSupport::TestCase
   end
 
   test "includes data when include_data is true" do
+    user = create(:user)
     lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc",
       data: { slug: "test-ex" })
 
-    result = SerializeLesson.(lesson, nil, include_data: true)
+    result = SerializeLesson.(lesson, user, include_data: true)
     assert_equal({ slug: "test-ex" }, result[:data])
   end
 
@@ -123,15 +125,14 @@ class SerializeLessonTest < ActiveSupport::TestCase
     assert_equal 2, result[:data][:sources].length
   end
 
-  test "returns all sources when user is nil" do
+  test "raises error when include_data is true but user is nil" do
     lesson = create(:lesson, :video, slug: "intro", title: "Title", description: "Desc",
-      data: { sources: [
-        { id: "js-video", language: "javascript" },
-        { id: "py-video", language: "python" }
-      ] })
+      data: { sources: [{ id: "video" }] })
 
-    result = SerializeLesson.(lesson, nil, include_data: true)
+    error = assert_raises(RuntimeError) do
+      SerializeLesson.(lesson, nil, include_data: true)
+    end
 
-    assert_equal 2, result[:data][:sources].length
+    assert_equal "user is required when include_data is true", error.message
   end
 end

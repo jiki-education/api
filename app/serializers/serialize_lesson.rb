@@ -4,6 +4,8 @@ class SerializeLesson
   initialize_with :lesson, :user, content: nil, include_data: false
 
   def call
+    raise "user is required when include_data is true" if include_data && user.nil?
+
     content_data = content || lesson.content_for_locale(I18n.locale)
 
     output = {
