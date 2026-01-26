@@ -8,9 +8,16 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
   end
 
   # Authentication and authorization guards
-  guard_admin! :admin_levels_path, method: :get
-  guard_admin! :admin_levels_path, method: :post
-  guard_admin! :admin_level_path, args: [1], method: :patch
+  guard_admin! :admin_levels_path, args: [{ course_slug: "test-course" }], method: :get do
+    create(:course, slug: "test-course")
+  end
+  guard_admin! :admin_levels_path, args: [{ course_slug: "test-course" }], method: :post do
+    create(:course, slug: "test-course")
+  end
+  guard_admin! :admin_level_path, args: [{ course_slug: "test-course", id: 1 }], method: :patch do
+    course = create(:course, slug: "test-course")
+    create(:level, id: 1, course: course)
+  end
 
   # CREATE tests
 

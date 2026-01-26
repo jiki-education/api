@@ -1,8 +1,9 @@
 class Internal::UserLevelsController < Internal::BaseController
+  before_action :use_course!
   before_action :use_level!, only: [:complete]
 
   def index
-    user_levels = current_user.user_levels
+    user_levels = current_user.user_levels.joins(:level).where(levels: { course: @course })
 
     render json: {
       user_levels: SerializeUserLevels.(user_levels)
@@ -18,8 +19,16 @@ class Internal::UserLevelsController < Internal::BaseController
   end
 
   private
+  def use_course!
+    @course = Course.find_by!(slug: params[:course_slug])
+  rescue ActiveRecord::RecordNotFound
+    render_not_found("Course not found")
+  end
+
   def use_level!
     slug = params[:level_slug] || params[:id]
-    @level = Level.find_by!(slug:)
+    @level = @course.levels.find_by!(slug:)
+  rescue ActiveRecord::RecordNotFound
+    render_not_found("Level not found")
   end
 end

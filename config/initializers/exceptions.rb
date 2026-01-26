@@ -26,6 +26,8 @@ class InvalidGoogleTokenError < RuntimeError; end
 
 # User progression errors
 class UserCourseNotFoundError < RuntimeError; end
+class LanguageAlreadyChosenError < RuntimeError; end
+class InvalidLanguageError < RuntimeError; end
 class UserLevelNotFoundError < RuntimeError; end
 class UserLessonNotFoundError < RuntimeError; end
 class LessonInProgressError < RuntimeError; end

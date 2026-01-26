@@ -53,14 +53,25 @@ Rails.application.routes.draw do
       patch 'notifications/:slug', action: :notification, as: :notification
     end
 
-    resources :levels, only: [:index] do
+    resources :courses, only: %i[index show]
+
+    resources :user_courses, only: %i[index show] do
       member do
-        get :milestone
+        post :enroll
+        patch :language
       end
     end
-    resources :user_levels, only: [:index], param: :level_slug do
-      member do
-        patch :complete
+
+    scope ':course_slug' do
+      resources :levels, only: [:index] do
+        member do
+          get :milestone
+        end
+      end
+      resources :user_levels, only: [:index], param: :level_slug do
+        member do
+          patch :complete
+        end
       end
     end
 
@@ -126,12 +137,14 @@ Rails.application.routes.draw do
       end
     end
     resources :users, only: %i[index show update destroy]
-    resources :levels, only: %i[index create update] do
-      resources :lessons, only: %i[index create update], controller: "levels/lessons"
-      scope module: :level do
-        resources :translations, only: [] do
-          collection do
-            post :translate
+    scope ':course_slug' do
+      resources :levels, only: %i[index create update] do
+        resources :lessons, only: %i[index create update], controller: "levels/lessons"
+        scope module: :level do
+          resources :translations, only: [] do
+            collection do
+              post :translate
+            end
           end
         end
       end

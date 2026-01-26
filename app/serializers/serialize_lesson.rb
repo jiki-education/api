@@ -1,7 +1,7 @@
 class SerializeLesson
   include Mandate
 
-  initialize_with :lesson, content: nil, include_data: false
+  initialize_with :lesson, content: nil, include_data: false, language: nil
 
   def call
     content_data = content || lesson.content_for_locale(I18n.locale)
@@ -12,7 +12,21 @@ class SerializeLesson
       description: content_data[:description],
       type: lesson.type
     }
-    output[:data] = lesson.data if include_data
+    output[:data] = filtered_data if include_data
     output
+  end
+
+  private
+  def filtered_data
+    data = lesson.data.dup
+    return data unless data[:sources].present? && language.present?
+
+    # Filter sources to only include:
+    # - Sources matching the user's language, OR
+    # - Sources with no language key (language-agnostic)
+    data[:sources] = data[:sources].select do |source|
+      source[:language].nil? || source[:language] == language
+    end
+    data
   end
 end
