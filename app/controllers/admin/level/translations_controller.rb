@@ -1,5 +1,4 @@
 class Admin::Level::TranslationsController < Admin::BaseController
-  before_action :set_course
   before_action :set_level
 
   def translate
@@ -12,14 +11,8 @@ class Admin::Level::TranslationsController < Admin::BaseController
   end
 
   private
-  def set_course
-    @course = Course.find_by!(slug: params[:course_slug])
-  rescue ActiveRecord::RecordNotFound
-    render_not_found("Course not found")
-  end
-
   def set_level
-    @level = @course.levels.find(params[:level_id])
+    @level = Level.find(params[:level_id])
   rescue ActiveRecord::RecordNotFound
     render_not_found("Level not found")
   end

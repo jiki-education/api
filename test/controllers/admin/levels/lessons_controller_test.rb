@@ -9,17 +9,14 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   # Authentication and authorization guards
-  guard_admin! :admin_level_lessons_path, args: [{ course_slug: "test-course", level_id: 1 }], method: :get do
-    course = create(:course, slug: "test-course")
-    create(:level, id: 1, course: course)
+  guard_admin! :admin_level_lessons_path, args: [{ level_id: 1 }], method: :get do
+    create(:level, id: 1)
   end
-  guard_admin! :admin_level_lessons_path, args: [{ course_slug: "test-course", level_id: 1 }], method: :post do
-    course = create(:course, slug: "test-course")
-    create(:level, id: 1, course: course)
+  guard_admin! :admin_level_lessons_path, args: [{ level_id: 1 }], method: :post do
+    create(:level, id: 1)
   end
-  guard_admin! :admin_level_lesson_path, args: [{ course_slug: "test-course", level_id: 1, id: 1 }], method: :patch do
-    course = create(:course, slug: "test-course")
-    level = create(:level, id: 1, course: course)
+  guard_admin! :admin_level_lesson_path, args: [{ level_id: 1, id: 1 }], method: :patch do
+    level = create(:level, id: 1)
     create(:lesson, :exercise, id: 1, level: level)
   end
 
@@ -31,7 +28,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       { "title" => "New Lesson", "description" => "New description", "type" => "exercise" }
     ).returns(create(:lesson, :exercise, level: @level))
 
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "New Lesson",
@@ -46,7 +43,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns created lesson" do
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "New Lesson",
@@ -69,7 +66,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create auto-generates slug from title when slug not provided" do
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "Hello World Lesson",
@@ -87,7 +84,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create uses provided slug when given" do
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           slug: "custom-slug",
@@ -109,7 +106,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     create(:lesson, :exercise, level: @level, position: 1)
     create(:lesson, :exercise, level: @level, position: 2)
 
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "New Lesson",
@@ -127,7 +124,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create can manually set position" do
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "New Lesson",
@@ -161,7 +158,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       top_level: "value"
     }
 
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "Complex Lesson",
@@ -179,7 +176,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns 422 for validation errors - missing title" do
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           description: "Description",
@@ -198,7 +195,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "POST create returns 422 for validation errors - duplicate slug" do
     create(:lesson, :exercise, level: @level, slug: "duplicate-slug")
 
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           slug: "duplicate-slug",
@@ -216,7 +213,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns 404 for non-existent level" do
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: 99_999),
+    post admin_level_lessons_path(level_id: 99_999),
       params: {
         lesson: {
           title: "New Lesson",
@@ -242,7 +239,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     SerializeAdminLesson.expects(:call).with(lesson).returns({ id: lesson.id })
 
-    post admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id),
+    post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
           title: "New Lesson",
@@ -267,7 +264,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     create(:lesson, :exercise, level: other_level)
 
     Prosopite.scan
-    get admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
 
     assert_response :success
     assert_json_response({
@@ -276,14 +273,14 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty array when level has no lessons" do
-    get admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
 
     assert_response :success
     assert_json_response({ lessons: [] })
   end
 
   test "GET index returns 404 for non-existent level" do
-    get admin_level_lessons_path(course_slug: @course.slug, level_id: 99_999), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: 99_999), headers: @headers, as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -303,7 +300,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       arg.to_a == lessons
     end.returns([])
 
-    get admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
 
     assert_response :success
   end
@@ -314,7 +311,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     26.times { |i| create(:lesson, :exercise, level: @level, slug: "lesson-#{i}") }
     Prosopite.scan
 
-    get admin_level_lessons_path(course_slug: @course.slug, level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
 
     assert_response :success
     json = response.parsed_body
@@ -331,7 +328,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       { "title" => "New Title", "description" => "New description" }
     ).returns(lesson)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: {
         lesson: {
           title: "New Title",
@@ -347,7 +344,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update returns updated lesson" do
     lesson = create(:lesson, :exercise, level: @level)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: {
         lesson: {
           title: "New Title",
@@ -367,7 +364,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update can update type" do
     lesson = create(:lesson, :exercise, level: @level)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { type: "video", data: { sources: [{ id: "abc123" }] } } },
       headers: @headers,
       as: :json
@@ -380,7 +377,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update can update position" do
     lesson = create(:lesson, :exercise, level: @level, position: 1)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { position: 5 } },
       headers: @headers,
       as: :json
@@ -393,7 +390,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update can update data" do
     lesson = create(:lesson, :exercise, level: @level, data: { slug: "some-exercise", key: "old" })
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { data: { slug: "some-exercise", key: "new", foo: "bar" } } },
       headers: @headers,
       as: :json
@@ -406,7 +403,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update returns 422 for validation errors" do
     lesson = create(:lesson, :exercise, level: @level)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: {
         lesson: {
           title: ""
@@ -424,7 +421,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update returns 404 for non-existent level" do
     lesson = create(:lesson, :exercise, level: @level)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: 99_999, id: lesson.id),
+    patch admin_level_lesson_path(level_id: 99_999, id: lesson.id),
       params: { lesson: { title: "New" } },
       headers: @headers,
       as: :json
@@ -439,7 +436,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update returns 404 for non-existent lesson" do
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: 99_999),
+    patch admin_level_lesson_path(level_id: @level.id, id: 99_999),
       params: { lesson: { title: "New" } },
       headers: @headers,
       as: :json
@@ -457,7 +454,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     other_level = create(:level, course: @course, slug: "other-level")
     lesson = create(:lesson, :exercise, level: other_level)
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { title: "New" } },
       headers: @headers,
       as: :json
@@ -477,7 +474,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     SerializeAdminLesson.expects(:call).with(lesson).returns({ id: lesson.id })
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { title: "Updated" } },
       headers: @headers,
       as: :json
@@ -503,7 +500,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       top_level: "value"
     }
 
-    patch admin_level_lesson_path(course_slug: @course.slug, level_id: @level.id, id: lesson.id),
+    patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { data: complex_data } },
       headers: @headers,
       as: :json

@@ -37,13 +37,18 @@ class Admin::LevelsController < Admin::BaseController
 
   private
   def set_course
+    unless params[:course_slug]
+      return render json: { error: { type: "missing_course", message: "course_slug parameter required" } },
+        status: :bad_request
+    end
+
     @course = Course.find_by!(slug: params[:course_slug])
   rescue ActiveRecord::RecordNotFound
     render_not_found("Course not found")
   end
 
   def set_level
-    @level = @course.levels.find(params[:id])
+    @level = Level.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     render_not_found("Level not found")
   end
