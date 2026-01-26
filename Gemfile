@@ -4,7 +4,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.0.rc1"
 
 # Fix OpenSSL 3.5+ CRL checking issue (can remove after Ruby 3.4.8)
-gem "openssl", "~> 3.3.1"
+gem "openssl", "~> 4.0.0"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
