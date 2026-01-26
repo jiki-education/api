@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   namespace :auth do
     post "google", to: "google_oauth#create"
     post "unsubscribe/:token", to: "unsubscribe#create", as: :unsubscribe
+    get "discourse/sso", to: "discourse#sso"
   end
 
   # External (public, unauthenticated) endpoints
