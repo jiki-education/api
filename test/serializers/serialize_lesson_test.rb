@@ -17,14 +17,14 @@ class SerializeLessonTest < ActiveSupport::TestCase
   test "serializes lesson with data when include_data is true" do
     user = create(:user)
     lesson = create(:lesson, :video, slug: "test", title: "Test Lesson", description: "A test lesson",
-      data: { sources: [{ id: "abc123" }], difficulty: "easy", points: 10 })
+      data: { sources: [{ id: "abc123" }] })
 
     expected = {
       slug: "test",
       title: "Test Lesson",
       description: "A test lesson",
       type: "video",
-      data: { sources: [{ id: "abc123" }], difficulty: "easy", points: 10, conversation_allowed: true }
+      data: { sources: [{ id: "abc123" }], conversation_allowed: true }
     }
 
     assert_equal(expected, SerializeLesson.(lesson, user, include_data: true))
