@@ -342,7 +342,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.0-x86_64-linux-musl)
       racc (~> 1.4)
-    openssl (3.3.2)
+    openssl (4.0.0)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     parallel (1.27.0)
@@ -555,7 +555,7 @@ DEPENDENCIES
   mjml-rails
   mocha
   mrml
-  openssl (~> 3.3.1)
+  openssl (~> 4.0)
   pg (~> 1.1)
   pg_query
   prosopite
