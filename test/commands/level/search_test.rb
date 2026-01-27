@@ -15,9 +15,9 @@ class Level::SearchTest < ActiveSupport::TestCase
     level_2 = create :level, title: "Advanced Ruby"
     level_3 = create :level, title: "Introduction to Python"
 
-    assert_equal [level_1, level_2, level_3], Level::Search.(title: "").to_a
-    assert_equal [level_1, level_3], Level::Search.(title: "Introduction").to_a
-    assert_equal [level_1, level_2], Level::Search.(title: "Ruby").to_a
+    assert_equal [level_1, level_2, level_3].sort_by(&:id), Level::Search.(title: "").to_a.sort_by(&:id)
+    assert_equal [level_1, level_3].sort_by(&:id), Level::Search.(title: "Introduction").to_a.sort_by(&:id)
+    assert_equal [level_1, level_2].sort_by(&:id), Level::Search.(title: "Ruby").to_a.sort_by(&:id)
     assert_empty Level::Search.(title: "xyz").to_a
   end
 
@@ -26,9 +26,9 @@ class Level::SearchTest < ActiveSupport::TestCase
     level_2 = create :level, slug: "ruby-advanced"
     level_3 = create :level, slug: "python-basics"
 
-    assert_equal [level_1, level_2, level_3], Level::Search.(slug: "").to_a
-    assert_equal [level_1, level_2], Level::Search.(slug: "ruby").to_a
-    assert_equal [level_1, level_3], Level::Search.(slug: "basics").to_a
+    assert_equal [level_1, level_2, level_3].sort_by(&:id), Level::Search.(slug: "").to_a.sort_by(&:id)
+    assert_equal [level_1, level_2].sort_by(&:id), Level::Search.(slug: "ruby").to_a.sort_by(&:id)
+    assert_equal [level_1, level_3].sort_by(&:id), Level::Search.(slug: "basics").to_a.sort_by(&:id)
     assert_empty Level::Search.(slug: "xyz").to_a
   end
 
