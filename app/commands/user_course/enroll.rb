@@ -11,7 +11,11 @@ class UserCourse::Enroll
 
   private
   def start_first_level!
-    first_level = course.levels.first
-    UserLevel::Start.(user, first_level) if first_level
+    return unless first_level
+
+    UserLevel::Start.(user, first_level)
   end
+
+  memoize
+  def first_level = course.levels.first
 end
