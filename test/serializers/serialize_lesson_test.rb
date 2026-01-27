@@ -17,14 +17,14 @@ class SerializeLessonTest < ActiveSupport::TestCase
   test "serializes lesson with data when include_data is true" do
     user = create(:user)
     lesson = create(:lesson, :video, slug: "test", title: "Test Lesson", description: "A test lesson",
-      data: { sources: [{ id: "abc123" }], difficulty: "easy", points: 10 })
+      data: { sources: [{ id: "abc123" }] })
 
     expected = {
       slug: "test",
       title: "Test Lesson",
       description: "A test lesson",
       type: "video",
-      data: { sources: [{ id: "abc123" }], difficulty: "easy", points: 10 }
+      data: { sources: [{ id: "abc123" }], conversation_allowed: true }
     }
 
     assert_equal(expected, SerializeLesson.(lesson, user, include_data: true))
@@ -86,7 +86,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
       data: { slug: "test-ex" })
 
     result = SerializeLesson.(lesson, user, include_data: true)
-    assert_equal({ slug: "test-ex" }, result[:data])
+    assert_equal({ slug: "test-ex", conversation_allowed: true }, result[:data])
   end
 
   test "filters sources by user's language choice" do
@@ -134,5 +134,25 @@ class SerializeLessonTest < ActiveSupport::TestCase
     end
 
     assert_equal "user is required when include_data is true", error.message
+  end
+
+  test "conversation_allowed is true when CheckUserAccess returns true" do
+    user = create(:user)
+    lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc")
+
+    AssistantConversation::CheckUserAccess.expects(:call).with(user, lesson).returns(true)
+
+    result = SerializeLesson.(lesson, user, include_data: true)
+    assert result[:data][:conversation_allowed]
+  end
+
+  test "conversation_allowed is false when CheckUserAccess returns false" do
+    user = create(:user)
+    lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc")
+
+    AssistantConversation::CheckUserAccess.expects(:call).with(user, lesson).returns(false)
+
+    result = SerializeLesson.(lesson, user, include_data: true)
+    refute result[:data][:conversation_allowed]
   end
 end
