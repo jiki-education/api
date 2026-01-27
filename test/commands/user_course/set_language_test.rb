@@ -9,14 +9,6 @@ class UserCourse::SetLanguageTest < ActiveSupport::TestCase
     assert_equal "javascript", user_course.reload.language
   end
 
-  test "returns the user_course" do
-    user_course = create(:user_course)
-
-    result = UserCourse::SetLanguage.(user_course, "python")
-
-    assert_equal user_course, result
-  end
-
   test "raises error if language already chosen" do
     user_course = create(:user_course, :with_javascript)
 

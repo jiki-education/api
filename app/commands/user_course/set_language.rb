@@ -8,6 +8,5 @@ class UserCourse::SetLanguage
     raise InvalidLanguageError, "Invalid language" unless UserCourse::SUPPORTED_LANGUAGES.include?(language)
 
     user_course.update!(language:)
-    user_course
   end
 end
