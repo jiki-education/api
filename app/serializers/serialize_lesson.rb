@@ -14,22 +14,24 @@ class SerializeLesson
       description: content_data[:description],
       type: lesson.type
     }
-    output[:data] = filtered_data if include_data
+    output[:data] = data if include_data
     output
   end
 
   private
-  def filtered_data
-    data = lesson.data.dup
-    return data unless data[:sources].present? && language.present?
+  def data
+    d = lesson.data.dup
+    d[:conversation_allowed] = AssistantConversation::CheckUserAccess.(user, lesson)
+
+    return d unless d[:sources].present? && language.present?
 
     # Filter sources to only include:
     # - Sources matching the user's language, OR
     # - Sources with no language key (language-agnostic)
-    data[:sources] = data[:sources].select do |source|
+    d[:sources] = d[:sources].select do |source|
       source[:language].nil? || source[:language] == language
     end
-    data
+    d
   end
 
   def language
