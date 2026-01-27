@@ -107,10 +107,10 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_response :unauthorized
   end
 
-  test "DELETE logout without session returns success" do
-    # Logout without being logged in should still succeed
+  test "DELETE logout without session returns unauthorized" do
+    # Devise 5 returns 401 Unauthorized when logging out without a session
     delete destroy_user_session_path, as: :json
 
-    assert_response :no_content
+    assert_response :unauthorized
   end
 end
