@@ -1,6 +1,10 @@
 require "test_helper"
 
 class Auth::RegistrationsControllerTest < ApplicationControllerTest
+  setup do
+    create(:course, slug: "coding-fundamentals")
+  end
+
   test "POST signup creates a new user with valid params" do
     assert_difference("User.count", 1) do
       post user_registration_path, params: {

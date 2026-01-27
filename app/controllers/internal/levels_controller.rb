@@ -1,9 +1,10 @@
 class Internal::LevelsController < Internal::BaseController
+  before_action :use_course!
   before_action :use_level!, only: [:milestone]
 
   def index
     render json: {
-      levels: SerializeLevels.(Level.all)
+      levels: SerializeLevels.(@course.levels)
     }
   end
 
@@ -14,6 +15,17 @@ class Internal::LevelsController < Internal::BaseController
   end
 
   private
+  def use_course!
+    unless params[:course_slug]
+      return render json: { error: { type: "missing_course", message: "course_slug parameter required" } },
+        status: :bad_request
+    end
+
+    @course = Course.find_by!(slug: params[:course_slug])
+  rescue ActiveRecord::RecordNotFound
+    render_not_found("Course not found")
+  end
+
   def use_level!
     @level = Level.find_by!(slug: params[:id])
   rescue ActiveRecord::RecordNotFound

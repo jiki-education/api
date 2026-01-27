@@ -3,6 +3,7 @@ class Level < ApplicationRecord
 
   disable_sti!
 
+  belongs_to :course
   has_many :lessons, -> { order(:position) }, dependent: :destroy, inverse_of: :level
   has_many :user_levels, dependent: :destroy
   has_many :users, through: :user_levels
@@ -15,7 +16,7 @@ class Level < ApplicationRecord
   validates :description, presence: true
   validates :milestone_summary, presence: true
   validates :milestone_content, presence: true
-  validates :position, presence: true, uniqueness: true
+  validates :position, presence: true, uniqueness: { scope: :course_id }
 
   before_validation :set_position, on: :create
 
@@ -24,7 +25,8 @@ class Level < ApplicationRecord
   private
   def set_position
     return if position.present?
+    return unless course
 
-    self.position = (self.class.maximum(:position) || 0) + 1
+    self.position = (course.levels.maximum(:position) || 0) + 1
   end
 end

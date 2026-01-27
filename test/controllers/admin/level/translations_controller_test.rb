@@ -8,7 +8,9 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
   end
 
   # Authentication and authorization guards
-  guard_admin! :translate_admin_level_translations_path, args: ["ruby-basics"], method: :post
+  guard_admin! :translate_admin_level_translations_path, args: [{ level_id: 1 }], method: :post do
+    create(:level, id: 1, slug: "ruby-basics")
+  end
 
   # POST translate tests
 
@@ -16,7 +18,7 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
     target_locales = %w[hu fr es de]
     Level::Translation::TranslateToAllLocales.expects(:call).with(@level).returns(target_locales)
 
-    post translate_admin_level_translations_path(level_id: @level.slug),
+    post translate_admin_level_translations_path(level_id: @level.id),
       headers: @headers,
       as: :json
 
@@ -27,7 +29,7 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
     target_locales = %w[hu fr es de]
     Level::Translation::TranslateToAllLocales.stubs(:call).returns(target_locales)
 
-    post translate_admin_level_translations_path(level_id: @level.slug),
+    post translate_admin_level_translations_path(level_id: @level.id),
       headers: @headers,
       as: :json
 
@@ -41,7 +43,7 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
   test "POST translate calls Level::Translation::TranslateToAllLocales command" do
     Level::Translation::TranslateToAllLocales.expects(:call).with(@level).returns([])
 
-    post translate_admin_level_translations_path(level_id: @level.slug),
+    post translate_admin_level_translations_path(level_id: @level.id),
       headers: @headers,
       as: :json
 
@@ -49,7 +51,7 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
   end
 
   test "POST translate returns 404 for non-existent level" do
-    post translate_admin_level_translations_path(level_id: "non-existent"),
+    post translate_admin_level_translations_path(level_id: 99_999),
       headers: @headers,
       as: :json
 

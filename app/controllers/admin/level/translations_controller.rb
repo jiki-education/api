@@ -12,7 +12,7 @@ class Admin::Level::TranslationsController < Admin::BaseController
 
   private
   def set_level
-    @level = Level.find_by!(slug: params[:level_id])
+    @level = Level.find(params[:level_id])
   rescue ActiveRecord::RecordNotFound
     render_not_found("Level not found")
   end

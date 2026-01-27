@@ -106,9 +106,11 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "raises error if user_level doesn't exist" do
     user = create(:user)
-    level = create(:level)
-    lesson = create(:lesson, :exercise, level:)
-    create(:user_lesson, user:, lesson:)
+    lesson = create(:lesson, :exercise)
+    # Manually create user_lesson without going through factory's after_build
+    # which auto-creates user_level
+    create(:user_course, user:, course: lesson.level.course)
+    UserLesson.create!(user:, lesson:, started_at: Time.current)
 
     assert_raises(UserLevelNotFoundError) do
       UserLesson::Complete.(user, lesson)
@@ -116,15 +118,14 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   end
 
   test "clears existing current_user_lesson on user_level" do
-    user = create(:user)
-    level = create(:level)
-    lesson1 = create(:lesson, :exercise, level:, slug: "first-lesson")
-    lesson2 = create(:lesson, :exercise, level:, slug: "second-lesson")
-    user_lesson1 = create(:user_lesson, user:, lesson: lesson1)
-    create(:user_lesson, user:, lesson: lesson2)
-    user_level = create(:user_level, user:, level:, current_user_lesson: user_lesson1)
+    user_level = create(:user_level)
+    lesson1 = create(:lesson, :exercise, level: user_level.level, slug: "first-lesson")
+    lesson2 = create(:lesson, :exercise, level: user_level.level, slug: "second-lesson")
+    user_lesson1 = create(:user_lesson, user: user_level.user, lesson: lesson1)
+    create(:user_lesson, user: user_level.user, lesson: lesson2)
+    user_level.update!(current_user_lesson: user_lesson1)
 
-    UserLesson::Complete.(user, lesson2)
+    UserLesson::Complete.(user_level.user, lesson2)
 
     user_level.reload
     assert_nil user_level.current_user_lesson_id

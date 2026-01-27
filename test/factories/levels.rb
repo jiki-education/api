@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :level do
+    course
     slug { "level-#{SecureRandom.hex(4)}" }
     title { "Level #{slug}" }
     description { "Description for #{title}" }

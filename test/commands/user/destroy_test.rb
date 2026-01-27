@@ -13,31 +13,29 @@ class User::DestroyTest < ActiveSupport::TestCase
   end
 
   test "destroys associated records due to dependent: :destroy" do
-    user = create(:user)
-    create(:user_lesson, user: user)
-    create(:user_level, user: user)
+    user_lesson = create(:user_lesson)
+    user = user_lesson.user
 
     assert_difference -> { UserLesson.count }, -1 do
       assert_difference -> { UserLevel.count }, -1 do
-        User::Destroy.(user)
+        assert_difference -> { UserCourse.count }, -1 do
+          User::Destroy.(user)
+        end
       end
     end
   end
 
-  test "handles circular foreign key constraint with current_user_level" do
-    user = create(:user)
-    user_level = create(:user_level, user: user)
+  test "handles circular foreign key constraint with current_user_level in user_course" do
+    user_level = create(:user_level)
+    user_course = UserCourse.find_by(user: user_level.user, course: user_level.course)
+    user_course.update_column(:current_user_level_id, user_level.id)
 
-    # Set the circular reference
-    user.update_column(:current_user_level_id, user_level.id)
-
-    # This should not raise a foreign key constraint error
     assert_nothing_raised do
-      User::Destroy.(user)
+      User::Destroy.(user_level.user)
     end
 
-    # Verify user and associated records are deleted
-    assert_nil User.find_by(id: user.id)
+    assert_nil User.find_by(id: user_level.user_id)
     assert_nil UserLevel.find_by(id: user_level.id)
+    assert_nil UserCourse.find_by(id: user_course.id)
   end
 end

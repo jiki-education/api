@@ -14,5 +14,10 @@ FactoryBot.define do
       type { "video" }
       data { { sources: [{ id: "abc123" }] } }
     end
+
+    trait :choose_language do
+      type { "choose_language" }
+      data { { sources: [{ id: "choose-lang-intro" }] } }
+    end
   end
 end

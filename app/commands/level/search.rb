@@ -8,7 +8,8 @@ class Level::Search
     DEFAULT_PER
   end
 
-  def initialize(title: nil, slug: nil, page: nil, per: nil)
+  def initialize(course: nil, title: nil, slug: nil, page: nil, per: nil)
+    @course = course
     @title = title
     @slug = slug
     @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
@@ -16,7 +17,7 @@ class Level::Search
   end
 
   def call
-    @levels = Level.all
+    @levels = course ? course.levels : Level.all
 
     filter_title!
     filter_slug!
@@ -25,7 +26,7 @@ class Level::Search
   end
 
   private
-  attr_reader :title, :slug, :page, :per
+  attr_reader :course, :title, :slug, :page, :per
 
   def filter_title!
     return if title.blank?

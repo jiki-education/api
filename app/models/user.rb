@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true
 
+  has_many :user_courses, dependent: :destroy
+  has_many :courses, through: :user_courses
   has_many :user_lessons, dependent: :destroy
   has_many :lessons, through: :user_lessons
   has_many :user_levels, dependent: :destroy
@@ -16,8 +18,6 @@ class User < ApplicationRecord
   has_many :badges, through: :acquired_badges
   has_many :assistant_conversations, dependent: :destroy
   has_many :payments, dependent: :destroy
-
-  belongs_to :current_user_level, class_name: "UserLevel", optional: true
 
   after_initialize do
     build_data if new_record? && !data

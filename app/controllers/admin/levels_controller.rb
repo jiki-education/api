@@ -1,8 +1,10 @@
 class Admin::LevelsController < Admin::BaseController
+  before_action :set_course
   before_action :set_level, only: [:update]
 
   def index
     levels = Level::Search.(
+      course: @course,
       title: params[:title],
       slug: params[:slug],
       page: params[:page],
@@ -16,7 +18,7 @@ class Admin::LevelsController < Admin::BaseController
   end
 
   def create
-    level = Level::Create.(level_params)
+    level = Level::Create.(level_params.merge(course: @course))
     render json: {
       level: SerializeAdminLevel.(level)
     }, status: :created
@@ -34,6 +36,17 @@ class Admin::LevelsController < Admin::BaseController
   end
 
   private
+  def set_course
+    unless params[:course_slug]
+      return render json: { error: { type: "missing_course", message: "course_slug parameter required" } },
+        status: :bad_request
+    end
+
+    @course = Course.find_by!(slug: params[:course_slug])
+  rescue ActiveRecord::RecordNotFound
+    render_not_found("Course not found")
+  end
+
   def set_level
     @level = Level.find(params[:id])
   rescue ActiveRecord::RecordNotFound

@@ -4,14 +4,16 @@ class User::Bootstrap
   initialize_with :user
 
   def call
-    # Queue welcome email to be sent asynchronously
     User::SendWelcomeEmail.defer(user)
-
-    # Create user_level for first level
-    first_level = Level.order(:position).first
-    UserLevel::Start.(user, first_level) if first_level
-
-    # Award member badge
+    setup_course!
     AwardBadgeJob.perform_later(user, 'member')
   end
+
+  private
+  def setup_course!
+    UserCourse::Enroll.(user, course)
+  end
+
+  memoize
+  def course = Course.find_by!(slug: "coding-fundamentals")
 end

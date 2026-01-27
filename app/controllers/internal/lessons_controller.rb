@@ -3,7 +3,7 @@ class Internal::LessonsController < Internal::BaseController
 
   def show
     render json: {
-      lesson: SerializeLesson.(@lesson, include_data: true)
+      lesson: SerializeLesson.(@lesson, current_user, include_data: true)
     }
   end
 end

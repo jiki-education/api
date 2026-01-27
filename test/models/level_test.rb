@@ -5,9 +5,10 @@ class LevelTest < ActiveSupport::TestCase
     assert build(:level).valid?
   end
 
-  test "auto-increments position" do
-    level1 = create(:level)
-    level2 = create(:level)
+  test "auto-increments position within course" do
+    course = create(:course)
+    level1 = create(:level, course:)
+    level2 = create(:level, course:)
 
     assert_equal 1, level1.position
     assert_equal 2, level2.position

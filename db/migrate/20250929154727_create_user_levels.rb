@@ -11,9 +11,5 @@ class CreateUserLevels < ActiveRecord::Migration[8.0]
     end
 
     add_index :user_levels, %i[user_id level_id], unique: true
-
-    # Add foreign key and index from users.current_user_level_id to user_levels (now that user_levels exists)
-    add_foreign_key :users, :user_levels, column: :current_user_level_id
-    add_index :users, :current_user_level_id
   end
 end

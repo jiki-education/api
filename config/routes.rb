@@ -54,6 +54,15 @@ Rails.application.routes.draw do
       patch 'notifications/:slug', action: :notification, as: :notification
     end
 
+    resources :courses, only: %i[index show]
+
+    resources :user_courses, only: %i[index show] do
+      member do
+        post :enroll
+        patch :language
+      end
+    end
+
     resources :levels, only: [:index] do
       member do
         get :milestone
