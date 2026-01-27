@@ -24,44 +24,13 @@ class User::BootstrapTest < ActiveSupport::TestCase
     end
   end
 
-  test "creates user_course and user_level for coding-fundamentals" do
+  test "enrolls user in coding-fundamentals course" do
     course = create(:course, slug: "coding-fundamentals")
-    level1 = create(:level, course:, position: 1)
-    create(:level, course:, position: 2)
-    create(:level, course:, position: 3)
-    user = create(:user)
-
-    User::Bootstrap.(user)
-
-    user_course = UserCourse.find_by(user:, course:)
-    refute_nil user_course
-    user_level = UserLevel.find_by(user:, level: level1)
-    refute_nil user_level
-    assert_equal user_level.id, user_course.reload.current_user_level_id
-  end
-
-  test "calls UserCourse::Enroll and UserLevel::Start with first level" do
-    course = create(:course, slug: "coding-fundamentals")
-    level1 = create(:level, course:, position: 1)
     user = create(:user)
 
     User::Bootstrap.(user)
 
     assert UserCourse.exists?(user:, course:)
-    assert UserLevel.exists?(user:, level: level1)
-  end
-
-  test "uses lowest position level as first within course" do
-    course = create(:course, slug: "coding-fundamentals")
-    create(:level, course:, position: 5)
-    create(:level, course:, position: 10)
-    level1 = create(:level, course:, position: 1)
-    user = create(:user)
-
-    User::Bootstrap.(user)
-
-    user_level = UserLevel.find_by(user:, level: level1)
-    refute_nil user_level
   end
 
   test "enqueues member badge award job" do

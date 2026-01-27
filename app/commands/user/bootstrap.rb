@@ -12,8 +12,6 @@ class User::Bootstrap
   private
   def setup_course!
     UserCourse::Enroll.(user, course)
-    first_level = course.levels.first
-    UserLevel::Start.(user, first_level) if first_level
   end
 
   memoize

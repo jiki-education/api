@@ -85,4 +85,38 @@ class UserCourse::EnrollTest < ActiveSupport::TestCase
 
     assert_nil result.completed_at
   end
+
+  test "starts first level when course has levels" do
+    user = create(:user)
+    course = create(:course)
+    level1 = create(:level, course:, position: 1)
+    create(:level, course:, position: 2)
+
+    UserCourse::Enroll.(user, course)
+
+    assert UserLevel.exists?(user:, level: level1)
+  end
+
+  test "starts lowest position level as first" do
+    user = create(:user)
+    course = create(:course)
+    create(:level, course:, position: 5)
+    level1 = create(:level, course:, position: 1)
+    create(:level, course:, position: 10)
+
+    UserCourse::Enroll.(user, course)
+
+    user_level = UserLevel.find_by(user:, level: level1)
+    refute_nil user_level
+  end
+
+  test "does not fail when course has no levels" do
+    user = create(:user)
+    course = create(:course)
+
+    result = UserCourse::Enroll.(user, course)
+
+    assert_instance_of UserCourse, result
+    assert_equal 0, UserLevel.where(user:).count
+  end
 end
