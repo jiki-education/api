@@ -142,7 +142,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal 0, user.activity_data.current_streak
     assert_equal 0, user.activity_data.longest_streak
     assert_equal 0, user.activity_data.total_active_days
-    assert_nil user.activity_data.last_active_date
   end
 
   test "current_streak returns value from aggregate_activity_data" do

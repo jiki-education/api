@@ -86,8 +86,9 @@ class User::ActivityLog::BackfillTest < ActiveSupport::TestCase
     user.activity_data.destroy!
     user.reload
 
-    # Should not raise
-    User::ActivityLog::Backfill.(user)
+    assert_nothing_raised do
+      User::ActivityLog::Backfill.(user)
+    end
   end
 
   test "does nothing when last recorded day is yesterday" do

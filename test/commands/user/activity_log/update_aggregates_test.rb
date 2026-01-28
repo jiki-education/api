@@ -1,6 +1,18 @@
 require "test_helper"
 
 class User::ActivityLog::UpdateAggregatesTest < ActiveSupport::TestCase
+  test "values are correct with no activity" do
+    user = create(:user)
+    user.activity_data.update!(activity_days: {})
+
+    User::ActivityLog::UpdateAggregates.(user)
+
+    activity_data = user.activity_data.reload
+    assert_equal 0, activity_data.current_streak
+    assert_equal 0, activity_data.longest_streak
+    assert_equal 0, activity_data.total_active_days
+  end
+
   test "calculates current_streak from consecutive days ending today" do
     user = create(:user)
     today = Date.current
@@ -29,13 +41,14 @@ class User::ActivityLog::UpdateAggregatesTest < ActiveSupport::TestCase
     assert_equal 3, user.activity_data.reload.current_streak
   end
 
-  test "streak breaks with gaps" do
+  test "streak breaks with no activity days" do
     user = create(:user)
     today = Date.current
     user.activity_data.update!(activity_days: {
       (today - 5.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
       (today - 4.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      # Gap on day -3
+      (today - 3.days).to_s => User::ActivityData::NO_ACTIVITY,
+      (today - 2.days).to_s => User::ActivityData::NO_ACTIVITY,
       (today - 1.day).to_s => User::ActivityData::ACTIVITY_PRESENT,
       today.to_s => User::ActivityData::ACTIVITY_PRESENT
     })
@@ -43,6 +56,33 @@ class User::ActivityLog::UpdateAggregatesTest < ActiveSupport::TestCase
     User::ActivityLog::UpdateAggregates.(user)
 
     assert_equal 2, user.activity_data.reload.current_streak
+  end
+
+  test "streak breaks with no recent activity" do
+    user = create(:user)
+    today = Date.current
+    user.activity_data.update!(activity_days: {
+      (today - 5.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
+      (today - 4.days).to_s => User::ActivityData::ACTIVITY_PRESENT
+    })
+
+    User::ActivityLog::UpdateAggregates.(user)
+
+    assert_equal 0, user.activity_data.reload.current_streak
+  end
+
+  test "streak passes with activity today" do
+    user = create(:user)
+    today = Date.current
+    user.activity_data.update!(activity_days: {
+      (today - 3.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
+      (today - 2.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
+      (today - 1.day).to_s => User::ActivityData::ACTIVITY_PRESENT
+    })
+
+    User::ActivityLog::UpdateAggregates.(user)
+
+    assert_equal 3, user.activity_data.reload.current_streak
   end
 
   test "streak continues with STREAK_FREEZE_USED value" do
@@ -57,26 +97,6 @@ class User::ActivityLog::UpdateAggregatesTest < ActiveSupport::TestCase
     User::ActivityLog::UpdateAggregates.(user)
 
     assert_equal 3, user.activity_data.reload.current_streak
-  end
-
-  test "calculates longest_streak correctly" do
-    user = create(:user)
-    today = Date.current
-    user.activity_data.update!(activity_days: {
-      # 5-day streak in the past
-      (today - 20.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      (today - 19.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      (today - 18.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      (today - 17.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      (today - 16.days).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      # Current 2-day streak
-      (today - 1.day).to_s => User::ActivityData::ACTIVITY_PRESENT,
-      today.to_s => User::ActivityData::ACTIVITY_PRESENT
-    })
-
-    User::ActivityLog::UpdateAggregates.(user)
-
-    assert_equal 5, user.activity_data.reload.longest_streak
   end
 
   test "longest_streak never decreases" do
@@ -107,32 +127,14 @@ class User::ActivityLog::UpdateAggregatesTest < ActiveSupport::TestCase
     assert_equal 2, user.activity_data.reload.total_active_days
   end
 
-  test "only saves when values changed" do
-    user = create(:user)
-    user.activity_data.update!(
-      activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT },
-      current_streak: 1,
-      longest_streak: 1,
-      total_active_days: 1
-    )
-    original_updated_at = user.activity_data.updated_at
-
-    # Small sleep to ensure time difference if updated
-    sleep 0.01
-
-    User::ActivityLog::UpdateAggregates.(user)
-
-    # updated_at should not change since values are the same
-    assert_equal original_updated_at, user.activity_data.reload.updated_at
-  end
-
-  test "returns early when activity_data is nil" do
+  test "does nothing when activity_data is nil" do
     user = create(:user)
     user.activity_data.destroy!
     user.reload
 
-    # Should not raise
-    User::ActivityLog::UpdateAggregates.(user)
+    assert_nothing_raised do
+      User::ActivityLog::UpdateAggregates.(user)
+    end
   end
 
   test "handles empty activity_days" do

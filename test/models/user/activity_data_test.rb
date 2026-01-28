@@ -8,27 +8,6 @@ class User::ActivityDataTest < ActiveSupport::TestCase
     assert_equal user, activity_data.user
   end
 
-  test "effective_timezone returns timezone when set" do
-    user = create(:user)
-    user.activity_data.update!(timezone: "America/New_York")
-
-    assert_equal "America/New_York", user.activity_data.effective_timezone
-  end
-
-  test "effective_timezone returns UTC when timezone is nil" do
-    user = create(:user)
-    user.activity_data.update!(timezone: nil)
-
-    assert_equal "UTC", user.activity_data.effective_timezone
-  end
-
-  test "effective_timezone returns UTC when timezone is empty string" do
-    user = create(:user)
-    user.activity_data.update!(timezone: "")
-
-    assert_equal "UTC", user.activity_data.effective_timezone
-  end
-
   test "activity_for returns value for given date" do
     user = create(:user)
     user.activity_data.update!(activity_days: { "2024-01-15" => 2 })

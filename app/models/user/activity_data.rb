@@ -6,11 +6,6 @@ class User::ActivityData < ApplicationRecord
   ACTIVITY_PRESENT = 2
   STREAK_FREEZE_USED = 3
 
-  # Default timezone if none set
-  DEFAULT_TIMEZONE = "UTC".freeze
-
-  def effective_timezone = timezone.presence || DEFAULT_TIMEZONE
-
   def activity_for(date) = activity_days[date.to_s]
 
   def active_on?(date)

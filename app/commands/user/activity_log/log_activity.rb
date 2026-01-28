@@ -4,20 +4,25 @@ class User::ActivityLog::LogActivity
   initialize_with :user, :date
 
   def call
-    activity_data = user.activity_data || user.create_activity_data!
-    date_key = date.to_s
+    # Check via SQL if already logged - avoid loading full record
+    return if already_logged?
 
-    # Only update if value changed
-    return if activity_data.activity_days[date_key] == User::ActivityData::ACTIVITY_PRESENT
-
-    activity_data.activity_days[date_key] = User::ActivityData::ACTIVITY_PRESENT
-
-    # Update last_active_date if this date is newer
-    activity_data.last_active_date = date if activity_data.last_active_date.nil? || date > activity_data.last_active_date
-
-    activity_data.save!
+    # Update via SQL
+    User::ActivityData.where(user_id: user.id).update_all(
+      ["activity_days = jsonb_set(activity_days, ?, ?), updated_at = ?",
+       "{#{date_key}}", User::ActivityData::ACTIVITY_PRESENT.to_s, Time.current]
+    )
 
     # Recalculate aggregates since value changed
     User::ActivityLog::UpdateAggregates.(user)
+  end
+
+  private
+  def date_key = date.to_s
+
+  def already_logged?
+    User::ActivityData.where(user_id: user.id).
+      where("activity_days->? = ?", date_key, User::ActivityData::ACTIVITY_PRESENT.to_s).
+      exists?
   end
 end

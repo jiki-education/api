@@ -4,38 +4,54 @@ class User::ActivityLog::Backfill
   initialize_with :user
 
   def call
-    activity_data = user.activity_data
-    return unless activity_data
+    result = User::ActivityData.connection.execute(
+      User::ActivityData.sanitize_sql([
+                                        <<~SQL.squish,
+                                          WITH last_recorded AS (
+                                            SELECT MAX(key::date) AS last_date
+                                            FROM user_activity_data, jsonb_each_text(activity_days)
+                                            WHERE user_id = :user_id
+                                          ),
+                                          missing_dates AS (
+                                            SELECT d::date::text AS date_key
+                                            FROM last_recorded, generate_series(
+                                              last_recorded.last_date + 1,
+                                              :yesterday,
+                                              '1 day'::interval
+                                            ) AS d
+                                            WHERE last_recorded.last_date IS NOT NULL
+                                              AND NOT EXISTS (
+                                                SELECT 1 FROM user_activity_data, jsonb_each_text(activity_days) AS existing
+                                                WHERE user_activity_data.user_id = :user_id AND existing.key = d::date::text
+                                              )
+                                          ),
+                                          new_entries AS (
+                                            SELECT COALESCE(jsonb_object_agg(date_key, :no_activity::int), '{}'::jsonb) AS entries
+                                            FROM missing_dates
+                                          )
+                                          UPDATE user_activity_data
+                                          SET activity_days = activity_days || new_entries.entries,
+                                              updated_at = :now
+                                          FROM new_entries
+                                          WHERE user_id = :user_id
+                                            AND new_entries.entries != '{}'::jsonb
+                                          RETURNING 1
+                                        SQL
+                                        {
+                                          user_id: user.id,
+                                          yesterday:,
+                                          no_activity: User::ActivityData::NO_ACTIVITY.to_s,
+                                          now: Time.current
+                                        }
+                                      ])
+    )
 
-    last_recorded_date = find_last_recorded_date
-    return unless last_recorded_date
-
-    # Fill all days between last recorded day and today (excluding today)
-    (last_recorded_date + 1.day..yesterday).each do |date|
-      date_key = date.to_s
-      next if activity_data.activity_days.key?(date_key)
-
-      # For now, fill with NO_ACTIVITY (value 1)
-      # TODO: Logic for streak freeze (value 3) TBD
-      activity_data.activity_days[date_key] = User::ActivityData::NO_ACTIVITY
-    end
-
-    activity_data.save! if activity_data.changed?
-
-    User::ActivityLog::UpdateAggregates.(user)
+    User::ActivityLog::UpdateAggregates.(user) if result.ntuples.positive?
   end
 
   private
-  def activity_data = user.activity_data
-
   memoize
   def yesterday
-    Time.current.in_time_zone(activity_data.effective_timezone).to_date - 1.day
-  end
-
-  def find_last_recorded_date
-    return nil if activity_data.activity_days.empty?
-
-    activity_data.activity_days.keys.map(&:to_date).max
+    Time.current.in_time_zone(user.timezone).to_date - 1.day
   end
 end

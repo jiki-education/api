@@ -372,9 +372,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
     t.jsonb "activity_days", default: {}, null: false
     t.datetime "created_at", null: false
     t.integer "current_streak", default: 0, null: false
-    t.date "last_active_date"
     t.integer "longest_streak", default: 0, null: false
-    t.string "timezone"
     t.integer "total_active_days", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -417,6 +415,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
     t.integer "subscription_status", default: 0, null: false
     t.datetime "subscription_valid_until"
     t.jsonb "subscriptions", default: [], null: false
+    t.string "timezone"
     t.bigint "unlocked_concept_ids", default: [], null: false, array: true
     t.string "unsubscribe_token", null: false
     t.datetime "updated_at", null: false

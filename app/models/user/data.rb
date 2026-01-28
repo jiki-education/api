@@ -2,7 +2,8 @@ class User::Data < ApplicationRecord
   belongs_to :user
 
   # Generate unsubscribe token for new records
-  before_create :generate_unsubscribe_token
+  before_create :generate_unsubscribe_token!
+  before_create :set_default_timezone!
 
   # Notification preference slugs mapped to column names
   NOTIFICATION_SLUGS = {
@@ -11,6 +12,8 @@ class User::Data < ApplicationRecord
     "milestone_emails" => :receive_milestone_emails,
     "activity_emails" => :receive_activity_emails
   }.freeze
+
+  DEFAULT_TIMEZONE = "UTC".freeze
 
   def self.valid_notification_slug?(slug)
     NOTIFICATION_SLUGS.key?(slug)
@@ -74,7 +77,11 @@ class User::Data < ApplicationRecord
   def email_wants_emails? = email_complaint_at.nil?
 
   private
-  def generate_unsubscribe_token
+  def generate_unsubscribe_token!
     self.unsubscribe_token ||= SecureRandom.uuid
+  end
+
+  def set_default_timezone!
+    self.timezone ||= DEFAULT_TIMEZONE
   end
 end
