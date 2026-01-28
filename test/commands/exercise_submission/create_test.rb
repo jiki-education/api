@@ -114,6 +114,15 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
     assert_equal "Too many files (maximum 20)", error.message
   end
 
+  test "logs activity" do
+    user_lesson = create(:user_lesson)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    User::ActivityLog::LogActivity.expects(:call).with(user_lesson.user, Date.current)
+
+    ExerciseSubmission::Create.(user_lesson, files)
+  end
+
   test "allows exactly 20 files" do
     user_lesson = create(:user_lesson)
     files = Array.new(20) { |i| { filename: "file#{i}.rb", code: "code#{i}" } }

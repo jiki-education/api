@@ -1,13 +1,13 @@
 require "test_helper"
 
 class SerializeProfileTest < ActiveSupport::TestCase
-  test "returns hardcoded icon_name" do
+  test "returns hardcoded icon" do
     user = create(:user)
     user.activity_data.update!(activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT })
 
     result = SerializeProfile.(user)
 
-    assert_equal "flag", result[:icon_name]
+    assert_equal "flag", result[:icon]
   end
 
   test "returns hardcoded avatar_url" do

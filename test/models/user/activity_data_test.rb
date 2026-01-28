@@ -7,46 +7,4 @@ class User::ActivityDataTest < ActiveSupport::TestCase
 
     assert_equal user, activity_data.user
   end
-
-  test "activity_for returns value for given date" do
-    user = create(:user)
-    user.activity_data.update!(activity_days: { "2024-01-15" => 2 })
-
-    assert_equal 2, user.activity_data.activity_for(Date.new(2024, 1, 15))
-  end
-
-  test "activity_for returns nil for date not in activity_days" do
-    user = create(:user)
-    user.activity_data.update!(activity_days: {})
-
-    assert_nil user.activity_data.activity_for(Date.new(2024, 1, 15))
-  end
-
-  test "active_on? returns true for ACTIVITY_PRESENT value" do
-    user = create(:user)
-    user.activity_data.update!(activity_days: { "2024-01-15" => User::ActivityData::ACTIVITY_PRESENT })
-
-    assert user.activity_data.active_on?(Date.new(2024, 1, 15))
-  end
-
-  test "active_on? returns true for STREAK_FREEZE_USED value" do
-    user = create(:user)
-    user.activity_data.update!(activity_days: { "2024-01-15" => User::ActivityData::STREAK_FREEZE_USED })
-
-    assert user.activity_data.active_on?(Date.new(2024, 1, 15))
-  end
-
-  test "active_on? returns false for NO_ACTIVITY value" do
-    user = create(:user)
-    user.activity_data.update!(activity_days: { "2024-01-15" => User::ActivityData::NO_ACTIVITY })
-
-    refute user.activity_data.active_on?(Date.new(2024, 1, 15))
-  end
-
-  test "active_on? returns false for date not in activity_days" do
-    user = create(:user)
-    user.activity_data.update!(activity_days: {})
-
-    refute user.activity_data.active_on?(Date.new(2024, 1, 15))
-  end
 end

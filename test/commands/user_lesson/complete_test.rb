@@ -91,6 +91,18 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal created_time.to_i, result.created_at.to_i
   end
 
+  test "logs activity" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    User::ActivityLog::LogActivity.expects(:call).with(user, Date.current)
+
+    UserLesson::Complete.(user, lesson)
+  end
+
   test "clears current_user_lesson on user_level when completing" do
     user = create(:user)
     level = create(:level)

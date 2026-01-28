@@ -12,10 +12,10 @@ class ExerciseSubmission::Create
       ExerciseSubmission.create!(
         context:,
         uuid:
-      ).tap do |s|
+      ).tap do |submission|
         files.each do |file_params|
           ExerciseSubmission::File::Create.(
-            s,
+            submission,
             file_params[:filename],
             file_params[:code]
           )
