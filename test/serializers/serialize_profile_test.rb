@@ -1,6 +1,24 @@
 require "test_helper"
 
 class SerializeProfileTest < ActiveSupport::TestCase
+  test "returns hardcoded icon_name" do
+    user = create(:user)
+    user.activity_data.update!(activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT })
+
+    result = SerializeProfile.(user)
+
+    assert_equal "flag", result[:icon_name]
+  end
+
+  test "returns hardcoded avatar_url" do
+    user = create(:user)
+    user.activity_data.update!(activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT })
+
+    result = SerializeProfile.(user)
+
+    assert_equal "https://randomuser.me/api/portraits/men/19.jpg", result[:avatar_url]
+  end
+
   test "returns streaks_enabled value" do
     user = create(:user)
     user.data.update!(streaks_enabled: true)
