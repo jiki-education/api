@@ -12,6 +12,7 @@ class CreateUserData < ActiveRecord::Migration[8.1]
       t.integer :subscription_status, default: 0, null: false
       t.datetime :subscription_valid_until
       t.jsonb :subscriptions, default: [], null: false
+      t.string :timezone
 
       t.timestamps
     end

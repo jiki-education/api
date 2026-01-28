@@ -140,6 +140,8 @@ Follow this step-by-step workflow:
 9. **Execute commit**: Stage and commit with the drafted message
 10. **Confirm success**: Show the commit that was created
 
+**Important Note**: You do not need to run the tests or rubocop or brakeman etc yourself. When you commit all these will run automatically. You can then respond to the output of that as appropriate. But it's a waste of the user's time to run everything only for it to be run again automatically by the git hooks.
+
 ## Output Format
 
 Provide a clear, concise report as you work:

@@ -20,6 +20,8 @@ class ExerciseSubmission::Create
             file_params[:code]
           )
         end
+
+        User::ActivityLog::LogActivity.(context.user, Date.current)
       end
     end
   end

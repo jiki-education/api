@@ -201,4 +201,18 @@ class User::DataTest < ActiveSupport::TestCase
     user.data.update!(subscription_status: "never_subscribed")
     refute user.data.can_change_tier?
   end
+
+  test "timezone defaults to UTC on create" do
+    user = create(:user)
+
+    assert_equal "UTC", user.data.timezone
+  end
+
+  test "timezone is not overridden when provided" do
+    user = build(:user)
+    user.data.timezone = "America/New_York"
+    user.save!
+
+    assert_equal "America/New_York", user.data.timezone
+  end
 end

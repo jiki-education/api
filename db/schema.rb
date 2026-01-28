@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -368,6 +368,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.index ["user_id"], name: "index_user_acquired_badges_on_user_id"
   end
 
+  create_table "user_activity_data", force: :cascade do |t|
+    t.jsonb "activity_days", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.integer "current_streak", default: 0, null: false
+    t.integer "longest_streak", default: 0, null: false
+    t.integer "total_active_days", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["activity_days"], name: "index_user_activity_data_on_activity_days", using: :gin
+    t.index ["user_id"], name: "index_user_activity_data_on_user_id", unique: true
+  end
+
   create_table "user_courses", force: :cascade do |t|
     t.datetime "completed_at"
     t.bigint "course_id", null: false
@@ -396,12 +408,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.boolean "receive_event_emails", default: true, null: false
     t.boolean "receive_milestone_emails", default: true, null: false
     t.boolean "receive_product_updates", default: true, null: false
+    t.boolean "streaks_enabled", default: false, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "stripe_subscription_status"
     t.integer "subscription_status", default: 0, null: false
     t.datetime "subscription_valid_until"
     t.jsonb "subscriptions", default: [], null: false
+    t.string "timezone"
     t.bigint "unlocked_concept_ids", default: [], null: false, array: true
     t.string "unsubscribe_token", null: false
     t.datetime "updated_at", null: false
@@ -420,7 +434,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.bigint "lesson_id", null: false
-    t.datetime "started_at", null: false
+    t.datetime "started_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["lesson_id"], name: "index_user_lessons_on_lesson_id"
@@ -434,7 +448,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
     t.bigint "current_user_lesson_id"
     t.integer "email_status", default: 0, null: false
     t.bigint "level_id", null: false
-    t.datetime "started_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["current_user_lesson_id"], name: "index_user_levels_on_current_user_lesson_id"
@@ -533,6 +546,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_22_164752) do
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "user_acquired_badges", "badges"
   add_foreign_key "user_acquired_badges", "users"
+  add_foreign_key "user_activity_data", "users"
   add_foreign_key "user_courses", "courses"
   add_foreign_key "user_courses", "user_levels", column: "current_user_level_id"
   add_foreign_key "user_courses", "users"
