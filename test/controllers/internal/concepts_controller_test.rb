@@ -29,6 +29,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 1,
         total_count: 3,
+        unlocked_count: 2,
         events: []
       }
     })
@@ -53,6 +54,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 1,
         total_count: 2,
+        unlocked_count: 2,
         events: []
       }
     })
@@ -76,6 +78,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 1,
         total_count: 2,
+        unlocked_count: 1,
         events: []
       }
     })
@@ -99,6 +102,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 1,
         total_count: 2,
+        unlocked_count: 2,
         events: []
       }
     })
@@ -122,6 +126,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 1,
         total_count: 2,
+        unlocked_count: 1,
         events: []
       }
     })
@@ -147,6 +152,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 2,
         total_count: 3,
+        unlocked_count: 3,
         events: []
       }
     })
@@ -166,6 +172,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 2,
         total_count: 5,
+        unlocked_count: 5,
         events: []
       }
     })
@@ -186,6 +193,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
         current_page: 1,
         total_pages: 1,
         total_count: 2,
+        unlocked_count: 0,
         events: []
       }
     })

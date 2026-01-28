@@ -13,7 +13,8 @@ class Internal::ConceptsController < Internal::BaseController
     render json: SerializePaginatedCollection.(
       concepts,
       serializer: SerializeConcepts,
-      serializer_kwargs: { for_user: current_user }
+      serializer_kwargs: { for_user: current_user },
+      meta: { unlocked_count: current_user.unlocked_concept_ids.count }
     )
   end
 
