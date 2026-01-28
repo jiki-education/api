@@ -12,14 +12,16 @@ class ExerciseSubmission::Create
       ExerciseSubmission.create!(
         context:,
         uuid:
-      ).tap do |submission|
+      ).tap do |s|
         files.each do |file_params|
           ExerciseSubmission::File::Create.(
-            submission,
+            s,
             file_params[:filename],
             file_params[:code]
           )
         end
+
+        User::ActivityLog::LogActivity.(context.user, Date.current)
       end
     end
   end

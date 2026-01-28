@@ -25,6 +25,9 @@ class UserLesson::Complete
       # Emit lesson_unlocked event if there's a next lesson in the level
       emit_lesson_unlocked_event!
 
+      # Log activity for streak tracking
+      User::ActivityLog::LogActivity.(user, Date.current)
+
       user_lesson
     end
   end

@@ -12,7 +12,9 @@ class SerializeUser
       provider: user.provider,
       email_confirmed: user.confirmed?,
       subscription_status: user.data.subscription_status,
-      subscription: subscription_data
+      subscription: subscription_data,
+      streaks_enabled: user.data.streaks_enabled,
+      **streak_data
     }
   end
 
@@ -26,5 +28,13 @@ class SerializeUser
       grace_period_ends_at: user.data.grace_period_ends_at,
       subscription_valid_until: user.data.subscription_valid_until
     }
+  end
+
+  def streak_data
+    if user.data.streaks_enabled
+      { current_streak: user.current_streak }
+    else
+      { total_active_days: user.total_active_days }
+    end
   end
 end

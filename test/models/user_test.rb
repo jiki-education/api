@@ -126,4 +126,36 @@ class UserTest < ActiveSupport::TestCase
       user.completely_unknown_method
     end
   end
+
+  test "automatically creates activity_data record on user creation" do
+    user = create(:user)
+
+    assert user.activity_data.present?
+    assert_instance_of User::ActivityData, user.activity_data
+    assert user.activity_data.persisted?
+  end
+
+  test "activity_data record has default values" do
+    user = create(:user)
+
+    assert_empty(user.activity_data.activity_days)
+    assert_equal 0, user.activity_data.current_streak
+    assert_equal 0, user.activity_data.longest_streak
+    assert_equal 0, user.activity_data.total_active_days
+    assert_nil user.activity_data.last_active_date
+  end
+
+  test "current_streak returns value from aggregate_activity_data" do
+    user = create(:user)
+    user.activity_data.update!(current_streak: 5)
+
+    assert_equal 5, user.current_streak
+  end
+
+  test "total_active_days returns value from aggregate_activity_data" do
+    user = create(:user)
+    user.activity_data.update!(total_active_days: 10)
+
+    assert_equal 10, user.total_active_days
+  end
 end

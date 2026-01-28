@@ -108,4 +108,35 @@ class SerializeUserTest < ActiveSupport::TestCase
     expected_grace_end = valid_until + 7.days
     assert_equal expected_grace_end.iso8601(3), result[:subscription][:grace_period_ends_at].iso8601(3)
   end
+
+  test "serializes streaks_enabled" do
+    user = create(:user)
+    user.data.update!(streaks_enabled: true)
+
+    result = SerializeUser.(user)
+
+    assert result[:streaks_enabled]
+  end
+
+  test "includes current_streak when streaks_enabled is true" do
+    user = create(:user)
+    user.data.update!(streaks_enabled: true)
+    user.activity_data.update!(current_streak: 5)
+
+    result = SerializeUser.(user)
+
+    assert_equal 5, result[:current_streak]
+    refute result.key?(:total_active_days)
+  end
+
+  test "includes total_active_days when streaks_enabled is false" do
+    user = create(:user)
+    user.data.update!(streaks_enabled: false)
+    user.activity_data.update!(total_active_days: 10)
+
+    result = SerializeUser.(user)
+
+    assert_equal 10, result[:total_active_days]
+    refute result.key?(:current_streak)
+  end
 end

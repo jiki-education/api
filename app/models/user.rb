@@ -1,10 +1,13 @@
 class User < ApplicationRecord
+  extend Mandate::Memoize
+
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
     :recoverable, :validatable, :confirmable
 
   has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true
+  has_one :activity_data, dependent: :destroy, class_name: "User::ActivityData", autosave: true
 
   has_many :user_courses, dependent: :destroy
   has_many :courses, through: :user_courses
@@ -21,6 +24,7 @@ class User < ApplicationRecord
 
   after_initialize do
     build_data if new_record? && !data
+    build_activity_data if new_record? && !activity_data
   end
 
   validates :locale, presence: true, inclusion: { in: %w[en hu] }
@@ -39,6 +43,13 @@ class User < ApplicationRecord
   def communication_preferences
     nil
   end
+
+  # Activity/streak methods
+  def current_streak = aggregate_activity_data[:current_streak]
+  def total_active_days = aggregate_activity_data[:total_active_days]
+
+  memoize
+  def aggregate_activity_data = User::ActivityLog::SyncAndRetrieveAggregates.(self)
 
   # Delegate unknown methods to data record
   def method_missing(name, *args)
