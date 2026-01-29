@@ -6,6 +6,5 @@ class AccountDeletion::ConfirmDeletion
   def call
     user = AccountDeletion::ValidateDeletionToken.(token)
     User::Destroy.(user)
-    user
   end
 end

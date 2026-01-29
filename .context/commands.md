@@ -528,7 +528,7 @@ end
 1. **Keep commands focused**: Each command should do one thing well
 2. **Use meaningful exceptions**: Create custom exception classes for domain errors
 3. **Validate early**: Run validations at the beginning of `call`
-4. **Return meaningful values**: Return the primary object affected by the operation
+4. **Only return values when necessary**: Don't return objects just because they exist. Only return a value if the caller needs it for subsequent operations. If a command performs an action (delete, send email, etc.) with no meaningful return value needed by callers, don't return anything.
 5. **Use memoization**: Cache expensive queries and computations
 6. **Test thoroughly**: Test both success and failure paths
 7. **Document complex logic**: Add comments for non-obvious business rules

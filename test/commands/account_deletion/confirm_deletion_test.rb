@@ -12,15 +12,6 @@ class AccountDeletion::ConfirmDeletionTest < ActiveSupport::TestCase
     assert_nil User.find_by(id: user.id)
   end
 
-  test "returns deleted user" do
-    user = create(:user)
-    token = AccountDeletion::CreateDeletionToken.(user)
-
-    result = AccountDeletion::ConfirmDeletion.(token)
-
-    assert_equal user.id, result.id
-  end
-
   test "raises InvalidTokenError for invalid token" do
     assert_raises(AccountDeletion::ValidateDeletionToken::InvalidTokenError) do
       AccountDeletion::ConfirmDeletion.("invalid-token")
