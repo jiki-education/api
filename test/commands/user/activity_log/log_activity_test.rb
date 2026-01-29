@@ -43,4 +43,25 @@ class User::ActivityLog::LogActivityTest < ActiveSupport::TestCase
 
     User::ActivityLog::LogActivity.(user, date)
   end
+
+  test "calls Backfill when activity not already logged" do
+    user = create(:user)
+    date = Date.new(2024, 1, 15)
+
+    User::ActivityLog::Backfill.expects(:call).with(user).once
+
+    User::ActivityLog::LogActivity.(user, date)
+  end
+
+  test "does not call Backfill when activity already logged" do
+    user = create(:user)
+    date = Date.new(2024, 1, 15)
+    user.activity_data.update!(
+      activity_days: { "2024-01-15" => User::ActivityData::ACTIVITY_PRESENT }
+    )
+
+    User::ActivityLog::Backfill.expects(:call).never
+
+    User::ActivityLog::LogActivity.(user, date)
+  end
 end
