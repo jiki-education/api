@@ -34,6 +34,8 @@ Rails.application.routes.draw do
     post "google", to: "google_oauth#create"
     post "unsubscribe/:token", to: "unsubscribe#create", as: :unsubscribe
     get "discourse/sso", to: "discourse#sso"
+    post "account_deletion/request", to: "account_deletions#request_deletion"
+    post "account_deletion/confirm", to: "account_deletions#confirm"
   end
 
   # External (public, unauthenticated) endpoints
