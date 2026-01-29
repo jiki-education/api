@@ -46,3 +46,6 @@ class InvalidNotificationSlugError < RuntimeError; end
 
 # Assistant conversation errors
 class AssistantConversationAccessDeniedError < RuntimeError; end
+
+# Stripe errors
+class StripeSubscriptionCancellationError < RuntimeError; end
