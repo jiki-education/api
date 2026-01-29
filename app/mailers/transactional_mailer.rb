@@ -56,6 +56,19 @@ class TransactionalMailer < ApplicationMailer
     )
   end
 
+  # Account deletion confirmation email
+  def account_deletion_confirmation(user, confirmation_url:)
+    with_locale(user) do
+      @user = user
+      @confirmation_url = confirmation_url
+
+      mail(
+        to: user.email,
+        subject: t('.subject')
+      )
+    end
+  end
+
   private
   def default_from_email = Jiki.config.mail_from_email
   def configuration_set = Jiki.config.ses_mail_configuration_set
