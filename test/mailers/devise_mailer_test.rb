@@ -8,7 +8,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.reset_password_instructions(user, token)
 
     assert_equal "Reset Your Password", mail.subject
-    assert_equal ["noreply@jiki.app"], mail.from
+    assert_equal [Jiki.config.mail_from_email], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains English text
@@ -30,7 +30,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.reset_password_instructions(user, token)
 
     assert_equal "Jelszó visszaállítása", mail.subject
-    assert_equal ["noreply@jiki.app"], mail.from
+    assert_equal [Jiki.config.mail_from_email], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains Hungarian text
@@ -123,7 +123,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.reset_password_instructions(user, token)
 
     # Check configured sender (from devise.rb)
-    assert_equal ["noreply@jiki.app"], mail.from
+    assert_equal [Jiki.config.mail_from_email], mail.from
   end
 
   # Confirmation instructions tests
@@ -134,7 +134,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.confirmation_instructions(user, token)
 
     assert_equal "Confirm Your Email Address", mail.subject
-    assert_equal ["noreply@jiki.app"], mail.from
+    assert_equal [Jiki.config.mail_from_email], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains English text
@@ -154,7 +154,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.confirmation_instructions(user, token)
 
     assert_equal "Erősítsd meg az e-mail címedet", mail.subject
-    assert_equal ["noreply@jiki.app"], mail.from
+    assert_equal [Jiki.config.mail_from_email], mail.from
     assert_equal [user.email], mail.to
 
     # Check HTML body contains Hungarian text
