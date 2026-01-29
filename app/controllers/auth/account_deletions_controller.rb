@@ -34,5 +34,12 @@ class Auth::AccountDeletionsController < ApplicationController
         message: "Deletion token has expired"
       }
     }, status: :unprocessable_entity
+  rescue StripeSubscriptionCancellationError
+    render json: {
+      error: {
+        type: "stripe_error",
+        message: "Could not cancel your subscription. Please try again or contact support."
+      }
+    }, status: :service_unavailable
   end
 end

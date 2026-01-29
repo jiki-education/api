@@ -4,6 +4,7 @@ class User::Destroy
   initialize_with :user
 
   def call
+    Stripe::CancelSubscriptionImmediately.(user)
     user.destroy!
   end
 end

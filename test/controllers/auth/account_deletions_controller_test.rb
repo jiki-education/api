@@ -85,4 +85,34 @@ class Auth::AccountDeletionsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     assert_equal "invalid_token", response.parsed_body["error"]["type"]
   end
+
+  test "POST confirm returns 503 when stripe cancellation fails" do
+    user = create(:user)
+    user.data.update!(stripe_subscription_id: "sub_123", subscription_status: "active")
+    token = AccountDeletion::CreateDeletionToken.(user)
+
+    error = ::Stripe::APIError.new("Stripe is down")
+    ::Stripe::Subscription.expects(:cancel).with("sub_123").raises(error)
+
+    assert_no_difference 'User.count' do
+      post auth_account_deletion_confirm_path, params: { token: token }, as: :json
+    end
+
+    assert_response :service_unavailable
+    assert_equal "stripe_error", response.parsed_body["error"]["type"]
+  end
+
+  test "POST confirm cancels stripe subscription before deleting user" do
+    user = create(:user)
+    user.data.update!(stripe_subscription_id: "sub_456", subscription_status: "active")
+    token = AccountDeletion::CreateDeletionToken.(user)
+
+    ::Stripe::Subscription.expects(:cancel).with("sub_456").returns(mock)
+
+    assert_difference 'User.count', -1 do
+      post auth_account_deletion_confirm_path, params: { token: token }, as: :json
+    end
+
+    assert_response :ok
+  end
 end
