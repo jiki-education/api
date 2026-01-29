@@ -6,7 +6,7 @@ class SerializeProfile
   def call
     {
       icon: "flag",
-      avatar_url: "https://randomuser.me/api/portraits/men/19.jpg",
+      avatar_url: user.avatar_url,
       streaks_enabled: user.data.streaks_enabled,
       **streak_data
     }

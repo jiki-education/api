@@ -13,6 +13,19 @@ amazon:
   region: eu-west-1
   bucket: jiki-active-storage
 
+# Cloudflare R2 for user uploads (avatars, etc.)
+# Uses S3-compatible API with public access via uploads.jiki.io
+# In dev/test, uses LocalStack S3; in production, uses Cloudflare R2
+r2:
+  service: S3
+  endpoint: <%= Jiki.config.r2_endpoint %>
+  access_key_id: <%= Jiki.secrets.r2_access_key_id %>
+  secret_access_key: <%= Jiki.secrets.r2_secret_access_key %>
+  region: auto
+  bucket: <%= Jiki.config.r2_bucket_uploads %>
+  public: true
+  force_path_style: true
+
 # Remember not to checkin your GCS keyfile to a repository
 # google:
 #   service: GCS

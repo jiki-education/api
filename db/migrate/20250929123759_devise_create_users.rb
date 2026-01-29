@@ -36,6 +36,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
       t.string :name, null: false
       t.string :handle, null: false
       t.string :locale, null: false, default: "en"
+      t.string :avatar_url
 
       ## OAuth fields
       t.string :google_id

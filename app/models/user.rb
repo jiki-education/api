@@ -6,6 +6,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
     :recoverable, :validatable, :confirmable
 
+  has_one_attached :avatar
+
   has_one :data, dependent: :destroy, class_name: "User::Data", autosave: true
   has_one :activity_data, dependent: :destroy, class_name: "User::ActivityData", autosave: true
 

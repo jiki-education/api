@@ -30,8 +30,8 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on R2 (see config/storage.yml for options).
+  config.active_storage.service = :r2
 
   # Use letter_opener to preview emails in browser instead of sending
   config.action_mailer.delivery_method = :letter_opener

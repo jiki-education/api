@@ -44,7 +44,9 @@ Rails.application.routes.draw do
   # Internal (authenticated user) endpoints
   namespace :internal do
     resource :me, only: [:show]
-    resource :profile, only: [:show]
+    resource :profile, only: [:show] do
+      resource :avatar, only: %i[update destroy], controller: 'profile/avatars'
+    end
 
     resource :settings, only: [:show] do
       patch :name
