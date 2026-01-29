@@ -73,7 +73,7 @@ config.action_mailer.ses_v2_settings = { region: Jiki.config.ses_region }
 
 ## File Structure
 
-**IMPORTANT**: MJML templates use `.mjml` extension (not `.mjml`) due to MRML compatibility. The `template_language = :haml` config handles HAML preprocessing.
+**IMPORTANT**: MJML templates use `.mjml` extension (not `.html.mjml`) due to MRML compatibility. The `template_language = :haml` config handles HAML preprocessing.
 
 ```
 app/
