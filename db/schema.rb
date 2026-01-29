@@ -469,6 +469,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
 
   create_table "users", force: :cascade do |t|
     t.boolean "admin", default: false, null: false
+    t.string "avatar_url"
     t.datetime "confirmation_sent_at"
     t.string "confirmation_token"
     t.datetime "confirmed_at"

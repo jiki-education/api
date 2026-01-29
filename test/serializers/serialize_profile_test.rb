@@ -10,13 +10,13 @@ class SerializeProfileTest < ActiveSupport::TestCase
     assert_equal "flag", result[:icon]
   end
 
-  test "returns hardcoded avatar_url" do
-    user = create(:user)
+  test "returns avatar_url from user record" do
+    user = create(:user, avatar_url: "https://uploads.jiki.io/ab/cd/efg/hijklmno.jpg")
     user.activity_data.update!(activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT })
 
     result = SerializeProfile.(user)
 
-    assert_equal "https://randomuser.me/api/portraits/men/19.jpg", result[:avatar_url]
+    assert_equal "https://uploads.jiki.io/ab/cd/efg/hijklmno.jpg", result[:avatar_url]
   end
 
   test "returns streaks_enabled value" do

@@ -13,6 +13,10 @@ class InvalidUnsubscribeTokenError < RuntimeError; end
 class ImageFileTooLargeError < RuntimeError; end
 class InvalidImageTypeError < RuntimeError; end
 
+# Avatar upload errors
+class InvalidAvatarError < RuntimeError; end
+class AvatarTooLargeError < RuntimeError; end
+
 # Gemini API errors
 module Gemini
   class Error < RuntimeError; end
