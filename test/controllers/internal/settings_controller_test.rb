@@ -14,6 +14,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :locale_internal_settings_path, method: :patch
   guard_incorrect_token! :handle_internal_settings_path, method: :patch
   guard_incorrect_token! :notification_internal_settings_path, args: ["product_updates"], method: :patch
+  guard_incorrect_token! :streaks_internal_settings_path, method: :patch
 
   # Show tests
   test "GET show returns current settings" do
@@ -175,5 +176,30 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal "not_found", json["error"]["type"]
     assert_equal "Unknown notification type", json["error"]["message"]
+  end
+
+  # Streaks tests
+  test "PATCH streaks enables streaks" do
+    refute @user.data.streaks_enabled
+
+    patch streaks_internal_settings_path, params: { enabled: true }, headers: @headers, as: :json
+
+    assert_response :success
+    assert @user.data.reload.streaks_enabled
+
+    json = response.parsed_body
+    assert json["settings"]["streaks_enabled"]
+  end
+
+  test "PATCH streaks disables streaks" do
+    @user.data.update!(streaks_enabled: true)
+
+    patch streaks_internal_settings_path, params: { enabled: false }, headers: @headers, as: :json
+
+    assert_response :success
+    refute @user.data.reload.streaks_enabled
+
+    json = response.parsed_body
+    refute json["settings"]["streaks_enabled"]
   end
 end

@@ -52,6 +52,7 @@ Rails.application.routes.draw do
       patch :password
       patch :locale
       patch :handle
+      patch :streaks
       patch 'notifications/:slug', action: :notification, as: :notification
     end
 
