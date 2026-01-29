@@ -7,6 +7,8 @@ class User::ActivityLog::LogActivity
     # Check via SQL if already logged - avoid loading full record
     return if already_logged?
 
+    User::ActivityLog::Backfill.(user)
+
     # Update via SQL
     User::ActivityData.where(user_id: user.id).update_all(
       ["activity_days = jsonb_set(activity_days, ?, ?), updated_at = ?",
