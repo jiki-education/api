@@ -73,7 +73,7 @@ config.action_mailer.ses_v2_settings = { region: Jiki.config.ses_region }
 
 ## File Structure
 
-**IMPORTANT**: MJML templates use `.html.mjml` extension (Rails processes them as: HAML → MJML → HTML)
+**IMPORTANT**: MJML templates use `.mjml` extension (not `.mjml`) due to MRML compatibility. The `template_language = :haml` config handles HAML preprocessing.
 
 ```
 app/
@@ -82,14 +82,14 @@ app/
     welcome_mailer.rb              # Example mailer
   views/
     layouts/
-      mailer.html.mjml             # MJML layout for all emails (HAML+MJML)
+      mailer.mjml                  # MJML layout for all emails (HAML+MJML)
       mailer.text.erb              # Plain text layout
     mailers/
       shared/
-        _header.html.mjml          # Reusable header component
-        _footer.html.mjml          # Reusable footer component
+        _header.mjml               # Reusable header component
+        _footer.mjml               # Reusable footer component
     welcome_mailer/
-      welcome.html.mjml            # HTML email template (HAML+MJML)
+      welcome.mjml                 # HTML email template (HAML+MJML)
       welcome.text.erb             # Plain text email template
 
 config/
@@ -144,10 +144,10 @@ end
 ```
 
 ### 2. Create MJML Template
-**File extension must be `.html.mjml`**
+**File extension must be `.mjml`**
 
 ```haml
-# app/views/user_mailer/notification.html.mjml
+# app/views/user_mailer/notification.mjml
 - content_for :title, t('.subject')
 - content_for :preview, t('.preview_text')
 
