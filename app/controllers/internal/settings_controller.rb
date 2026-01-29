@@ -50,6 +50,13 @@ class Internal::SettingsController < Internal::BaseController
     render_settings_error("Notification update failed", e)
   end
 
+  def streaks
+    User::UpdateStreaksEnabled.(current_user, params[:enabled])
+    render json: { settings: SerializeSettings.(current_user) }
+  rescue ActiveRecord::RecordInvalid => e
+    render_settings_error("Streaks update failed", e)
+  end
+
   private
   # TODO: Re-enable once frontend supports sudo password verification
   # def validate_sudo!

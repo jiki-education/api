@@ -14,7 +14,8 @@ class SerializeSettings
       receive_product_updates: user.data.receive_product_updates,
       receive_event_emails: user.data.receive_event_emails,
       receive_milestone_emails: user.data.receive_milestone_emails,
-      receive_activity_emails: user.data.receive_activity_emails
+      receive_activity_emails: user.data.receive_activity_emails,
+      streaks_enabled: user.data.streaks_enabled
     }
   end
 end

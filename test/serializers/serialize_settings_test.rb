@@ -21,7 +21,8 @@ class SerializeSettingsTest < ActiveSupport::TestCase
       receive_product_updates: true,
       receive_event_emails: true,
       receive_milestone_emails: true,
-      receive_activity_emails: true
+      receive_activity_emails: true,
+      streaks_enabled: false
     }
 
     assert_equal expected, result
