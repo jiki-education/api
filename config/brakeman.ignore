@@ -22,29 +22,6 @@
         89
       ],
       "note": "IDs are integers from ActiveRecord objects, not user input. Safe from SQL injection."
-    },
-    {
-      "warning_type": "Mass Assignment",
-      "warning_code": 70,
-      "fingerprint": "3a093d8ef38f7f0089385e9a90f41745bf0d11e753f6490fb55bdfc8b7006ff8",
-      "check_name": "MassAssignment",
-      "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
-      "file": "app/controllers/spi/video_production_controller.rb",
-      "line": 18,
-      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
-      "code": "params[:result].permit!",
-      "render_path": null,
-      "location": {
-        "type": "method",
-        "class": "SPI::VideoProductionController",
-        "method": "executor_callback"
-      },
-      "user_input": null,
-      "confidence": "Medium",
-      "cwe_id": [
-        915
-      ],
-      "note": "SPI endpoints are network-guarded for service-to-service communication. Only trusted services (Lambda) can access this endpoint. Result structure varies by executor type."
     }
   ],
   "updated": "2025-10-21 00:00:00 +0000",

@@ -15,8 +15,5 @@
   # Background processing - lower priority, bulk operations
   - background
 
-  # Queue for video production
-  - video_production
-
   # Lowest priority - metrics, cleanup, non-urgent tasks
   - low

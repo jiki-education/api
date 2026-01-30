@@ -24,18 +24,13 @@ app/controllers/
 │   ├── projects_controller.rb
 │   ├── user_lessons_controller.rb
 │   └── user_levels_controller.rb
-├── admin/                       # Admin-only endpoints
-│   ├── base_controller.rb      # Enforces auth + admin check
-│   ├── concepts_controller.rb
-│   ├── email_templates_controller.rb
-│   ├── levels_controller.rb
-│   ├── projects_controller.rb
-│   ├── users_controller.rb
-│   └── video_production/
-│       ├── pipelines_controller.rb
-│       └── nodes_controller.rb
-└── spi/                         # Service Provider Interface (network-guarded)
-    └── video_production_controller.rb
+└── admin/                       # Admin-only endpoints
+    ├── base_controller.rb      # Enforces auth + admin check
+    ├── concepts_controller.rb
+    ├── email_templates_controller.rb
+    ├── levels_controller.rb
+    ├── projects_controller.rb
+    └── users_controller.rb
 ```
 
 ## ApplicationController
@@ -46,7 +41,7 @@ The base controller (`ApplicationController`) provides shared functionality for 
 
 **Authentication is NOT enforced globally.** Instead, it's enforced at the namespace level:
 
-- **No auth required:** `External::BaseController`, `Auth::*` controllers, `SPI::BaseController`
+- **No auth required:** `External::BaseController`, `Auth::*` controllers
 - **Auth required:** `Internal::BaseController` (via `before_action :authenticate_user!`)
 - **Auth + admin required:** `Admin::BaseController` (via `before_action :authenticate_user!` and `before_action :ensure_admin!`)
 
@@ -211,24 +206,6 @@ end
 - Standard Ruby namespacing convention
 - Consistent with Rails best practices
 - Easier to refactor and maintain
-
-**For nested namespaces (e.g., admin video production controllers):**
-
-```ruby
-# CORRECT: Use class Admin::VideoProduction:: pattern
-class Admin::VideoProduction::PipelinesController < Admin::BaseController
-  # ...
-end
-
-# INCORRECT: Don't use nested modules
-module Admin
-  module VideoProduction
-    class PipelinesController < Admin::BaseController
-      # ...
-    end
-  end
-end
-```
 
 ## Paginated Collection Endpoints
 
