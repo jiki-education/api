@@ -1,7 +1,7 @@
 # Unsubscribes a user from marketing emails via their unsubscribe token
 #
 # Sets email_complaint_at and email_complaint_type to mark the user as
-# unsubscribed, which makes email_wants_emails? return false.
+# unsubscribed, which makes may_receive_emails? return false.
 class User::Unsubscribe
   include Mandate
 

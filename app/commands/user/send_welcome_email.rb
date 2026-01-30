@@ -6,7 +6,7 @@ class User::SendWelcomeEmail
   initialize_with :user
 
   def call
-    WelcomeMailer.welcome(user, login_url:).deliver_now
+    AccountMailer.welcome(user, login_url:).deliver_now
   end
 
   private

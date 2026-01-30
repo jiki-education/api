@@ -48,7 +48,7 @@ class UserLevel::Complete
 
   def send_completion_email!(user_level)
     User::SendEmail.(user_level) do
-      UserLevelMailer.with(user_level:).completed(user_level).deliver_later
+      ProgressionMailer.level_completed(user_level).deliver_later
     end
   end
 end

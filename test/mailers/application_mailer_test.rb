@@ -1,10 +1,12 @@
 require "test_helper"
 
 class ApplicationMailerTest < ActionMailer::TestCase
-  # Test mailer class to test the protected mail_template_with_locale method
+  # Test mailer class to test the protected mail_template_to_user method
   class TestMailer < ApplicationMailer
+    self.email_category = :transactional
+
     def test_template_email(user, template_type, template_key, context = {})
-      mail_template_with_locale(user, template_type, template_key, context)
+      mail_template_to_user(user, template_type, template_key, context:)
     end
   end
 

@@ -35,12 +35,6 @@ class User < ApplicationRecord
   # OAuth users have random passwords, so skip password validation for them
   validates :password, presence: true, if: -> { new_record? && provider.nil? && encrypted_password.blank? }
 
-  # Placeholder for email preferences - always allow emails for now
-  # TODO: Implement actual email preferences when communication_preferences are built
-  def may_receive_emails?
-    true
-  end
-
   # Placeholder for communication preferences - will be implemented later
   def communication_preferences
     nil

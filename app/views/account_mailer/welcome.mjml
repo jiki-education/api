@@ -3,7 +3,6 @@
 
 = render 'mailers/shared/header'
 
--# Main content section
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     %mj-text{ "padding-bottom": "10px" }
@@ -14,8 +13,7 @@
       %p{ style: "margin: 0 0 15px 0;" }
         = t('.body')
 
-    %mj-text{ "padding-top": "20px", "color": "#666666", "font-size": "14px" }
-      %p{ style: "margin: 0;" }
-        = t('.footer')
+    %mj-button{ "background-color": "#0066cc", "color": "#ffffff", "font-size": "16px", "font-weight": "bold", "border-radius": "4px", "padding": "15px 30px", "href": @login_url }
+      = t('.cta')
 
 = render 'mailers/shared/footer'
