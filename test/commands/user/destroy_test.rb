@@ -38,4 +38,40 @@ class User::DestroyTest < ActiveSupport::TestCase
     assert_nil UserLevel.find_by(id: user_level.id)
     assert_nil UserCourse.find_by(id: user_course.id)
   end
+
+  test "cancels stripe subscription before destroying user" do
+    user = create(:user)
+    user.data.update!(stripe_subscription_id: "sub_123", subscription_status: "active")
+
+    ::Stripe::Subscription.expects(:cancel).with("sub_123").returns(mock)
+
+    assert_difference -> { User.count }, -1 do
+      User::Destroy.(user)
+    end
+  end
+
+  test "destroys user without stripe subscription" do
+    user = create(:user)
+    user.data.update!(stripe_subscription_id: nil)
+
+    ::Stripe::Subscription.expects(:cancel).never
+
+    assert_difference -> { User.count }, -1 do
+      User::Destroy.(user)
+    end
+  end
+
+  test "does not destroy user when stripe cancellation fails" do
+    user = create(:user)
+    user.data.update!(stripe_subscription_id: "sub_123", subscription_status: "active")
+
+    error = ::Stripe::APIError.new("Stripe is down")
+    ::Stripe::Subscription.expects(:cancel).with("sub_123").raises(error)
+
+    assert_no_difference -> { User.count } do
+      assert_raises(StripeSubscriptionCancellationError) do
+        User::Destroy.(user)
+      end
+    end
+  end
 end
