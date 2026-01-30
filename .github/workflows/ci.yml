@@ -72,6 +72,9 @@ jobs:
       - name: Run Zeitwerk test
         run: bundle exec rails test:zeitwerk
 
+      - name: Validate recurring jobs config
+        run: bundle exec rails test:recurring_jobs
+
       - name: Run tests
         env:
           RAILS_ENV: test
