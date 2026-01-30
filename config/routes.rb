@@ -41,6 +41,13 @@ Rails.application.routes.draw do
   # External (public, unauthenticated) endpoints
   namespace :external do
     resources :concepts, only: %i[index show], param: :concept_slug
+
+    resources :email_preferences, only: %i[show update], param: :token do
+      member do
+        post :unsubscribe_all
+        post :subscribe_all
+      end
+    end
   end
 
   # Internal (authenticated user) endpoints

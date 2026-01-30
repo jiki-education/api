@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_30_153918) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -407,7 +407,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
     t.boolean "receive_activity_emails", default: true, null: false
     t.boolean "receive_event_emails", default: true, null: false
     t.boolean "receive_milestone_emails", default: true, null: false
-    t.boolean "receive_product_updates", default: true, null: false
+    t.boolean "receive_newsletters", default: true, null: false
     t.boolean "streaks_enabled", default: false, null: false
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"

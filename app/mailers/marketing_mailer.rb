@@ -10,12 +10,11 @@ class MarketingMailer < ApplicationMailer
     reply_to: -> { Jiki.config.support_email }
 
   # Example: Monthly newsletter
-  # TODO: Implement when User model exists
   # def monthly_newsletter(user)
-  #   return unless user.marketing_emails_enabled?
+  #   return unless user.data.receive_newsletters?
   #
   #   @user = user
-  #   @unsubscribe_url = unsubscribe_url(token: user.unsubscribe_token)
+  #   @unsubscribe_key = :newsletters
   #
   #   mail(
   #     to: user.email,
@@ -23,18 +22,17 @@ class MarketingMailer < ApplicationMailer
   #   )
   # end
 
-  # Example: Feature announcement
-  # TODO: Implement when User model exists
-  # def feature_announcement(user, feature)
-  #   return unless user.marketing_emails_enabled?
+  # Example: Event announcement
+  # def event_announcement(user, event)
+  #   return unless user.data.receive_event_emails?
   #
   #   @user = user
-  #   @feature = feature
-  #   @unsubscribe_url = unsubscribe_url(token: user.unsubscribe_token)
+  #   @event = event
+  #   @unsubscribe_key = :event_emails
   #
   #   mail(
   #     to: user.email,
-  #     subject: "New feature: #{feature.title}"
+  #     subject: "Join us: #{event.title}"
   #   )
   # end
 
