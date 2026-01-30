@@ -50,6 +50,6 @@ class User::SendWelcomeEmailTest < ActiveSupport::TestCase
 
     email = ActionMailer::Base.deliveries.last
     # Subject should be in Hungarian
-    assert_equal I18n.t("welcome_mailer.welcome.subject", locale: "hu"), email.subject
+    assert_equal I18n.t("account_mailer.welcome.subject", locale: "hu"), email.subject
   end
 end

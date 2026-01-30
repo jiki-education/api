@@ -6,11 +6,11 @@
       %p{ style: "margin: 0 0 10px 0;" }
         © #{Time.current.year} Jiki. All rights reserved.
       %p{ style: "margin: 0;" }
-        - if defined?(@user) && @user&.data&.unsubscribe_token
+        - if defined?(@user) && @user&.unsubscribe_token
           - if defined?(@unsubscribe_key) && @unsubscribe_key.present?
-            %a.link{ href: unsubscribe_url(token: @user.data.unsubscribe_token, key: @unsubscribe_key), style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
+            %a.link{ href: unsubscribe_url(token: @user.unsubscribe_token, key: @unsubscribe_key), style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
               Unsubscribe
-          %a.link{ href: unsubscribe_url(token: @user.data.unsubscribe_token), style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
+          %a.link{ href: unsubscribe_url(token: @user.unsubscribe_token), style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
             Email Preferences
         %a.link{ href: "#{Jiki.config.frontend_base_url}/privacy", style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
           Privacy Policy

@@ -74,7 +74,7 @@ class User::Data < ApplicationRecord
 
   # Email validity checks
   def email_valid? = email_bounced_at.nil?
-  def email_wants_emails? = email_complaint_at.nil?
+  def may_receive_emails? = email_complaint_at.nil?
 
   private
   def generate_unsubscribe_token!

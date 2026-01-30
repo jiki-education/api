@@ -1,9 +1,0 @@
-en:
-  welcome_mailer:
-    welcome:
-      subject: "Welcome to Jiki!"
-      greeting: "Hi %{name},"
-      intro: "Welcome to Jiki - your journey to learning programming starts here!"
-      body: "We're excited to have you join our community of learners. Jiki provides a structured, linear learning path designed specifically for coding beginners."
-      cta: "Start Learning"
-      footer: "If you have any questions, just reply to this email. We're here to help!"

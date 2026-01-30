@@ -1,0 +1,16 @@
+- content_for :title, t('.subject')
+- content_for :preview, t('.intro')
+
+= render 'mailers/shared/header'
+
+%mj-section{ "background-color": "#ffffff" }
+  %mj-column
+    %mj-text{ "padding-bottom": "10px" }
+      %h2{ style: "margin: 0 0 20px 0; font-size: 24px; color: #333333;" }
+        = t('.greeting', name: @user.name)
+
+    %mj-text{ "padding-bottom": "20px" }
+      %p{ style: "margin: 0 0 15px 0;" }
+        = t('.body')
+
+= render 'mailers/shared/footer'

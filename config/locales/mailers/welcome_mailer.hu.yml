@@ -1,9 +1,0 @@
-hu:
-  welcome_mailer:
-    welcome:
-      subject: "Üdvözlünk a Jiki-nél!"
-      greeting: "Szia %{name},"
-      intro: "Üdvözlünk a Jiki-nél - itt kezdődik a programozás tanulásának útja!"
-      body: "Örülünk, hogy csatlakoztál tanulóközösségünkhöz. A Jiki strukturált, lineáris tanulási útvonalat kínál, amelyet kifejezetten kezdők számára terveztünk."
-      cta: "Kezdd el a tanulást"
-      footer: "Ha bármilyen kérdésed van, csak válaszolj erre az e-mailre. Segítünk!"

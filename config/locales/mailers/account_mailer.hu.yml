@@ -1,0 +1,14 @@
+hu:
+  account_mailer:
+    welcome:
+      subject: "Üdvözlünk a Jiki-nél!"
+      greeting: "Szia %{name},"
+      intro: "Üdvözlünk a Jiki-nél - itt kezdődik a programozás tanulásának útja!"
+      body: "Örülünk, hogy csatlakoztál tanulóközösségünkhöz. A Jiki strukturált, lineáris tanulási útvonalat kínál, amelyet kifejezetten kezdők számára terveztünk."
+      cta: "Kezdd el a tanulást"
+    account_deletion_confirmation:
+      subject: "Fiók törlésének megerősítése"
+      preview: "Kérjük, erősítsd meg, hogy véglegesen törölni szeretnéd a Jiki fiókodat"
+      greeting: "Szia %{name}!"
+      warning: "Figyelem: Ez a művelet végleges és nem vonható vissza. Minden haladásod, beküldésed és adatod véglegesen törlődik."
+      cta: "Fiók törlése"
