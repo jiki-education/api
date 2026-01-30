@@ -83,5 +83,5 @@ production:
   host: <%= Jiki.config.aurora_endpoint %>
   port: <%= Jiki.config.aurora_port %>
   database: <%= Jiki.config.aurora_database_name %>
-  username: jiki
+  username: <%= Jiki.secrets.aurora_username %>
   password: <%= Jiki.secrets.aurora_password %>
