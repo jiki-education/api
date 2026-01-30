@@ -7,7 +7,7 @@ namespace :test do
 
   desc 'Validate Solid Queue recurring jobs configuration'
   task recurring_jobs: :environment do
-    config_path = Rails.root.join('config/recurring.yml')
+    config_path = Rails.root.join('config', 'recurring.yml')
     unless File.exist?(config_path)
       puts 'No recurring.yml found, skipping validation'
       next
