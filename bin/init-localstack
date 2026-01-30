@@ -27,7 +27,6 @@ end
 
 # Create S3 buckets
 buckets = [
-  { name: Jiki.config.s3_bucket_video_production, description: 'Video Production' },
   { name: Jiki.config.r2_bucket_assets, description: 'Assets (R2)' },
   { name: Jiki.config.r2_bucket_uploads, description: 'Uploads (R2)' }
 ]

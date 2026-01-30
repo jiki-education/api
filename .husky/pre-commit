@@ -11,14 +11,4 @@ bin/rails test || exit 1
 echo "Running Brakeman security scan..."
 bin/brakeman -q || exit 1
 
-# Generate TypeScript types if schemas changed
-if git diff --cached --name-only | grep -q "app/commands/video_production/node/schemas/"; then
-  echo "Schema changes detected, generating TypeScript types..."
-  bundle exec rake typescript:generate || exit 1
-
-  # Stage generated TypeScript files
-  git add typescript/src/
-  echo "✅ TypeScript types generated and staged"
-fi
-
-echo "✅ All pre-commit checks passed!"
+echo "All pre-commit checks passed!"

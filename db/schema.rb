@@ -492,40 +492,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  create_table "video_production_nodes", force: :cascade do |t|
-    t.jsonb "asset"
-    t.jsonb "config", default: {}, null: false
-    t.datetime "created_at", null: false
-    t.jsonb "inputs", default: {}, null: false
-    t.boolean "is_valid", default: false, null: false
-    t.jsonb "metadata"
-    t.jsonb "output"
-    t.bigint "pipeline_id", null: false
-    t.string "status", default: "pending", null: false
-    t.string "title", null: false
-    t.string "type", null: false
-    t.datetime "updated_at", null: false
-    t.string "uuid", null: false
-    t.jsonb "validation_errors", default: {}, null: false
-    t.index ["pipeline_id", "status"], name: "index_video_production_nodes_on_pipeline_id_and_status"
-    t.index ["pipeline_id"], name: "index_video_production_nodes_on_pipeline_id"
-    t.index ["status"], name: "index_video_production_nodes_on_status"
-    t.index ["type"], name: "index_video_production_nodes_on_type"
-    t.index ["uuid"], name: "index_video_production_nodes_on_uuid", unique: true
-  end
-
-  create_table "video_production_pipelines", force: :cascade do |t|
-    t.jsonb "config", default: {}, null: false
-    t.datetime "created_at", null: false
-    t.jsonb "metadata", default: {}, null: false
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.string "uuid", null: false
-    t.string "version", default: "1.0", null: false
-    t.index ["updated_at"], name: "index_video_production_pipelines_on_updated_at"
-    t.index ["uuid"], name: "index_video_production_pipelines_on_uuid", unique: true
-  end
-
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assistant_conversations", "users"
@@ -559,5 +525,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
   add_foreign_key "user_levels", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
-  add_foreign_key "video_production_nodes", "video_production_pipelines", column: "pipeline_id", on_delete: :cascade
 end

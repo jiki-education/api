@@ -26,9 +26,6 @@ You can read these files at **any point during your work** - even in the middle 
 | `llm.md` | AI-powered translation, Gemini API |
 | `i18n.md` | Internationalization, translations |
 | `concepts.md` | Educational content model |
-| `video_production.md` | Video pipeline system |
-| `spi.md` | Service-to-service communication |
-| `typescript_generation.md` | Type generation from schemas |
 | `auth.md` | Authentication, JWT |
 | `premium.md` | Premium/membership features |
 | `stripe.md` | Payment integration |
@@ -58,10 +55,9 @@ Always perform these checks before committing code:
 
 1. **Run Tests**: `bin/rails test`
 2. **Run Linting**: `bin/rubocop -a`
-3. **TypeScript Generation**: Automatically handled by pre-commit hook if schemas changed
-4. **Security Check**: `bin/brakeman`
-5. **Update Context Files**: Review if any `.context/` files need updating based on your changes
-6. **Commit Message**: Use clear, descriptive commit messages that explain the "why"
+3. **Security Check**: `bin/brakeman`
+4. **Update Context Files**: Review if any `.context/` files need updating based on your changes
+5. **Commit Message**: Use clear, descriptive commit messages that explain the "why"
 
 ### Pre-Commit Hook
 
@@ -69,24 +65,6 @@ The `.husky/pre-commit` hook automatically:
 - Runs linting on staged files
 - Runs all tests
 - Runs security scanning with Brakeman
-- **Generates TypeScript types** if schema files changed
-- Stages generated TypeScript files automatically
-
-If schema files in `app/commands/video_production/node/schemas/` are staged, the hook will:
-1. Detect the schema changes
-2. Run `bundle exec rake typescript:generate`
-3. Stage the generated files in `typescript/src/`
-4. Include them in your commit
-
-### CI Auto-Generation
-
-If you bypass the pre-commit hook or forget to regenerate types, the CI pipeline will:
-1. Detect missing type updates after merge to `main`
-2. Generate the types automatically
-3. Create a follow-up commit with the updated types
-4. Push it to `main`
-
-This ensures types are always in sync with schemas on the `main` branch.
 
 ## Git Workflow for Agents (Committing)
 
@@ -185,7 +163,6 @@ When you learn something important or encounter a pattern worth documenting, upd
 ### Completed Infrastructure (Terraform)
 
 - **VPC & Networking**: VPC, subnets, internet gateway (`terraform/terraform/aws/vpc.tf`)
-- **S3 Video Production**: Bucket and IAM user for video generation (`terraform/terraform/aws/video-production.tf`)
 - **DynamoDB Config**: Configuration table with 14 items populated from Terraform (`terraform/terraform/aws/dynamodb.tf`)
   - Includes: domains, Cloudflare R2 config, database config, Stripe placeholders
   - IAM policy for ECS task access included
