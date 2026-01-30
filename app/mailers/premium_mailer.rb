@@ -11,34 +11,16 @@ class PremiumMailer < ApplicationMailer
 
   # Sends welcome email when user upgrades to Premium
   def welcome_to_premium(user)
-    with_locale(user) do
-      mail_to_user(
-        user,
-        to: user.email,
-        subject: t(".subject")
-      )
-    end
+    mail_to_user(user)
   end
 
   # Sends welcome email when user upgrades to Max
   def welcome_to_max(user)
-    with_locale(user) do
-      mail_to_user(
-        user,
-        to: user.email,
-        subject: t(".subject")
-      )
-    end
+    mail_to_user(user)
   end
 
   # Sends notification when subscription ends (downgrade to standard)
   def subscription_ended(user)
-    with_locale(user) do
-      mail_to_user(
-        user,
-        to: user.email,
-        subject: t(".subject")
-      )
-    end
+    mail_to_user(user)
   end
 end

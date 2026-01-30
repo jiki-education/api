@@ -56,8 +56,7 @@ class ApplicationMailer < ActionMailer::Base
     return unless user.may_receive_emails?
 
     if unsubscribe_key
-      preference_method = "receive_#{unsubscribe_key}?"
-      return unless user.public_send(preference_method)
+      return unless user.public_send("receive_#{unsubscribe_key}?")
 
       add_unsubscribe_headers!(user, unsubscribe_key)
     end
@@ -68,7 +67,9 @@ class ApplicationMailer < ActionMailer::Base
 
     # Call the mail method with our special guard method that ensures this
     # doesn't get overriden accidently elsewhere.
-    mail(**args, called_via_mail_to_user: true, &block)
+    I18n.with_locale(user.locale) do
+      mail(to: user.email, **args, called_via_mail_to_user: true, &block)
+    end
   end
 
   # Sends an email using a database-backed email template with Liquid rendering
@@ -105,18 +106,10 @@ class ApplicationMailer < ActionMailer::Base
     # Render text body with Liquid
     text_body = Liquid::Template.parse(template.body_text).render(liquid_context)
 
-    # Send email in user's locale with multipart HTML/text
-    with_locale(user) do
-      mail_to_user(user, unsubscribe_key:, to: user.email, subject:) do |format|
-        format.html { render inline: @mjml_content, layout: 'mailer' }
-        format.text { render plain: text_body }
-      end
+    mail_to_user(user, unsubscribe_key:, subject:) do |format|
+      format.html { render inline: @mjml_content, layout: 'mailer' }
+      format.text { render plain: text_body }
     end
-  end
-
-  # Set the locale for the email based on the recipient's preference
-  def with_locale(user, &block)
-    I18n.with_locale(user.locale || I18n.default_locale, &block)
   end
 
   private
