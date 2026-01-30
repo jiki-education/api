@@ -1,6 +1,7 @@
 class ApplicationMailer < ActionMailer::Base
   default from: -> { default_from_email }
   layout "mailer"
+  helper_method :unsubscribe_url
 
   private
   # Override in subclasses to specify different from email
@@ -19,8 +20,9 @@ class ApplicationMailer < ActionMailer::Base
   end
 
   # Generate unsubscribe URL for frontend
-  def unsubscribe_url(token:)
-    "#{Jiki.config.frontend_base_url}/unsubscribe/#{token}"
+  def unsubscribe_url(token:, key: nil)
+    url = "#{Jiki.config.frontend_base_url}/unsubscribe?token=#{token}"
+    key.present? ? "#{url}&key=#{key}" : url
   end
 
   # Add RFC 8058 one-click unsubscribe headers

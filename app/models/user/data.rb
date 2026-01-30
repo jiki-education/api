@@ -7,7 +7,7 @@ class User::Data < ApplicationRecord
 
   # Notification preference slugs mapped to column names
   NOTIFICATION_SLUGS = {
-    "product_updates" => :receive_product_updates,
+    "newsletters" => :receive_newsletters,
     "event_emails" => :receive_event_emails,
     "milestone_emails" => :receive_milestone_emails,
     "activity_emails" => :receive_activity_emails

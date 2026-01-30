@@ -1,5 +1,5 @@
 class User
-  class UpdateNotification
+  class UpdateNotificationPreference
     include Mandate
 
     initialize_with :user, :slug, :value

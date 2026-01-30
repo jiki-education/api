@@ -10,13 +10,13 @@ class NotificationsMailer < ApplicationMailer
   default from: -> { Jiki.config.notifications_from_email }
 
   # Example: Lesson completed notification
-  # TODO: Implement when User and Lesson models exist
   # def lesson_completed(user, lesson)
-  #   return unless user.notifications_enabled?
+  #   return unless user.data.receive_activity_emails?
   #
   #   @user = user
   #   @lesson = lesson
   #   @next_lesson = lesson.next_lesson
+  #   @unsubscribe_key = :activity_emails
   #
   #   mail(
   #     to: user.email,
@@ -25,12 +25,12 @@ class NotificationsMailer < ApplicationMailer
   # end
 
   # Example: Achievement unlocked
-  # TODO: Implement when User and Achievement models exist
   # def achievement_unlocked(user, achievement)
-  #   return unless user.notifications_enabled?
+  #   return unless user.data.receive_activity_emails?
   #
   #   @user = user
   #   @achievement = achievement
+  #   @unsubscribe_key = :activity_emails
   #
   #   mail(
   #     to: user.email,

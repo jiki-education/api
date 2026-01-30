@@ -150,12 +150,12 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
   # Notification tests
   test "PATCH notification updates preference successfully" do
-    patch notification_internal_settings_path("product_updates"),
+    patch notification_internal_settings_path("newsletters"),
       params: { value: false },
       as: :json
 
     assert_response :success
-    refute @user.data.reload.receive_product_updates
+    refute @user.data.reload.receive_newsletters
   end
 
   test "PATCH notification returns 404 for invalid slug" do
