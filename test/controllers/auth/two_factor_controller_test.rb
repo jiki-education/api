@@ -16,9 +16,10 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     post auth_verify_2fa_path, params: { otp_code: otp_code }, as: :json
 
     assert_response :ok
-
-    json = response.parsed_body
-    assert_equal @admin.handle, json["user"]["handle"]
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(@admin)
+    })
 
     # Verify user IS signed in
     get internal_me_path, as: :json
@@ -87,12 +88,14 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
 
     assert_response :ok
 
-    json = response.parsed_body
-    assert_equal @admin.handle, json["user"]["handle"]
-
-    # Verify 2FA is now enabled
+    # Reload to get the updated otp_enabled_at timestamp for serializer
     @admin.reload
     assert @admin.otp_enabled?
+
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(@admin)
+    })
 
     # Verify user IS signed in
     get internal_me_path, as: :json

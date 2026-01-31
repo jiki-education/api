@@ -26,12 +26,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert_equal 'newuser', user.handle
 
     # Check response
-    json = response.parsed_body
-    assert_equal 'newuser', json['user']['handle']
-    assert_equal 'newuser@gmail.com', json['user']['email']
-    assert_equal 'New User', json['user']['name']
-    assert_equal 'google', json['user']['provider']
-    assert json['user']['email_confirmed']
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(user)
+    })
   end
 
   test "POST google with valid code for existing google user signs them in" do
@@ -55,10 +53,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     end
 
     assert_response :ok
-
-    json = response.parsed_body
-    assert_equal existing_user.handle, json['user']['handle']
-    assert_equal 'existing@gmail.com', json['user']['email']
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(existing_user)
+    })
   end
 
   test "POST google links existing email user to Google account" do
@@ -85,9 +83,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert_equal 'google', existing_user.provider
     assert existing_user.confirmed?
 
-    json = response.parsed_body
-    assert_equal existing_user.handle, json['user']['handle']
-    assert_equal 'google', json['user']['provider']
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(existing_user)
+    })
   end
 
   test "POST google with invalid code returns unauthorized" do

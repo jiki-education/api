@@ -8,7 +8,7 @@ class Auth::ConfirmationsController < Devise::ConfirmationsController
 
     if resource.errors.empty?
       sign_in(resource)
-      render json: { user: SerializeUser.(resource) }, status: :ok
+      render json: { status: "success", user: SerializeUser.(resource) }, status: :ok
     else
       render json: {
         error: { type: "invalid_token" }

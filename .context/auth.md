@@ -145,6 +145,7 @@ Authenticate and establish session. User must have confirmed email.
 **Success Response (200):**
 ```json
 {
+  "status": "success",
   "user": {
     "id": 123,
     "email": "user@example.com",
@@ -202,6 +203,7 @@ Verify OTP code and complete admin login. Called after login returns `2fa_requir
 **Success Response (200):**
 ```json
 {
+  "status": "success",
   "user": {
     "handle": "admin-user",
     "email": "admin@example.com",
@@ -244,6 +246,7 @@ Verify OTP code, enable 2FA, and complete first-time admin login. Called after l
 **Success Response (200):**
 ```json
 {
+  "status": "success",
   "user": {
     "handle": "admin-user",
     "email": "admin@example.com",
@@ -318,6 +321,7 @@ Confirm email address and sign in user.
 **Success Response (200):**
 ```json
 {
+  "status": "success",
   "user": {
     "handle": "john-doe",
     "email": "user@example.com",
@@ -414,6 +418,7 @@ Authenticate with Google OAuth.
 **Success Response (200):**
 ```json
 {
+  "status": "success",
   "user": {
     "id": 123,
     "email": "user@gmail.com",
