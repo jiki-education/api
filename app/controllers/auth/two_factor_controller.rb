@@ -43,7 +43,7 @@ class Auth::TwoFactorController < ApplicationController
   def complete_sign_in
     clear_otp_session
     sign_in(:user, user)
-    render json: { user: SerializeUser.(user) }, status: :ok
+    render json: { status: "success", user: SerializeUser.(user) }, status: :ok
   end
 
   def clear_otp_session

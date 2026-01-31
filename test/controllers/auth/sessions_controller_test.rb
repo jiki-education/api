@@ -195,10 +195,10 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     }, as: :json
 
     assert_response :ok
-
-    json = response.parsed_body
-    assert_equal @user.handle, json["user"]["handle"]
-    assert_nil json["status"]
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(@user)
+    })
 
     # Verify user IS signed in
     get internal_me_path, as: :json

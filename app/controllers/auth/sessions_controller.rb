@@ -45,7 +45,7 @@ class Auth::SessionsController < Devise::SessionsController
 
   private
   def respond_with(resource, _opts = {})
-    render json: { user: SerializeUser.(resource) }, status: :ok
+    render json: { status: "success", user: SerializeUser.(resource) }, status: :ok
   end
 
   def respond_with_error
