@@ -16,7 +16,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     @current_user.data.update!(membership_type: "premium")
 
     post internal_assistant_conversations_path,
-      headers: @headers,
       params: { lesson_slug: "basic-movement" },
       as: :json
 
@@ -38,7 +37,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     @current_user.data.update!(membership_type: "standard")
 
     post internal_assistant_conversations_path,
-      headers: @headers,
       params: { lesson_slug: "basic-movement" },
       as: :json
 
@@ -52,7 +50,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     create(:assistant_conversation, user: @current_user, context: other_lesson)
 
     post internal_assistant_conversations_path,
-      headers: @headers,
       params: { lesson_slug: "basic-movement" },
       as: :json
 
@@ -63,7 +60,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
   test "POST create returns 404 for non-existent lesson" do
     post internal_assistant_conversations_path,
-      headers: @headers,
       params: { lesson_slug: "non-existent" },
       as: :json
 
@@ -76,7 +72,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
     assert_difference 'AssistantConversation.count', 1 do
       post internal_assistant_conversations_path,
-        headers: @headers,
         params: { lesson_slug: "basic-movement" },
         as: :json
     end
@@ -89,7 +84,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   # POST user_messages
   test "POST user_messages successfully adds user message" do
     post user_messages_internal_assistant_conversations_path,
-      headers: @headers,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
@@ -111,7 +105,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     ).returns(build_stubbed(:assistant_conversation))
 
     post user_messages_internal_assistant_conversations_path,
-      headers: @headers,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
@@ -131,7 +124,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     signature = OpenSSL::HMAC.hexdigest('SHA256', Jiki.secrets.hmac_secret, payload)
 
     post assistant_messages_internal_assistant_conversations_path,
-      headers: @headers,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
@@ -147,7 +139,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
   test "POST assistant_messages with invalid signature returns 401" do
     post assistant_messages_internal_assistant_conversations_path,
-      headers: @headers,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
@@ -176,7 +167,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     ).returns(build_stubbed(:assistant_conversation))
 
     post assistant_messages_internal_assistant_conversations_path,
-      headers: @headers,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",

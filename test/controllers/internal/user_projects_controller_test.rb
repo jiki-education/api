@@ -17,7 +17,6 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
     SerializeUserProject.expects(:call).with(user_project).returns(serialized_data)
 
     get internal_user_project_path(project_slug: @project.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -26,7 +25,6 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
 
   test "GET show returns 404 when user_project does not exist" do
     get internal_user_project_path(project_slug: @project.slug),
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -40,7 +38,6 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
 
   test "GET show returns 404 for non-existent project" do
     get internal_user_project_path(project_slug: "non-existent-slug"),
-      headers: @headers,
       as: :json
 
     assert_response :not_found

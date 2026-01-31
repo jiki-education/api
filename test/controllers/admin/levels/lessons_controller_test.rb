@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
     @course = create(:course, slug: "test-course")
     @level = create(:level, course: @course)
   end
@@ -36,7 +36,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           type: "exercise"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -52,7 +51,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           data: { slug: "test-exercise", foo: "bar" }
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -75,7 +73,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           data: { slug: "some-exercise", key: "value" }
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -94,7 +91,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           data: { slug: "some-exercise", key: "value" }
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -115,7 +111,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           data: { slug: "some-exercise", key: "value" }
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -134,7 +129,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           data: { slug: "some-exercise", key: "value" }
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -167,7 +161,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           data: complex_data
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -183,7 +176,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           type: "exercise"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -204,7 +196,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           type: "exercise"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -221,7 +212,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           type: "exercise"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -247,7 +237,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           type: "exercise"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -264,7 +253,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     create(:lesson, :exercise, level: other_level)
 
     Prosopite.scan
-    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), as: :json
 
     assert_response :success
     assert_json_response({
@@ -273,14 +262,14 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty array when level has no lessons" do
-    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), as: :json
 
     assert_response :success
     assert_json_response({ lessons: [] })
   end
 
   test "GET index returns 404 for non-existent level" do
-    get admin_level_lessons_path(level_id: 99_999), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: 99_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -300,7 +289,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       arg.to_a == lessons
     end.returns([])
 
-    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), as: :json
 
     assert_response :success
   end
@@ -311,7 +300,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     26.times { |i| create(:lesson, :exercise, level: @level, slug: "lesson-#{i}") }
     Prosopite.scan
 
-    get admin_level_lessons_path(level_id: @level.id), headers: @headers, as: :json
+    get admin_level_lessons_path(level_id: @level.id), as: :json
 
     assert_response :success
     json = response.parsed_body
@@ -335,7 +324,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           description: "New description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -351,7 +339,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           description: "New description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -366,7 +353,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { type: "video", data: { sources: [{ id: "abc123" }] } } },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -379,7 +365,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { position: 5 } },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -392,7 +377,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { data: { slug: "some-exercise", key: "new", foo: "bar" } } },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -409,7 +393,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: ""
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -423,7 +406,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: 99_999, id: lesson.id),
       params: { lesson: { title: "New" } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -438,7 +420,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "PATCH update returns 404 for non-existent lesson" do
     patch admin_level_lesson_path(level_id: @level.id, id: 99_999),
       params: { lesson: { title: "New" } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -456,7 +437,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { title: "New" } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -476,7 +456,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { title: "Updated" } },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -502,7 +481,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { data: complex_data } },
-      headers: @headers,
       as: :json
 
     assert_response :success

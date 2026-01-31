@@ -18,6 +18,7 @@ gem "bcrypt", "~> 3.1.7"
 gem "devise", "~> 5.0"
 gem "jwt" # For conversation tokens (AI assistant)
 gem "discourse_api" # For Discourse SSO integration
+gem "rotp", "~> 6.3" # TOTP for two-factor authentication
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[windows jruby]

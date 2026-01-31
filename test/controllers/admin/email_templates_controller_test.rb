@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
   end
 
   # Authentication and authorization guards
@@ -24,7 +24,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     template2 = create(:email_template, slug: "template-2", locale: "hu")
 
     Prosopite.scan # Resume scan for the actual request
-    get admin_email_templates_path, headers: @headers, as: :json
+    get admin_email_templates_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -38,7 +38,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty results when no templates exist" do
-    get admin_email_templates_path, headers: @headers, as: :json
+    get admin_email_templates_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -53,7 +53,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
 
   # TYPES tests
   test "GET types returns all available template types" do
-    get types_admin_email_templates_path, headers: @headers, as: :json
+    get types_admin_email_templates_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -63,7 +63,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
 
   # SUMMARY tests
   test "GET summary returns empty array when no templates exist" do
-    get summary_admin_email_templates_path, headers: @headers, as: :json
+    get summary_admin_email_templates_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -82,7 +82,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     create(:email_template, type: :level_completion, slug: "level-2", locale: "en")
 
     Prosopite.scan # Resume scan for the actual request
-    get summary_admin_email_templates_path, headers: @headers, as: :json
+    get summary_admin_email_templates_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -111,7 +111,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     ]
     EmailTemplate::GenerateSummary.expects(:call).returns(expected_summary)
 
-    get summary_admin_email_templates_path, headers: @headers, as: :json
+    get summary_admin_email_templates_path, as: :json
 
     assert_response :success
   end
@@ -130,7 +130,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
             body_text: "Test text"
           }
         },
-        headers: @headers,
         as: :json
     end
 
@@ -153,7 +152,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           locale: "en"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -176,7 +174,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           body_text: "Duplicate text"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -202,7 +199,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           body_text: "Test"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -212,7 +208,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   test "GET show returns single template with full data using SerializeEmailTemplate" do
     email_template = create(:email_template)
 
-    get admin_email_template_path(email_template), headers: @headers, as: :json
+    get admin_email_template_path(email_template), as: :json
 
     assert_response :success
     assert_json_response({
@@ -221,7 +217,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 404 for non-existent template" do
-    get admin_email_template_path(99_999), headers: @headers, as: :json
+    get admin_email_template_path(99_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -247,7 +243,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           body_mjml: "New MJML"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -267,7 +262,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           body_text: new_text
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -281,7 +275,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   test "PATCH update returns 404 for non-existent template" do
     patch admin_email_template_path(99_999),
       params: { email_template: { subject: "New" } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -304,7 +297,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           locale: "hu"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -324,7 +316,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           slug: "level-1"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -342,7 +333,6 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
           subject: ""
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -357,7 +347,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     template_id = email_template.id
 
     assert_difference -> { EmailTemplate.count }, -1 do
-      delete admin_email_template_path(email_template), headers: @headers, as: :json
+      delete admin_email_template_path(email_template), as: :json
     end
 
     assert_response :no_content
@@ -365,7 +355,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   end
 
   test "DELETE destroy returns 404 for non-existent template" do
-    delete admin_email_template_path(99_999), headers: @headers, as: :json
+    delete admin_email_template_path(99_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -384,7 +374,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     EmailTemplate::TranslateToLocale.expects(:defer).with(email_template, "hu")
     EmailTemplate::TranslateToLocale.expects(:defer).with(email_template, "fr")
 
-    post translate_admin_email_template_path(email_template), headers: @headers, as: :json
+    post translate_admin_email_template_path(email_template), as: :json
 
     assert_response :accepted
     assert_json_response({
@@ -396,7 +386,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   test "POST translate returns 422 when template is not in English" do
     email_template = create(:email_template, locale: "hu")
 
-    post translate_admin_email_template_path(email_template), headers: @headers, as: :json
+    post translate_admin_email_template_path(email_template), as: :json
 
     assert_response :unprocessable_entity
     json = response.parsed_body
@@ -404,7 +394,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   end
 
   test "POST translate returns 404 when template not found" do
-    post translate_admin_email_template_path(99_999), headers: @headers, as: :json
+    post translate_admin_email_template_path(99_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -419,7 +409,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     email_template = create(:email_template, locale: "en")
     EmailTemplate::TranslateToAllLocales.expects(:call).with(email_template).returns(%w[hu fr])
 
-    post translate_admin_email_template_path(email_template), headers: @headers, as: :json
+    post translate_admin_email_template_path(email_template), as: :json
 
     assert_response :accepted
   end

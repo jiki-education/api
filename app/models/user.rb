@@ -50,6 +50,11 @@ class User < ApplicationRecord
   def current_streak = aggregate_activity_data[:current_streak]
   def total_active_days = aggregate_activity_data[:total_active_days]
 
+  # Two-Factor Authentication
+  def otp_enabled? = otp_secret.present? && otp_enabled_at.present?
+  def requires_otp? = admin?
+  def otp_provisioning_uri = otp_secret ? ROTP::TOTP.new(otp_secret, issuer: "Jiki").provisioning_uri(email) : nil
+
   memoize
   def aggregate_activity_data = User::ActivityLog::SyncAndRetrieveAggregates.(self)
 

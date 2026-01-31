@@ -20,7 +20,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     create(:user_project, user: @current_user, project: project_zebra)
     create(:user_project, user: @current_user, project: project_middle)
 
-    get internal_projects_path, headers: @headers, as: :json
+    get internal_projects_path, as: :json
 
     assert_response :success
     # Unlocked first (Middle, Zebra), then locked (Apple)
@@ -40,7 +40,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     project_apple = create(:project, title: "Apple Project")
     project_banana = create(:project, title: "Banana Project")
 
-    get internal_projects_path, headers: @headers, as: :json
+    get internal_projects_path, as: :json
 
     assert_response :success
     # All locked, ordered by title
@@ -60,7 +60,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     project = create(:project, title: "Calculator")
     create(:user_project, user: @current_user, project:, started_at: Time.current, completed_at: nil)
 
-    get internal_projects_path, headers: @headers, as: :json
+    get internal_projects_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -79,7 +79,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     project = create(:project, title: "Calculator")
     create(:user_project, user: @current_user, project:, started_at: 2.days.ago, completed_at: Time.current)
 
-    get internal_projects_path, headers: @headers, as: :json
+    get internal_projects_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -101,7 +101,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
     create(:user_project, user: @current_user, project: project_sci_calc)
 
-    get internal_projects_path(title: "Calculator"), headers: @headers, as: :json
+    get internal_projects_path(title: "Calculator"), as: :json
 
     assert_response :success
     # Scientific Calculator (unlocked) first, then Calculator App (locked)
@@ -124,7 +124,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
     create(:user_project, user: @current_user, project: project_cherry)
 
-    get internal_projects_path(page: 1, per: 2), headers: @headers, as: :json
+    get internal_projects_path(page: 1, per: 2), as: :json
 
     assert_response :success
     assert_json_response({
@@ -142,7 +142,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     Prosopite.finish
     projects = Array.new(5) { |i| create(:project, title: "Project #{i}") }
 
-    get internal_projects_path(per: 3), headers: @headers, as: :json
+    get internal_projects_path(per: 3), as: :json
 
     assert_response :success
     assert_json_response({
@@ -160,7 +160,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     Prosopite.finish
     project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
 
-    get internal_projects_path, headers: @headers, as: :json
+    get internal_projects_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -179,7 +179,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     Prosopite.finish
     project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
 
-    get internal_project_path(project_slug: project.slug), headers: @headers, as: :json
+    get internal_project_path(project_slug: project.slug), as: :json
 
     assert_response :success
     assert_json_response({
@@ -190,7 +190,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
   test "GET show returns 404 for non-existent project" do
     Prosopite.finish
 
-    get internal_project_path(project_slug: "non-existent"), headers: @headers, as: :json
+    get internal_project_path(project_slug: "non-existent"), as: :json
 
     assert_response :not_found
     assert_json_response({

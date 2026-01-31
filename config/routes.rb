@@ -36,6 +36,10 @@ Rails.application.routes.draw do
     get "discourse/sso", to: "discourse#sso"
     post "account_deletion/request", to: "account_deletions#request_deletion"
     post "account_deletion/confirm", to: "account_deletions#confirm"
+
+    # Two-factor authentication
+    post "verify-2fa", to: "two_factor#verify"
+    post "setup-2fa", to: "two_factor#setup"
   end
 
   # External (public, unauthenticated) endpoints

@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::ConceptsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
   end
 
   # Authentication and authorization guards
@@ -21,7 +21,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     concept2 = create(:concept, title: "Arrays", slug: "arrays")
 
     Prosopite.scan # Resume scan for the actual request
-    get admin_concepts_path, headers: @headers, as: :json
+    get admin_concepts_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -42,7 +42,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     concept2.update!(title: "Arrays")
 
     Prosopite.scan
-    get admin_concepts_path(title: "String"), headers: @headers, as: :json
+    get admin_concepts_path(title: "String"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -62,7 +62,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     create(:concept, title: "Concept 3")
 
     Prosopite.scan
-    get admin_concepts_path(page: 1, per: 2), headers: @headers, as: :json
+    get admin_concepts_path(page: 1, per: 2), as: :json
 
     assert_response :success
     # Ordered alphabetically by title
@@ -77,7 +77,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty results when no concepts exist" do
-    get admin_concepts_path, headers: @headers, as: :json
+    get admin_concepts_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -103,7 +103,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     }
 
     assert_difference "Concept.count", 1 do
-      post admin_concepts_path, params: concept_params, headers: @headers, as: :json
+      post admin_concepts_path, params: concept_params, as: :json
     end
 
     assert_response :created
@@ -127,7 +127,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    post admin_concepts_path, params: concept_params, headers: @headers, as: :json
+    post admin_concepts_path, params: concept_params, as: :json
 
     assert_response :created
 
@@ -145,7 +145,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     }
 
     assert_no_difference "Concept.count" do
-      post admin_concepts_path, params: concept_params, headers: @headers, as: :json
+      post admin_concepts_path, params: concept_params, as: :json
     end
 
     assert_response :unprocessable_entity
@@ -162,7 +162,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   test "GET show returns concept with markdown" do
     concept = create(:concept, title: "Strings", content_markdown: "# Strings\n\nContent")
 
-    get admin_concept_path(concept.id), headers: @headers, as: :json
+    get admin_concept_path(concept.id), as: :json
 
     assert_response :success
     assert_json_response({
@@ -171,7 +171,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 404 for non-existent concept" do
-    get admin_concept_path(999_999), headers: @headers, as: :json
+    get admin_concept_path(999_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -192,7 +192,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_concept_path(concept.id), params: update_params, headers: @headers, as: :json
+    patch admin_concept_path(concept.id), params: update_params, as: :json
 
     assert_response :success
 
@@ -210,7 +210,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_concept_path(concept.id), params: update_params, headers: @headers, as: :json
+    patch admin_concept_path(concept.id), params: update_params, as: :json
 
     assert_response :success
     assert_equal "# Updated", concept.reload.content_markdown
@@ -225,7 +225,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_concept_path(concept.id), params: update_params, headers: @headers, as: :json
+    patch admin_concept_path(concept.id), params: update_params, as: :json
 
     assert_response :unprocessable_entity
     assert_json_response({
@@ -243,7 +243,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_concept_path(999_999), params: update_params, headers: @headers, as: :json
+    patch admin_concept_path(999_999), params: update_params, as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -260,14 +260,14 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     concept = create(:concept)
 
     assert_difference "Concept.count", -1 do
-      delete admin_concept_path(concept.id), headers: @headers, as: :json
+      delete admin_concept_path(concept.id), as: :json
     end
 
     assert_response :no_content
   end
 
   test "DELETE destroy returns 404 for non-existent concept" do
-    delete admin_concept_path(999_999), headers: @headers, as: :json
+    delete admin_concept_path(999_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -291,7 +291,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    post admin_concepts_path, params: concept_params, headers: @headers, as: :json
+    post admin_concepts_path, params: concept_params, as: :json
 
     assert_response :created
     concept = Concept.last
@@ -307,7 +307,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_concept_path(concept.id), params: update_params, headers: @headers, as: :json
+    patch admin_concept_path(concept.id), params: update_params, as: :json
 
     assert_response :success
     assert_equal parent.id, concept.reload.parent_concept_id
@@ -322,7 +322,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_concept_path(parent.id), params: update_params, headers: @headers, as: :json
+    patch admin_concept_path(parent.id), params: update_params, as: :json
 
     assert_response :unprocessable_entity
     assert_json_response({
@@ -341,7 +341,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     create(:concept, parent: concept) # child
 
     Prosopite.scan
-    get admin_concept_path(concept.id), headers: @headers, as: :json
+    get admin_concept_path(concept.id), as: :json
 
     assert_response :success
     response_data = JSON.parse(response.body)
@@ -358,7 +358,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     create(:concept, parent: parent)
 
     Prosopite.scan
-    get admin_concepts_path, headers: @headers, as: :json
+    get admin_concepts_path, as: :json
 
     assert_response :success
     response_data = JSON.parse(response.body)

@@ -27,7 +27,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson2, completed_at: nil)
     create(:user_lesson, user: @current_user, lesson: lesson3, completed_at: Time.current)
 
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     user_levels = @current_user.user_levels.joins(:level).where(levels: { course: @course })
@@ -37,7 +37,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty array when no user_levels exist for course" do
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_json_response({ user_levels: [] })
@@ -58,7 +58,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson1)
     create(:user_lesson, user: other_user, lesson: lesson2)
 
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     user_levels = @current_user.user_levels.joins(:level).where(levels: { course: @course })
@@ -74,7 +74,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_level, user: @current_user, level: level)
     create(:user_lesson, user: @current_user, lesson: lesson)
 
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
 
@@ -106,7 +106,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     SerializeUserLevels.expects(:call).with { |arg| arg.map(&:id).sort == user_levels.map(&:id).sort }.returns(serialized_data)
 
     Prosopite.scan # Resume scan for the actual request
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_json_response({ user_levels: serialized_data })
@@ -130,7 +130,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson2)
     create(:user_lesson, user: @current_user, lesson: lesson3)
 
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     user_levels = @current_user.user_levels.joins(:level).where(levels: { course: @course })
@@ -155,7 +155,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson1)
     create(:user_lesson, user: @current_user, lesson: lesson2)
 
-    get internal_user_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_equal 1, response.parsed_body["user_levels"].length
@@ -163,7 +163,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns 404 for non-existent course" do
-    get internal_user_levels_path(course_slug: "non-existent"), headers: @headers, as: :json
+    get internal_user_levels_path(course_slug: "non-existent"), as: :json
 
     assert_response :not_found
   end
@@ -179,7 +179,6 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
 
     patch complete_internal_user_level_path(course_slug: @course.slug, level_slug: level.slug),
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -196,7 +195,6 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: Time.current)
 
     patch complete_internal_user_level_path(course_slug: @course.slug, level_slug: level1.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -222,7 +220,6 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson:, completed_at: Time.current)
 
     patch complete_internal_user_level_path(course_slug: @course.slug, level_slug: level.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success

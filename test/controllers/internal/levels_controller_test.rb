@@ -18,7 +18,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     create(:lesson, :video, level: level1, slug: "lesson-2")
     create(:lesson, :exercise, level: level2, slug: "lesson-3", data: { slug: :ex3 })
 
-    get internal_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_json_response({
@@ -27,7 +27,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty array when no levels exist for course" do
-    get internal_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_json_response({ levels: [] })
@@ -37,7 +37,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     level = create(:level, course: @course)
     create(:lesson, :exercise, level: level)
 
-    get internal_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
 
@@ -64,7 +64,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     SerializeLevels.expects(:call).with { |arg| arg.to_a == levels }.returns(serialized_data)
 
     Prosopite.scan # Resume scan for the actual request
-    get internal_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_json_response({ levels: serialized_data })
@@ -75,7 +75,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     level1 = create(:level, course: @course, slug: "my-level")
     create(:level, course: other_course, slug: "other-level")
 
-    get internal_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_equal 1, response.parsed_body["levels"].length
@@ -83,7 +83,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns 404 for non-existent course" do
-    get internal_levels_path(course_slug: "non-existent"), headers: @headers, as: :json
+    get internal_levels_path(course_slug: "non-existent"), as: :json
 
     assert_response :not_found
   end
@@ -105,7 +105,6 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
       milestone_content: "# Done!")
 
     get milestone_internal_level_path(course_slug: @course.slug, id: level.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -135,7 +134,6 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
       milestone_content: "# Kész!")
 
     get milestone_internal_level_path(course_slug: @course.slug, id: level.slug, locale: "hu"),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -157,7 +155,6 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
       milestone_content: "# Done!")
 
     get milestone_internal_level_path(course_slug: @course.slug, id: level.slug, locale: "fr"),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -174,7 +171,6 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     SerializeLevelMilestone.expects(:call).with(level).returns({ level_slug: "test" })
 
     get milestone_internal_level_path(course_slug: @course.slug, id: level.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -183,7 +179,6 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
 
   test "GET milestone returns 404 for non-existent level" do
     get milestone_internal_level_path(course_slug: @course.slug, id: "non-existent"),
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -202,7 +197,6 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     SerializeLevelMilestone.expects(:call).with(level).returns(serialized_data)
 
     get milestone_internal_level_path(course_slug: @course.slug, id: level.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success

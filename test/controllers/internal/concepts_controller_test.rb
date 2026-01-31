@@ -19,7 +19,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Concept::UnlockForUser.(concept_arrays, @current_user)
     Concept::UnlockForUser.(concept_hashes, @current_user)
 
-    get internal_concepts_path, headers: @headers, as: :json
+    get internal_concepts_path, as: :json
 
     assert_response :success
     # Unlocked first (Arrays, Hashes alphabetically), then locked (Strings)
@@ -44,7 +44,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Concept::UnlockForUser.(concept_basics, @current_user)
     Concept::UnlockForUser.(concept_advanced, @current_user)
 
-    get internal_concepts_path(title: "String"), headers: @headers, as: :json
+    get internal_concepts_path(title: "String"), as: :json
 
     assert_response :success
     # All unlocked, ordered alphabetically by title
@@ -68,7 +68,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Concept::UnlockForUser.(concept_basics, @current_user)
     # concept_advanced is locked
 
-    get internal_concepts_path(title: "String"), headers: @headers, as: :json
+    get internal_concepts_path(title: "String"), as: :json
 
     assert_response :success
     # Unlocked first (String Basics), then locked (String Advanced)
@@ -93,7 +93,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Concept::UnlockForUser.(concept_arrays, @current_user)
     Concept::UnlockForUser.(concept_hashes, @current_user)
 
-    get internal_concepts_path(slugs: "arrays,hashes"), headers: @headers, as: :json
+    get internal_concepts_path(slugs: "arrays,hashes"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -116,7 +116,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Concept::UnlockForUser.(concept_arrays, @current_user)
     # concept_hashes is locked
 
-    get internal_concepts_path(slugs: "arrays,hashes"), headers: @headers, as: :json
+    get internal_concepts_path(slugs: "arrays,hashes"), as: :json
 
     assert_response :success
     # Unlocked first (Arrays), then locked (Hashes)
@@ -142,7 +142,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Concept::UnlockForUser.(concept_b, @current_user)
     Concept::UnlockForUser.(concept_c, @current_user)
 
-    get internal_concepts_path(page: 1, per: 2), headers: @headers, as: :json
+    get internal_concepts_path(page: 1, per: 2), as: :json
 
     assert_response :success
     # All unlocked, ordered alphabetically: A, B (first page)
@@ -162,7 +162,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     Prosopite.finish
     concepts = Array.new(5) { |i| create(:concept, title: "Concept #{i}").tap { |c| Concept::UnlockForUser.(c, @current_user) } }
 
-    get internal_concepts_path(per: 3), headers: @headers, as: :json
+    get internal_concepts_path(per: 3), as: :json
 
     assert_response :success
     # All unlocked, ordered alphabetically: Concept 0, 1, 2
@@ -183,7 +183,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     concept_arrays = create(:concept, title: "Arrays")
     concept_strings = create(:concept, title: "Strings")
 
-    get internal_concepts_path, headers: @headers, as: :json
+    get internal_concepts_path, as: :json
 
     assert_response :success
     # All concepts returned (all locked), ordered alphabetically
@@ -204,7 +204,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     concept = create(:concept, title: "Arrays")
     Concept::UnlockForUser.(concept, @current_user)
 
-    get internal_concept_path(concept_slug: concept.slug, as: :json), headers: @headers, as: :json
+    get internal_concept_path(concept_slug: concept.slug, as: :json), as: :json
 
     assert_response :success
     assert_json_response({
@@ -216,7 +216,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     concept = create(:concept, title: "Arrays")
     # Not unlocked for user
 
-    get internal_concept_path(concept_slug: concept.slug, as: :json), headers: @headers, as: :json
+    get internal_concept_path(concept_slug: concept.slug, as: :json), as: :json
 
     assert_response :forbidden
     assert_json_response({
@@ -225,7 +225,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 404 for non-existent concept" do
-    get internal_concept_path(concept_slug: "non-existent-slug"), headers: @headers, as: :json
+    get internal_concept_path(concept_slug: "non-existent-slug"), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -244,7 +244,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     concept.update!(slug: "new-slug")
 
     # Old slug should still work
-    get internal_concept_path(concept_slug: "original-slug"), headers: @headers, as: :json
+    get internal_concept_path(concept_slug: "original-slug"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -258,7 +258,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
     concept.update!(slug: "new-slug")
 
-    get internal_concept_path(concept_slug: "original-slug"), headers: @headers, as: :json
+    get internal_concept_path(concept_slug: "original-slug"), as: :json
 
     assert_response :forbidden
     assert_json_response({

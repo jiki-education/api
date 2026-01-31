@@ -320,37 +320,21 @@ end
 
 ### Testing Admin Controllers
 
-Admin controller tests should verify both authentication and authorization:
+Admin controller tests should verify both authentication and authorization. Use the `guard_admin!` macro which handles both:
 
 ```ruby
 class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
   end
 
-  # Test authentication (401)
-  guard_incorrect_token! :admin_email_templates_path, method: :get
-
-  # Test authorization (403)
-  test "GET index returns 403 for non-admin users" do
-    user = create(:user, admin: false)
-    headers = auth_headers_for(user)
-
-    get admin_email_templates_path, headers:, as: :json
-
-    assert_response :forbidden
-    assert_json_response({
-      error: {
-        type: "forbidden",
-        message: "Admin access required"
-      }
-    })
-  end
+  # guard_admin! tests both authentication (401) and authorization (403)
+  guard_admin! :admin_email_templates_path, method: :get
 
   # Test successful admin access (200)
   test "GET index returns templates for admin users" do
-    get admin_email_templates_path, headers: @headers, as: :json
+    get admin_email_templates_path, as: :json
 
     assert_response :success
   end

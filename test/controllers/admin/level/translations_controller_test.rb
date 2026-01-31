@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
     @level = create(:level, slug: "ruby-basics")
   end
 
@@ -19,7 +19,6 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
     Level::Translation::TranslateToAllLocales.expects(:call).with(@level).returns(target_locales)
 
     post translate_admin_level_translations_path(level_id: @level.id),
-      headers: @headers,
       as: :json
 
     assert_response :accepted
@@ -30,7 +29,6 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
     Level::Translation::TranslateToAllLocales.stubs(:call).returns(target_locales)
 
     post translate_admin_level_translations_path(level_id: @level.id),
-      headers: @headers,
       as: :json
 
     assert_response :accepted
@@ -44,7 +42,6 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
     Level::Translation::TranslateToAllLocales.expects(:call).with(@level).returns([])
 
     post translate_admin_level_translations_path(level_id: @level.id),
-      headers: @headers,
       as: :json
 
     assert_response :accepted
@@ -52,7 +49,6 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
 
   test "POST translate returns 404 for non-existent level" do
     post translate_admin_level_translations_path(level_id: 99_999),
-      headers: @headers,
       as: :json
 
     assert_response :not_found

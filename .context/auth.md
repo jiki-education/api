@@ -42,8 +42,35 @@ Rails encrypts the session data (including `user_id`) into an httpOnly, secure c
 2. Frontend POSTs to `/auth/login`
 3. API validates credentials and confirmation status
 4. If unconfirmed: returns `{ error: { type: "unconfirmed", email } }` (401)
-5. If confirmed: establishes session, returns user data
-6. Frontend updates auth state
+5. If admin without 2FA setup: returns `{ status: "2fa_setup_required", provisioning_uri }` (200)
+6. If admin with 2FA enabled: returns `{ status: "2fa_required" }` (200)
+7. If non-admin confirmed: establishes session, returns user data
+8. Frontend updates auth state
+
+#### Two-Factor Authentication (Admin Only)
+
+All admin users are required to use TOTP-based two-factor authentication. The 2FA flow is intercepted during login.
+
+**First-time Setup:**
+1. Admin enters credentials on frontend
+2. API validates credentials, generates OTP secret
+3. API returns `{ status: "2fa_setup_required", provisioning_uri }` (200)
+4. Frontend displays QR code from provisioning_uri
+5. Admin scans QR with authenticator app
+6. Admin enters 6-digit code
+7. Frontend POSTs to `/auth/setup-2fa` with code
+8. API verifies code, enables 2FA, establishes session
+9. Frontend updates auth state
+
+**Subsequent Logins:**
+1. Admin enters credentials on frontend
+2. API validates credentials
+3. API returns `{ status: "2fa_required" }` (200)
+4. Frontend shows OTP input
+5. Admin enters 6-digit code from authenticator app
+6. Frontend POSTs to `/auth/verify-2fa` with code
+7. API verifies code, establishes session
+8. Frontend updates auth state
 
 #### Logout
 1. Frontend DELETEs to `/auth/logout`
@@ -143,6 +170,95 @@ Authenticate and establish session. User must have confirmed email.
   "error": {
     "type": "unconfirmed",
     "email": "user@example.com"
+  }
+}
+```
+
+**2FA Setup Required Response (200 - Admin without 2FA):**
+```json
+{
+  "status": "2fa_setup_required",
+  "provisioning_uri": "otpauth://totp/Jiki:admin@example.com?secret=ABCD1234&issuer=Jiki"
+}
+```
+
+**2FA Required Response (200 - Admin with 2FA enabled):**
+```json
+{
+  "status": "2fa_required"
+}
+```
+
+#### POST /auth/verify-2fa
+Verify OTP code and complete admin login. Called after login returns `2fa_required`.
+
+**Request:**
+```json
+{
+  "otp_code": "123456"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "user": {
+    "handle": "admin-user",
+    "email": "admin@example.com",
+    "name": "Admin User",
+    "admin": true
+  }
+}
+```
+
+**Error Response (401 - Invalid OTP):**
+```json
+{
+  "error": {
+    "type": "invalid_otp",
+    "message": "Invalid verification code"
+  }
+}
+```
+
+**Error Response (401 - Session Expired):**
+```json
+{
+  "error": {
+    "type": "session_expired",
+    "message": "Session expired. Please log in again."
+  }
+}
+```
+
+#### POST /auth/setup-2fa
+Verify OTP code, enable 2FA, and complete first-time admin login. Called after login returns `2fa_setup_required`.
+
+**Request:**
+```json
+{
+  "otp_code": "123456"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "user": {
+    "handle": "admin-user",
+    "email": "admin@example.com",
+    "name": "Admin User",
+    "admin": true
+  }
+}
+```
+
+**Error Response (401 - Invalid OTP):**
+```json
+{
+  "error": {
+    "type": "invalid_otp",
+    "message": "Invalid verification code"
   }
 }
 ```
@@ -401,6 +517,10 @@ create_table :users do |t|
   # User settings
   t.string :locale, null: false, default: "en"
 
+  # Two-Factor Authentication
+  t.string :otp_secret
+  t.datetime :otp_enabled_at
+
   # OAuth ready fields
   t.string :google_id
   t.string :github_id
@@ -528,8 +648,8 @@ end
 
 ### Short Term
 - [x] Email verification on registration
+- [x] Two-factor authentication (admin only, TOTP-based)
 - [ ] Account lockout after failed attempts
-- [ ] Two-factor authentication
 - [ ] Session management UI (view active sessions)
 
 ### Long Term

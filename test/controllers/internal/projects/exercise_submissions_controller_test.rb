@@ -19,7 +19,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
     Prosopite.pause do
       post internal_project_exercise_submissions_path(project_slug: @project.slug),
         params: { submission: { files: } },
-        headers: @headers,
         as: :json
     end
 
@@ -37,7 +36,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -58,7 +56,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -69,7 +66,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
 
     post internal_project_exercise_submissions_path(project_slug: "nonexistent"),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -91,7 +87,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
     Prosopite.pause do
       post internal_project_exercise_submissions_path(project_slug: @project.slug),
         params: { submission: { files: } },
-        headers: @headers,
         as: :json
     end
 
@@ -106,7 +101,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -123,7 +117,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -142,7 +135,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -157,7 +149,6 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
   test "POST create returns 422 for empty files array" do
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: [] } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity

@@ -21,7 +21,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     SerializeUserLesson.expects(:call).with(user_lesson).returns(serialized_data)
 
     get internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -30,7 +29,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "GET show returns 404 when user_lesson does not exist" do
     get internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -44,7 +42,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "GET show returns 404 for non-existent lesson" do
     get internal_user_lesson_path(lesson_slug: "non-existent-slug"),
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -59,7 +56,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   # POST /v1/user_lessons/:slug/start tests
   test "POST start successfully starts a lesson" do
     post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -70,7 +66,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     UserLesson::Start.expects(:call).with(@current_user, @lesson)
 
     post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -78,7 +73,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "POST start returns 404 for non-existent lesson" do
     post start_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -93,7 +87,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "POST start is idempotent" do
     assert_difference "UserLesson.count", 1 do
       post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-        headers: @headers,
         as: :json
     end
 
@@ -101,7 +94,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
     assert_no_difference "UserLesson.count" do
       post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-        headers: @headers,
         as: :json
     end
 
@@ -111,7 +103,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "POST start creates user_lesson record" do
     assert_difference "UserLesson.count", 1 do
       post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-        headers: @headers,
         as: :json
     end
 
@@ -121,13 +112,11 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "POST start does not create duplicate user_lessons" do
     # First start
     post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     # Second start should not create another record
     assert_no_difference "UserLesson.count" do
       post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
-        headers: @headers,
         as: :json
     end
 
@@ -139,7 +128,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: @lesson)
 
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -151,7 +139,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     UserLesson::Complete.expects(:call).with(@current_user, @lesson)
 
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -159,7 +146,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "PATCH complete returns 404 for non-existent lesson" do
     patch complete_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -176,7 +162,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
     # First completion
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -184,7 +169,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     # Second completion should be idempotent
     assert_no_difference "UserLesson.count" do
       patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-        headers: @headers,
         as: :json
     end
 
@@ -195,7 +179,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     # No user_lesson created
 
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -212,13 +195,11 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
     # First completion
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-      headers: @headers,
       as: :json
 
     # Second completion should not create another record
     assert_no_difference "UserLesson.count" do
       patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
-        headers: @headers,
         as: :json
     end
 
@@ -237,7 +218,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson:)
 
     patch complete_internal_user_lesson_path(lesson_slug: lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -269,7 +249,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson: lesson1)
 
     patch complete_internal_user_lesson_path(lesson_slug: lesson1.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -294,7 +273,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     create(:user_lesson, user: @current_user, lesson:)
 
     patch complete_internal_user_lesson_path(lesson_slug: lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -313,7 +291,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     @user_level.update!(current_user_lesson: in_progress)
 
     post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -327,7 +304,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     create(:user_course, user: @current_user, course: other_level.course)
 
     post start_internal_user_lesson_path(lesson_slug: other_lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :forbidden
@@ -348,7 +324,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     # level1 is not fully complete (only 1 lesson)
 
     post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity

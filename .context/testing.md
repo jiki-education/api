@@ -214,7 +214,7 @@ test "GET index returns user levels" do
   user_level1 = create(:user_level, user: @current_user, level: level1)
   user_level2 = create(:user_level, user: @current_user, level: level2)
 
-  get v1_user_levels_path, headers: @headers, as: :json
+  get v1_user_levels_path, as: :json
 
   assert_response :success
   assert_json_response({
@@ -226,7 +226,7 @@ end
 test "GET index returns user levels" do
   user_level1 = create(:user_level, user: @current_user, level: level1)
 
-  get v1_user_levels_path, headers: @headers, as: :json
+  get v1_user_levels_path, as: :json
 
   assert_response :success
   assert_json_response({
@@ -260,7 +260,6 @@ test "PATCH complete emits events for unlocked concept" do
   lesson = create(:lesson, unlocked_concept: concept)
 
   patch complete_v1_user_lesson_path(lesson_slug: lesson.slug),
-    headers: @headers,
     as: :json
 
   response_json = JSON.parse(response.body, symbolize_names: true)
@@ -275,7 +274,6 @@ test "PATCH complete emits events for unlocked concept" do
   lesson = create(:lesson, unlocked_concept: concept)
 
   patch complete_v1_user_lesson_path(lesson_slug: lesson.slug),
-    headers: @headers,
     as: :json
 
   response_json = JSON.parse(response.body, symbolize_names: true)
@@ -311,7 +309,7 @@ end
 test "GET show returns user data" do
   user = create(:user, name: "Test User", email: "test@example.com")
 
-  get user_path(user), headers: @headers, as: :json
+  get user_path(user), as: :json
 
   assert_response :success
   assert_json_response({
@@ -324,7 +322,7 @@ test "GET index returns projects with pagination" do
   project1 = create(:project)
   project2 = create(:project)
 
-  get admin_projects_path(page: 1, per: 2), headers: @headers, as: :json
+  get admin_projects_path(page: 1, per: 2), as: :json
 
   assert_response :success
   assert_json_response({
@@ -339,7 +337,7 @@ end
 
 # CORRECT: Use response.parsed_body for error messages with regex
 test "POST create returns validation error" do
-  post projects_path, params: { project: { title: "" } }, headers: @headers, as: :json
+  post projects_path, params: { project: { title: "" } }, as: :json
 
   assert_response :unprocessable_entity
 
@@ -352,7 +350,7 @@ end
 test "GET show returns user data" do
   user = create(:user, name: "Test User")
 
-  get user_path(user), headers: @headers, as: :json
+  get user_path(user), as: :json
 
   assert_response :success
   json = response.parsed_body
@@ -378,7 +376,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get user profile" do
-    get user_path(@current_user), headers: @headers, as: :json
+    get user_path(@current_user), as: :json
 
     assert_response :success
     assert_json_response({
@@ -416,7 +414,7 @@ test "GET index uses SerializeLevels" do
 
   SerializeLevels.expects(:call).with { |arg| arg.to_a == levels }.returns(serialized_data)
 
-  get levels_path, headers: @headers, as: :json
+  get levels_path, as: :json
 
   assert_response :success
   assert_json_response({ levels: serialized_data })
@@ -426,7 +424,7 @@ end
 test "GET index uses SerializeLevels" do
   level = create(:level, slug: "test-level")
 
-  get levels_path, headers: @headers, as: :json
+  get levels_path, as: :json
 
   assert_response :success
   json = response.parsed_body
@@ -455,7 +453,6 @@ test "GET index calls Command with correct params" do
   ).returns(paginated)
 
   get v1_admin_models_path(filter1: "value", page: 2),
-    headers: @headers,
     as: :json
 
   assert_response :success
@@ -473,7 +470,7 @@ test "GET index uses SerializePaginatedCollection" do
   ).returns({ results: [], meta: {} })
 
   Prosopite.scan
-  get v1_admin_models_path, headers: @headers, as: :json
+  get v1_admin_models_path, as: :json
 
   assert_response :success
 end
@@ -483,7 +480,6 @@ test "GET index filters by parameter" do
   bob = create(:model, name: "Bob")
 
   get v1_admin_models_path(name: "Bob"),
-    headers: @headers,
     as: :json
 
   assert_response :success
@@ -498,7 +494,6 @@ test "GET index paginates results" do
 
   Prosopite.scan
   get v1_admin_models_path(page: 1, per: 2),
-    headers: @headers,
     as: :json
 
   assert_response :success
@@ -534,7 +529,6 @@ class LessonsControllerTest < ActionDispatch::IntegrationTest
 
     post lessons_path,
       params: { lesson: { title: "New Lesson", content: "Content" } },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -546,7 +540,6 @@ class LessonsControllerTest < ActionDispatch::IntegrationTest
 
     post lessons_path,
       params: { lesson: { content: "Content" } },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -565,15 +558,26 @@ end
 ```ruby
 # In test_helper.rb or a support file
 module AuthenticationHelper
+  include Rails.application.routes.url_helpers
+
   def setup_user(user = nil)
     @current_user = user || create(:user)
-    @auth_token = create(:auth_token, user: @current_user)
-    @headers = { 'Authorization' => "Bearer #{@auth_token.token}" }
+    sign_in_user(@current_user)
   end
 
-  def auth_headers_for(user)
-    token = create(:auth_token, user: user)
-    { 'Authorization' => "Bearer #{token.token}" }
+  # Sign in a user by posting to the session endpoint
+  # This sets up the session cookie for subsequent requests
+  # For admin users, completes the 2FA flow automatically
+  def sign_in_user(user)
+    post user_session_path, params: {
+      user: { email: user.email, password: "password123" }
+    }, as: :json
+
+    return unless user.admin?
+
+    # Admin users require 2FA - complete the flow
+    User::VerifyOtp.expects(:call).with(user, "123456").returns(true)
+    post auth_verify_2fa_path, params: { otp_code: "123456" }, as: :json
   end
 end
 
@@ -635,7 +639,6 @@ class V1::LessonsControllerTest < ApplicationControllerTest
   # Then write your functional tests (skip manual auth tests)
   test "POST start successfully starts a lesson" do
     post start_v1_lesson_path(@lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -643,7 +646,6 @@ class V1::LessonsControllerTest < ApplicationControllerTest
 
   test "PATCH complete successfully completes a lesson" do
     patch complete_v1_lesson_path(@lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :ok
@@ -671,11 +673,12 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
     # Then, guard against non-admin users (403 error)
     test "#{method} #{path_helper} returns 403 for non-admin users" do
+      reset!
       user = create(:user, admin: false)
-      headers = auth_headers_for(user)
+      sign_in_user(user)
       path = send(path_helper, *args)
 
-      send(method, path, headers:, as: :json)
+      send(method, path, as: :json)
 
       assert_response :forbidden
       assert_json_response({
@@ -698,7 +701,7 @@ module V1
     class EmailTemplatesControllerTest < ApplicationControllerTest
       setup do
         @admin = create(:user, :admin)
-        @headers = auth_headers_for(@admin)
+        sign_in_user(@admin)
       end
 
       # Place admin guards at the top - handles both auth and admin checks
@@ -710,7 +713,7 @@ module V1
       test "GET index returns all templates" do
         template = create(:email_template)
 
-        get v1_admin_email_templates_path, headers: @headers, as: :json
+        get v1_admin_email_templates_path, as: :json
 
         assert_response :success
         assert_json_response({
@@ -742,8 +745,8 @@ end
 
 test "GET index returns 403 for non-admin users" do
   user = create(:user, admin: false)
-  headers = auth_headers_for(user)
-  get v1_admin_email_templates_path, headers:, as: :json
+  sign_in_user(user)
+  get v1_admin_email_templates_path, as: :json
   assert_response :forbidden
 end
 ```
@@ -1024,7 +1027,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   include JsonAssertions
 
   test "returns correct JSON structure" do
-    get user_path(@user), headers: @headers, as: :json
+    get user_path(@user), as: :json
 
     assert_json_structure({
       user: {
