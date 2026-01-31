@@ -164,6 +164,28 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_response :unauthorized
   end
 
+  test "POST login for admin cannot access admin pages before completing 2FA" do
+    admin = create(:user, :admin, email: "admin@example.com", password: "password123")
+    User::GenerateOtpSecret.(admin)
+    User::EnableOtp.(admin)
+
+    # Login - should return 2fa_required
+    post user_session_path, params: {
+      user: {
+        email: "admin@example.com",
+        password: "password123"
+      }
+    }, as: :json
+
+    assert_response :ok
+    assert_equal "2fa_required", response.parsed_body["status"]
+
+    # Try to access admin page - should be unauthorized
+    get admin_users_path, as: :json
+    assert_response :unauthorized
+    assert_equal "unauthorized", response.parsed_body["error"]["type"]
+  end
+
   test "POST login for non-admin signs in normally" do
     post user_session_path, params: {
       user: {

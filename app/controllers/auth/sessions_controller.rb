@@ -20,9 +20,13 @@ class Auth::SessionsController < Devise::SessionsController
 
     # Check if user requires 2FA (admins)
     if resource.requires_otp?
-      # Clear any stored session - we don't want the user signed in yet
+      # store: false above should prevent session creation, but Devise/Warden
+      # still persists the user somehow. Explicitly clear it.
       warden.logout(:user)
-      store_otp_session(resource)
+
+      # Store OTP session
+      session[:otp_user_id] = resource.id
+      session[:otp_timestamp] = Time.current.to_i
 
       return render json: { status: "2fa_required" }, status: :ok if resource.otp_enabled?
 
@@ -33,6 +37,7 @@ class Auth::SessionsController < Devise::SessionsController
       }, status: :ok
 
     end
+
     # Non-admin: sign in normally
     sign_in(resource_name, resource)
     respond_with resource, location: after_sign_in_path_for(resource)
@@ -59,11 +64,6 @@ class Auth::SessionsController < Devise::SessionsController
     # after_action doesn't run when Devise's verify_signed_out_user halts the chain.
     cookies.delete(:jiki_user_id, domain: :all)
     render json: {}, status: non_navigational_status
-  end
-
-  def store_otp_session(user)
-    session[:otp_user_id] = user.id
-    session[:otp_timestamp] = Time.current.to_i
   end
 
   def auth_options
