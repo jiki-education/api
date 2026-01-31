@@ -157,4 +157,62 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     # This will cause an error in VerifyGoogleToken
     assert_response :unauthorized
   end
+
+  test "POST google for admin with 2FA enabled returns 2fa_required" do
+    admin = create(:user, :admin,
+      email: 'admin@gmail.com',
+      google_id: 'google-admin-id',
+      provider: 'google',
+      confirmed_at: Time.current)
+    User::GenerateOtpSecret.(admin)
+    User::EnableOtp.(admin)
+
+    google_payload = {
+      'sub' => 'google-admin-id',
+      'email' => 'admin@gmail.com',
+      'name' => 'Admin User',
+      'exp' => 1.hour.from_now.to_i
+    }
+
+    Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+
+    post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
+
+    assert_response :ok
+    assert_json_response({ status: "2fa_required" })
+
+    # Verify user is NOT signed in yet
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+  end
+
+  test "POST google for admin without 2FA returns 2fa_setup_required" do
+    create(:user, :admin,
+      email: 'newadmin@gmail.com',
+      google_id: 'google-newadmin-id',
+      provider: 'google',
+      confirmed_at: Time.current)
+
+    google_payload = {
+      'sub' => 'google-newadmin-id',
+      'email' => 'newadmin@gmail.com',
+      'name' => 'New Admin',
+      'exp' => 1.hour.from_now.to_i
+    }
+
+    Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+
+    post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
+
+    assert_response :ok
+
+    json = response.parsed_body
+    assert_equal "2fa_setup_required", json["status"]
+    assert json["provisioning_uri"].present?
+    assert json["provisioning_uri"].start_with?("otpauth://totp/Jiki:")
+
+    # Verify user is NOT signed in yet
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+  end
 end

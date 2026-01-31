@@ -318,7 +318,7 @@ Confirm email address and sign in user.
 **Query Parameters:**
 - `confirmation_token`: The token from the confirmation email
 
-**Success Response (200):**
+**Success Response (200) - Non-admin:**
 ```json
 {
   "status": "success",
@@ -332,6 +332,23 @@ Confirm email address and sign in user.
 }
 ```
 Session cookie is set automatically.
+
+**2FA Setup Required Response (200) - Admin without 2FA:**
+```json
+{
+  "status": "2fa_setup_required",
+  "provisioning_uri": "otpauth://totp/Jiki:admin@example.com?secret=ABCD1234&issuer=Jiki"
+}
+```
+
+**2FA Required Response (200) - Admin with 2FA enabled:**
+```json
+{
+  "status": "2fa_required"
+}
+```
+
+Note: Admin users confirming their email are subject to the same 2FA requirements as login.
 
 **Error Response (422 - Invalid/Expired Token):**
 ```json
@@ -415,7 +432,7 @@ Authenticate with Google OAuth.
 }
 ```
 
-**Success Response (200):**
+**Success Response (200) - Non-admin:**
 ```json
 {
   "status": "success",
@@ -427,6 +444,23 @@ Authenticate with Google OAuth.
   }
 }
 ```
+
+**2FA Setup Required Response (200) - Admin without 2FA:**
+```json
+{
+  "status": "2fa_setup_required",
+  "provisioning_uri": "otpauth://totp/Jiki:admin@example.com?secret=ABCD1234&issuer=Jiki"
+}
+```
+
+**2FA Required Response (200) - Admin with 2FA enabled:**
+```json
+{
+  "status": "2fa_required"
+}
+```
+
+Note: Admin users authenticating via Google OAuth are subject to the same 2FA requirements as email/password login.
 
 ## Frontend Integration
 

@@ -7,8 +7,7 @@ class Auth::ConfirmationsController < Devise::ConfirmationsController
     self.resource = resource_class.confirm_by_token(params[:confirmation_token])
 
     if resource.errors.empty?
-      sign_in(resource)
-      render json: { status: "success", user: SerializeUser.(resource) }, status: :ok
+      sign_in_with_2fa_guard!(resource)
     else
       render json: {
         error: { type: "invalid_token" }

@@ -3,10 +3,7 @@ module Auth
     def create
       user = Auth::AuthenticateWithGoogle.(params[:code])
 
-      # Sign in the user (creates session cookie automatically)
-      sign_in(user)
-
-      render json: { status: "success", user: SerializeUser.(user) }, status: :ok
+      sign_in_with_2fa_guard!(user)
     rescue InvalidGoogleTokenError => e
       render json: {
         error: {

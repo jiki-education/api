@@ -110,4 +110,32 @@ class ApplicationController < ActionController::API
       }
     }, status: :unprocessable_entity
   end
+
+  # Signs in the user, checking for 2FA requirement first.
+  # For admin users, stores OTP session and renders 2FA response instead of signing in.
+  # For non-admin users, signs in immediately and renders success response.
+  def sign_in_with_2fa_guard!(user)
+    if user.requires_otp?
+      # Clear any existing session before setting up 2FA.
+      # This is needed for Devise sessions where warden.authenticate persists the user.
+      warden.logout(:user)
+
+      session[:otp_user_id] = user.id
+      session[:otp_timestamp] = Time.current.to_i
+
+      if user.otp_enabled?
+        render json: { status: "2fa_required" }, status: :ok
+      else
+        User::GenerateOtpSecret.(user)
+        render json: {
+          status: "2fa_setup_required",
+          provisioning_uri: user.otp_provisioning_uri
+        }, status: :ok
+      end
+      return
+    end
+
+    sign_in(user)
+    render json: { status: "success", user: SerializeUser.(user) }, status: :ok
+  end
 end
