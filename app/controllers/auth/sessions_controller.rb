@@ -18,36 +18,10 @@ class Auth::SessionsController < Devise::SessionsController
       }, status: :unauthorized
     end
 
-    # Check if user requires 2FA (admins)
-    if resource.requires_otp?
-      # store: false above should prevent session creation, but Devise/Warden
-      # still persists the user somehow. Explicitly clear it.
-      warden.logout(:user)
-
-      # Store OTP session
-      session[:otp_user_id] = resource.id
-      session[:otp_timestamp] = Time.current.to_i
-
-      return render json: { status: "2fa_required" }, status: :ok if resource.otp_enabled?
-
-      User::GenerateOtpSecret.(resource)
-      return render json: {
-        status: "2fa_setup_required",
-        provisioning_uri: resource.otp_provisioning_uri
-      }, status: :ok
-
-    end
-
-    # Non-admin: sign in normally
-    sign_in(resource_name, resource)
-    respond_with resource, location: after_sign_in_path_for(resource)
+    sign_in_with_2fa_guard!(resource)
   end
 
   private
-  def respond_with(resource, _opts = {})
-    render json: { status: "success", user: SerializeUser.(resource) }, status: :ok
-  end
-
   def respond_with_error
     render json: {
       error: {

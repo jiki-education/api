@@ -89,4 +89,38 @@ class Auth::ConfirmationsControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal "confirmed@example.com", json["user"]["email"]
   end
+
+  test "GET confirmation for admin with 2FA enabled returns 2fa_required" do
+    admin = create(:user, :admin, :unconfirmed)
+    User::GenerateOtpSecret.(admin)
+    User::EnableOtp.(admin)
+    token = admin.confirmation_token
+
+    get user_confirmation_path(confirmation_token: token), as: :json
+
+    assert_response :ok
+    assert_json_response({ status: "2fa_required" })
+
+    # Verify user is NOT signed in yet
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+  end
+
+  test "GET confirmation for admin without 2FA returns 2fa_setup_required" do
+    admin = create(:user, :admin, :unconfirmed)
+    token = admin.confirmation_token
+
+    get user_confirmation_path(confirmation_token: token), as: :json
+
+    assert_response :ok
+
+    json = response.parsed_body
+    assert_equal "2fa_setup_required", json["status"]
+    assert json["provisioning_uri"].present?
+    assert json["provisioning_uri"].start_with?("otpauth://totp/Jiki:")
+
+    # Verify user is NOT signed in yet
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+  end
 end
