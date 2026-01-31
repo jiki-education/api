@@ -22,10 +22,11 @@ class ApplicationMailer < ActionMailer::Base
   class_attribute :email_category
 
   # Override mail to:
-  # 1. Guard against direct calls (must use mail_to_user, unless DeviseMailer)
+  # 1. Guard against direct calls (must be called from ApplicationMailer or DeviseMailer)
   # 2. Set SES configuration based on email_category
-  def mail(called_via_mail_to_user: false, **args)
-    unless called_via_mail_to_user || self.instance_of?(DeviseMailer)
+  def mail(**args)
+    caller_path = caller_locations(1, 1).first.path
+    unless caller_path.end_with?('application_mailer.rb', 'devise_mailer.rb')
       raise "Use mail_to_user instead of mail directly in #{self.class.name}"
     end
 
@@ -65,10 +66,8 @@ class ApplicationMailer < ActionMailer::Base
     @user = user
     @unsubscribe_key = unsubscribe_key
 
-    # Call the mail method with our special guard method that ensures this
-    # doesn't get overriden accidently elsewhere.
     I18n.with_locale(user.locale) do
-      mail(to: user.email, **args, called_via_mail_to_user: true, &block)
+      mail(to: user.email, **args, &block)
     end
   end
 
