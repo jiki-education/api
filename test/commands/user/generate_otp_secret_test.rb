@@ -12,7 +12,7 @@ class User::GenerateOtpSecretTest < ActiveSupport::TestCase
     assert_equal 32, user.otp_secret.length
   end
 
-  test "replaces existing OTP secret" do
+  test "does not replace existing OTP secret" do
     user = create(:user)
     User::GenerateOtpSecret.(user)
     old_secret = user.reload.otp_secret
@@ -20,7 +20,6 @@ class User::GenerateOtpSecretTest < ActiveSupport::TestCase
     User::GenerateOtpSecret.(user)
 
     user.reload
-    assert user.otp_secret.present?
-    refute_equal old_secret, user.otp_secret
+    assert_equal old_secret, user.otp_secret
   end
 end
