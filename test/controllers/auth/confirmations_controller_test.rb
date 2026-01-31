@@ -9,29 +9,15 @@ class Auth::ConfirmationsControllerTest < ApplicationControllerTest
 
     assert_response :ok
 
-    json = response.parsed_body
-    assert_equal user.email, json["user"]["email"]
-    assert_equal user.handle, json["user"]["handle"]
-    assert json["user"]["email_confirmed"]
+    user.reload
+    assert_json_response({
+      status: "success",
+      user: SerializeUser.(user)
+    })
 
     # Verify user is now signed in
     get internal_me_path, as: :json
     assert_response :ok
-  end
-
-  test "GET confirmation with valid token returns full user data" do
-    user = create(:user, :unconfirmed, name: "Test User")
-    token = user.confirmation_token
-
-    get user_confirmation_path(confirmation_token: token), as: :json
-
-    assert_response :ok
-
-    json = response.parsed_body
-    assert_equal user.email, json["user"]["email"]
-    assert_equal user.handle, json["user"]["handle"]
-    assert_equal "Test User", json["user"]["name"]
-    assert_equal "standard", json["user"]["membership_type"]
   end
 
   test "GET confirmation with invalid token returns error" do

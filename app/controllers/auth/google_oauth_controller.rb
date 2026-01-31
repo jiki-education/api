@@ -6,7 +6,7 @@ module Auth
       # Sign in the user (creates session cookie automatically)
       sign_in(user)
 
-      render json: { user: SerializeUser.(user) }, status: :ok
+      render json: { status: "success", user: SerializeUser.(user) }, status: :ok
     rescue InvalidGoogleTokenError => e
       render json: {
         error: {
