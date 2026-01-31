@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::LevelsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
     @course = create(:course, slug: "test-course")
   end
 
@@ -42,7 +42,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           milestone_content: "# Done!"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -59,7 +58,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           milestone_content: "# Congratulations!"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -85,7 +83,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           milestone_content: "# Congratulations!"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -105,7 +102,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           position: 5
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -121,7 +117,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "Description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -138,7 +133,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "Description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -154,7 +148,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           title: "Ruby Basics"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -171,7 +164,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "Description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -190,7 +182,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "Description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -210,7 +201,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           position: 1
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -232,7 +222,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "Test"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -247,7 +236,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "Test"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -264,7 +252,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     create(:level, title: "Other Course Level") # Different course
 
     Prosopite.scan
-    get admin_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get admin_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
     assert_json_response({
@@ -292,7 +280,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     ).returns(paginated_levels)
 
     get admin_levels_path(course_slug: @course.slug, title: "Ruby", slug: "basics", page: 2),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -303,7 +290,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     advanced = create(:level, course: @course, title: "Ruby Advanced")
 
     get admin_levels_path(course_slug: @course.slug, title: "Advanced"),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -317,7 +303,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     advanced = create(:level, course: @course, slug: "ruby-advanced")
 
     get admin_levels_path(course_slug: @course.slug, slug: "advanced"),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -332,7 +317,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     Prosopite.scan
     get admin_levels_path(course_slug: @course.slug, page: 1, per: 2),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -355,7 +339,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     ).returns({ results: [], meta: {} })
 
     Prosopite.scan
-    get admin_levels_path(course_slug: @course.slug), headers: @headers, as: :json
+    get admin_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
   end
@@ -376,7 +360,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "New description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -392,7 +375,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           description: "New description"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -407,7 +389,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     patch admin_level_path(level, course_slug: @course.slug),
       params: { level: { position: 5 } },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -420,7 +401,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     patch admin_level_path(level, course_slug: @course.slug),
       params: { level: { slug: "new-slug" } },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -437,7 +417,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
           title: ""
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -449,7 +428,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
   test "PATCH update returns 404 for non-existent level" do
     patch admin_level_path(99_999, course_slug: @course.slug),
       params: { level: { title: "New" } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -469,7 +447,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     patch admin_level_path(level, course_slug: @course.slug),
       params: { level: { title: "Updated" } },
-      headers: @headers,
       as: :json
 
     assert_response :success

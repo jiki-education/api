@@ -12,7 +12,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
     level = create(:level)
     lesson = create(:lesson, :exercise, level: level, slug: "test-lesson", data: { slug: "ex1", title: "Test Exercise" })
 
-    get internal_lesson_path(lesson_slug: "test-lesson"), headers: @headers, as: :json
+    get internal_lesson_path(lesson_slug: "test-lesson"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -21,7 +21,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 404 for non-existent lesson" do
-    get internal_lesson_path(lesson_slug: "non-existent"), headers: @headers, as: :json
+    get internal_lesson_path(lesson_slug: "non-existent"), as: :json
 
     assert_response :not_found
   end
@@ -35,7 +35,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
     SerializeLesson.expects(:call).with(lesson, @current_user, include_data: true).returns(serialized_data)
 
     Prosopite.scan # Resume scan for the actual request
-    get internal_lesson_path(lesson_slug: "test-lesson"), headers: @headers, as: :json
+    get internal_lesson_path(lesson_slug: "test-lesson"), as: :json
 
     assert_response :success
     assert_json_response({ lesson: serialized_data })

@@ -15,7 +15,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     create(:maze_navigator_badge)
     create(:test_secret_badge)
 
-    get internal_badges_path, headers: @headers, as: :json
+    get internal_badges_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -28,7 +28,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     secret_badge = create(:test_secret_badge)
     create(:user_acquired_badge, user: @current_user, badge: secret_badge)
 
-    get internal_badges_path, headers: @headers, as: :json
+    get internal_badges_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -45,7 +45,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     create(:user_acquired_badge, user: @current_user, badge: unrevealed_badge, revealed: false)
     create(:user_acquired_badge, :revealed, user: @current_user, badge: revealed_badge)
 
-    get internal_badges_path, headers: @headers, as: :json
+    get internal_badges_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -57,7 +57,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   test "GET index uses SerializeBadges" do
     SerializeBadges.expects(:call).with(@current_user).returns([])
 
-    get internal_badges_path, headers: @headers, as: :json
+    get internal_badges_path, as: :json
 
     assert_response :success
   end
@@ -67,7 +67,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     badge = create(:badge)
     acquired_badge = create(:user_acquired_badge, user: @current_user, badge:, revealed: false)
 
-    patch reveal_internal_badge_path(badge.id), headers: @headers, as: :json
+    patch reveal_internal_badge_path(badge.id), as: :json
 
     assert_response :success
     assert acquired_badge.reload.revealed?
@@ -77,7 +77,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, user: @current_user, badge:, revealed: false)
 
-    patch reveal_internal_badge_path(badge.id), headers: @headers, as: :json
+    patch reveal_internal_badge_path(badge.id), as: :json
 
     assert_response :success
     assert_json_response({
@@ -86,7 +86,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   end
 
   test "PATCH reveal returns 404 when badge not found" do
-    patch reveal_internal_badge_path(999), headers: @headers, as: :json
+    patch reveal_internal_badge_path(999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -102,7 +102,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
     badge = create(:badge)
     create(:user_acquired_badge, user: other_user, badge:)
 
-    patch reveal_internal_badge_path(badge.id), headers: @headers, as: :json
+    patch reveal_internal_badge_path(badge.id), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -119,7 +119,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
 
     User::AcquiredBadge::Reveal.expects(:call).with(acquired_badge)
 
-    patch reveal_internal_badge_path(badge.id), headers: @headers, as: :json
+    patch reveal_internal_badge_path(badge.id), as: :json
 
     assert_response :success
   end

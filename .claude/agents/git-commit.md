@@ -69,7 +69,7 @@ Scan all changed code files against these project-specific rules. **Report viola
 - ✓ Uses `response.parsed_body` ONLY when assert_json_response cannot work (e.g. for non-serialized values, error messages **with regex**, implementation details)
 - ✓ Never uses `JSON.parse(response.body)` - always uses `response.parsed_body` or preferably `assert_json_response`
 - ✓ Uses guard macros: `guard_incorrect_token!`, `guard_admin!`
-- ✓ Uses authentication helpers: `setup_user`, `auth_headers_for`
+- ✓ Uses authentication helpers: `setup_user`, `sign_in_user`
 - ✓ Never manually resets test database
 - ✓ 1-1 mapping between commands and tests
 - ✓ Tests all error scenarios

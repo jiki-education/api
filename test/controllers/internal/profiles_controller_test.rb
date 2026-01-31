@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::ProfilesControllerTest < ApplicationControllerTest
   setup do
     @user = create(:user)
-    @headers = auth_headers_for(@user)
+    sign_in_user(@user)
   end
 
   guard_incorrect_token! :internal_profile_path, method: :get
@@ -15,7 +15,7 @@ class Internal::ProfilesControllerTest < ApplicationControllerTest
       activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT }
     )
 
-    get internal_profile_path, headers: @headers, as: :json
+    get internal_profile_path, as: :json
 
     assert_response :success
 
@@ -32,7 +32,7 @@ class Internal::ProfilesControllerTest < ApplicationControllerTest
       activity_days: { Date.current.to_s => User::ActivityData::ACTIVITY_PRESENT }
     )
 
-    get internal_profile_path, headers: @headers, as: :json
+    get internal_profile_path, as: :json
 
     assert_response :success
 

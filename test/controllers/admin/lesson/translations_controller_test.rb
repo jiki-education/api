@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
     @lesson = create(:lesson, :exercise, slug: "variables-intro")
   end
 
@@ -17,7 +17,6 @@ class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
     Lesson::Translation::TranslateToAllLocales.expects(:call).with(@lesson).returns(target_locales)
 
     post translate_admin_lesson_translations_path(lesson_id: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :accepted
@@ -28,7 +27,6 @@ class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
     Lesson::Translation::TranslateToAllLocales.stubs(:call).returns(target_locales)
 
     post translate_admin_lesson_translations_path(lesson_id: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :accepted
@@ -42,7 +40,6 @@ class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
     Lesson::Translation::TranslateToAllLocales.expects(:call).with(@lesson).returns([])
 
     post translate_admin_lesson_translations_path(lesson_id: @lesson.slug),
-      headers: @headers,
       as: :json
 
     assert_response :accepted
@@ -50,7 +47,6 @@ class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
 
   test "POST translate returns 404 for non-existent lesson" do
     post translate_admin_lesson_translations_path(lesson_id: "non-existent"),
-      headers: @headers,
       as: :json
 
     assert_response :not_found

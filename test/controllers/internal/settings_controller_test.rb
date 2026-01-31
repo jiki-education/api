@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::SettingsControllerTest < ApplicationControllerTest
   setup do
     @user = create(:user, name: "Test User", email: "test@example.com", locale: "en", password: "password123")
-    @headers = auth_headers_for(@user)
+    sign_in_user(@user)
   end
 
   # Auth guards
@@ -18,7 +18,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
   # Show tests
   test "GET show returns current settings" do
-    get internal_settings_path, headers: @headers, as: :json
+    get internal_settings_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -28,7 +28,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
   # Name tests
   test "PATCH name updates successfully" do
-    patch name_internal_settings_path, params: { value: "New Name" }, headers: @headers, as: :json
+    patch name_internal_settings_path, params: { value: "New Name" }, as: :json
 
     assert_response :success
     assert_equal "New Name", @user.reload.name
@@ -41,7 +41,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH email stores in unconfirmed_email" do
     patch email_internal_settings_path,
       params: { value: "new@example.com" },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -57,7 +56,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
     patch email_internal_settings_path,
       params: { value: "new@example.com", sudo_password: "wrongpassword" },
-      headers: @headers,
       as: :json
 
     assert_response :unauthorized
@@ -73,7 +71,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
     patch email_internal_settings_path,
       params: { value: "new@example.com" },
-      headers: @headers,
       as: :json
 
     assert_response :unauthorized
@@ -84,7 +81,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH password updates successfully" do
     patch password_internal_settings_path,
       params: { value: "newpassword456" },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -97,7 +93,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
     patch password_internal_settings_path,
       params: { value: "newpassword456", sudo_password: "wrongpassword" },
-      headers: @headers,
       as: :json
 
     assert_response :unauthorized
@@ -110,7 +105,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
     patch password_internal_settings_path,
       params: { value: "newpassword456" },
-      headers: @headers,
       as: :json
 
     assert_response :unauthorized
@@ -119,14 +113,14 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
   # Locale tests
   test "PATCH locale updates successfully" do
-    patch locale_internal_settings_path, params: { value: "hu" }, headers: @headers, as: :json
+    patch locale_internal_settings_path, params: { value: "hu" }, as: :json
 
     assert_response :success
     assert_equal "hu", @user.reload.locale
   end
 
   test "PATCH locale fails with invalid locale" do
-    patch locale_internal_settings_path, params: { value: "invalid" }, headers: @headers, as: :json
+    patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
 
     assert_response :unprocessable_entity
 
@@ -137,7 +131,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
   # Handle tests
   test "PATCH handle updates successfully" do
-    patch handle_internal_settings_path, params: { value: "new-handle" }, headers: @headers, as: :json
+    patch handle_internal_settings_path, params: { value: "new-handle" }, as: :json
 
     assert_response :success
     assert_equal "new-handle", @user.reload.handle
@@ -146,7 +140,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH handle fails with duplicate" do
     create(:user, handle: "taken-handle")
 
-    patch handle_internal_settings_path, params: { value: "taken-handle" }, headers: @headers, as: :json
+    patch handle_internal_settings_path, params: { value: "taken-handle" }, as: :json
 
     assert_response :unprocessable_entity
 
@@ -158,7 +152,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH notification updates preference successfully" do
     patch notification_internal_settings_path("product_updates"),
       params: { value: false },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -168,7 +161,6 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH notification returns 404 for invalid slug" do
     patch notification_internal_settings_path("invalid_slug"),
       params: { value: false },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -182,7 +174,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH streaks enables streaks" do
     refute @user.data.streaks_enabled
 
-    patch streaks_internal_settings_path, params: { enabled: true }, headers: @headers, as: :json
+    patch streaks_internal_settings_path, params: { enabled: true }, as: :json
 
     assert_response :success
     assert @user.data.reload.streaks_enabled
@@ -194,7 +186,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH streaks disables streaks" do
     @user.data.update!(streaks_enabled: true)
 
-    patch streaks_internal_settings_path, params: { enabled: false }, headers: @headers, as: :json
+    patch streaks_internal_settings_path, params: { enabled: false }, as: :json
 
     assert_response :success
     refute @user.data.reload.streaks_enabled

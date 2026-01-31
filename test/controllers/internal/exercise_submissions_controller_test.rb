@@ -19,7 +19,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     Prosopite.pause do
       post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
         params: { submission: { files: } },
-        headers: @headers,
         as: :json
     end
 
@@ -37,7 +36,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -58,7 +56,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :created
@@ -69,7 +66,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: "nonexistent"),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -91,7 +87,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     Prosopite.pause do
       post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
         params: { submission: { files: } },
-        headers: @headers,
         as: :json
     end
 
@@ -106,7 +101,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -123,7 +117,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -142,7 +135,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -155,7 +147,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   test "POST create returns 422 for empty files array" do
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: [] } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -170,7 +161,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -185,7 +175,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -200,7 +189,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -215,7 +203,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: } },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity

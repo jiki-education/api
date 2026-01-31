@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::ProjectsControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
   end
 
   # Authentication and authorization guards
@@ -21,7 +21,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     project2 = create(:project, title: "Todo App", slug: "todo-app")
 
     Prosopite.scan # Resume scan for the actual request
-    get admin_projects_path, headers: @headers, as: :json
+    get admin_projects_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -42,7 +42,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     project2.update!(title: "Todo List")
 
     Prosopite.scan
-    get admin_projects_path(title: "Calculator"), headers: @headers, as: :json
+    get admin_projects_path(title: "Calculator"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -62,7 +62,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     create(:project, title: "CCC Project")
 
     Prosopite.scan
-    get admin_projects_path(page: 1, per: 2), headers: @headers, as: :json
+    get admin_projects_path(page: 1, per: 2), as: :json
 
     assert_response :success
     assert_json_response({
@@ -76,7 +76,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   end
 
   test "GET index returns empty results when no projects exist" do
-    get admin_projects_path, headers: @headers, as: :json
+    get admin_projects_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -99,7 +99,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     create(:user_project, user: regular_user, project: project_2)
 
     Prosopite.scan
-    get admin_projects_path, headers: @headers, as: :json
+    get admin_projects_path, as: :json
 
     assert_response :success
     # Admin should see all projects ordered by title (default ordering)
@@ -126,7 +126,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     }
 
     assert_difference "Project.count", 1 do
-      post admin_projects_path, params: project_params, headers: @headers, as: :json
+      post admin_projects_path, params: project_params, as: :json
     end
 
     assert_response :created
@@ -145,7 +145,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     }
 
     assert_no_difference "Project.count" do
-      post admin_projects_path, params: project_params, headers: @headers, as: :json
+      post admin_projects_path, params: project_params, as: :json
     end
 
     assert_response :unprocessable_entity
@@ -162,7 +162,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   test "GET show returns project" do
     project = create(:project, title: "Calculator", exercise_slug: "calculator-project")
 
-    get admin_project_path(project.id), headers: @headers, as: :json
+    get admin_project_path(project.id), as: :json
 
     assert_response :success
     assert_json_response({
@@ -171,7 +171,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 404 for non-existent project" do
-    get admin_project_path(999_999), headers: @headers, as: :json
+    get admin_project_path(999_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -192,7 +192,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_project_path(project.id), params: update_params, headers: @headers, as: :json
+    patch admin_project_path(project.id), params: update_params, as: :json
 
     assert_response :success
 
@@ -210,7 +210,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_project_path(project.id), params: update_params, headers: @headers, as: :json
+    patch admin_project_path(project.id), params: update_params, as: :json
 
     assert_response :unprocessable_entity
     assert_json_response({
@@ -228,7 +228,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
       }
     }
 
-    patch admin_project_path(999_999), params: update_params, headers: @headers, as: :json
+    patch admin_project_path(999_999), params: update_params, as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -245,14 +245,14 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     project = create(:project)
 
     assert_difference "Project.count", -1 do
-      delete admin_project_path(project.id), headers: @headers, as: :json
+      delete admin_project_path(project.id), as: :json
     end
 
     assert_response :no_content
   end
 
   test "DELETE destroy returns 404 for non-existent project" do
-    delete admin_project_path(999_999), headers: @headers, as: :json
+    delete admin_project_path(999_999), as: :json
 
     assert_response :not_found
     assert_json_response({

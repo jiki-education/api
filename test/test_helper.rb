@@ -71,6 +71,8 @@ end
 
 # Authentication helpers for API testing
 module AuthenticationHelper
+  include Rails.application.routes.url_helpers
+
   def setup_user(user = nil)
     @current_user = user || create(:user)
     sign_in_user(@current_user)
@@ -78,17 +80,17 @@ module AuthenticationHelper
 
   # Sign in a user by posting to the session endpoint
   # This sets up the session cookie for subsequent requests
+  # For admin users, completes the 2FA flow automatically
   def sign_in_user(user)
     post user_session_path, params: {
       user: { email: user.email, password: "password123" }
     }, as: :json
-  end
 
-  # For tests that need headers (compatibility with existing tests)
-  # With session-based auth, we don't need headers - cookies are automatic
-  def auth_headers_for(user)
-    sign_in_user(user)
-    {} # No headers needed - session cookie is handled automatically
+    return unless user.admin?
+
+    # Admin users require 2FA - complete the flow
+    User::VerifyOtp.expects(:call).with(user, "123456").returns(true)
+    post auth_verify_2fa_path, params: { otp_code: "123456" }, as: :json
   end
 end
 

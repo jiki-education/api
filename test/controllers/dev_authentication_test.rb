@@ -33,20 +33,20 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
     assert_equal "unauthorized", response.parsed_body["error"]["type"]
   end
 
-  test "falls back to JWT authentication when no user_id param in development" do
+  test "falls back to session authentication when no user_id param in development" do
     Rails.env.stubs(:development?).returns(true)
 
-    headers = auth_headers_for(@user)
-    get internal_levels_path(course_slug: @course.slug), headers: headers, as: :json
+    sign_in_user(@user)
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
   end
 
-  test "JWT authentication still works in development without user_id" do
+  test "session authentication still works in development without user_id" do
     Rails.env.stubs(:development?).returns(true)
 
-    headers = auth_headers_for(@user)
-    get internal_levels_path(course_slug: @course.slug), headers: headers, as: :json
+    sign_in_user(@user)
+    get internal_levels_path(course_slug: @course.slug), as: :json
 
     assert_response :success
   end

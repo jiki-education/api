@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   setup do
     @user = create(:user)
-    @headers = auth_headers_for(@user)
+    sign_in_user(@user)
   end
 
   # Authentication guards
@@ -26,7 +26,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -49,7 +48,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -69,7 +67,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "max", return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -82,7 +79,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "invalid", return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -96,7 +92,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -107,7 +102,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST checkout_session rejects missing return_url" do
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium" },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -124,7 +118,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :internal_server_error
@@ -142,7 +135,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: return_url },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -151,7 +143,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST checkout_session rejects invalid return_url" do
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: "https://evil.com/steal" },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -167,7 +158,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: bypass_url },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -183,7 +173,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: bypass_url },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -198,7 +187,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_checkout_session_path,
       params: { product: "premium", return_url: bypass_url },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -220,7 +208,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_verify_checkout_path,
       params: { session_id: },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -243,7 +230,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_verify_checkout_path,
       params: { session_id: },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -257,7 +243,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout returns error when session_id is missing" do
     post internal_subscriptions_verify_checkout_path,
       params: {},
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -275,7 +260,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_verify_checkout_path,
       params: { session_id: },
-      headers: @headers,
       as: :json
 
     assert_response :forbidden
@@ -292,7 +276,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_verify_checkout_path,
       params: { session_id: },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -309,7 +292,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_verify_checkout_path,
       params: { session_id: },
-      headers: @headers,
       as: :json
 
     assert_response :internal_server_error
@@ -328,7 +310,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CreatePortalSession.expects(:call).with(@user).returns(session)
 
     post internal_subscriptions_portal_session_path,
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -340,7 +321,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_nil @user.data.stripe_customer_id
 
     post internal_subscriptions_portal_session_path,
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -355,7 +335,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CreatePortalSession.expects(:call).raises(StandardError.new("Stripe API error"))
 
     post internal_subscriptions_portal_session_path,
-      headers: @headers,
       as: :json
 
     assert_response :internal_server_error
@@ -383,7 +362,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "max" },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -408,7 +386,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "premium" },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -428,7 +405,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "max" },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -445,7 +421,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "max" },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -460,7 +435,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "invalid" },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -478,7 +452,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "premium" },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -495,7 +468,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "premium" },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -511,7 +483,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "premium" },
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -530,7 +501,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "max" },
-      headers: @headers,
       as: :json
 
     assert_response :internal_server_error
@@ -549,7 +519,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     post internal_subscriptions_update_path,
       params: { product: "max" },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -575,7 +544,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CancelSubscription.expects(:call).with(@user).returns(result)
 
     delete internal_subscriptions_cancel_path,
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -594,7 +562,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CancelSubscription.expects(:call).with(@user).returns({})
 
     delete internal_subscriptions_cancel_path,
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -610,7 +577,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CancelSubscription.expects(:call).with(@user).returns({})
 
     delete internal_subscriptions_cancel_path,
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -624,7 +590,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     )
 
     delete internal_subscriptions_cancel_path,
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -641,7 +606,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     )
 
     delete internal_subscriptions_cancel_path,
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -659,7 +623,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CancelSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
 
     delete internal_subscriptions_cancel_path,
-      headers: @headers,
       as: :json
 
     assert_response :internal_server_error
@@ -686,7 +649,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::ReactivateSubscription.expects(:call).with(@user).returns(result)
 
     post internal_subscriptions_reactivate_path,
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -703,7 +665,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     )
 
     post internal_subscriptions_reactivate_path,
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -720,7 +681,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     )
 
     post internal_subscriptions_reactivate_path,
-      headers: @headers,
       as: :json
 
     assert_response :bad_request
@@ -739,7 +699,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::ReactivateSubscription.expects(:call).raises(ArgumentError.new("Custom error"))
 
     post internal_subscriptions_reactivate_path,
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -758,7 +717,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::ReactivateSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
 
     post internal_subscriptions_reactivate_path,
-      headers: @headers,
       as: :json
 
     assert_response :internal_server_error

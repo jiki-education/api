@@ -480,6 +480,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_28_000002) do
     t.string "handle", null: false
     t.string "locale", default: "en", null: false
     t.string "name"
+    t.datetime "otp_enabled_at"
+    t.string "otp_secret"
     t.string "provider"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"

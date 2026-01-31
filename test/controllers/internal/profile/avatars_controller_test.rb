@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
   setup do
     @user = create(:user)
-    @headers = auth_headers_for(@user)
+    sign_in_user(@user)
   end
 
   guard_incorrect_token! :internal_profile_avatar_path, method: :put
@@ -17,8 +17,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
 
     User::Avatar::Upload.expects(:call).with(@user, anything).returns(@user)
 
-    put internal_profile_avatar_path, params: { avatar: image_file }, headers: @headers
-
+    put internal_profile_avatar_path, params: { avatar: image_file }
     assert_response :success
     json = response.parsed_body
     assert json.key?("profile")
@@ -34,8 +33,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
       InvalidAvatarError.new("Invalid file type")
     )
 
-    put internal_profile_avatar_path, params: { avatar: image_file }, headers: @headers
-
+    put internal_profile_avatar_path, params: { avatar: image_file }
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
@@ -47,8 +45,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
       InvalidAvatarError.new("No file provided")
     )
 
-    put internal_profile_avatar_path, params: {}, headers: @headers
-
+    put internal_profile_avatar_path, params: {}
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
@@ -65,8 +62,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
       AvatarTooLargeError.new("File exceeds 5MB limit")
     )
 
-    put internal_profile_avatar_path, params: { avatar: image_file }, headers: @headers
-
+    put internal_profile_avatar_path, params: { avatar: image_file }
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
@@ -76,8 +72,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
   test "DELETE destroy returns profile with null avatar_url" do
     User::Avatar::Delete.expects(:call).with(@user).returns(@user)
 
-    delete internal_profile_avatar_path, headers: @headers
-
+    delete internal_profile_avatar_path
     assert_response :success
     json = response.parsed_body
     assert json.key?("profile")
@@ -87,8 +82,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
   test "DELETE destroy works when no avatar attached" do
     User::Avatar::Delete.expects(:call).with(@user).returns(@user)
 
-    delete internal_profile_avatar_path, headers: @headers
-
+    delete internal_profile_avatar_path
     assert_response :success
   end
 end

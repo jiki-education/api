@@ -10,7 +10,7 @@ class Internal::PaymentsControllerTest < ApplicationControllerTest
 
   # Index action tests
   test "GET index returns empty array when no payments" do
-    get internal_payments_path, headers: @headers, as: :json
+    get internal_payments_path, as: :json
 
     assert_response :success
     assert_json_response({ payments: [] })
@@ -20,7 +20,7 @@ class Internal::PaymentsControllerTest < ApplicationControllerTest
     payment1 = create(:payment, user: @current_user, created_at: 2.days.ago)
     payment2 = create(:payment, user: @current_user, created_at: 1.day.ago)
 
-    get internal_payments_path, headers: @headers, as: :json
+    get internal_payments_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -33,7 +33,7 @@ class Internal::PaymentsControllerTest < ApplicationControllerTest
     create(:payment, user: other_user)
     my_payment = create(:payment, user: @current_user)
 
-    get internal_payments_path, headers: @headers, as: :json
+    get internal_payments_path, as: :json
 
     assert_response :success
     json = response.parsed_body
@@ -45,7 +45,7 @@ class Internal::PaymentsControllerTest < ApplicationControllerTest
     old_payment = create(:payment, user: @current_user, created_at: 1.week.ago)
     new_payment = create(:payment, user: @current_user, created_at: 1.day.ago)
 
-    get internal_payments_path, headers: @headers, as: :json
+    get internal_payments_path, as: :json
 
     assert_response :success
     json = response.parsed_body
@@ -58,7 +58,7 @@ class Internal::PaymentsControllerTest < ApplicationControllerTest
 
     SerializePayments.expects(:call).returns([])
 
-    get internal_payments_path, headers: @headers, as: :json
+    get internal_payments_path, as: :json
 
     assert_response :success
   end

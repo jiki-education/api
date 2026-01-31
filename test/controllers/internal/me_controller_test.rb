@@ -3,13 +3,13 @@ require "test_helper"
 class Internal::MeControllerTest < ApplicationControllerTest
   setup do
     @user = create(:user)
-    @headers = auth_headers_for(@user)
+    sign_in_user(@user)
   end
 
   guard_incorrect_token! :internal_me_path, method: :get
 
   test "GET show returns current user data" do
-    get internal_me_path, headers: @headers, as: :json
+    get internal_me_path, as: :json
 
     assert_response :success
 
@@ -25,7 +25,7 @@ class Internal::MeControllerTest < ApplicationControllerTest
   test "GET show returns correct membership_type for premium user" do
     @user.data.update!(membership_type: "premium")
 
-    get internal_me_path, headers: @headers, as: :json
+    get internal_me_path, as: :json
 
     assert_response :success
 
@@ -36,7 +36,7 @@ class Internal::MeControllerTest < ApplicationControllerTest
   test "GET show returns correct membership_type for max user" do
     @user.data.update!(membership_type: "max")
 
-    get internal_me_path, headers: @headers, as: :json
+    get internal_me_path, as: :json
 
     assert_response :success
 

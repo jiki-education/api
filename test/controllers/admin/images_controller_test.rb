@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::ImagesControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin)
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
   end
 
   # Authentication and authorization guards
@@ -24,8 +24,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
       digest: '123456'
     })
 
-    post admin_images_path, params: { image: image_file }, headers: @headers
-
+    post admin_images_path, params: { image: image_file }
     assert_response :created
     assert_json_response({
       url: 'https://assets.jiki.io/development/images/123/uuid.jpg'
@@ -33,7 +32,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns 422 when no image file provided" do
-    post admin_images_path, params: {}, headers: @headers, as: :json
+    post admin_images_path, params: {}, as: :json
 
     assert_response :unprocessable_entity
     assert_json_response({
@@ -52,8 +51,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
       ImageFileTooLargeError.new('Image file size exceeds maximum of 5MB')
     )
 
-    post admin_images_path, params: { image: image_file }, headers: @headers
-
+    post admin_images_path, params: { image: image_file }
     assert_response :unprocessable_entity
     assert_json_response({
       error: 'Image file size exceeds maximum of 5MB'
@@ -71,8 +69,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
       InvalidImageTypeError.new('Invalid image type. Allowed types: image/jpeg, image/png, image/gif, image/webp')
     )
 
-    post admin_images_path, params: { image: image_file }, headers: @headers
-
+    post admin_images_path, params: { image: image_file }
     assert_response :unprocessable_entity
     assert_json_response({
       error: 'Invalid image type. Allowed types: image/jpeg, image/png, image/gif, image/webp'
@@ -92,8 +89,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
       digest: '123'
     })
 
-    post admin_images_path, params: { image: image_file }, headers: @headers
-
+    post admin_images_path, params: { image: image_file }
     assert_response :created
     assert_json_response({ url: 'https://assets.jiki.io/key' })
   end

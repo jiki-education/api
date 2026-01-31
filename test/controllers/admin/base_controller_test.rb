@@ -17,6 +17,10 @@ class Admin::BaseControllerTest < ApplicationControllerTest
         controllers: { sessions: "auth/sessions", registrations: "auth/registrations", passwords: "auth/passwords" },
         skip: [:omniauth_callbacks]
 
+      namespace :auth do
+        post "verify-2fa", to: "two_factor#verify"
+      end
+
       namespace :admin do
         get "test", to: "base_controller_test/test#test_action"
       end
@@ -37,9 +41,9 @@ class Admin::BaseControllerTest < ApplicationControllerTest
 
   test "returns 403 for authenticated non-admin users" do
     user = create(:user, admin: false)
-    headers = auth_headers_for(user)
+    sign_in_user(user)
 
-    get "/admin/test", headers:, as: :json
+    get "/admin/test", as: :json
 
     assert_response :forbidden
     assert_json_response({
@@ -52,9 +56,9 @@ class Admin::BaseControllerTest < ApplicationControllerTest
 
   test "allows access for authenticated admin users" do
     admin = create(:user, :admin)
-    headers = auth_headers_for(admin)
+    sign_in_user(admin)
 
-    get "/admin/test", headers:, as: :json
+    get "/admin/test", as: :json
 
     assert_response :success
     assert_json_response({ success: true })

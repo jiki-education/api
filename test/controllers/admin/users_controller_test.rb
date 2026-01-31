@@ -3,7 +3,7 @@ require "test_helper"
 class Admin::UsersControllerTest < ApplicationControllerTest
   setup do
     @admin = create(:user, :admin, name: "Admin User")
-    @headers = auth_headers_for(@admin)
+    sign_in_user(@admin)
   end
 
   # Authentication and authorization guards
@@ -20,7 +20,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     user_2 = create(:user, name: "Charlie", email: "user2@example.com", admin: false)
 
     Prosopite.scan # Resume scan for the actual request
-    get admin_users_path, headers: @headers, as: :json
+    get admin_users_path, as: :json
 
     assert_response :success
     assert_json_response({
@@ -35,7 +35,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
   test "GET index returns empty results when only admin exists" do
     # Only admin exists (created in setup), no other users
-    get admin_users_path, headers: @headers, as: :json
+    get admin_users_path, as: :json
 
     assert_response :success
     json = response.parsed_body
@@ -55,7 +55,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     ).returns(paginated_users)
 
     get admin_users_path(name: "Test", email: "test@example.com", page: 2),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -66,7 +65,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     bob = create(:user, name: "Bob Jones")
 
     get admin_users_path(name: "Bob"),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -80,7 +78,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     bob = create(:user, email: "bob@test.org")
 
     get admin_users_path(email: "test.org"),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -95,7 +92,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
     Prosopite.scan
     get admin_users_path(page: 1, per: 2),
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -118,7 +114,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     ).returns({ results: [], meta: {} })
 
     Prosopite.scan
-    get admin_users_path, headers: @headers, as: :json
+    get admin_users_path, as: :json
 
     assert_response :success
   end
@@ -128,7 +124,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   test "GET show returns single user with full data using SerializeAdminUser" do
     user = create(:user, name: "Test User", email: "test@example.com")
 
-    get admin_user_path(user), headers: @headers, as: :json
+    get admin_user_path(user), as: :json
 
     assert_response :success
     assert_json_response({
@@ -137,7 +133,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 404 for non-existent user" do
-    get admin_user_path(99_999), headers: @headers, as: :json
+    get admin_user_path(99_999), as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -163,7 +159,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           email: "newemail@example.com"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -178,7 +173,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           email: "new@example.com"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -197,7 +191,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           email: "updated@example.com"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -210,7 +203,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   test "PATCH update returns 404 for non-existent user" do
     patch admin_user_path(99_999),
       params: { user: { email: "new@example.com" } },
-      headers: @headers,
       as: :json
 
     assert_response :not_found
@@ -231,7 +223,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           email: ""
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -249,7 +240,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           email: "not-an-email"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -268,7 +258,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           email: "existing@example.com"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :unprocessable_entity
@@ -289,7 +278,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
           locale: "fr"
         }
       },
-      headers: @headers,
       as: :json
 
     assert_response :success
@@ -307,7 +295,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     user = create(:user)
     User::Destroy.expects(:call).with(user)
 
-    delete admin_user_path(user), headers: @headers, as: :json
+    delete admin_user_path(user), as: :json
 
     assert_response :no_content
   end
@@ -317,7 +305,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     user_id = user.id
 
     assert_difference -> { User.count }, -1 do
-      delete admin_user_path(user), headers: @headers, as: :json
+      delete admin_user_path(user), as: :json
     end
 
     assert_response :no_content
@@ -325,7 +313,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   end
 
   test "DELETE destroy returns 404 for non-existent user" do
-    delete admin_user_path(99_999), headers: @headers, as: :json
+    delete admin_user_path(99_999), as: :json
 
     assert_response :not_found
     assert_json_response({

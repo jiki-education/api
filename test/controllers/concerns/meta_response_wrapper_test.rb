@@ -54,7 +54,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
   end
 
   test "adds meta with empty events to simple response" do
-    get "/test/simple", headers: @headers, as: :json
+    get "/test/simple", as: :json
 
     assert_response :success
     assert_json_response({
@@ -73,7 +73,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
       end
     end
 
-    get "/test/simple", headers: @headers, as: :json
+    get "/test/simple", as: :json
 
     assert_response :success
     json = response.parsed_body
@@ -89,7 +89,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
   end
 
   test "merges events into existing meta" do
-    get "/test/with_meta", headers: @headers, as: :json
+    get "/test/with_meta", as: :json
 
     assert_response :success
     assert_json_response({
@@ -103,7 +103,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
   end
 
   test "adds meta to empty response" do
-    get "/test/empty", headers: @headers, as: :json
+    get "/test/empty", as: :json
 
     assert_response :success
     assert_json_response({
@@ -112,7 +112,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
   end
 
   test "adds meta to error responses" do
-    get "/test/error", headers: @headers, as: :json
+    get "/test/error", as: :json
 
     assert_response :not_found
     assert_json_response({
@@ -125,7 +125,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
     # Make user an admin to pass authorization
     @current_user.update!(admin: true)
 
-    get "/test/admin", headers: @headers, as: :json
+    get "/test/admin", as: :json
 
     assert_response :success
     assert_json_response({
@@ -145,7 +145,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
       end
     end
 
-    get "/test/simple", headers: @headers, as: :json
+    get "/test/simple", as: :json
     first_response = response.parsed_body
 
     assert_equal 1, first_response["meta"]["events"].size
@@ -159,7 +159,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
       end
     end
 
-    get "/test/simple", headers: @headers, as: :json
+    get "/test/simple", as: :json
     second_response = response.parsed_body
 
     assert_equal 0, second_response["meta"]["events"].size
