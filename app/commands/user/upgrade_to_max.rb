@@ -15,6 +15,6 @@ class User::UpgradeToMax
 
   private
   def send_welcome_email!
-    UserMailer.welcome_to_max(user).deliver_later
+    PremiumMailer.welcome_to_max(user).deliver_later
   end
 end

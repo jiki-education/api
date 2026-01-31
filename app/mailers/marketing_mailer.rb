@@ -1,66 +1,36 @@
 # Marketing emails sent via hello.jiki.io
 # - Monthly newsletters
 # - Feature announcements
-# - Product updates
+# - Event announcements
 #
-# Users can unsubscribe via one-click unsubscribe
+# Users can unsubscribe via newsletters or event_emails preferences.
 
 class MarketingMailer < ApplicationMailer
-  default from: -> { Jiki.config.marketing_from_email },
-    reply_to: -> { Jiki.config.support_email }
+  self.email_category = :marketing
 
   # Example: Monthly newsletter
-  # TODO: Implement when User model exists
   # def monthly_newsletter(user)
-  #   return unless user.marketing_emails_enabled?
-  #
-  #   @user = user
-  #   @unsubscribe_url = unsubscribe_url(token: user.unsubscribe_token)
-  #
-  #   mail(
-  #     to: user.email,
-  #     subject: "What's new at Jiki - #{Date.current.strftime('%B %Y')}"
-  #   )
+  #   with_locale(user) do
+  #     mail_to_user(
+  #       user,
+  #       unsubscribe_key: :newsletters,
+  #       to: user.email,
+  #       subject: "What's new at Jiki - #{Date.current.strftime('%B %Y')}"
+  #     )
+  #   end
   # end
 
-  # Example: Feature announcement
-  # TODO: Implement when User model exists
-  # def feature_announcement(user, feature)
-  #   return unless user.marketing_emails_enabled?
+  # Example: Event announcement
+  # def event_announcement(user, event)
+  #   with_locale(user) do
+  #     @event = event
   #
-  #   @user = user
-  #   @feature = feature
-  #   @unsubscribe_url = unsubscribe_url(token: user.unsubscribe_token)
-  #
-  #   mail(
-  #     to: user.email,
-  #     subject: "New feature: #{feature.title}"
-  #   )
+  #     mail_to_user(
+  #       user,
+  #       unsubscribe_key: :event_emails,
+  #       to: user.email,
+  #       subject: "Join us: #{event.title}"
+  #     )
+  #   end
   # end
-
-  # Test email for verification
-  def test_email(to)
-    unless Rails.env.test? || to == "jez.walker@gmail.com"
-      raise "test_email can only be called in test environment or to jez.walker@gmail.com"
-    end
-
-    mail(
-      to: to,
-      subject: '[TEST] Marketing email from hello.jiki.io'
-    ) do |format|
-      format.html { render html: '<p>This is a test marketing email from hello.jiki.io</p>'.html_safe }
-      format.text { render plain: 'This is a test marketing email from hello.jiki.io' }
-    end
-  end
-
-  private
-  def default_from_email = Jiki.config.marketing_from_email
-  def configuration_set = Jiki.config.ses_marketing_configuration_set
-  def reply_to_email = Jiki.config.support_email
-
-  # Add RFC 8058 one-click unsubscribe headers for marketing emails
-  def mail(**args)
-    add_unsubscribe_headers!
-    super(**args)
-  end
 end

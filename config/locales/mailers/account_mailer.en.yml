@@ -1,11 +1,14 @@
 en:
-  transactional_mailer:
+  account_mailer:
+    welcome:
+      subject: "Welcome to Jiki!"
+      greeting: "Hi %{name},"
+      intro: "Welcome to Jiki - your journey to learning programming starts here!"
+      body: "We're excited to have you join our community of learners. Jiki provides a structured, linear learning path designed specifically for coding beginners."
+      cta: "Start Learning"
     account_deletion_confirmation:
       subject: "Confirm Your Account Deletion"
       preview: "Please confirm that you want to permanently delete your Jiki account"
       greeting: "Hi %{name},"
-      intro: "We received a request to delete your Jiki account. If you made this request, please confirm by clicking the button below."
       warning: "Warning: This action is permanent and cannot be undone. All your progress, submissions, and data will be permanently deleted."
       cta: "Delete My Account"
-      expiry: "This link will expire in 1 hour."
-      no_request: "If you didn't request this, you can safely ignore this email. Your account will not be deleted."

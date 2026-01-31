@@ -15,6 +15,6 @@ class User::UpgradeToPremium
 
   private
   def send_welcome_email!
-    UserMailer.welcome_to_premium(user).deliver_later
+    PremiumMailer.welcome_to_premium(user).deliver_later
   end
 end

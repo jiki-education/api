@@ -18,7 +18,7 @@ class SES::HandleEmailComplaintTest < ActiveSupport::TestCase
     SES::HandleEmailComplaint.(event)
 
     user.reload
-    refute user.data.email_wants_emails?
+    refute user.data.may_receive_emails?
     assert_equal 'abuse', user.data.email_complaint_type
     refute_nil user.data.email_complaint_at
   end
@@ -45,8 +45,8 @@ class SES::HandleEmailComplaintTest < ActiveSupport::TestCase
 
     user1.reload
     user2.reload
-    refute user1.data.email_wants_emails?
-    refute user2.data.email_wants_emails?
+    refute user1.data.may_receive_emails?
+    refute user2.data.may_receive_emails?
   end
 
   test "handles different complaint types" do
@@ -70,7 +70,7 @@ class SES::HandleEmailComplaintTest < ActiveSupport::TestCase
       SES::HandleEmailComplaint.(event)
 
       user.reload
-      refute user.data.email_wants_emails?
+      refute user.data.may_receive_emails?
       assert_equal complaint_type, user.data.email_complaint_type
     end
     Prosopite.resume

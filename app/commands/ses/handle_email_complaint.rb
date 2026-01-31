@@ -22,7 +22,7 @@ class SES::HandleEmailComplaint
     user = users_by_email[email]
     return unless user&.data
 
-    # Record spam complaint - email_wants_emails? will return false
+    # Record spam complaint - may_receive_emails? will return false
     user.data.update!(
       email_complaint_at: Time.current,
       email_complaint_type: complaint_feedback_type

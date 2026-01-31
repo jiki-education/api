@@ -7,6 +7,6 @@ class AccountDeletion::RequestDeletion
     token = AccountDeletion::CreateDeletionToken.(user)
     confirmation_url = "#{Jiki.config.frontend_base_url}/delete-account/confirm?token=#{token}"
 
-    TransactionalMailer.account_deletion_confirmation(user, confirmation_url:).deliver_later
+    AccountMailer.account_deletion_confirmation(user, confirmation_url:).deliver_later
   end
 end

@@ -15,6 +15,6 @@ class User::DowngradeToStandard
 
   private
   def send_downgrade_email!
-    UserMailer.subscription_ended(user).deliver_later
+    PremiumMailer.subscription_ended(user).deliver_later
   end
 end

@@ -11,7 +11,7 @@ class SerializeSettings
       unconfirmed_email: user.unconfirmed_email,
       email_confirmed: user.confirmed?,
       locale: user.locale,
-      receive_product_updates: user.data.receive_product_updates,
+      receive_newsletters: user.data.receive_newsletters,
       receive_event_emails: user.data.receive_event_emails,
       receive_milestone_emails: user.data.receive_milestone_emails,
       receive_activity_emails: user.data.receive_activity_emails,

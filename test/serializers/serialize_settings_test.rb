@@ -18,7 +18,7 @@ class SerializeSettingsTest < ActiveSupport::TestCase
       unconfirmed_email: nil,
       email_confirmed: true,
       locale: "en",
-      receive_product_updates: true,
+      receive_newsletters: true,
       receive_event_emails: true,
       receive_milestone_emails: true,
       receive_activity_emails: true,
@@ -31,7 +31,7 @@ class SerializeSettingsTest < ActiveSupport::TestCase
   test "serializes notification preferences when disabled" do
     user = create(:user)
     user.data.update!(
-      receive_product_updates: false,
+      receive_newsletters: false,
       receive_event_emails: false,
       receive_milestone_emails: true,
       receive_activity_emails: false
@@ -39,7 +39,7 @@ class SerializeSettingsTest < ActiveSupport::TestCase
 
     result = SerializeSettings.(user)
 
-    refute result[:receive_product_updates]
+    refute result[:receive_newsletters]
     refute result[:receive_event_emails]
     assert result[:receive_milestone_emails]
     refute result[:receive_activity_emails]

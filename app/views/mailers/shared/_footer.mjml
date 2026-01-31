@@ -1,13 +1,18 @@
 -# Email footer with links and legal info
+-# Expects: @user (required), @unsubscribe_key (optional)
 %mj-section{ "background-color": "#333333", "padding": "30px 20px" }
   %mj-column
     %mj-text{ "align": "center", "color": "#ffffff", "font-size": "14px" }
       %p{ style: "margin: 0 0 10px 0;" }
         © #{Time.current.year} Jiki. All rights reserved.
       %p{ style: "margin: 0;" }
-        %a.link{ href: "#", style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
-          Unsubscribe
-        %a.link{ href: "#", style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
+        - if defined?(@user) && @user&.unsubscribe_token
+          - if defined?(@unsubscribe_key) && @unsubscribe_key.present?
+            %a.link{ href: unsubscribe_url(token: @user.unsubscribe_token, key: @unsubscribe_key), style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
+              Unsubscribe
+          %a.link{ href: unsubscribe_url(token: @user.unsubscribe_token), style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
+            Email Preferences
+        %a.link{ href: "#{Jiki.config.frontend_base_url}/privacy", style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
           Privacy Policy
-        %a.link{ href: "#", style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
+        %a.link{ href: "mailto:#{Jiki.config.support_email}", style: "color: #66b3ff; text-decoration: none; margin: 0 10px;" }
           Contact Us
