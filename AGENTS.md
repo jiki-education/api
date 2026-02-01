@@ -1,169 +1,277 @@
-# CLAUDE.md
+# Instructions for Coding Agents.
 
 This file provides guidance to Agents (e.g. Claude Code) when working with code in this repository.
 
-## Subagents
+## Overview
 
-ALWAYS use subagents in the following situation:
-- `git commit ...` or `git add ... && git commit ...`: Use the Task tool with `subagent_type: git-commit`.
+This is a Rails API project for Jiki, a Learn to Code platform. Jiki provides structured, linear learning pathways for coding beginners through problem-solving and interactive exercises.
 
-## Context Files
+### Front End
 
-The `.context/` directory contains detailed documentation for this codebase. **Read any files relevant to the task you are working on. Even if the file is only tangentally relevant, read it to be sure.**
+This app integrates with a front end, which is a monorepo available for you to read at `../front-end`. The core is the NextJS app at `../front-end/app`. 
 
-You can read these files at **any point during your work** - even in the middle of implementing a plan if appropriate.
+### Deployment
 
-| File | When to Read |
-|------|--------------|
-| `commands.md` | Running tests, linting, deployment commands |
-| `architecture.md` | Understanding project structure, making structural changes |
-| `controllers.md` | Adding or modifying API endpoints |
-| `configuration.md` | Setting up services, environment config, CORS |
-| `testing.md` | Writing tests, using FactoryBot |
-| `serializers.md` | JSON response formatting |
-| `mailers.md` | Email templates, MJML/HAML, production delivery (SES) |
-| `jobs.md` | Background job processing with Sidekiq |
-| `llm.md` | AI-powered translation, Gemini API |
-| `i18n.md` | Internationalization, translations |
-| `concepts.md` | Educational content model |
-| `auth.md` | Authentication, JWT |
-| `premium.md` | Premium/membership features |
-| `stripe.md` | Payment integration |
-| `api.md` | API endpoint documentation |
-| `user_data.md` | User data model |
-| `concept_unlocking.md` | Concept progression system |
+This API is deployed onto ECS servers and a Postgres Aurora Serverless 2 database. It uses Terraform to deploy. You can read the full terraform config at `../terraform`.
 
-## How to Complete a Task
+### Local Development
 
-### 1. Determine a plan and get sign off
+The local server is started via `./bin/dev`. This is nearly always running - you should NOT run it yourself.
 
-Work with the user to come up with a clear plan. Ask clarifying questions. Minimise assumptions.
+## Application Information
 
-Only continue to (2) once the user has given signoff on the plan.
+- **Authentication**: Devise with session-based auth. Admin users require TOTP 2FA.
+- **Membership tiers**: `standard` (free), `premium`, `max`. Check access via `user.has_premium_access?` or `user.has_max_access?`.
+- **Subscriptions**: Stripe for payments. Status tracked in `User::Data` with webhooks handling state changes.
+- **Learning content**: Courses contain Levels, Levels contain Lessons. Lessons can unlock Concepts. Users progress linearly.
+- **i18n**: Database-backed translations via `*::Translation` models. LLM translation via Gemini API.
 
-### 2. Write a PLAN.md
+### Nomenclature
 
-Write a PLAN.md document that lists the plan with checkboxes to tick off.
-
-### 3. Work through the plan
-
-As you work through the plan, add new checkboxes if new tasks are added, and check off checkboxes as needed.
-
-## Before Committing
-
-Always perform these checks before committing code:
-
-1. **Run Tests**: `bin/rails test`
-2. **Run Linting**: `bin/rubocop -a`
-3. **Security Check**: `bin/brakeman`
-4. **Update Context Files**: Review if any `.context/` files need updating based on your changes
-5. **Commit Message**: Use clear, descriptive commit messages that explain the "why"
-
-### Pre-Commit Hook
-
-The `.husky/pre-commit` hook automatically:
-- Runs linting on staged files
-- Runs all tests
-- Runs security scanning with Brakeman
-
-## Git Workflow for Agents (Committing)
-
-**REQUIRED**: When completing any task, agents MUST follow this workflow:
-
-1. **Create Feature Branch**: Always work on a descriptively named feature branch (e.g., `setup-factorybot`, `add-user-authentication`)
-2. **Implement Changes**: Make all necessary code and documentation changes
-3. **Quality Checks**: Run tests, linting, and security checks
-4. **Commit Changes**: **ALWAYS use the git-commit subagent** - Never create commits directly. The git-commit subagent will validate changes, review code quality, and execute the commit.
-5. **Push Branch**: Push the feature branch to the remote repository
-6. **Create Pull Request**: Always create a PR with a comprehensive description of changes
-
-This ensures proper code review, maintains git history, and follows professional development practices.
-
-## Project Context
-
-This is the Jiki API - a Rails 8 API-only application that serves as the backend for Jiki, a Learn to Code platform. Jiki provides structured, linear learning pathways for coding beginners through problem-solving and interactive exercises.
-
-### Core Business Requirements
-
-Based on `/overview/tech/backend.md`:
-- **Linear Learning Path**: Users progress through lessons sequentially
-- **Exercise State Management**: Server stores all exercise submissions and progress
-- **PPP Pricing**: Geographic-based pricing with Stripe integration
-- **Internationalization**: Database-stored translations generated to i18n files
-- **Integration with Exercism**: Shares infrastructure patterns but different user journey
-
-### Related Repositories
-
-This repo is part of a set of repos:
-- **Frontend** (`../front-end/app`) - React/Next.js application
-- **Curriculum** (`../front-end/curriculum`) - Learning content and exercises
-- **Interpreters** (`../front-end/interpreters`) - Code execution engines
-- **Overview** (`../overview`) - Business requirements and system design
-
-You can look into those repos if you need to understand how they integrate with this API.
-
-## Nomenclature
-
+- **Jiki**: A learn to code platform.
+- **Exercism**: The coding education platform. Developed by the same team as Jiki. You can read the Exercism website codebase at `../../exercism/website` if the user asks you how Exercism does something.
 - **language**: Always refers to programming language (e.g., JavaScript, Python)
 - **locale**: Always refers to natural/human language (e.g., English, Hungarian)
 
-## Key Principles
 
-### Documentation is Current State
+## Coding Standards
 
-All documentation should reflect the current state of the codebase. Never use changelog format or document iterative changes. Focus on what IS, not what WAS.
+### Overview
 
-### Keep It Relevant
+This is a Rails 8, API-only project. JSON responses only. No views. It uses Sidekiq ActiveJob for async processing.
 
-Don't duplicate code that's easily accessible. Reference file paths and describe functionality instead of copying large code blocks.
+The project is built around a command-pattern. All functionality is encapsulated in commands, including data serialization. The project values a strong separation of concerns.
 
-### Continuous Improvement
+Testing happens with Rails Test Unit supported by FactoryBot.
 
-When you learn something important or encounter a pattern worth documenting, update the relevant context file immediately.
+### Commands
 
-## Rails Guidelines
+This project relies heavily on commands, which live in the `app/commands` directory, and are used for most business logic. Commands use the Mandate gem (which is maintained by the same team)
 
-### API-Only Considerations
+A command will look like this:
 
-- No views or asset pipeline
-- JSON responses only
-- Middleware optimized for APIs
-- CORS configuration required
+```ruby
+class User::Create
+  include Mandate
 
-### Testing with Minitest and FactoryBot
+  # Supports args and kwargs.
+  initialize_with :params
 
-- Parallel execution by default
-- FactoryBot for test data generation (no fixtures)
-- Test files in `test/` directory with factories in `test/factories/`
-- Run specific tests with `-n` flag
+  # The overarching structure goes into the call method
+  def call
+    # Functionality is broken into small methods
+    validate!
 
-### Background Jobs
+    # Often calls ActiveRecord methods or communicates
+    # with other gems or APIs.
+    User.create!(
+      email: params[:email],
+      name: params[:name],
+      password: params[:password]
+    ).tap do |user|
+      # Sometimes side effects are called in a tap
+      # block like this. These will be either calls
+      # to methods or to other commands
+      User::Badge::Create.(user, :member)
+    end
+  end
 
-- Use Sidekiq 8.0 with ActiveJob for async processing
-- Integrate with Mandate using `.defer()` method
-- Queue priorities: critical > default > mailers > translations > background > low
-- See `.context/jobs.md` for comprehensive patterns and testing
+  # Normally only the call method is public. Everything
+  # else is private.
+  private
 
-## Security Notes
+  def validate!
+    raise ValidationError, errors unless valid?
+  end
 
-### Sensitive Information
+  # Always use Mandate's memoize method rather than 
+  # manual ||= patterns. memoize automatically adds memoization
+  # to the method that comes after it.
+  memoize
 
-- We use the jiki config gem for config (NOT rails credentials)
-- Filter sensitive parameters from logs
-- Validate all input data
+  # Always use one-line methods for simple code like this
+  def valid? = errors.empty? 
 
-### API Security
+  # Rather than having methods like "generate_errors", just
+  # have a method that represents the data and memoize it.
+  memoize
+  def errors
+    {}.tap do |errs|
+      errs[:email] = ["can't be blank"] if params[:email].blank?
+      errs[:name] = ["can't be blank"] if params[:name].blank?
+      errs[:password] = ["is too short"] if params[:password].to_s.length < 8
+    end
+  end
+end
+```
 
-- Rate limiting is implemented through Cloudflare
-- Validate CORS origins
-- Sanitize error messages in production
+#### Notes
 
-## AWS Deployment Status
+- Mandate commands are called with either `SomeCommand.(...)` or with `SomeCommand.defer(...)` for async
+- Use Bang methods (`!`) for methods that perform actions or can raise exceptions. Use regular methods for computed values or queries.
+- Only return values when the caller needs them. If a command performs an action with no meaningful return (delete, send email), don't return anything.
+- For background execution: use `queue_as :queue_name` at class level, `requeue_job!(seconds)` to retry later
+- Search commands follow consistent pattern: `DEFAULT_PAGE`, `DEFAULT_PER` constants, private filter methods, Kaminari pagination
+- Always use `sanitize_sql_like()` before adding `%` wildcards in LIKE queries
 
-### Completed Infrastructure (Terraform)
+#### Organization
 
-- **VPC & Networking**: VPC, subnets, internet gateway (`terraform/terraform/aws/vpc.tf`)
-- **DynamoDB Config**: Configuration table with 14 items populated from Terraform (`terraform/terraform/aws/dynamodb.tf`)
-  - Includes: domains, Cloudflare R2 config, database config, Stripe placeholders
-  - IAM policy for ECS task access included
-- **Cloudflare R2**: Assets bucket with CDN (`terraform/terraform/cloudflare/r2.tf`)
+Commands are organized by domain in `app/commands/`. For example, we might choose to organise like this:
+
+```
+app/commands/
+├── user/
+│   ├── create.rb         # User registration
+│   ├── update.rb         # Profile updates
+│   ├── authenticate.rb   # Login logic
+│   └── reset_password.rb # Password reset
+├── lesson/
+│   ├── create.rb         # Create new lesson
+│   ├── update.rb         # Update lesson content
+│   ├── complete.rb       # Mark lesson as complete
+│   └── unlock_next.rb    # Unlock next lesson
+└── exercise/
+    ├── submit.rb         # Submit solution
+    ├── evaluate.rb       # Run tests
+    ├── complete.rb       # Mark as complete
+    └── unlock_hint.rb    # Unlock hints
+```
+
+#### When to Use Commands
+
+Use commands for:
+- **Business operations**: Creating, updating, deleting records with business logic
+- **Complex queries**: When queries involve business rules or multiple steps
+- **External integrations**: API calls, payment processing, email sending
+- **Multi-step processes**: Operations that coordinate multiple models
+- **Validation logic**: Complex validation that goes beyond ActiveRecord validations
+
+Don't use commands for:
+- **Simple ActiveRecord operations**: Direct `find`, `where` without business logic
+- **Pure data transformations**: Use serializers or presenters instead
+- **View logic**: Use helpers or view components
+
+### Models
+
+This repository generally uses standard ActiveRecord patterns for models.
+
+- Models should stay extremely thin. For complex or mutating methods, use Commands.
+- Prefer association methods for creating records: use `level.lessons.create!(attrs)` not `Lesson.create!(attrs.merge(level_id: level.id))`
+
+#### Specific Models
+
+- **User::Data**: Extended user metadata is stored in `User::Data`, not on `User` directly. The `User` model uses `method_missing` to delegate, so call `user.some_method` not `user.data.some_method`. Only use `user.data.x` when there's a name clash (e.g., `user.data.id`).
+
+- **Translation models**: Translatable models (e.g., `Level`, `Lesson`) have separate `*::Translation` models. English content stays on the main model; other locales use the translation table. Include the `Translatable` concern for this pattern.
+
+### Serializers
+
+Serializers are used to transform data into the structures the API outputs. They provide a single consistent data-format. They live in `app/serializers`, are normally called from controllers, and use the same Mandate pattern as commands: `include Mandate`, `initialize_with`, called with `.()`. 
+
+- Don't include `created_at`/`updated_at` timestamps unless there's a specific business requirement.
+- No business logic in serializers - only data transformation. Logic belongs in models/commands.
+- Use `SerializePaginatedCollection` for paginated endpoints (wraps with `results` and `meta` containing pagination info).
+- Group vs Individual serializers: Sometimes `SerializeLessons` calls `SerializeLesson` in a loop, sometimes it inlines. If calling singular, guard all N+1s in the plural serializer. Always ask the user which approach to use - do not guess.
+
+### Controllers
+
+Controllers are thin - delegate to commands, handle exceptions, render responses. No business logic.
+
+- **Namespace structure**: Different namespaces with different auth levels:
+  - `External::` - Public, unauthenticated endpoints
+  - `Internal::` - Requires authenticated user
+  - `Admin::` - Requires authenticated admin
+  - `Auth::` - Authentication endpoints (login, signup, etc.)
+  - `Webhooks::` - Webhook receivers (e.g., Stripe)
+  - Auth is enforced at the namespace base controller level (e.g., `Internal::BaseController`), not globally in ApplicationController.
+- **Use helper methods** from ApplicationController: `render_validation_error(exception)`, `render_not_found(message)`, `use_lesson!`, `use_concept!`, `use_project!`
+- **Class naming**: Use `class Internal::LessonsController` not `module Internal; class LessonsController; end; end`
+- If you find yourself adding business logic to a controller, stop and move it into a command instead.
+
+### Mailers
+
+Mailers use MJML (via MRML Rust compiler) for responsive HTML emails. Development uses Letter Opener; production uses SES v2 API.
+
+- **Set email category**: Every mailer must set `self.email_category = :transactional | :notifications | :marketing` to determine from address and SES configuration.
+- **Never call `mail()` directly**: Use `mail_to_user(user, unsubscribe_key:, **args)` instead. It handles preference checking, locale, and unsubscribe headers.
+- **Database templates**: Use `mail_template_to_user(user, template_type, template_key, ...)` for templates stored in DB with Liquid rendering.
+- **File extension**: MJML templates use `.mjml` extension (not `.html.mjml`) due to MRML compatibility.
+- **Always both formats**: Include HTML (`.mjml`) and text (`.text.erb`) versions.
+
+### Configuration
+
+Never use `ENV` or Rails credentials directly in application code. Always use the Jiki config gem:
+
+- `Jiki.config.*` for configuration values (e.g., `Jiki.config.frontend_base_url`). Stored in YAML files (`../config/settings/`) for dev/test, DynamoDB for production.
+- `Jiki.secrets.*` for sensitive values (e.g., `Jiki.secrets.stripe_api_key`). Stored in YAML files (`../config/settings/`) for dev/test, AWS Secrets Manager for production.
+
+If you need to add a new config key, include a PR to the config gem (`../config`) as part of your plan.
+
+### Migrations
+
+- **Never** manually reset the test database with `RAILS_ENV=test bin/rails db:reset`. Rails handles test DB automatically.
+
+### Exceptions
+
+Any exceptions that are referenced outside of the file in which they're raised, should be defined in `config/initializers/exceptions.rb`. This allows exceptions to be shared across multiple commands and accessed throughout the application.
+
+## Testing
+
+### Overview
+
+- **Tests**: `bin/rails test` (Rails TestUnit with FactoryBot)
+- **Linting**: `bin/rubocop -a` (auto-fixes issues)
+- **Security**: `bin/brakeman`
+
+**IMPORTANT:** All three are run automatically by the git pre-commit hook. For basic changes, you don't need to run these yourself - just let the git hook handle it when you commit. For more complex changes, run tests manually during development, but leave rubocop and brakeman to the git hook.
+
+Always read `test/test_helper.rb` to understand available helpers and configuration.
+
+#### Libraries
+- **FactoryBot** - Test data generation. Use `create` for DB, `build` for in-memory, `attributes_for` for hashes.
+- **Mocha** - Mocking and stubbing. Use `expects`, `returns`, `raises`.
+- **WebMock** - HTTP request stubbing for external APIs.
+- **Prosopite** - N+1 query detection.
+
+### Testing Commands
+
+- Aim for 100% test coverage of all command functionality.
+- Do NOT test functionality encapsulated in other commands - just mock those commands and verify they're called with the correct arguments.
+
+### Testing Serializers
+
+- Cover the default/happy path with a full JSON comparison.
+- For variants that change individual keys, only assert on those specific keys.
+- If there are multiple large forks in logic, use full JSON comparisons for each fork.
+
+### Testing Controllers
+
+- **Don't manually test authentication**: Use `guard_incorrect_token!` macro (auto-generates 2 tests) or `guard_admin!` macro for admin endpoints (auto-generates 3 tests). Never write manual auth tests.
+- **Test all code paths**: If a controller has multiple rescue blocks or conditionals, test each one.
+- **Use serializers in assertions**: Always reference the serializer, never manually write out JSON:
+  ```ruby
+  # CORRECT
+  assert_json_response({ success: true, user: SerializeUser.(user) })
+
+  # WRONG - never do this
+  assert_json_response({ success: true, user: { id: 1, name: "..." } })
+  ```
+- Use `setup_user` helper in setup block for authenticated endpoints.
+
+### Application Specific
+
+- **Lesson factory**: Always use `:exercise` or `:video` trait when creating lessons - the factory requires it for validation.
+
+## Git Workflow
+
+- Always use a feature branch based off `main` and create a PR.
+- If you're already on a feature branch, check it has a relevant name for the current task. **If unsure, ask the user.**
+- **Never** `git stash drop` or lose stashed content.
+- **Never** `git reset --hard`, `git checkout .`, or any command that loses uncommitted changes.
+- **Never** reset, checkout, or discard content in files you haven't edited yourself.
+
+---
+
+## Editing This File
+
+When editing this file, keep things concise and only provide information that is not-standard. Give enough information that Claude can determine what's meant - do not give unncessary examples.
