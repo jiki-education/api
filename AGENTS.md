@@ -38,7 +38,7 @@ The local server is started via `./bin/dev`. This is nearly always running - you
 
 ### Overview
 
-This is a Rails 8, API-only project. JSON responses only. No views. It uses Sidekiq ActiveJob for async processing.
+This is a Rails 8, API-only project. JSON responses only. No views. It uses Solid Queue for async processing.
 
 The project is built around a command-pattern. All functionality is encapsulated in commands, including data serialization. The project values a strong separation of concerns.
 
