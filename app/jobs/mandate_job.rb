@@ -49,19 +49,10 @@ class MandateJob < ApplicationJob
     return unless prereq_jobs.present?
 
     # TODO: Implement prerequisite job checking for Solid Queue
-    # This feature was ported from Sidekiq but is not currently used in the codebase.
+    # This feature is not currently used in the codebase.
     # When needed, implement using Solid Queue's job querying API:
     # - SolidQueue::Job.where(active_job_id: jid).exists?
     # - Check both ready and failed execution tables
-    #
-    # Original Sidekiq implementation (for reference):
-    # prereq_jobs.each do |job|
-    #   jid = job[:job_id]
-    #   if Sidekiq::Queue.new(job[:queue_name]).find_job(jid) ||
-    #      Sidekiq::RetrySet.new.find_job(jid)
-    #     raise PreqJobNotFinishedError, jid
-    #   end
-    # end
 
     Rails.logger.warn("Prerequisite job checking not yet implemented for Solid Queue")
   end

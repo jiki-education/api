@@ -28,7 +28,7 @@ class EmailTemplate::TranslateToLocale
 
     target_template
   rescue Gemini::RateLimitError => e
-    # Let Sidekiq handle retry with backoff
+    # Let Solid Queue handle retry with backoff
     raise e
   end
 

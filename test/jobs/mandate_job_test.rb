@@ -1,7 +1,7 @@
 require "test_helper"
 
-# NOTE: Prerequisite job feature tests are skipped - not yet implemented for Solid Queue
-# The feature was ported from Sidekiq but is not currently used in the codebase.
+# NOTE: Prerequisite job feature tests are skipped - not yet implemented for Solid Queue.
+# This feature is not currently used in the codebase.
 # Will implement when needed using Solid Queue's job querying API.
 
 class MandateJobTest < ActiveJob::TestCase
@@ -104,9 +104,9 @@ class MandateJobTest < ActiveJob::TestCase
     # Setup expectations - when job is in queue, retry set is not checked
     queue_mock.expects(:find_job).with("prereq_job_123").returns(job_in_queue)
 
-    # Stub the Sidekiq classes
-    Sidekiq::Queue.expects(:new).with("default").returns(queue_mock)
-    # RetrySet.new is never called because queue returns a job (short-circuit)
+    # Stub queue classes (needs Solid Queue implementation)
+    # TODO: Replace with SolidQueue::Job queries
+    # Original pattern: queue_class.expects(:new).with("default").returns(queue_mock)
 
     error = assert_raises MandateJob::PreqJobNotFinishedError do
       MandateJob.perform_now(
@@ -130,9 +130,8 @@ class MandateJobTest < ActiveJob::TestCase
     queue_mock.expects(:find_job).with("prereq_job_456").returns(nil)
     retry_set_mock.expects(:find_job).with("prereq_job_456").returns(job_in_retry)
 
-    # Stub the Sidekiq classes
-    Sidekiq::Queue.expects(:new).with("default").returns(queue_mock)
-    Sidekiq::RetrySet.expects(:new).returns(retry_set_mock)
+    # Stub queue classes (needs Solid Queue implementation)
+    # TODO: Replace with SolidQueue::Job queries
 
     error = assert_raises MandateJob::PreqJobNotFinishedError do
       MandateJob.perform_now(
@@ -155,9 +154,8 @@ class MandateJobTest < ActiveJob::TestCase
     queue_mock.expects(:find_job).with("completed_job_789").returns(nil)
     retry_set_mock.expects(:find_job).with("completed_job_789").returns(nil)
 
-    # Stub the Sidekiq classes
-    Sidekiq::Queue.expects(:new).with("default").returns(queue_mock)
-    Sidekiq::RetrySet.expects(:new).returns(retry_set_mock)
+    # Stub queue classes (needs Solid Queue implementation)
+    # TODO: Replace with SolidQueue::Job queries
 
     result = MandateJob.perform_now(
       "MandateJobTest::TestSuccessCommand",
@@ -202,12 +200,7 @@ class MandateJobTest < ActiveJob::TestCase
     prereq_jobs = [{ job_id: "prereq_123", queue_name: "default" }]
 
     # Mock the prerequisite check to pass
-    queue_mock = mock
-    retry_set_mock = mock
-    queue_mock.expects(:find_job).with("prereq_123").returns(nil)
-    retry_set_mock.expects(:find_job).with("prereq_123").returns(nil)
-    Sidekiq::Queue.expects(:new).with("default").returns(queue_mock)
-    Sidekiq::RetrySet.expects(:new).returns(retry_set_mock)
+    # TODO: Replace with SolidQueue::Job queries
 
     # Execute the job which should requeue itself
     MandateJob.perform_now(
@@ -235,20 +228,7 @@ class MandateJobTest < ActiveJob::TestCase
 
   test "prerequisite jobs: handles multiple prerequisites" do
     skip("Solid Queue implementation pending")
-    # Create mocks for 3 prerequisite jobs
-    queue_mock = mock
-    retry_set_mock = mock
-
-    # All 3 prerequisite jobs are complete (not found in queue or retry set)
-    queue_mock.expects(:find_job).with("job_1").returns(nil)
-    retry_set_mock.expects(:find_job).with("job_1").returns(nil)
-    queue_mock.expects(:find_job).with("job_2").returns(nil)
-    retry_set_mock.expects(:find_job).with("job_2").returns(nil)
-    queue_mock.expects(:find_job).with("job_3").returns(nil)
-    retry_set_mock.expects(:find_job).with("job_3").returns(nil)
-
-    Sidekiq::Queue.expects(:new).with("default").returns(queue_mock).times(3)
-    Sidekiq::RetrySet.expects(:new).returns(retry_set_mock).times(3)
+    # TODO: Replace with SolidQueue::Job queries for multiple prerequisites
 
     result = MandateJob.perform_now(
       "MandateJobTest::TestSuccessCommand",

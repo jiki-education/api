@@ -759,7 +759,7 @@ Same as list view plus:
     "startedAt": "2025-10-15T13:00:00Z",
     "completedAt": "2025-10-15T13:05:00Z",
     "cost": 0.05,
-    "jobId": "sidekiq-job-123"
+    "jobId": "job-123"
   },
   "output": {
     "type": "video",
@@ -873,10 +873,6 @@ Ruby 3.4.4
   - **Linux**: `sudo apt-get install postgresql postgresql-contrib`
 - **Bundler**
   - Install: `gem install bundler`
-- **Redis** (for Sidekiq background jobs)
-  - **macOS**: `brew install redis`
-  - **Linux**: `sudo apt-get install redis-server`
-  - Start: `brew services start redis` (macOS) or `sudo service redis-server start` (Linux)
 - **Hivemind** (for running multiple processes)
   - **macOS**: `brew install hivemind`
   - **Linux**: Download from [releases](https://github.com/DarthSim/hivemind/releases)
@@ -936,9 +932,7 @@ Ruby 3.4.4
 bin/dev
 ```
 
-This starts both the Rails server (port 3060) and Sidekiq worker using Hivemind.
-
-**Note:** Redis must be running for Sidekiq. Start Redis with `brew services start redis` if needed.
+This starts both the Rails server (port 3060) and Solid Queue worker using Hivemind.
 
 ### Stopping LocalStack
 

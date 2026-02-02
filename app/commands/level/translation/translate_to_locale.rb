@@ -27,7 +27,7 @@ class Level::Translation::TranslateToLocale
 
     target_translation
   rescue Gemini::RateLimitError => e
-    # Let Sidekiq handle retry with backoff
+    # Let Solid Queue handle retry with backoff
     raise e
   end
 
