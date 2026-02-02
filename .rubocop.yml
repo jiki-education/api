@@ -88,6 +88,9 @@ Style/MultilineTernaryOperator:
 Style/ZeroLengthPredicate:
   Enabled: false
 
+Style/GuardClause:
+  Enabled: false
+
 # I don't mind this being enabled if
 # someone fixes all the fails.
 Style/ClassAndModuleChildren:

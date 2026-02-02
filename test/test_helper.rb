@@ -86,11 +86,11 @@ module AuthenticationHelper
       user: { email: user.email, password: "password123" }
     }, as: :json
 
-    return unless user.admin?
-
-    # Admin users require 2FA - complete the flow
-    User::VerifyOtp.expects(:call).with(user, "123456").returns(true)
-    post auth_verify_2fa_path, params: { otp_code: "123456" }, as: :json
+    if user.admin?
+      # Admin users require 2FA - complete the flow
+      User::VerifyOtp.expects(:call).with(user, "123456").returns(true)
+      post auth_verify_2fa_path, params: { otp_code: "123456" }, as: :json
+    end
   end
 end
 
