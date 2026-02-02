@@ -5,7 +5,7 @@ class User
     initialize_with :user
 
     def call
-      user.update!(otp_enabled_at: Time.current)
+      user.data.update!(otp_enabled_at: Time.current)
     end
   end
 end

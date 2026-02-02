@@ -14,6 +14,10 @@ class CreateUserData < ActiveRecord::Migration[8.1]
       t.jsonb :subscriptions, default: [], null: false
       t.string :timezone
 
+      # Two-Factor Authentication
+      t.string :otp_secret
+      t.datetime :otp_enabled_at
+
       t.timestamps
     end
 
