@@ -8,31 +8,22 @@
 class NotificationsMailer < ApplicationMailer
   self.email_category = :notifications
 
-  # Example: Badge earned notification
-  # def badge_earned(user, badge)
-  #   with_locale(user) do
-  #     @badge = badge
+  # Sends a badge earned notification to a user
   #
-  #     mail_to_user(
-  #       user,
-  #       unsubscribe_key: :activity_emails,
-  #       to: user.email,
-  #       subject: t('.subject', badge_name: badge.name)
-  #     )
-  #   end
-  # end
+  # @param user [User] The user who earned the badge
+  # @param badge [Badge] The badge that was earned
+  def badge_earned(user, badge)
+    @user = user
+    @badge = badge
 
-  # Example: Achievement unlocked
-  # def achievement_unlocked(user, achievement)
-  #   with_locale(user) do
-  #     @achievement = achievement
-  #
-  #     mail_to_user(
-  #       user,
-  #       unsubscribe_key: :activity_emails,
-  #       to: user.email,
-  #       subject: t('.subject', achievement_name: achievement.title)
-  #     )
-  #   end
-  # end
+    # Get translated content for user's locale
+    content = badge.content_for_locale(user.locale)
+    @subject = content[:email_subject]
+    @content_markdown = content[:email_content_markdown]
+    @image_url = badge.email_image_url
+
+    return unless @subject.present? && @content_markdown.present?
+
+    mail_to_user(@user, unsubscribe_key: :activity_emails, subject: @subject)
+  end
 end

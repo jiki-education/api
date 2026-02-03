@@ -7,7 +7,9 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     translation = {
       name: "Tag",
       description: "Csatlakozott a Jikihez",
-      fun_fact: "Üdvözöljük a közösségben!"
+      fun_fact: "Üdvözöljük a közösségben!",
+      email_subject: "Új jelvényt szereztél!",
+      email_content_markdown: "Gratulálunk!"
     }
     Gemini::Translate.stubs(:call).returns(translation)
 
@@ -19,6 +21,8 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     assert_equal "Tag", target.name
     assert_equal "Csatlakozott a Jikihez", target.description
     assert_equal "Üdvözöljük a közösségben!", target.fun_fact
+    assert_equal "Új jelvényt szereztél!", target.email_subject
+    assert_equal "Gratulálunk!", target.email_content_markdown
   end
 
   test "calls Gemini::Translate with correct parameters" do
@@ -27,7 +31,9 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     translation = {
       name: "Test",
       description: "Test",
-      fun_fact: "Test"
+      fun_fact: "Test",
+      email_subject: "Test",
+      email_content_markdown: "Test"
     }
 
     Gemini::Translate.expects(:call).with(
@@ -73,7 +79,9 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     translation = {
       name: "New Name",
       description: "New Description",
-      fun_fact: "New Fun Fact"
+      fun_fact: "New Fun Fact",
+      email_subject: "New Subject",
+      email_content_markdown: "New Content"
     }
     Gemini::Translate.stubs(:call).returns(translation)
 
@@ -90,7 +98,9 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     translation = {
       name: "Test",
       description: "Test",
-      fun_fact: "Test"
+      fun_fact: "Test",
+      email_subject: "Test",
+      email_content_markdown: "Test"
     }
     Gemini::Translate.stubs(:call).returns(translation)
 
@@ -103,7 +113,7 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     assert_includes prompt, "Target Language: Hungarian (hu)"
   end
 
-  test "translation prompt includes all three source fields" do
+  test "translation prompt includes all five source fields" do
     badge = create(:member_badge)
 
     command = Badge::Translation::TranslateToLocale.new(badge, "hu")
@@ -112,6 +122,8 @@ class Badge::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     assert_includes prompt, badge.name
     assert_includes prompt, badge.description
     assert_includes prompt, badge.fun_fact
+    assert_includes prompt, badge.email_subject
+    assert_includes prompt, badge.email_content_markdown
   end
 
   test "translation prompt has localization expert instructions" do

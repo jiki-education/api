@@ -2,16 +2,28 @@ en:
   premium_mailer:
     welcome_to_premium:
       subject: "Welcome to Jiki Premium!"
-      greeting: "Hi %{name}!"
-      intro: "Welcome to Premium"
-      body: "Thank you for subscribing to Jiki Premium. You now have access to all Premium features."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Thank you for subscribing to Jiki Premium!
+
+        You've taken a key step in accelerating your learning journey. Check out the [Premium page](https://jiki.io/articles/premium) for a list of all the features you now have access to.
+
+        If you have any questions, just reply to this email.
+
+        Jeremy
     welcome_to_max:
       subject: "Welcome to Jiki Max!"
-      greeting: "Hi %{name}!"
-      intro: "Welcome to Max"
-      body: "Thank you for subscribing to Jiki Max. You now have access to all Max features."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Thank you for subscribing to Jiki Max. You now have access to all Max features.
     subscription_ended:
       subject: "Your Jiki subscription has ended"
-      greeting: "Hi %{name}!"
-      intro: "Subscription ended"
-      body: "Your subscription has ended. You can resubscribe at any time to regain access to premium features."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Your Jiki Premium subscription has ended and you're now on our free plan.
+
+        You still have full access to all our core content — nothing's going anywhere! If you'd like to resubscribe, you can do so anytime on your [settings page](https://jiki.io/settings).
+
+        Thanks for trying Jiki Premium.
+
+        Jeremy

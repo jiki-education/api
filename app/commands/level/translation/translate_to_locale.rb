@@ -20,7 +20,9 @@ class Level::Translation::TranslateToLocale
       title: translated[:title],
       description: translated[:description],
       milestone_summary: translated[:milestone_summary],
-      milestone_content: translated[:milestone_content]
+      milestone_content: translated[:milestone_content],
+      milestone_email_subject: translated[:milestone_email_subject],
+      milestone_email_content_markdown: translated[:milestone_email_content_markdown]
     )
 
     Rails.logger.info "Translated level #{level.slug} → #{target_locale}"
@@ -55,9 +57,11 @@ class Level::Translation::TranslateToLocale
         title: { type: "string" },
         description: { type: "string" },
         milestone_summary: { type: "string" },
-        milestone_content: { type: "string" }
+        milestone_content: { type: "string" },
+        milestone_email_subject: { type: "string" },
+        milestone_email_content_markdown: { type: "string" }
       },
-      required: %w[title description milestone_summary milestone_content]
+      required: %w[title description milestone_summary milestone_content milestone_email_subject milestone_email_content_markdown]
     }
   end
 
@@ -95,13 +99,21 @@ class Level::Translation::TranslateToLocale
       Milestone Content (longer, shown in modal):
       #{level.milestone_content}
 
+      Milestone Email Subject:
+      #{level.milestone_email_subject}
+
+      Milestone Email Content (markdown):
+      #{level.milestone_email_content_markdown}
+
       Required Output:
-      Return ONLY a valid JSON object with these four fields (no additional text or markdown):
+      Return ONLY a valid JSON object with these six fields (no additional text or markdown):
       {
         "title": "translated title",
         "description": "translated description",
         "milestone_summary": "translated summary text",
-        "milestone_content": "translated content text"
+        "milestone_content": "translated content text",
+        "milestone_email_subject": "translated email subject",
+        "milestone_email_content_markdown": "translated email content"
       }
     PROMPT
   end

@@ -143,15 +143,6 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :concepts, only: %i[index show create update destroy]
     resources :projects, only: %i[index show create update destroy]
-    resources :email_templates, only: %i[index show create update destroy] do
-      member do
-        post :translate
-      end
-      collection do
-        get :types
-        get :summary
-      end
-    end
     resources :users, only: %i[index show update destroy]
     resources :levels, only: %i[index create update] do
       resources :lessons, only: %i[index create update], controller: "levels/lessons"

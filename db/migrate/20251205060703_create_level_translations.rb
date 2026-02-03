@@ -7,6 +7,8 @@ class CreateLevelTranslations < ActiveRecord::Migration[8.1]
       t.text :description, null: false
       t.text :milestone_summary, null: false
       t.text :milestone_content, null: false
+      t.text :milestone_email_subject, null: false
+      t.text :milestone_email_content_markdown, null: false
 
       t.timestamps
     end

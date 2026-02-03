@@ -13,14 +13,14 @@ class DeviseMailerTest < ActionMailer::TestCase
 
     # Check HTML body contains English text
     assert_match "Hi John Doe,", mail.html_part.body.to_s
-    assert_match "Someone requested a link to reset your password", mail.html_part.body.to_s
+    assert_match "We received a request to reset your password", mail.html_part.body.to_s
     assert_match "Reset My Password", mail.html_part.body.to_s
     assert_match "you can safely ignore this email", mail.html_part.body.to_s
     assert_match "expire in 6 hours", mail.html_part.body.to_s
 
     # Check text body
     assert_match "Hi John Doe,", mail.text_part.body.to_s
-    assert_match "Someone requested a link to reset your password", mail.text_part.body.to_s
+    assert_match "We received a request to reset your password", mail.text_part.body.to_s
   end
 
   test "reset_password_instructions renders with Hungarian locale" do
@@ -35,7 +35,7 @@ class DeviseMailerTest < ActionMailer::TestCase
 
     # Check HTML body contains Hungarian text
     assert_match "Szia János Kovács,", mail.html_part.body.to_s
-    assert_match "Valaki jelszó-visszaállítási linket kért", mail.html_part.body.to_s
+    assert_match "Kaptunk egy kérést a Jiki fiókod jelszavának visszaállítására", mail.html_part.body.to_s
     assert_match "Jelszó visszaállítása", mail.html_part.body.to_s
     assert_match "figyelmen kívül hagyhatod", mail.html_part.body.to_s
     assert_match "6 óra múlva lejár", mail.html_part.body.to_s
@@ -112,7 +112,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     # DeviseMailer defaults to I18n.default_locale (en) when user.locale is nil
     assert_equal "Reset Your Password", mail.subject
     # Check for English text in the email
-    assert_match "Someone requested a link to reset your password", mail.html_part.body.to_s
+    assert_match "We received a request to reset your password", mail.html_part.body.to_s
     assert_match "Reset My Password", mail.html_part.body.to_s
   end
 

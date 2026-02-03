@@ -7,13 +7,17 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
       title: "Ruby Basics",
       description: "Learn Ruby",
       milestone_summary: "Great job!",
-      milestone_content: "# Congratulations!")
+      milestone_content: "# Congratulations!",
+      milestone_email_subject: "Congratulations!",
+      milestone_email_content_markdown: "You did it!")
 
     translation = {
       title: "Ruby Alapok",
       description: "Tanuld meg a Ruby-t",
       milestone_summary: "Nagyszerű munka!",
-      milestone_content: "# Gratulálunk!"
+      milestone_content: "# Gratulálunk!",
+      milestone_email_subject: "Gratulálunk!",
+      milestone_email_content_markdown: "Sikerült!"
     }
     Gemini::Translate.stubs(:call).returns(translation)
 
@@ -26,6 +30,8 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     assert_equal "Tanuld meg a Ruby-t", target.description
     assert_equal "Nagyszerű munka!", target.milestone_summary
     assert_equal "# Gratulálunk!", target.milestone_content
+    assert_equal "Gratulálunk!", target.milestone_email_subject
+    assert_equal "Sikerült!", target.milestone_email_content_markdown
   end
 
   test "calls Gemini::Translate with correct parameters" do
@@ -40,7 +46,9 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
       title: "Test",
       description: "Test",
       milestone_summary: "Test",
-      milestone_content: "Test"
+      milestone_content: "Test",
+      milestone_email_subject: "Test",
+      milestone_email_content_markdown: "Test"
     }
 
     # Verify Gemini::Translate is called with correct params
@@ -93,7 +101,9 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
       title: "New Title",
       description: "New Description",
       milestone_summary: "New Summary",
-      milestone_content: "New Content"
+      milestone_content: "New Content",
+      milestone_email_subject: "New Subject",
+      milestone_email_content_markdown: "New Email Content"
     }
     Gemini::Translate.stubs(:call).returns(translation)
 
@@ -116,7 +126,9 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
       title: "Test",
       description: "Test",
       milestone_summary: "Test",
-      milestone_content: "Test"
+      milestone_content: "Test",
+      milestone_email_subject: "Test",
+      milestone_email_content_markdown: "Test"
     }
     Gemini::Translate.stubs(:call).returns(translation)
 
@@ -130,12 +142,14 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     assert_includes prompt, "Target Language: Hungarian (hu)"
   end
 
-  test "translation prompt includes all four source fields" do
+  test "translation prompt includes all six source fields" do
     level = create(:level,
       title: "Unique Title",
       description: "Unique description text",
       milestone_summary: "Unique summary text",
-      milestone_content: "# Unique content markdown")
+      milestone_content: "# Unique content markdown",
+      milestone_email_subject: "Unique email subject",
+      milestone_email_content_markdown: "Unique email content")
 
     command = Level::Translation::TranslateToLocale.new(level, "hu")
     prompt = command.send(:translation_prompt)
@@ -144,6 +158,8 @@ class Level::Translation::TranslateToLocaleTest < ActiveSupport::TestCase
     assert_includes prompt, "Unique description text"
     assert_includes prompt, "Unique summary text"
     assert_includes prompt, "# Unique content markdown"
+    assert_includes prompt, "Unique email subject"
+    assert_includes prompt, "Unique email content"
   end
 
   test "translation prompt has localization expert instructions" do

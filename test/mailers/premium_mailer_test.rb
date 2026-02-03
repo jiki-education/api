@@ -10,10 +10,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Hi John Doe!", mail.html_part.body.to_s
+    assert_match "Hi John Doe,", mail.html_part.body.to_s
     assert_match "Thank you for subscribing to Jiki Premium", mail.html_part.body.to_s
 
-    assert_match "Hi John Doe!", mail.text_part.body.to_s
+    assert_match "Hi John Doe,", mail.text_part.body.to_s
     assert_match "Thank you for subscribing to Jiki Premium", mail.text_part.body.to_s
   end
 
@@ -46,10 +46,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Hi John Doe!", mail.html_part.body.to_s
+    assert_match "Hi John Doe,", mail.html_part.body.to_s
     assert_match "Thank you for subscribing to Jiki Max", mail.html_part.body.to_s
 
-    assert_match "Hi John Doe!", mail.text_part.body.to_s
+    assert_match "Hi John Doe,", mail.text_part.body.to_s
     assert_match "Thank you for subscribing to Jiki Max", mail.text_part.body.to_s
   end
 
@@ -82,11 +82,11 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Hi John Doe!", mail.html_part.body.to_s
-    assert_match "Your subscription has ended", mail.html_part.body.to_s
+    assert_match "Hi John Doe,", mail.html_part.body.to_s
+    assert_match "Your Jiki Premium subscription has ended", mail.html_part.body.to_s
 
-    assert_match "Hi John Doe!", mail.text_part.body.to_s
-    assert_match "Your subscription has ended", mail.text_part.body.to_s
+    assert_match "Hi John Doe,", mail.text_part.body.to_s
+    assert_match "Your Jiki Premium subscription has ended", mail.text_part.body.to_s
   end
 
   test "subscription_ended email includes both HTML and text parts" do
@@ -114,8 +114,8 @@ class PremiumMailerTest < ActionMailer::TestCase
     user = create(:user, name: "Graig D'Amore")
     mail = PremiumMailer.welcome_to_premium(user)
 
-    assert_match "Hi Graig D&#39;Amore!", mail.html_part.body.to_s
-    assert_match "Hi Graig D'Amore!", mail.text_part.body.to_s
+    assert_match "Hi Graig D&#39;Amore,", mail.html_part.body.to_s
+    assert_match "Hi Graig D'Amore,", mail.text_part.body.to_s
   end
 
   test "emails do not include unsubscribe headers" do

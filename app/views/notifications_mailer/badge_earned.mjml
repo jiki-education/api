@@ -1,0 +1,13 @@
+- content_for :title, @subject
+- content_for :preview, "You've earned a new badge!"
+
+%mj-section{ "background-color": "#ffffff" }
+  %mj-column
+    %mj-text
+      Hi #{@user.name},
+
+    - if @image_url.present?
+      %mj-image{ src: @image_url, alt: @badge.name, width: "100%" }
+
+    %mj-text
+      = markdown_to_html(@content_markdown)

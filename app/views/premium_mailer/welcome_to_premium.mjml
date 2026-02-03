@@ -1,5 +1,5 @@
 - content_for :title, t('.subject')
-- content_for :preview, t('.intro')
+- content_for :preview, t('.subject')
 
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
@@ -7,4 +7,4 @@
       = t('.greeting', name: @user.name)
 
     %mj-text
-      = t('.body')
+      = markdown_to_html(t('.body_markdown'))

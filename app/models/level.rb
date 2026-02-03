@@ -9,7 +9,8 @@ class Level < ApplicationRecord
   has_many :users, through: :user_levels
   has_many :translations, class_name: 'Level::Translation', dependent: :destroy
 
-  self.translatable_fields = %i[title description milestone_summary milestone_content]
+  self.translatable_fields = %i[title description milestone_summary milestone_content milestone_email_subject
+                                milestone_email_content_markdown]
 
   validates :slug, presence: true, uniqueness: true
   validates :title, presence: true

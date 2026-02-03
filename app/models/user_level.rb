@@ -18,13 +18,4 @@ class UserLevel < ApplicationRecord
   def email_communication_preferences_key
     nil
   end
-
-  # Check if an email template exists for this level completion
-  def email_should_send?
-    EmailTemplate.exists?(
-      type: :level_completion,
-      slug: level.slug,
-      locale: user.locale
-    )
-  end
 end

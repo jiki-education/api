@@ -1,6 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
   layout "mailer"
-  helper_method :unsubscribe_url
+  helper_method :unsubscribe_url, :markdown_to_html, :markdown_to_text
 
   # Email configuration by category
   # Each mailer must set email_category to one of these keys
@@ -71,47 +71,19 @@ class ApplicationMailer < ActionMailer::Base
     end
   end
 
-  # Sends an email using a database-backed email template with Liquid rendering
-  #
-  # Automatically injects the user into the Liquid context and handles all template
-  # rendering, MJML compilation, and multipart (HTML/text) mail delivery.
-  #
-  # @param user [User] The recipient user (also injected into Liquid context)
-  # @param template_type [Symbol] The type of template (e.g., :level_completion)
-  # @param template_key [String] The template key (e.g., level slug)
-  # @param unsubscribe_key [Symbol, nil] The preference key for unsubscribe
-  # @param context [Hash] Additional context for Liquid rendering (keys as symbols)
-  #
-  # @return [Mail::Message, nil] The mail message if template found, nil otherwise
-  def mail_template_to_user(user, template_type, template_key, unsubscribe_key: nil, context: {})
-    # Find the template for this type, key, and user's locale
-    template = EmailTemplate.find_for(template_type, template_key, user.locale)
-    return unless template
-
-    # Build Liquid context with user automatically included
-    liquid_context = { 'user' => UserDrop.new(user) }
-
-    # Merge in provided context, converting symbol keys to strings for Liquid
-    context.each do |key, value|
-      liquid_context[key.to_s] = value
-    end
-
-    # Render subject with Liquid
-    subject = Liquid::Template.parse(template.subject).render(liquid_context)
-
-    # Render MJML body content with Liquid (content only, no layout wrapper)
-    @mjml_content = Liquid::Template.parse(template.body_mjml).render(liquid_context).html_safe
-
-    # Render text body with Liquid
-    text_body = Liquid::Template.parse(template.body_text).render(liquid_context)
-
-    mail_to_user(user, unsubscribe_key:, subject:) do |format|
-      format.html { render inline: @mjml_content, layout: 'mailer' }
-      format.text { render plain: text_body }
-    end
+  private
+  # Convert markdown to HTML for email templates
+  def markdown_to_html(markdown)
+    Commonmarker.to_html(markdown).html_safe
   end
 
-  private
+  # Convert markdown to plain text for email templates
+  # Converts [text](url) to "text (url)"
+  def markdown_to_text(markdown)
+    # Convert markdown links [text](url) to "text (url)"
+    markdown.gsub(/\[([^\]]+)\]\(([^)]+)\)/, '\1 (\2)')
+  end
+
   # Generate unsubscribe URL for frontend
   def unsubscribe_url(token:, key: nil)
     url = "#{Jiki.config.frontend_base_url}/unsubscribe?token=#{token}"

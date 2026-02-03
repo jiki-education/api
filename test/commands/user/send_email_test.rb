@@ -2,19 +2,13 @@ require "test_helper"
 
 class User::SendEmailTest < ActiveSupport::TestCase
   test "sends email when all conditions are met" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    create(:email_template, slug: "level-1", locale: "en")
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
+    user_level = create(:user_level, completed_at: Time.current)
 
     assert_email_sent(user_level)
   end
 
   test "updates email status to sent" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    create(:email_template, slug: "level-1", locale: "en")
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
+    user_level = create(:user_level, completed_at: Time.current)
 
     refute user_level.email_sent?
 
@@ -24,57 +18,39 @@ class User::SendEmailTest < ActiveSupport::TestCase
   end
 
   test "does not send if user may not receive emails" do
-    user = create(:user, locale: "en")
-    user.expects(may_receive_emails?: false)
-    level = create(:level, slug: "level-1")
-    create(:email_template, slug: "level-1", locale: "en")
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
-
-    refute_email_sent(user_level)
-    assert user_level.email_skipped?
-  end
-
-  test "does not send if email template does not exist" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-2")
-    # No template created for level-2
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
+    user_level = create(:user_level, completed_at: Time.current)
+    user_level.user.expects(may_receive_emails?: false)
 
     refute_email_sent(user_level)
     assert user_level.email_skipped?
   end
 
   test "only sends for email pending status" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    create(:email_template, slug: "level-1", locale: "en")
+    user = create(:user)
+    level = create(:level)
 
     # Skipped
-    user_level_skipped = create(:user_level, user: user, level: level, completed_at: Time.current, email_status: :skipped)
+    user_level_skipped = create(:user_level, user:, level:, completed_at: Time.current, email_status: :skipped)
     refute_email_sent(user_level_skipped)
 
     # Sent
-    level_sent = create(:level, slug: "level-2")
-    user_level_sent = create(:user_level, user: user, level: level_sent, completed_at: Time.current, email_status: :sent)
+    level_sent = create(:level)
+    user_level_sent = create(:user_level, user:, level: level_sent, completed_at: Time.current, email_status: :sent)
     refute_email_sent(user_level_sent)
 
     # Failed
-    level_failed = create(:level, slug: "level-3")
-    user_level_failed = create(:user_level, user: user, level: level_failed, completed_at: Time.current, email_status: :failed)
+    level_failed = create(:level)
+    user_level_failed = create(:user_level, user:, level: level_failed, completed_at: Time.current, email_status: :failed)
     refute_email_sent(user_level_failed)
 
     # Pending
-    level_pending = create(:level, slug: "level-4")
-    create(:email_template, slug: "level-4", locale: "en")
-    user_level_pending = create(:user_level, user: user, level: level_pending, completed_at: Time.current, email_status: :pending)
+    level_pending = create(:level)
+    user_level_pending = create(:user_level, user:, level: level_pending, completed_at: Time.current, email_status: :pending)
     assert_email_sent(user_level_pending)
   end
 
   test "prevents duplicate sending with locking" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    create(:email_template, slug: "level-1", locale: "en")
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
+    user_level = create(:user_level, completed_at: Time.current)
 
     # Simulate concurrent calls
     call_count = 0
@@ -93,31 +69,15 @@ class User::SendEmailTest < ActiveSupport::TestCase
   end
 
   test "returns true when email is sent" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    create(:email_template, slug: "level-1", locale: "en")
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
+    user_level = create(:user_level, completed_at: Time.current)
 
     result = User::SendEmail.(user_level) {}
 
     assert result
   end
 
-  test "returns false when email is skipped" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    # No template exists
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
-
-    result = User::SendEmail.(user_level) {}
-
-    refute result
-  end
-
   test "raises error when no block is given" do
-    user = create(:user, locale: "en")
-    level = create(:level, slug: "level-1")
-    user_level = create(:user_level, user: user, level: level, completed_at: Time.current)
+    user_level = create(:user_level, completed_at: Time.current)
 
     assert_raises(RuntimeError, "Block must be given for sending") do
       User::SendEmail.(user_level)

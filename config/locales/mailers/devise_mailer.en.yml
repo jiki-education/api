@@ -5,16 +5,15 @@ en:
         subject: "Confirm Your Email Address"
         preview: "Confirm your email address for your Jiki account"
         greeting: "Hi %{name},"
-        intro: "Please confirm your email address by clicking the link below:"
+        body_markdown: |
+          Please confirm your email address by clicking the button below.
         cta: "Confirm My Email"
-        no_request: "If you didn't create a Jiki account, you can safely ignore this email."
+        footer: "If you didn't create a Jiki account, you can safely ignore this email."
       reset_password_instructions:
         subject: "Reset Your Password"
         preview: "Reset your password for your Jiki account"
         greeting: "Hi %{name},"
-        intro: "Someone requested a link to reset your password for your Jiki account."
-        body: "If this was you, click the button below to choose a new password:"
+        body_markdown: |
+          We received a request to reset your password for your Jiki account.
         cta: "Reset My Password"
-        no_request: "If you didn't request this, you can safely ignore this email."
-        no_change: "Your password won't change until you access the link above and create a new one."
-        expires_in: "This password reset link will expire in 6 hours."
+        footer: "If you didn't request this, you can safely ignore this email — your password won't change unless you click the link above. This link will expire in 6 hours."

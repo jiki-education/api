@@ -1,5 +1,5 @@
 <%= t('.greeting', name: @user.name || @user.email) %>
 
-<%= t('.warning') %>
+<%= markdown_to_text(t('.body_markdown')) %>
 
 <%= t('.cta') %>: <%= @confirmation_url %>
