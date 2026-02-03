@@ -5,11 +5,6 @@ class Dev::BaseController < ApplicationController
   def ensure_development_environment!
     return if Rails.env.development?
 
-    render json: {
-      error: {
-        type: "not_found",
-        message: "Not found"
-      }
-    }, status: :not_found
+    render_404(:not_found)
   end
 end

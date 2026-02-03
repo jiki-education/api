@@ -259,13 +259,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
       begin
         send(method, path, as: :json)
 
-        assert_response :not_found
-        assert_json_response({
-          error: {
-            type: "not_found",
-            message: "Not found"
-          }
-        })
+        assert_json_error(:not_found)
       ensure
         # Clean up the stub
         Rails.env.unstub(:development?)

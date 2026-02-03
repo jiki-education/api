@@ -35,7 +35,6 @@ en:
     invalid_submission: "Invalid submission"
 
     # User progression errors
-    level_not_found: "Level not found"
     lesson_in_progress: "Complete current lesson before starting a new one"
     level_not_completed: "Complete the current level first"
     user_lesson_not_found: "User lesson not found"
