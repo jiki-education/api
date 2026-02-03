@@ -28,22 +28,22 @@ class Internal::UserCoursesController < Internal::BaseController
     render json: {
       user_course: SerializeUserCourse.(@user_course.reload)
     }
-  rescue LanguageAlreadyChosenError => e
-    render json: { error: { type: "language_already_chosen", message: e.message } }, status: :unprocessable_entity
-  rescue InvalidLanguageError => e
-    render json: { error: { type: "invalid_language", message: e.message } }, status: :unprocessable_entity
+  rescue LanguageAlreadyChosenError
+    render_422(:language_already_chosen)
+  rescue InvalidLanguageError
+    render_422(:invalid_language)
   end
 
   private
   def use_course!
     @course = Course.find_by!(slug: params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Course not found")
+    render_404(:course_not_found)
   end
 
   def use_user_course!
     @user_course = current_user.user_courses.find_by!(course: @course)
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Not enrolled in this course")
+    render_404(:not_found)
   end
 end

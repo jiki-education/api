@@ -9,9 +9,7 @@ class Auth::ConfirmationsController < Devise::ConfirmationsController
     if resource.errors.empty?
       sign_in_with_2fa_guard!(resource)
     else
-      render json: {
-        error: { type: "invalid_token" }
-      }, status: :unprocessable_entity
+      render_422(:invalid_token)
     end
   end
 

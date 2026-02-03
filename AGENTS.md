@@ -184,7 +184,7 @@ Controllers are thin - delegate to commands, handle exceptions, render responses
   - `Auth::` - Authentication endpoints (login, signup, etc.)
   - `Webhooks::` - Webhook receivers (e.g., Stripe)
   - Auth is enforced at the namespace base controller level (e.g., `Internal::BaseController`), not globally in ApplicationController.
-- **Use helper methods** from ApplicationController: `render_validation_error(exception)`, `render_not_found(message)`, `use_lesson!`, `use_concept!`, `use_project!`
+- **Error responses**: Use `render_401`, `render_403`, `render_404`, `render_422` helpers from ApplicationController. Also use `use_lesson!`, `use_concept!`, `use_project!` for resource lookup with automatic 404 handling.
 - **Class naming**: Use `class Internal::LessonsController` not `module Internal; class LessonsController; end; end`
 - If you find yourself adding business logic to a controller, stop and move it into a command instead.
 

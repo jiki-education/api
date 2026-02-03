@@ -15,13 +15,7 @@ class External::EmailPreferencesControllerTest < ActionDispatch::IntegrationTest
   test "GET show returns 404 for invalid token" do
     get external_email_preference_path(token: "invalid-token"), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Invalid or expired unsubscribe token"
-      }
-    })
+    assert_json_error(:not_found, error_type: :invalid_unsubscribe_token)
   end
 
   test "PATCH update changes specific preferences" do

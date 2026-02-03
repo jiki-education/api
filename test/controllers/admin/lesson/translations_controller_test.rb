@@ -49,12 +49,6 @@ class Admin::Lesson::TranslationsControllerTest < ApplicationControllerTest
     post translate_admin_lesson_translations_path(lesson_id: "non-existent"),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 end

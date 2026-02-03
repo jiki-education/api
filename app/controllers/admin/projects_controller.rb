@@ -20,7 +20,7 @@ class Admin::ProjectsController < Admin::BaseController
       project: SerializeAdminProject.(project)
     }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def show
@@ -35,7 +35,7 @@ class Admin::ProjectsController < Admin::BaseController
       project: SerializeAdminProject.(project)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def destroy
@@ -47,7 +47,7 @@ class Admin::ProjectsController < Admin::BaseController
   def use_project
     @project = Project.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Project not found")
+    render_404(:project_not_found)
   end
 
   def project_params

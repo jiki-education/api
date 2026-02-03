@@ -14,6 +14,6 @@ class Admin::Lesson::TranslationsController < Admin::BaseController
   def set_lesson
     @lesson = Lesson.find_by!(slug: params[:lesson_id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Lesson not found")
+    render_404(:lesson_not_found)
   end
 end

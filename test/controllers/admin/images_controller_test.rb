@@ -34,10 +34,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
   test "POST create returns 422 when no image file provided" do
     post admin_images_path, params: {}, as: :json
 
-    assert_response :unprocessable_entity
-    assert_json_response({
-      error: 'No image file provided'
-    })
+    assert_json_error(:unprocessable_entity, error_type: :no_image_provided)
   end
 
   test "POST create returns 422 when file size exceeds limit" do
@@ -52,10 +49,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
     )
 
     post admin_images_path, params: { image: image_file }
-    assert_response :unprocessable_entity
-    assert_json_response({
-      error: 'Image file size exceeds maximum of 5MB'
-    })
+    assert_json_error(:unprocessable_entity, error_type: :file_too_large)
   end
 
   test "POST create returns 422 when invalid file type" do
@@ -70,10 +64,7 @@ class Admin::ImagesControllerTest < ApplicationControllerTest
     )
 
     post admin_images_path, params: { image: image_file }
-    assert_response :unprocessable_entity
-    assert_json_response({
-      error: 'Invalid image type. Allowed types: image/jpeg, image/png, image/gif, image/webp'
-    })
+    assert_json_error(:unprocessable_entity, error_type: :invalid_image_type)
   end
 
   test "POST create handles multipart form data" do

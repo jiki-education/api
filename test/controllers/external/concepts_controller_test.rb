@@ -48,13 +48,7 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
   test "GET show returns 404 for non-existent concept" do
     get external_concept_path(concept_slug: "non-existent-slug"), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Concept not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
   test "GET index filters by title parameter" do

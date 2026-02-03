@@ -11,7 +11,7 @@ class External::EmailPreferencesController < ApplicationController
     end
     render json: { email_preferences: SerializeEmailPreferences.(@user) }
   rescue InvalidNotificationSlugError
-    render_not_found("Unknown notification type")
+    render_404(:not_found)
   end
 
   def unsubscribe_all
@@ -29,12 +29,7 @@ class External::EmailPreferencesController < ApplicationController
     @user = User.joins(:data).find_by(user_data: { unsubscribe_token: params[:token] })
     raise InvalidUnsubscribeTokenError unless @user
   rescue InvalidUnsubscribeTokenError
-    render json: {
-      error: {
-        type: "not_found",
-        message: "Invalid or expired unsubscribe token"
-      }
-    }, status: :not_found
+    render_404(:invalid_unsubscribe_token)
   end
 
   def preference_params

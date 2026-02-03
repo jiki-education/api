@@ -21,16 +21,14 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
 
     get internal_levels_path(course_slug: @course.slug, user_id: @user.id), as: :json
 
-    assert_response :unauthorized
-    assert_equal "unauthorized", response.parsed_body["error"]["type"]
+    assert_json_error(:unauthorized, error_type: :unauthenticated)
   end
 
   test "URL-based authentication is blocked in test environment" do
     # Test environment is the default (development? returns false)
     get internal_levels_path(course_slug: @course.slug, user_id: @user.id), as: :json
 
-    assert_response :unauthorized
-    assert_equal "unauthorized", response.parsed_body["error"]["type"]
+    assert_json_error(:unauthorized, error_type: :unauthenticated)
   end
 
   test "falls back to session authentication when no user_id param in development" do
@@ -56,8 +54,7 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
 
     get internal_levels_path(course_slug: @course.slug, user_id: 99_999), as: :json
 
-    assert_response :unauthorized
-    assert_equal "unauthorized", response.parsed_body["error"]["type"]
+    assert_json_error(:unauthorized, error_type: :unauthenticated)
   end
 
   test "returns 401 in development when no authentication provided" do
@@ -65,7 +62,6 @@ class DevAuthenticationTest < ActionDispatch::IntegrationTest
 
     get internal_levels_path(course_slug: @course.slug), as: :json
 
-    assert_response :unauthorized
-    assert_equal "unauthorized", response.parsed_body["error"]["type"]
+    assert_json_error(:unauthorized, error_type: :unauthenticated)
   end
 end

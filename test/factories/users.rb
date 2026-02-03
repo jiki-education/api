@@ -19,5 +19,11 @@ FactoryBot.define do
     trait :admin do
       admin { true }
     end
+
+    trait :with_2fa do
+      after(:create) do |user|
+        user.data.update!(otp_secret: ROTP::Base32.random, otp_enabled_at: Time.current)
+      end
+    end
   end
 end

@@ -1,0 +1,4 @@
+en:
+  api_messages:
+    password_reset_sent: "Reset instructions sent to %{email}"
+    password_reset_success: "Password has been reset successfully"

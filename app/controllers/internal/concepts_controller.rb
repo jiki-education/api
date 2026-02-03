@@ -19,10 +19,7 @@ class Internal::ConceptsController < Internal::BaseController
   end
 
   def show
-    unless current_user.unlocked_concept_ids.include?(@concept.id)
-      render json: { error: "This concept is locked" }, status: :forbidden
-      return
-    end
+    return render_403(:concept_locked) unless current_user.unlocked_concept_ids.include?(@concept.id)
 
     render json: {
       concept: SerializeConcept.(@concept)

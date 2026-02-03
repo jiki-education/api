@@ -4,7 +4,7 @@ class Internal::UserProjectsController < Internal::BaseController
   def show
     user_project = UserProject.find_by(user: current_user, project: @project)
 
-    return render_not_found("User project not found") unless user_project
+    return render_404(:user_project_not_found) unless user_project
 
     render json: {
       user_project: SerializeUserProject.(user_project)

@@ -6,6 +6,6 @@ class Auth::UnsubscribeController < ApplicationController
     user = User::Unsubscribe.(params[:token])
     render json: { unsubscribed: true, email: user.email }, status: :ok
   rescue InvalidUnsubscribeTokenError
-    render json: { error: "Invalid or expired unsubscribe token" }, status: :not_found
+    render_404(:invalid_unsubscribe_token)
   end
 end

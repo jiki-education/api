@@ -68,47 +68,35 @@ class ApplicationController < ActionController::API
   def use_lesson!
     @lesson = Lesson.find_by!(slug: params[:lesson_slug])
   rescue ActiveRecord::RecordNotFound
-    render json: {
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    }, status: :not_found
+    render_404(:lesson_not_found)
   end
 
   def use_project!
     @project = Project.find_by!(slug: params[:project_slug])
   rescue ActiveRecord::RecordNotFound
-    render json: {
-      error: {
-        type: "not_found",
-        message: "Project not found"
-      }
-    }, status: :not_found
+    render_404(:project_not_found)
   end
 
   def use_concept!
     @concept = Concept.friendly.find(params[:concept_slug])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Concept not found")
+    render_404(:concept_not_found)
   end
 
-  def render_not_found(message)
+  def render_error(status_code, error_type, extra = {})
     render json: {
-      error: {
-        type: "not_found",
-        message: message
-      }
-    }, status: :not_found
+      error: { type: error_type.to_s, message: I18n.t("api_errors.#{error_type}") }.merge(extra)
+    }, status: status_code
   end
 
-  def render_validation_error(exception)
-    render json: {
-      error: {
-        type: "validation_error",
-        message: exception.message
-      }
-    }, status: :unprocessable_entity
+  def render_400(error_type, **extra) = render_error(:bad_request, error_type, extra)
+  def render_401(error_type = :unauthenticated, **extra) = render_error(:unauthorized, error_type, extra)
+  def render_403(error_type = :forbidden, **extra) = render_error(:forbidden, error_type, extra)
+  def render_404(error_type = :not_found, **extra) = render_error(:not_found, error_type, extra)
+  def render_422(error_type, **extra) = render_error(:unprocessable_entity, error_type, extra)
+
+  def render_success(message_type, status: :ok, **interpolations)
+    render json: { message: I18n.t("api_messages.#{message_type}", **interpolations) }, status: status
   end
 
   # Signs in the user, checking for 2FA requirement first.

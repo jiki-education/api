@@ -1,0 +1,86 @@
+en:
+  api_errors:
+    # Authentication errors
+    unauthenticated: "You need to sign in or sign up before continuing."
+    invalid_credentials: "Invalid email or password"
+    unconfirmed: "Please confirm your email address"
+    forbidden: "Admin access required"
+    access_denied: "Access denied"
+    invalid_signature: "Invalid signature"
+
+    # Token errors
+    invalid_token: "Token is invalid or has expired"
+    token_expired: "Token has expired"
+    session_expired: "Session expired. Please log in again."
+    invalid_otp: "Invalid verification code"
+    invalid_unsubscribe_token: "Invalid or expired unsubscribe token"
+
+    # Resource errors
+    not_found: "Resource not found"
+    lesson_not_found: "Lesson not found"
+    level_not_found: "Level not found"
+    course_not_found: "Course not found"
+    user_not_found: "User not found"
+    project_not_found: "Project not found"
+    concept_not_found: "Concept not found"
+    badge_not_found: "Badge not found"
+    email_template_not_found: "Email template not found"
+    user_project_not_found: "User project not found"
+    validation_error: "Validation failed"
+
+    # File submission errors
+    duplicate_filename: "Duplicate filename in submission"
+    file_too_large: "File exceeds maximum size"
+    too_many_files: "Too many files in submission"
+    invalid_submission: "Invalid submission"
+
+    # User progression errors
+    lesson_in_progress: "Complete current lesson before starting a new one"
+    level_not_completed: "Complete the current level first"
+    user_lesson_not_found: "User lesson not found"
+    user_level_not_found: "User level not found"
+    language_already_chosen: "Language has already been chosen"
+    invalid_language: "Invalid language selection"
+    missing_course: "course_slug parameter required"
+
+    # Settings errors
+    invalid_password: "Current password is incorrect"
+    locale_update_failed: "Locale update failed"
+    name_update_failed: "Name update failed"
+    email_update_failed: "Email update failed"
+    password_update_failed: "Password update failed"
+    handle_update_failed: "Handle update failed"
+    notification_update_failed: "Notification update failed"
+    streaks_update_failed: "Streaks update failed"
+
+    # Image/Avatar errors
+    no_image_provided: "No image file provided"
+    invalid_image_type: "Invalid image type"
+    invalid_avatar: "Invalid avatar"
+    avatar_too_large: "Avatar file is too large"
+
+    # Content errors
+    concept_locked: "This concept is locked"
+    translation_error: "Translation failed"
+    lesson_incomplete: "Complete current lessons first"
+
+    # Subscription errors
+    invalid_product: "Invalid product"
+    existing_subscription: "Already has an active subscription"
+    invalid_return_url: "Invalid return URL"
+    checkout_failed: "Checkout failed"
+    no_customer: "No Stripe customer found"
+    portal_failed: "Portal session failed"
+    missing_session_id: "Missing session ID"
+    invalid_session: "Invalid session"
+    verification_failed: "Verification failed"
+    no_subscription: "No active subscription"
+    same_tier: "Already on this tier"
+    update_failed: "Subscription update failed"
+    invalid_request: "Invalid request"
+    cancel_failed: "Cancellation failed"
+    not_cancelling: "Subscription is not scheduled for cancellation"
+    reactivate_failed: "Reactivation failed"
+
+    # External service errors
+    stripe_error: "Payment processing error"

@@ -149,12 +149,9 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     end
 
     assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "validation_error",
-        message: /Validation failed/
-      }
-    })
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert_includes json["error"]["errors"]["title"], "can't be blank"
   end
 
   # SHOW tests
@@ -173,13 +170,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   test "GET show returns 404 for non-existent project" do
     get admin_project_path(999_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Project not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :project_not_found)
   end
 
   # UPDATE tests
@@ -213,12 +204,9 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
     patch admin_project_path(project.id), params: update_params, as: :json
 
     assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "validation_error",
-        message: /Validation failed/
-      }
-    })
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert_includes json["error"]["errors"]["title"], "can't be blank"
   end
 
   test "PATCH update returns 404 for non-existent project" do
@@ -230,13 +218,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
     patch admin_project_path(999_999), params: update_params, as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Project not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :project_not_found)
   end
 
   # DESTROY tests
@@ -254,12 +236,6 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   test "DELETE destroy returns 404 for non-existent project" do
     delete admin_project_path(999_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Project not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :project_not_found)
   end
 end

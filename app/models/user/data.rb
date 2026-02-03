@@ -13,8 +13,6 @@ class User::Data < ApplicationRecord
     "activity_emails" => :receive_activity_emails
   }.freeze
 
-  DEFAULT_TIMEZONE = "UTC".freeze
-
   def self.valid_notification_slug?(slug)
     NOTIFICATION_SLUGS.key?(slug)
   end
@@ -82,6 +80,6 @@ class User::Data < ApplicationRecord
   end
 
   def set_default_timezone!
-    self.timezone ||= DEFAULT_TIMEZONE
+    self.timezone ||= "UTC".freeze
   end
 end

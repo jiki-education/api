@@ -28,13 +28,7 @@ class Dev::BaseControllerTest < ApplicationControllerTest
     begin
       get "/dev/test", as: :json
 
-      assert_response :not_found
-      assert_json_response({
-        error: {
-          type: "not_found",
-          message: "Not found"
-        }
-      })
+      assert_json_error(:not_found)
     ensure
       Rails.env.unstub(:development?)
     end

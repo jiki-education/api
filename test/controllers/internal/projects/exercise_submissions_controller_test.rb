@@ -68,13 +68,7 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
       params: { submission: { files: } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Project not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :project_not_found)
   end
 
   test "POST create with multiple files" do

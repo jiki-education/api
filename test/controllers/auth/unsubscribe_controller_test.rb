@@ -40,10 +40,7 @@ class Auth::UnsubscribeControllerTest < ApplicationControllerTest
   test "POST create returns 404 for invalid token" do
     post auth_unsubscribe_path("invalid-token-that-does-not-exist"), as: :json
 
-    assert_response :not_found
-
-    json = response.parsed_body
-    assert_equal "Invalid or expired unsubscribe token", json["error"]
+    assert_json_error(:not_found, error_type: :invalid_unsubscribe_token)
   end
 
   test "POST create returns 404 for empty string token" do

@@ -6,11 +6,6 @@ class Admin::BaseController < ApplicationController
   def ensure_admin!
     return if current_user.admin?
 
-    render json: {
-      error: {
-        type: "forbidden",
-        message: "Admin access required"
-      }
-    }, status: :forbidden
+    render_403(:forbidden)
   end
 end

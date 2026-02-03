@@ -27,25 +27,13 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
     get internal_user_project_path(project_slug: @project.slug),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "User project not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :user_project_not_found)
   end
 
   test "GET show returns 404 for non-existent project" do
     get internal_user_project_path(project_slug: "non-existent-slug"),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Project not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :project_not_found)
   end
 end

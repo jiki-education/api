@@ -8,9 +8,9 @@ class CustomAuthFailure < Devise::FailureApp
   private
   def error_response
     if warden_message == :unconfirmed
-      { error: { type: "unconfirmed", email: attempted_email } }
+      { error: { type: "unconfirmed", message: I18n.t("api_errors.unconfirmed"), email: attempted_email } }
     else
-      { error: { type: "unauthorized", message: i18n_message } }
+      { error: { type: "unauthenticated", message: I18n.t("api_errors.unauthenticated") } }
     end
   end
 

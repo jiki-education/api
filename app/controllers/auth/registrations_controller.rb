@@ -23,13 +23,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
         render json: { user: { email: resource.email, email_confirmed: false } }, status: :created
       end
     else
-      render json: {
-        error: {
-          type: "validation_error",
-          message: "Validation failed",
-          errors: resource.errors.messages
-        }
-      }, status: :unprocessable_entity
+      render_422(:validation_error, errors: resource.errors.messages)
     end
   end
 

@@ -149,12 +149,9 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     end
 
     assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "validation_error",
-        message: /Validation failed/
-      }
-    })
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert_includes json["error"]["errors"]["title"], "can't be blank"
   end
 
   # SHOW tests
@@ -173,13 +170,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   test "GET show returns 404 for non-existent concept" do
     get admin_concept_path(999_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Concept not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
   # UPDATE tests
@@ -228,12 +219,9 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     patch admin_concept_path(concept.id), params: update_params, as: :json
 
     assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "validation_error",
-        message: /Validation failed/
-      }
-    })
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert_includes json["error"]["errors"]["title"], "can't be blank"
   end
 
   test "PATCH update returns 404 for non-existent concept" do
@@ -245,13 +233,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
 
     patch admin_concept_path(999_999), params: update_params, as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Concept not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
   # DESTROY tests
@@ -269,13 +251,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   test "DELETE destroy returns 404 for non-existent concept" do
     delete admin_concept_path(999_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Concept not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
   # Parent-child hierarchy tests
@@ -325,12 +301,9 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     patch admin_concept_path(parent.id), params: update_params, as: :json
 
     assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "validation_error",
-        message: /circular reference/
-      }
-    })
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert_includes json["error"]["errors"]["parent_concept_id"], "would create a circular reference"
   end
 
   test "GET show includes ancestors and children_count" do

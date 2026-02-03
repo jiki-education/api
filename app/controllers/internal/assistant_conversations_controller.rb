@@ -1,17 +1,12 @@
 class Internal::AssistantConversationsController < Internal::BaseController
   def create
     lesson = Lesson.find_by(slug: params[:lesson_slug])
-    return render_not_found("Lesson not found") unless lesson
+    return render_404(:lesson_not_found) unless lesson
 
     token = AssistantConversation::CreateConversationToken.(current_user, lesson)
     render json: { token: }
-  rescue AssistantConversationAccessDeniedError => e
-    render json: {
-      error: {
-        type: "forbidden",
-        message: e.message
-      }
-    }, status: :forbidden
+  rescue AssistantConversationAccessDeniedError
+    render_403(:access_denied)
   end
 
   def create_user_message
@@ -40,6 +35,6 @@ class Internal::AssistantConversationsController < Internal::BaseController
 
     render json: {}
   rescue InvalidHMACSignatureError
-    render json: { error: 'Invalid signature' }, status: :unauthorized
+    render_401(:invalid_signature)
   end
 end
