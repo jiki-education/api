@@ -14,6 +14,6 @@ class Internal::CoursesController < Internal::BaseController
       course: SerializeCourse.(course)
     }
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Course not found")
+    render_404(:course_not_found)
   end
 end

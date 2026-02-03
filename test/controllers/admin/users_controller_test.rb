@@ -135,13 +135,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   test "GET show returns 404 for non-existent user" do
     get admin_user_path(99_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "User not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :user_not_found)
   end
 
   # UPDATE tests
@@ -205,13 +199,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
       params: { user: { email: "new@example.com" } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "User not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :user_not_found)
   end
 
   test "PATCH update returns 422 for blank email" do
@@ -228,7 +216,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/Validation failed/, json["error"]["message"])
+    assert json["error"]["errors"]["email"].present?
   end
 
   test "PATCH update returns 422 for invalid email format" do
@@ -245,7 +233,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/Validation failed/, json["error"]["message"])
+    assert json["error"]["errors"]["email"].present?
   end
 
   test "PATCH update returns 422 for duplicate email" do
@@ -263,7 +251,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/has already been taken/, json["error"]["message"])
+    assert_includes json["error"]["errors"]["email"], "has already been taken"
   end
 
   test "PATCH update ignores non-email fields" do
@@ -315,12 +303,6 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   test "DELETE destroy returns 404 for non-existent user" do
     delete admin_user_path(99_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "User not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :user_not_found)
   end
 end

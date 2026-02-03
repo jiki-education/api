@@ -34,10 +34,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
     )
 
     put internal_profile_avatar_path, params: { avatar: image_file }
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-    assert_equal "Invalid file type", json["error"]["message"]
+    assert_json_error(:unprocessable_entity, error_type: :invalid_avatar)
   end
 
   test "PUT update returns error for missing file" do
@@ -46,10 +43,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
     )
 
     put internal_profile_avatar_path, params: {}
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-    assert_equal "No file provided", json["error"]["message"]
+    assert_json_error(:unprocessable_entity, error_type: :invalid_avatar)
   end
 
   test "PUT update returns error for file too large" do
@@ -63,10 +57,7 @@ class Internal::Profile::AvatarsControllerTest < ApplicationControllerTest
     )
 
     put internal_profile_avatar_path, params: { avatar: image_file }
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-    assert_equal "File exceeds 5MB limit", json["error"]["message"]
+    assert_json_error(:unprocessable_entity, error_type: :avatar_too_large)
   end
 
   test "DELETE destroy returns profile with null avatar_url" do

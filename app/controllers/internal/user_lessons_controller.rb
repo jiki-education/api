@@ -4,7 +4,7 @@ class Internal::UserLessonsController < Internal::BaseController
   def show
     user_lesson = UserLesson.find_by(user: current_user, lesson: @lesson)
 
-    return render_not_found("User lesson not found") unless user_lesson
+    return render_404(:not_found) unless user_lesson
 
     render json: {
       user_lesson: SerializeUserLesson.(user_lesson)
@@ -15,31 +15,21 @@ class Internal::UserLessonsController < Internal::BaseController
     UserLesson::Start.(current_user, @lesson)
 
     render json: {}
-  rescue LessonInProgressError => e
-    render json: { error: e.message }, status: :unprocessable_entity
-  rescue UserLevelNotFoundError => e
-    render json: { error: e.message }, status: :forbidden
-  rescue LevelNotCompletedError => e
-    render json: { error: e.message }, status: :unprocessable_entity
+  rescue LessonInProgressError
+    render_422(:lesson_in_progress)
+  rescue UserLevelNotFoundError
+    render_403(:user_level_not_found)
+  rescue LevelNotCompletedError
+    render_422(:level_not_completed)
   end
 
   def complete
     UserLesson::Complete.(current_user, @lesson)
 
     render json: {}
-  rescue UserLessonNotFoundError => e
-    render json: {
-      error: {
-        type: "user_lesson_not_found",
-        message: e.message
-      }
-    }, status: :unprocessable_entity
-  rescue UserLevelNotFoundError => e
-    render json: {
-      error: {
-        type: "user_level_not_found",
-        message: e.message
-      }
-    }, status: :unprocessable_entity
+  rescue UserLessonNotFoundError
+    render_422(:user_lesson_not_found)
+  rescue UserLevelNotFoundError
+    render_422(:user_level_not_found)
   end
 end

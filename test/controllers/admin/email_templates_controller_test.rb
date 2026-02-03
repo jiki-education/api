@@ -179,7 +179,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/has already been taken/, json["error"]["message"])
+    assert_includes json["error"]["errors"]["type"], "has already been taken"
   end
 
   test "POST create calls EmailTemplate::Create command" do
@@ -219,13 +219,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   test "GET show returns 404 for non-existent template" do
     get admin_email_template_path(99_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Email template not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :email_template_not_found)
   end
 
   # UPDATE tests
@@ -277,13 +271,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
       params: { email_template: { subject: "New" } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Email template not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :email_template_not_found)
   end
 
   test "PATCH update can update type, slug, and locale fields" do
@@ -321,7 +309,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/has already been taken/, json["error"]["message"])
+    assert_includes json["error"]["errors"]["type"], "has already been taken"
   end
 
   test "PATCH update returns 422 for validation errors" do
@@ -357,13 +345,7 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
   test "DELETE destroy returns 404 for non-existent template" do
     delete admin_email_template_path(99_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Email template not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :email_template_not_found)
   end
 
   # TRANSLATE tests
@@ -388,21 +370,13 @@ class Admin::EmailTemplatesControllerTest < ApplicationControllerTest
 
     post translate_admin_email_template_path(email_template), as: :json
 
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "Source template must be in English (en)", json["error"]
+    assert_json_error(:unprocessable_entity, error_type: :translation_error)
   end
 
   test "POST translate returns 404 when template not found" do
     post translate_admin_email_template_path(99_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Email template not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :email_template_not_found)
   end
 
   test "POST translate calls EmailTemplate::TranslateToAllLocales with correct template" do

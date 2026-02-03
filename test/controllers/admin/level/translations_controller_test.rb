@@ -51,12 +51,6 @@ class Admin::Level::TranslationsControllerTest < ApplicationControllerTest
     post translate_admin_level_translations_path(level_id: 99_999),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Level not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :level_not_found)
   end
 end

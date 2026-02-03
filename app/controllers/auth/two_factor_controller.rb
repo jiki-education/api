@@ -3,10 +3,11 @@ class Auth::TwoFactorController < ApplicationController
 
   OTP_SESSION_TIMEOUT = 5.minutes
 
+  before_action :use_user!
   before_action :validate_otp_session
 
   def verify
-    if User::VerifyOtp.(user, params[:otp_code])
+    if User::VerifyOtp.(@user, params[:otp_code])
       complete_sign_in
     else
       render_invalid_otp
@@ -14,8 +15,8 @@ class Auth::TwoFactorController < ApplicationController
   end
 
   def setup
-    if User::VerifyOtp.(user, params[:otp_code])
-      User::EnableOtp.(user)
+    if User::VerifyOtp.(@user, params[:otp_code])
+      User::EnableOtp.(@user)
       complete_sign_in
     else
       render_invalid_otp
@@ -27,7 +28,7 @@ class Auth::TwoFactorController < ApplicationController
     return render_session_expired unless session[:otp_user_id]
     return render_session_expired if otp_session_expired?
 
-    render_session_expired unless user
+    render_session_expired unless @user
   end
 
   def otp_session_expired?
@@ -36,14 +37,14 @@ class Auth::TwoFactorController < ApplicationController
     Time.current - Time.zone.at(session[:otp_timestamp]) > OTP_SESSION_TIMEOUT
   end
 
-  def user
-    @user ||= User.find_by(id: session[:otp_user_id])
+  def use_user!
+    @user = User.find_by(id: session[:otp_user_id])
   end
 
   def complete_sign_in
     clear_otp_session
-    sign_in(:user, user)
-    render json: { status: "success", user: SerializeUser.(user) }, status: :ok
+    sign_in(:user, @user)
+    render json: { status: "success", user: SerializeUser.(@user) }, status: :ok
   end
 
   def clear_otp_session
@@ -53,20 +54,10 @@ class Auth::TwoFactorController < ApplicationController
 
   def render_session_expired
     clear_otp_session
-    render json: {
-      error: {
-        type: "session_expired",
-        message: "Session expired. Please log in again."
-      }
-    }, status: :unauthorized
+    render_401(:session_expired)
   end
 
   def render_invalid_otp
-    render json: {
-      error: {
-        type: "invalid_otp",
-        message: "Invalid verification code"
-      }
-    }, status: :unauthorized
+    render_401(:invalid_otp)
   end
 end

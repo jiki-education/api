@@ -16,12 +16,7 @@ class Admin::Levels::LessonsController < Admin::BaseController
       lesson: SerializeAdminLesson.(lesson)
     }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render json: {
-      error: {
-        type: "validation_error",
-        message: e.message
-      }
-    }, status: :unprocessable_entity
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def update
@@ -30,20 +25,20 @@ class Admin::Levels::LessonsController < Admin::BaseController
       lesson: SerializeAdminLesson.(lesson)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   private
   def set_level
     @level = Level.find(params[:level_id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Level not found")
+    render_404(:level_not_found)
   end
 
   def set_lesson
     @lesson = @level.lessons.find_by!(id: params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Lesson not found")
+    render_404(:lesson_not_found)
   end
 
   def lesson_params

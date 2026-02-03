@@ -122,10 +122,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH locale fails with invalid locale" do
     patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
 
-    assert_response :unprocessable_entity
-
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
+    assert_json_error(:unprocessable_entity, error_type: :locale_update_failed, errors: { locale: ["is not included in the list"] })
     assert_equal "en", @user.reload.locale
   end
 
@@ -142,10 +139,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
 
     patch handle_internal_settings_path, params: { value: "taken-handle" }, as: :json
 
-    assert_response :unprocessable_entity
-
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
+    assert_json_error(:unprocessable_entity, error_type: :handle_update_failed, errors: { handle: ["has already been taken"] })
   end
 
   # Notification tests
@@ -163,11 +157,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
       params: { value: false },
       as: :json
 
-    assert_response :not_found
-
-    json = response.parsed_body
-    assert_equal "not_found", json["error"]["type"]
-    assert_equal "Unknown notification type", json["error"]["message"]
+    assert_json_error(:not_found)
   end
 
   # Streaks tests

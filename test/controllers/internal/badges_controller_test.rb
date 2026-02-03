@@ -88,13 +88,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   test "PATCH reveal returns 404 when badge not found" do
     patch reveal_internal_badge_path(999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Badge not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :badge_not_found)
   end
 
   test "PATCH reveal returns 404 when badge belongs to different user" do
@@ -104,13 +98,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
 
     patch reveal_internal_badge_path(badge.id), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Badge not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :badge_not_found)
   end
 
   test "PATCH reveal uses User::AcquiredBadge::Reveal command" do

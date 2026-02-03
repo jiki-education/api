@@ -14,6 +14,6 @@ class Admin::Level::TranslationsController < Admin::BaseController
   def set_level
     @level = Level.find(params[:level_id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Level not found")
+    render_404(:level_not_found)
   end
 end

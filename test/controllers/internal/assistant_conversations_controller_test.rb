@@ -53,9 +53,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
       params: { lesson_slug: "basic-movement" },
       as: :json
 
-    assert_response :forbidden
-    assert_equal "forbidden", response.parsed_body["error"]["type"]
-    assert_equal "Assistant access not allowed for this lesson", response.parsed_body["error"]["message"]
+    assert_json_error(:forbidden, error_type: :access_denied)
   end
 
   test "POST create returns 404 for non-existent lesson" do
@@ -63,8 +61,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
       params: { lesson_slug: "non-existent" },
       as: :json
 
-    assert_response :not_found
-    assert_equal "not_found", response.parsed_body["error"]["type"]
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
   test "POST create creates assistant conversation record" do
@@ -148,8 +145,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
       },
       as: :json
 
-    assert_response :unauthorized
-    assert_equal "Invalid signature", response.parsed_body["error"]
+    assert_json_error(:unauthorized, error_type: :invalid_signature)
   end
 
   test "POST assistant_messages delegates to AddAssistantMessage command" do

@@ -38,7 +38,7 @@ class Admin::EmailTemplatesController < Admin::BaseController
       email_template: SerializeAdminEmailTemplate.(email_template)
     }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def show
@@ -53,7 +53,7 @@ class Admin::EmailTemplatesController < Admin::BaseController
       email_template: SerializeAdminEmailTemplate.(email_template)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def destroy
@@ -67,15 +67,15 @@ class Admin::EmailTemplatesController < Admin::BaseController
       email_template: SerializeAdminEmailTemplate.(@email_template),
       queued_locales: target_locales
     }, status: :accepted
-  rescue ArgumentError => e
-    render json: { error: e.message }, status: :unprocessable_entity
+  rescue ArgumentError
+    render_422(:translation_error)
   end
 
   private
   def use_email_template
     @email_template = EmailTemplate.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Email template not found")
+    render_404(:email_template_not_found)
   end
 
   def email_template_params

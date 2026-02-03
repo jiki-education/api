@@ -23,12 +23,7 @@ class Auth::SessionsController < Devise::SessionsController
 
   private
   def respond_with_error
-    render json: {
-      error: {
-        type: "unauthorized",
-        message: "Invalid email or password"
-      }
-    }, status: :unauthorized
+    render_401(:invalid_credentials)
   end
 
   def respond_to_on_destroy(non_navigational_status: :no_content)

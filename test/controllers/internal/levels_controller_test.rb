@@ -181,13 +181,7 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
     get milestone_internal_level_path(course_slug: @course.slug, id: "non-existent"),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Level not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :level_not_found)
   end
 
   test "GET milestone uses SerializeLevelMilestone" do

@@ -31,26 +31,14 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     get internal_user_lesson_path(lesson_slug: @lesson.slug),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "User lesson not found"
-      }
-    })
+    assert_json_error(:not_found)
   end
 
   test "GET show returns 404 for non-existent lesson" do
     get internal_user_lesson_path(lesson_slug: "non-existent-slug"),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
   # POST /v1/user_lessons/:slug/start tests
@@ -75,13 +63,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     post start_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
   test "POST start is idempotent" do
@@ -148,13 +130,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     patch complete_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
   test "PATCH complete is idempotent" do
@@ -181,13 +157,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "user_lesson_not_found",
-        message: "Lesson not started"
-      }
-    })
+    assert_json_error(:unprocessable_entity, error_type: :user_lesson_not_found)
   end
 
   test "PATCH complete preserves lesson record on re-completion" do
@@ -293,8 +263,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_equal "Complete current lesson before starting a new one", response.parsed_body["error"]
+    assert_json_error(:unprocessable_entity, error_type: :lesson_in_progress)
   end
 
   test "POST start returns 403 when user level not found" do
@@ -306,8 +275,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     post start_internal_user_lesson_path(lesson_slug: other_lesson.slug),
       as: :json
 
-    assert_response :forbidden
-    assert_equal "Level not available", response.parsed_body["error"]
+    assert_json_error(:forbidden, error_type: :user_level_not_found)
   end
 
   test "POST start returns 422 when trying to start lesson in next level before completing current" do
@@ -326,7 +294,6 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_equal "Complete the current level before starting lessons in the next level", response.parsed_body["error"]
+    assert_json_error(:unprocessable_entity, error_type: :level_not_completed)
   end
 end

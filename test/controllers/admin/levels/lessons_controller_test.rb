@@ -214,13 +214,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Level not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :level_not_found)
   end
 
   test "POST create uses SerializeAdminLesson" do
@@ -271,13 +265,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "GET index returns 404 for non-existent level" do
     get admin_level_lessons_path(level_id: 99_999), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Level not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :level_not_found)
   end
 
   test "GET index uses SerializeAdminLessons" do
@@ -408,13 +396,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       params: { lesson: { title: "New" } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Level not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :level_not_found)
   end
 
   test "PATCH update returns 404 for non-existent lesson" do
@@ -422,13 +404,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       params: { lesson: { title: "New" } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
   test "PATCH update returns 404 for lesson in different level" do
@@ -439,13 +415,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       params: { lesson: { title: "New" } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Lesson not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
   test "PATCH update uses SerializeAdminLesson" do

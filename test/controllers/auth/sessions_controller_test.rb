@@ -30,11 +30,7 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
       }
     }, as: :json
 
-    assert_response :unauthorized
-
-    json = response.parsed_body
-    assert_equal "unauthorized", json["error"]["type"]
-    assert json["error"]["message"].present?
+    assert_json_error(:unauthorized, error_type: :invalid_credentials)
   end
 
   test "POST login returns error with non-existent email" do
@@ -45,11 +41,7 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
       }
     }, as: :json
 
-    assert_response :unauthorized
-
-    json = response.parsed_body
-    assert_equal "unauthorized", json["error"]["type"]
-    assert json["error"]["message"].present?
+    assert_json_error(:unauthorized, error_type: :invalid_credentials)
   end
 
   test "POST login returns unconfirmed error for unconfirmed user" do
@@ -182,8 +174,7 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
 
     # Try to access admin page - should be unauthorized
     get admin_users_path, as: :json
-    assert_response :unauthorized
-    assert_equal "unauthorized", response.parsed_body["error"]["type"]
+    assert_json_error(:unauthorized, error_type: :unauthenticated)
   end
 
   test "POST login for non-admin signs in normally" do

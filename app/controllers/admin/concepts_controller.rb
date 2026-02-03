@@ -20,7 +20,7 @@ class Admin::ConceptsController < Admin::BaseController
       concept: SerializeAdminConcept.(concept)
     }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def show
@@ -35,7 +35,7 @@ class Admin::ConceptsController < Admin::BaseController
       concept: SerializeAdminConcept.(concept)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def destroy
@@ -47,7 +47,7 @@ class Admin::ConceptsController < Admin::BaseController
   def use_concept
     @concept = Concept.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Concept not found")
+    render_404(:concept_not_found)
   end
 
   def concept_params

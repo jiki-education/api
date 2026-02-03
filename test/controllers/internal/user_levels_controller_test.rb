@@ -181,8 +181,7 @@ class Internal::UserLevelsControllerTest < ApplicationControllerTest
     patch complete_internal_user_level_path(course_slug: @course.slug, level_slug: level.slug),
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_equal "Cannot complete level: 2 lesson(s) incomplete", response.parsed_body["error"]
+    assert_json_error(:unprocessable_entity, error_type: :lesson_incomplete)
   end
 
   test "PATCH complete emits lesson_unlocked event for first lesson of next level" do

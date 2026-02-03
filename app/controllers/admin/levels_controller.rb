@@ -23,7 +23,7 @@ class Admin::LevelsController < Admin::BaseController
       level: SerializeAdminLevel.(level)
     }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def update
@@ -32,25 +32,22 @@ class Admin::LevelsController < Admin::BaseController
       level: SerializeAdminLevel.(level)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   private
   def set_course
-    unless params[:course_slug]
-      return render json: { error: { type: "missing_course", message: "course_slug parameter required" } },
-        status: :bad_request
-    end
+    return render_400(:missing_course) unless params[:course_slug]
 
     @course = Course.find_by!(slug: params[:course_slug])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Course not found")
+    render_404(:course_not_found)
   end
 
   def set_level
     @level = Level.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("Level not found")
+    render_404(:level_not_found)
   end
 
   def level_params

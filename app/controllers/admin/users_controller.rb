@@ -27,7 +27,7 @@ class Admin::UsersController < Admin::BaseController
       user: SerializeAdminUser.(user)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_validation_error(e)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def destroy
@@ -39,7 +39,7 @@ class Admin::UsersController < Admin::BaseController
   def use_user
     @user = User.find(params[:id])
   rescue ActiveRecord::RecordNotFound
-    render_not_found("User not found")
+    render_404(:user_not_found)
   end
 
   def user_params

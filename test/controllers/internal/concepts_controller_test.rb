@@ -218,22 +218,13 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
     get internal_concept_path(concept_slug: concept.slug, as: :json), as: :json
 
-    assert_response :forbidden
-    assert_json_response({
-      error: "This concept is locked"
-    })
+    assert_json_error(:forbidden, error_type: :concept_locked)
   end
 
   test "GET show returns 404 for non-existent concept" do
     get internal_concept_path(concept_slug: "non-existent-slug"), as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Concept not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
   test "GET show works with slug history" do
@@ -260,9 +251,6 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
     get internal_concept_path(concept_slug: "original-slug"), as: :json
 
-    assert_response :forbidden
-    assert_json_response({
-      error: "This concept is locked"
-    })
+    assert_json_error(:forbidden, error_type: :concept_locked)
   end
 end

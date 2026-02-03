@@ -430,13 +430,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
       params: { level: { title: "New" } },
       as: :json
 
-    assert_response :not_found
-    assert_json_response({
-      error: {
-        type: "not_found",
-        message: "Level not found"
-      }
-    })
+    assert_json_error(:not_found, error_type: :level_not_found)
   end
 
   test "PATCH update uses SerializeAdminLevel" do

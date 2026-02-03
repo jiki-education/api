@@ -13,7 +13,7 @@ class Internal::BadgesController < Internal::BaseController
   def reveal
     acquired_badge = current_user.acquired_badges.find_by(badge_id: params[:id])
 
-    return render_not_found("Badge not found") if acquired_badge.nil?
+    return render_404(:badge_not_found) if acquired_badge.nil?
 
     User::AcquiredBadge::Reveal.(acquired_badge)
 
