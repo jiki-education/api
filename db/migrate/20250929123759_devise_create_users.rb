@@ -46,10 +46,6 @@ class DeviseCreateUsers < ActiveRecord::Migration[8.0]
       ## Admin access
       t.boolean :admin, null: false, default: false
 
-      ## Two-Factor Authentication
-      t.string :otp_secret
-      t.datetime :otp_enabled_at
-
       ## JWT revocation
       t.string :jti, null: false
 
