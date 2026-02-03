@@ -4,7 +4,7 @@ class User::Bootstrap
   initialize_with :user
 
   def call
-    User::SendWelcomeEmail.defer(user)
+    AccountMailer.welcome(user).deliver_later
     setup_course!
     AwardBadgeJob.perform_later(user, 'member')
   end

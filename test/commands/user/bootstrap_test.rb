@@ -6,9 +6,8 @@ class User::BootstrapTest < ActiveSupport::TestCase
     user = create(:user)
 
     assert_enqueued_with(
-      job: MandateJob,
-      args: ["User::SendWelcomeEmail", user],
-      queue: "mailers"
+      job: ActionMailer::MailDeliveryJob,
+      args: ["AccountMailer", "welcome", "deliver_now", { args: [user] }]
     ) do
       User::Bootstrap.(user)
     end
@@ -19,7 +18,7 @@ class User::BootstrapTest < ActiveSupport::TestCase
     user = build(:user)
     user.save!
 
-    assert_enqueued_jobs 1, only: MandateJob do
+    assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
       User::Bootstrap.(user)
     end
   end

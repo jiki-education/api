@@ -10,9 +10,8 @@ class AccountMailer < ApplicationMailer
   # Sends a welcome email to a new user
   #
   # @param user [User] The user to send the welcome email to
-  # @param login_url [String] URL for the user to log in and start learning
-  def welcome(user, login_url:)
-    @login_url = login_url
+  def welcome(user)
+    @login_url = "#{Jiki.config.frontend_base_url}/login"
     mail_to_user(user)
   end
 

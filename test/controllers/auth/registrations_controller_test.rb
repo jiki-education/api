@@ -64,9 +64,8 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup calls User::Bootstrap on successful registration" do
     assert_enqueued_with(
-      job: MandateJob,
-      args: ->(args) { args[0] == "User::SendWelcomeEmail" },
-      queue: "mailers"
+      job: ActionMailer::MailDeliveryJob,
+      args: ->(args) { args[0] == "AccountMailer" && args[1] == "welcome" }
     ) do
       post user_registration_path, params: {
         user: {
