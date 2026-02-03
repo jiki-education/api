@@ -120,6 +120,9 @@ group :development do
   gem "letter_opener"
 end
 
+# Fake data generation for tests and mailer previews
+gem "faker", group: %i[development test]
+
 group :test do
   # Pin minitest to 5.x until Rails supports 6.0
   gem "minitest", "~> 5.0"
@@ -135,7 +138,4 @@ group :test do
 
   # Additional controller testing helpers
   gem "rails-controller-testing"
-
-  # Fake data generation for tests
-  gem "faker"
 end

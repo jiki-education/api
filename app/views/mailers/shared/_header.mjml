@@ -1,7 +1,6 @@
--# Email header with logo and branding
-%mj-section{ "background-color": "#ffffff", "padding": "40px 20px" }
+-# Email header with logo image
+-# Receives: header_image (filename)
+- image_url = "#{Jiki.config.assets_cdn_url}/static/emails/#{header_image}"
+%mj-section{ "background-color": "#ffffff", "padding-top": "12px", "padding-bottom": "20px" }
   %mj-column
-    %mj-text{ "align": "center", "font-size": "32px", "font-weight": "bold", "color": "#0066cc" }
-      Jiki
-    %mj-text{ "align": "center", "font-size": "14px", "color": "#666666", "padding-top": "5px" }
-      Learn to Code
+    %mj-image{ src: image_url, alt: "Jiki", width: "360px" }
