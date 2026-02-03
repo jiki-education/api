@@ -138,5 +138,4 @@ group :test do
 
   # Additional controller testing helpers
   gem "rails-controller-testing"
-
 end
