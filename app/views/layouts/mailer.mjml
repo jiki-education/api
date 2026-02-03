@@ -2,14 +2,14 @@
   %mj-head
     %mj-title= yield(:title)
     %mj-preview= yield(:preview)
+    %mj-font{ name: "Poppins", href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" }
     %mj-attributes
-      %mj-all{ "font-family": "Arial, sans-serif" }
-      %mj-text{ "font-size": "16px", "line-height": "1.6", "color": "#333333" }
-      %mj-section{ "padding": "20px" }
-    %mj-style
-      :plain
-        .link { color: #0066cc; text-decoration: none; }
-        .link:hover { text-decoration: underline; }
+      %mj-all{ "font-family": "Poppins, Arial, sans-serif" }
+      %mj-section{ "padding": "0 48px" }
+      %mj-text{ "color": "#334155", "font-size": "16px", "line-height": "1.6", "padding": "0 0 10px 0" }
+      %mj-class{ name: "h2", "font-size": "20px", "font-weight": "600", "color": "#1e293b", "padding": "8px 0" }
 
-  %mj-body{ "background-color": "#f4f4f4" }
+  %mj-body{ "background-color": "#f0f1f5" }
+    = render 'mailers/shared/header', header_image: @header_image.presence || "jiki-header.jpg"
     = yield
+    = render 'mailers/shared/footer', user: @user, unsubscribe_key: @unsubscribe_key

@@ -1,24 +1,16 @@
 - content_for :title, t('devise.mailer.confirmation_instructions.subject')
 - content_for :preview, t('devise.mailer.confirmation_instructions.preview')
 
-= render 'mailers/shared/header'
-
--# Main content section
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
-    %mj-text{ "padding-bottom": "10px" }
-      %h2{ style: "margin: 0 0 20px 0; font-size: 24px; color: #333333;" }
-        = t('devise.mailer.confirmation_instructions.greeting', name: @user.name || @user.email)
+    %mj-text
+      = t('devise.mailer.confirmation_instructions.greeting', name: @user.name || @user.email)
 
-    %mj-text{ "padding-bottom": "20px" }
-      %p{ style: "margin: 0 0 15px 0;" }
-        = t('devise.mailer.confirmation_instructions.intro')
+    %mj-text
+      = t('devise.mailer.confirmation_instructions.intro')
 
-    %mj-button{ "background-color": "#0066cc", "color": "#ffffff", "font-size": "16px", "font-weight": "bold", "border-radius": "4px", "padding": "15px 30px", "href": @confirmation_url }
+    %mj-button{ "background-color": "#7c3aed", "color": "#ffffff", "font-size": "16px", "font-weight": "bold", "border-radius": "4px", "padding": "15px 30px", "href": @confirmation_url }
       = t('devise.mailer.confirmation_instructions.cta')
 
-    %mj-text{ "padding-top": "30px", "color": "#666666", "font-size": "14px" }
-      %p{ style: "margin: 0;" }
-        = t('devise.mailer.confirmation_instructions.no_request')
-
-= render 'mailers/shared/footer'
+    %mj-text{ "padding-top": "20px", color: "#64748b", "font-size": "14px" }
+      = t('devise.mailer.confirmation_instructions.no_request')
