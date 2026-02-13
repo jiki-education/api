@@ -58,6 +58,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_153918) do
     t.bigint "badge_id", null: false
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.text "email_content_markdown", null: false
+    t.text "email_subject", null: false
     t.text "fun_fact", null: false
     t.string "locale", null: false
     t.string "name", null: false
@@ -69,6 +71,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_153918) do
   create_table "badges", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
+    t.text "email_content_markdown", default: "", null: false
+    t.string "email_image_url", default: "", null: false
+    t.text "email_subject", default: "", null: false
     t.text "fun_fact"
     t.string "icon", null: false
     t.string "name", null: false
@@ -109,18 +114,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_153918) do
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_courses_on_position", unique: true
     t.index ["slug"], name: "index_courses_on_slug", unique: true
-  end
-
-  create_table "email_templates", force: :cascade do |t|
-    t.text "body_mjml", null: false
-    t.text "body_text", null: false
-    t.datetime "created_at", null: false
-    t.string "locale", null: false
-    t.string "slug"
-    t.text "subject", null: false
-    t.integer "type", null: false
-    t.datetime "updated_at", null: false
-    t.index ["type", "slug", "locale"], name: "index_email_templates_on_type_and_slug_and_locale", unique: true
   end
 
   create_table "exercise_submission_files", force: :cascade do |t|
@@ -186,6 +179,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_153918) do
     t.bigint "level_id", null: false
     t.string "locale", null: false
     t.text "milestone_content", null: false
+    t.text "milestone_email_content_markdown", null: false
+    t.text "milestone_email_subject", null: false
     t.text "milestone_summary", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
@@ -198,6 +193,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_30_153918) do
     t.datetime "created_at", null: false
     t.text "description", null: false
     t.text "milestone_content", null: false
+    t.text "milestone_email_content_markdown", default: "", null: false
+    t.string "milestone_email_image_url", default: "", null: false
+    t.text "milestone_email_subject", default: "", null: false
     t.text "milestone_summary", null: false
     t.integer "position", null: false
     t.string "slug", null: false

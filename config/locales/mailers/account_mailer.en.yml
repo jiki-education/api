@@ -3,12 +3,24 @@ en:
     welcome:
       subject: "Welcome to Jiki!"
       greeting: "Hi %{name},"
-      intro: "Welcome to Jiki - your journey to learning programming starts here!"
-      body: "We're excited to have you join our community of learners. Jiki provides a structured, linear learning path designed specifically for coding beginners."
-      cta: "Start Learning"
+      body_markdown: |
+        Welcome to [Jiki](https://jiki.io)! I'm really excited to have you here.
+
+        Jiki is designed to take you from complete beginner to confident coder. You'll be working on fun projects and solving interesting problems, making progress one small step at a time.
+
+        If you ever get stuck or have questions, don't hesitate to reach out. Learning to code can feel overwhelming at first, but you've got this!
+
+        Have fun, and enjoy the journey!
+
+        Jeremy
     account_deletion_confirmation:
       subject: "Confirm Your Account Deletion"
       preview: "Please confirm that you want to permanently delete your Jiki account"
       greeting: "Hi %{name},"
-      warning: "Warning: This action is permanent and cannot be undone. All your progress, submissions, and data will be permanently deleted."
+      body_markdown: |
+        We received a request to delete your Jiki account.
+
+        If this was you, click the button below to confirm. This action is permanent and cannot be undone — all your progress and data will be deleted.
+
+        If you didn't request this, you can safely ignore this email and your account will remain unchanged.
       cta: "Delete My Account"

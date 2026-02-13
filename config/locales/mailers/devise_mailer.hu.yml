@@ -5,16 +5,15 @@ hu:
         subject: "Erősítsd meg az e-mail címedet"
         preview: "Erősítsd meg az e-mail címedet a Jiki fiókodhoz"
         greeting: "Szia %{name},"
-        intro: "Kérjük, erősítsd meg az e-mail címedet az alábbi linkre kattintva:"
+        body_markdown: |
+          Kérjük, erősítsd meg az e-mail címedet az alábbi gombra kattintva.
         cta: "E-mail cím megerősítése"
-        no_request: "Ha nem hoztál létre Jiki fiókot, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt."
+        footer: "Ha nem hoztál létre Jiki fiókot, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt."
       reset_password_instructions:
         subject: "Jelszó visszaállítása"
         preview: "Állítsd vissza jelszavadat a Jiki fiókodhoz"
         greeting: "Szia %{name},"
-        intro: "Valaki jelszó-visszaállítási linket kért a Jiki fiókodhoz."
-        body: "Ha ez te voltál, kattints az alábbi gombra egy új jelszó választásához:"
+        body_markdown: |
+          Kaptunk egy kérést a Jiki fiókod jelszavának visszaállítására.
         cta: "Jelszó visszaállítása"
-        no_request: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt."
-        no_change: "A jelszavad nem fog megváltozni, amíg nem használod a fenti linket és nem hozol létre egy újat."
-        expires_in: "Ez a jelszó-visszaállítási link 6 óra múlva lejár."
+        footer: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt — a jelszavad nem fog megváltozni, amíg nem kattintasz a fenti linkre. Ez a link 6 óra múlva lejár."

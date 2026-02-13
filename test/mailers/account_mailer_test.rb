@@ -10,12 +10,11 @@ class AccountMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     assert_match "Hi John Doe,", mail.html_part.body.to_s
-    assert_match "Jiki provides a structured, linear learning path", mail.html_part.body.to_s
-    assert_match "Start Learning", mail.html_part.body.to_s
-    assert_match "#{Jiki.config.frontend_base_url}/login", mail.html_part.body.to_s
+    assert_match "Jiki is designed to take you from complete beginner to confident coder", mail.html_part.body.to_s
+    assert_match "https://jiki.io", mail.html_part.body.to_s
 
     assert_match "Hi John Doe,", mail.text_part.body.to_s
-    assert_match "Jiki provides a structured, linear learning path", mail.text_part.body.to_s
+    assert_match "Jiki is designed to take you from complete beginner to confident coder", mail.text_part.body.to_s
   end
 
   test "welcome email renders with Hungarian locale" do
@@ -27,11 +26,11 @@ class AccountMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     assert_match "Szia János Kovács,", mail.html_part.body.to_s
-    assert_match "A Jiki strukturált, lineáris tanulási útvonalat kínál", mail.html_part.body.to_s
-    assert_match "Kezdd el a tanulást", mail.html_part.body.to_s
+    assert_match "strukturált, lineáris tanulási útvonalat kínál", mail.html_part.body.to_s
+    assert_match "https://jiki.io", mail.html_part.body.to_s
 
     assert_match "Szia János Kovács,", mail.text_part.body.to_s
-    assert_match "A Jiki strukturált, lineáris tanulási útvonalat kínál", mail.text_part.body.to_s
+    assert_match "strukturált, lineáris tanulási útvonalat kínál", mail.text_part.body.to_s
   end
 
   test "welcome email compiles MJML to responsive HTML" do
@@ -82,13 +81,12 @@ class AccountMailerTest < ActionMailer::TestCase
     assert_match "Hi Graig D'Amore,", mail.text_part.body.to_s
   end
 
-  test "welcome email includes login URL in button" do
+  test "welcome email includes Jiki link" do
     user = create(:user)
     mail = AccountMailer.welcome(user)
-    expected_url = "#{Jiki.config.frontend_base_url}/login"
 
-    assert_match expected_url, mail.html_part.body.to_s
-    assert_match expected_url, mail.text_part.body.to_s
+    assert_match "https://jiki.io", mail.html_part.body.to_s
+    assert_match "https://jiki.io", mail.text_part.body.to_s
   end
 
   test "welcome email does not include unsubscribe headers" do

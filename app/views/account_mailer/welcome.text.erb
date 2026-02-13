@@ -1,5 +1,3 @@
 <%= t('.greeting', name: @user.name) %>
 
-<%= t('.body') %>
-
-<%= t('.cta') %>: <%= @login_url %>
+<%= markdown_to_text(t('.body_markdown')) %>

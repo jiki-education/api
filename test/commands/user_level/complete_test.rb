@@ -126,51 +126,26 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     assert_nil user_level.reload.completed_at
   end
 
-  test "sends completion email when template exists" do
+  test "sends completion email when email fields are configured" do
     user_level = create(:user_level)
     user_level.user.update!(locale: "en")
-    user_level.level.update!(slug: "level-1")
     lesson = create(:lesson, :exercise, level: user_level.level)
     create(:user_lesson, user: user_level.user, lesson:, completed_at: Time.current)
-    create(:email_template, slug: "level-1", locale: "en")
 
+    # Level factory already includes email fields by default
     assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
       UserLevel::Complete.(user_level.user, user_level.level)
     end
   end
 
-  test "does not send email when template does not exist" do
-    user_level = create(:user_level)
-    user_level.user.update!(locale: "en")
-    user_level.level.update!(slug: "level-2")
-    lesson = create(:lesson, :exercise, level: user_level.level)
-    create(:user_lesson, user: user_level.user, lesson:, completed_at: Time.current)
-
-    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
-      UserLevel::Complete.(user_level.user, user_level.level)
-    end
-  end
-
-  test "marks email as skipped when no template exists" do
-    user_level = create(:user_level)
-    user_level.user.update!(locale: "en")
-    user_level.level.update!(slug: "level-2")
-    lesson = create(:lesson, :exercise, level: user_level.level)
-    create(:user_lesson, user: user_level.user, lesson:, completed_at: Time.current)
-
-    result = UserLevel::Complete.(user_level.user, user_level.level)
-    assert result.reload.email_skipped?
-  end
-
   test "idempotency: does not create next level or send email on re-completion" do
     user_course = create(:user_course)
     user_course.user.update!(locale: "en")
-    level1 = create(:level, course: user_course.course, position: 1, slug: "level-1")
+    level1 = create(:level, course: user_course.course, position: 1)
     level2 = create(:level, course: user_course.course, position: 2)
     lesson = create(:lesson, :exercise, level: level1)
     create(:user_level, user: user_course.user, level: level1)
     create(:user_lesson, user: user_course.user, lesson:, completed_at: Time.current)
-    create(:email_template, slug: "level-1", locale: "en")
 
     user_level = UserLevel::Complete.(user_course.user, level1)
     old_completed_at = user_level.completed_at

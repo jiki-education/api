@@ -19,7 +19,9 @@ class Badge::Translation::TranslateToLocale
       locale: target_locale,
       name: translated[:name],
       description: translated[:description],
-      fun_fact: translated[:fun_fact]
+      fun_fact: translated[:fun_fact],
+      email_subject: translated[:email_subject],
+      email_content_markdown: translated[:email_content_markdown]
     )
 
     Rails.logger.info "Translated badge #{badge.slug} → #{target_locale}"
@@ -53,9 +55,11 @@ class Badge::Translation::TranslateToLocale
       properties: {
         name: { type: "string" },
         description: { type: "string" },
-        fun_fact: { type: "string" }
+        fun_fact: { type: "string" },
+        email_subject: { type: "string" },
+        email_content_markdown: { type: "string" }
       },
-      required: %w[name description fun_fact]
+      required: %w[name description fun_fact email_subject email_content_markdown]
     }
   end
 
@@ -89,12 +93,20 @@ class Badge::Translation::TranslateToLocale
       Fun Fact:
       #{badge.fun_fact}
 
+      Email Subject:
+      #{badge.email_subject}
+
+      Email Content (markdown):
+      #{badge.email_content_markdown}
+
       Required Output:
-      Return ONLY a valid JSON object with these three fields (no additional text or markdown):
+      Return ONLY a valid JSON object with these five fields (no additional text or markdown):
       {
         "name": "translated name",
         "description": "translated description",
-        "fun_fact": "translated fun fact"
+        "fun_fact": "translated fun fact",
+        "email_subject": "translated email subject",
+        "email_content_markdown": "translated email content"
       }
     PROMPT
   end

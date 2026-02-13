@@ -6,7 +6,7 @@ class Badge < ApplicationRecord
 
   scope :secret, -> { where(secret: true) }
 
-  self.translatable_fields = %i[name description fun_fact]
+  self.translatable_fields = %i[name description fun_fact email_subject email_content_markdown]
 
   # Class method to store badge metadata
   def self.seed(name, icon, description, fun_fact: nil, secret: false)
