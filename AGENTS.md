@@ -194,7 +194,6 @@ Mailers use MJML (via MRML Rust compiler) for responsive HTML emails. Developmen
 
 - **Set email category**: Every mailer must set `self.email_category = :transactional | :notifications | :marketing` to determine from address and SES configuration.
 - **Never call `mail()` directly**: Use `mail_to_user(user, unsubscribe_key:, **args)` instead. It handles preference checking, locale, and unsubscribe headers.
-- **Database templates**: Use `mail_template_to_user(user, template_type, template_key, ...)` for templates stored in DB with Liquid rendering.
 - **File extension**: MJML templates use `.mjml` extension (not `.html.mjml`) due to MRML compatibility.
 - **Always both formats**: Include HTML (`.mjml`) and text (`.text.erb`) versions.
 
