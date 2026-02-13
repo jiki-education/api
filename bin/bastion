@@ -237,7 +237,7 @@ OVERRIDES=$(jq -n \
   }'
 )
 
-TASK_ARN=$(aws ecs run-task \
+RUN_TASK_OUTPUT=$(aws ecs run-task \
   --cluster "$CLUSTER" \
   --task-definition "$TASK_FAMILY" \
   --launch-type FARGATE \
@@ -250,7 +250,26 @@ TASK_ARN=$(aws ecs run-task \
   }" \
   --region "$REGION" \
   --query 'tasks[0].taskArn' \
-  --output text)
+  --output text 2>&1) || {
+    if echo "$RUN_TASK_OUTPUT" | grep -q "AccessDeniedException"; then
+        MY_IP=$(curl -s --max-time 5 ifconfig.me || echo "unknown")
+        echo ""
+        echo "❌ ERROR: Access denied - your IP ($MY_IP) is not in the bastion whitelist."
+        echo ""
+        echo "To fix this, add your IP to bastion_whitelisted_ips in:"
+        echo "  terraform/terraform/aws/variables.tf"
+        echo ""
+        echo "Then run:"
+        echo "  cd terraform/terraform"
+        echo "  aws-vault exec jiki -- terraform apply"
+    else
+        echo ""
+        echo "❌ ERROR: Failed to start bastion task"
+        echo "$RUN_TASK_OUTPUT"
+    fi
+    exit 1
+}
+TASK_ARN="$RUN_TASK_OUTPUT"
 
 if [ -z "$TASK_ARN" ] || [ "$TASK_ARN" = "None" ]; then
     echo "❌ ERROR: Failed to start bastion task"
