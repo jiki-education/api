@@ -19,6 +19,7 @@ KEEP_ALIVE=false
 REUSED_TASK=false
 ROOT_USER=false
 STOP_ALL=false
+IN_RECONNECT_LOOP=false
 
 # Check if we're running with aws-vault, if not, re-exec with it
 # This must happen BEFORE argument parsing so arguments are preserved
@@ -87,6 +88,11 @@ fi
 
 # Cleanup function - stops bastion task on exit/interrupt
 cleanup() {
+    # If we're inside the reconnect loop, don't clean up - let the loop handle it
+    if [ "$IN_RECONNECT_LOOP" = true ]; then
+        return
+    fi
+
     if [ -n "$TASK_ID" ] && [ "$KEEP_ALIVE" = false ] && [ "$REUSED_TASK" = false ]; then
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -114,6 +120,11 @@ cleanup() {
         echo "👋 Goodbye!"
     fi
 }
+
+# Ignore SIGPIPE at the script level - broken pipe from SSM WebSocket
+# delivers SIGPIPE which would kill the shell and bypass the reconnect loop.
+# The child process (aws ecs execute-command) still exits with code 141.
+trap '' PIPE
 
 # Trap to ensure cleanup on exit, interrupt, or termination
 trap cleanup EXIT INT TERM
@@ -360,6 +371,7 @@ else
 fi
 
 # Connect to bastion with auto-reconnect on broken pipe
+IN_RECONNECT_LOOP=true
 USER_EXITED=false
 MAX_RECONNECTS=30
 RECONNECT_COUNT=0
@@ -429,5 +441,6 @@ while [ "$USER_EXITED" = false ]; do
     echo "   Press Ctrl+C to disconnect instead."
     sleep 2
 done
+IN_RECONNECT_LOOP=false
 
 # Cleanup handled by trap on EXIT
