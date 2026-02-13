@@ -34,5 +34,8 @@
 # Ignore node modules anywhere
 node_modules/
 
+# Ignore git worktrees (used by /fix skill)
+/worktrees/
+
 # Ignore Claude Code local settings
 /.claude/settings.local.json
