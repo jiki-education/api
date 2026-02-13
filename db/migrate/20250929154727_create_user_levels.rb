@@ -5,6 +5,7 @@ class CreateUserLevels < ActiveRecord::Migration[8.0]
       t.references :level, null: false, foreign_key: true
       t.references :current_user_lesson, null: true, foreign_key: { to_table: :user_lessons }
       t.datetime :completed_at
+      t.integer :email_status, null: false, default: 0
 
       t.timestamps
     end

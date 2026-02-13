@@ -11,6 +11,8 @@ class CreateConcepts < ActiveRecord::Migration[8.1]
       t.string :premium_video_provider
       t.string :premium_video_id
       t.bigint :unlocked_by_lesson_id
+      t.references :parent_concept, null: true, foreign_key: { to_table: :concepts, on_delete: :nullify }
+      t.integer :children_count, null: false, default: 0
 
       t.timestamps
     end
