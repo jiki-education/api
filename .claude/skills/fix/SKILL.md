@@ -13,7 +13,7 @@ You are fixing a GitHub issue for the jiki-education/api repository.
 ## Issue details
 
 ```json
-!`gh issue view $ARGUMENTS --json number,title,body,labels,comments`
+!`gh issue view $(echo "$ARGUMENTS" | grep -oE '[0-9]+$') --json number,title,body,labels,comments`
 ```
 
 Issue number: !`echo "$ARGUMENTS" | grep -oE '[0-9]+$'`
@@ -67,12 +67,12 @@ Only create the worktree **after the plan is approved**. The issue number has be
 
 ```bash
 git pull --ff-only origin main
-mkdir -p ../api-worktrees
-git worktree add ../api-worktrees/fix-<issue-number> -b fix/<issue-number>
-cd ../api-worktrees/fix-<issue-number>
+mkdir -p worktrees
+git worktree add worktrees/fix-<issue-number> -b fix/<issue-number>
+cd worktrees/fix-<issue-number>
 ```
 
-**Important:** After creating the worktree, `cd` into it immediately. All subsequent work (file edits, bash commands, tests) happens inside the worktree. The main repo stays untouched on its current branch.
+**CRITICAL:** You MUST `cd` into the worktree immediately after creating it. All subsequent work — file reads, edits, bash commands, tests — MUST happen from inside the worktree directory using `cd worktrees/fix-<issue-number> && <command>` on every Bash call. Do NOT use absolute paths to the worktree from the main repo. The main repo stays untouched on its current branch.
 
 ### Step 4: Implement the fix
 
@@ -129,9 +129,9 @@ EOF
 
 ```bash
 cd /Users/iHiD/Code/jiki/api
-git worktree remove ../api-worktrees/fix-<issue-number>
+git worktree remove worktrees/fix-<issue-number>
 ```
 
-This removes the worktree directory and returns you to the main repo. The branch remains on the remote for the PR.
+This removes the worktree directory. The branch remains on the remote for the PR.
 
 Report the PR URL to the user.
