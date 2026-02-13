@@ -18,6 +18,25 @@ class CreateUserData < ActiveRecord::Migration[8.1]
       t.string :otp_secret
       t.datetime :otp_enabled_at
 
+      # Email tracking
+      t.boolean :notifications_enabled, null: false, default: true
+      t.string :email_bounce_reason
+      t.datetime :email_bounced_at
+      t.datetime :email_complaint_at
+      t.string :email_complaint_type
+      t.datetime :last_email_opened_at
+      t.string :unsubscribe_token, null: false
+      t.string :email_verification_token
+
+      # Notification preferences
+      t.boolean :receive_newsletters, null: false, default: true
+      t.boolean :receive_event_emails, null: false, default: true
+      t.boolean :receive_milestone_emails, null: false, default: true
+      t.boolean :receive_activity_emails, null: false, default: true
+
+      # Streaks
+      t.boolean :streaks_enabled, null: false, default: false
+
       t.timestamps
     end
 
@@ -27,5 +46,6 @@ class CreateUserData < ActiveRecord::Migration[8.1]
     add_index :user_data, :stripe_subscription_id
     add_index :user_data, :subscription_status
     add_index :user_data, :subscriptions, using: :gin
+    add_index :user_data, :unsubscribe_token, unique: true
   end
 end

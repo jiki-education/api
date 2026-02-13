@@ -7,6 +7,10 @@ class CreateBadges < ActiveRecord::Migration[8.1]
       t.text :description, null: false
       t.boolean :secret, default: false, null: false
       t.integer :num_awardees, default: 0, null: false
+      t.text :fun_fact
+      t.text :email_subject, null: false, default: ''
+      t.text :email_content_markdown, null: false, default: ''
+      t.string :email_image_url, null: false, default: ''
 
       t.timestamps
     end
