@@ -19,6 +19,11 @@ KEEP_ALIVE=false
 REUSED_TASK=false
 ROOT_USER=false
 STOP_ALL=false
+# Temp file marker: when this file exists, the script is inside the interactive
+# session and an unexpected exit (broken pipe) should NOT stop the bastion task.
+# This uses the filesystem instead of bash variables because signals from the
+# dying SSM session kill the bash process in a way that bypasses variable state.
+SESSION_ACTIVE_MARKER=""
 
 # Check if we're running with aws-vault, if not, re-exec with it
 # This must happen BEFORE argument parsing so arguments are preserved
@@ -87,6 +92,19 @@ fi
 
 # Cleanup function - stops bastion task on exit/interrupt
 cleanup() {
+    # If we're inside the interactive session (marker file exists), the exit
+    # was unexpected (broken pipe). Leave the task running so re-running the
+    # script reconnects instantly.
+    if [ -n "$SESSION_ACTIVE_MARKER" ] && [ -f "$SESSION_ACTIVE_MARKER" ]; then
+        rm -f "$SESSION_ACTIVE_MARKER"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⚠️  Connection lost unexpectedly. Bastion task left running."
+        echo "   Re-run ./bin/bastion to reconnect to the same task."
+        echo ""
+        return
+    fi
+
     if [ -n "$TASK_ID" ] && [ "$KEEP_ALIVE" = false ] && [ "$REUSED_TASK" = false ]; then
         echo ""
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -113,10 +131,15 @@ cleanup() {
         echo ""
         echo "👋 Goodbye!"
     fi
+
+    rm -f "$SESSION_ACTIVE_MARKER"
 }
 
-# Trap to ensure cleanup on exit, interrupt, or termination
-trap cleanup EXIT INT TERM
+# Trap to ensure cleanup on exit, interrupt, or termination.
+# On INT/TERM: remove the marker first so cleanup knows it's intentional.
+trap cleanup EXIT
+trap 'rm -f "$SESSION_ACTIVE_MARKER"; exit 130' INT
+trap 'rm -f "$SESSION_ACTIVE_MARKER"; exit 143' TERM
 
 echo "🔐 Bastion Access Script"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -352,24 +375,6 @@ fi
 echo ""
 fi
 
-# Connect to bastion
-echo "🔌 Connecting to bastion..."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "You are now connected to the bastion container."
-if [ "$ROOT_USER" = false ]; then
-    echo "Available commands:"
-    echo "  ./bin/rails console    - Rails console"
-    echo "  ./bin/rails dbconsole  - Database console"
-    echo "  ./bin/rails runner ... - Run Ruby code"
-else
-    echo "Running as root - use for system administration."
-    echo "Switch to rails user: su rails"
-fi
-echo ""
-echo "Type 'exit' to disconnect and stop the bastion."
-echo ""
-
 # Choose command based on root mode
 if [ "$ROOT_USER" = true ]; then
     EXEC_COMMAND="/bin/bash"
@@ -377,12 +382,82 @@ else
     EXEC_COMMAND="/bin/bash -c 'cd /rails && export HOME=/rails && exec setpriv --reuid=1000 --regid=1000 --clear-groups bash'"
 fi
 
-aws ecs execute-command \
-  --cluster "$CLUSTER" \
-  --task "$TASK_ID" \
-  --container "$CONTAINER_NAME" \
-  --interactive \
-  --command "$EXEC_COMMAND" \
-  --region "$REGION"
+# Connect to bastion with auto-reconnect on broken pipe
+# Create marker file: its presence tells cleanup "we're in a session, don't stop the task"
+SESSION_ACTIVE_MARKER=$(mktemp)
+USER_EXITED=false
+MAX_RECONNECTS=30
+RECONNECT_COUNT=0
+
+while [ "$USER_EXITED" = false ]; do
+    if [ $RECONNECT_COUNT -eq 0 ]; then
+        echo "🔌 Connecting to bastion..."
+    else
+        echo "🔌 Reconnecting to bastion (attempt $RECONNECT_COUNT/$MAX_RECONNECTS)..."
+    fi
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    if [ "$ROOT_USER" = false ]; then
+        echo "Available commands:"
+        echo "  ./bin/rails console    - Rails console"
+        echo "  ./bin/rails dbconsole  - Database console"
+        echo "  ./bin/rails runner ... - Run Ruby code"
+    else
+        echo "Running as root - use for system administration."
+        echo "Switch to rails user: su rails"
+    fi
+    echo ""
+    echo "Type 'exit' to disconnect and stop the bastion."
+    echo ""
+
+    # Run in a child bash process to isolate our script from signals
+    # (SIGPIPE/SIGHUP) that the dying SSM session delivers to the process group.
+    set +e
+    bash -c 'aws ecs execute-command \
+      --cluster "$1" \
+      --task "$2" \
+      --container "$3" \
+      --interactive \
+      --command "$4" \
+      --region "$5"' _ "$CLUSTER" "$TASK_ID" "$CONTAINER_NAME" "$EXEC_COMMAND" "$REGION"
+    EXIT_CODE=$?
+    set -e
+
+    # Exit code 0 means the user typed 'exit' cleanly
+    if [ $EXIT_CODE -eq 0 ]; then
+        USER_EXITED=true
+        break
+    fi
+
+    RECONNECT_COUNT=$((RECONNECT_COUNT + 1))
+    if [ $RECONNECT_COUNT -ge $MAX_RECONNECTS ]; then
+        echo ""
+        echo "❌ Too many disconnections ($MAX_RECONNECTS). Giving up."
+        break
+    fi
+
+    # Check if the task is still running before reconnecting
+    TASK_STATUS=$(aws ecs describe-tasks \
+        --cluster "$CLUSTER" \
+        --tasks "$TASK_ID" \
+        --region "$REGION" \
+        --query 'tasks[0].lastStatus' \
+        --output text 2>/dev/null || echo "UNKNOWN")
+
+    if [ "$TASK_STATUS" != "RUNNING" ]; then
+        echo ""
+        echo "❌ Bastion task is no longer running (status: $TASK_STATUS)"
+        USER_EXITED=true
+        break
+    fi
+
+    echo ""
+    echo "⚠️  Connection lost (broken pipe). Reconnecting in 2s..."
+    echo "   Press Ctrl+C to disconnect instead."
+    sleep 2
+done
+
+# Remove marker so cleanup knows this was a normal exit
+rm -f "$SESSION_ACTIVE_MARKER"
 
 # Cleanup handled by trap on EXIT
