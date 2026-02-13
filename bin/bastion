@@ -121,10 +121,12 @@ cleanup() {
     fi
 }
 
-# Ignore SIGPIPE at the script level - broken pipe from SSM WebSocket
-# delivers SIGPIPE which would kill the shell and bypass the reconnect loop.
-# The child process (aws ecs execute-command) still exits with code 141.
-trap '' PIPE
+# Ignore SIGPIPE and SIGHUP at the script level - when the SSM WebSocket
+# breaks, signals are delivered to the process group which would kill the
+# shell and bypass the reconnect loop. Ignoring them here means the child
+# process (aws ecs execute-command) still exits with a non-zero code that
+# our reconnect loop can handle.
+trap '' PIPE HUP
 
 # Trap to ensure cleanup on exit, interrupt, or termination
 trap cleanup EXIT INT TERM
@@ -397,14 +399,16 @@ while [ "$USER_EXITED" = false ]; do
     echo "Type 'exit' to disconnect and stop the bastion."
     echo ""
 
+    # Run in a child bash process to isolate our script from signals
+    # (SIGPIPE/SIGHUP) that the dying SSM session delivers to the process group.
     set +e
-    aws ecs execute-command \
-      --cluster "$CLUSTER" \
-      --task "$TASK_ID" \
-      --container "$CONTAINER_NAME" \
+    bash -c 'aws ecs execute-command \
+      --cluster "$1" \
+      --task "$2" \
+      --container "$3" \
       --interactive \
-      --command "$EXEC_COMMAND" \
-      --region "$REGION"
+      --command "$4" \
+      --region "$5"' _ "$CLUSTER" "$TASK_ID" "$CONTAINER_NAME" "$EXEC_COMMAND" "$REGION"
     EXIT_CODE=$?
     set -e
 
