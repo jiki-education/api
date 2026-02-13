@@ -352,24 +352,6 @@ fi
 echo ""
 fi
 
-# Connect to bastion
-echo "🔌 Connecting to bastion..."
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "You are now connected to the bastion container."
-if [ "$ROOT_USER" = false ]; then
-    echo "Available commands:"
-    echo "  ./bin/rails console    - Rails console"
-    echo "  ./bin/rails dbconsole  - Database console"
-    echo "  ./bin/rails runner ... - Run Ruby code"
-else
-    echo "Running as root - use for system administration."
-    echo "Switch to rails user: su rails"
-fi
-echo ""
-echo "Type 'exit' to disconnect and stop the bastion."
-echo ""
-
 # Choose command based on root mode
 if [ "$ROOT_USER" = true ]; then
     EXEC_COMMAND="/bin/bash"
@@ -377,12 +359,75 @@ else
     EXEC_COMMAND="/bin/bash -c 'cd /rails && export HOME=/rails && exec setpriv --reuid=1000 --regid=1000 --clear-groups bash'"
 fi
 
-aws ecs execute-command \
-  --cluster "$CLUSTER" \
-  --task "$TASK_ID" \
-  --container "$CONTAINER_NAME" \
-  --interactive \
-  --command "$EXEC_COMMAND" \
-  --region "$REGION"
+# Connect to bastion with auto-reconnect on broken pipe
+USER_EXITED=false
+MAX_RECONNECTS=30
+RECONNECT_COUNT=0
+
+while [ "$USER_EXITED" = false ]; do
+    if [ $RECONNECT_COUNT -eq 0 ]; then
+        echo "🔌 Connecting to bastion..."
+    else
+        echo "🔌 Reconnecting to bastion (attempt $RECONNECT_COUNT/$MAX_RECONNECTS)..."
+    fi
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    if [ "$ROOT_USER" = false ]; then
+        echo "Available commands:"
+        echo "  ./bin/rails console    - Rails console"
+        echo "  ./bin/rails dbconsole  - Database console"
+        echo "  ./bin/rails runner ... - Run Ruby code"
+    else
+        echo "Running as root - use for system administration."
+        echo "Switch to rails user: su rails"
+    fi
+    echo ""
+    echo "Type 'exit' to disconnect and stop the bastion."
+    echo ""
+
+    set +e
+    aws ecs execute-command \
+      --cluster "$CLUSTER" \
+      --task "$TASK_ID" \
+      --container "$CONTAINER_NAME" \
+      --interactive \
+      --command "$EXEC_COMMAND" \
+      --region "$REGION"
+    EXIT_CODE=$?
+    set -e
+
+    # Exit code 0 means the user typed 'exit' cleanly
+    if [ $EXIT_CODE -eq 0 ]; then
+        USER_EXITED=true
+        break
+    fi
+
+    RECONNECT_COUNT=$((RECONNECT_COUNT + 1))
+    if [ $RECONNECT_COUNT -ge $MAX_RECONNECTS ]; then
+        echo ""
+        echo "❌ Too many disconnections ($MAX_RECONNECTS). Giving up."
+        break
+    fi
+
+    # Check if the task is still running before reconnecting
+    TASK_STATUS=$(aws ecs describe-tasks \
+        --cluster "$CLUSTER" \
+        --tasks "$TASK_ID" \
+        --region "$REGION" \
+        --query 'tasks[0].lastStatus' \
+        --output text 2>/dev/null || echo "UNKNOWN")
+
+    if [ "$TASK_STATUS" != "RUNNING" ]; then
+        echo ""
+        echo "❌ Bastion task is no longer running (status: $TASK_STATUS)"
+        USER_EXITED=true
+        break
+    fi
+
+    echo ""
+    echo "⚠️  Connection lost (broken pipe). Reconnecting in 2s..."
+    echo "   Press Ctrl+C to disconnect instead."
+    sleep 2
+done
 
 # Cleanup handled by trap on EXIT
