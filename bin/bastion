@@ -19,7 +19,11 @@ KEEP_ALIVE=false
 REUSED_TASK=false
 ROOT_USER=false
 STOP_ALL=false
-IN_RECONNECT_LOOP=false
+# Temp file marker: when this file exists, the script is inside the interactive
+# session and an unexpected exit (broken pipe) should NOT stop the bastion task.
+# This uses the filesystem instead of bash variables because signals from the
+# dying SSM session kill the bash process in a way that bypasses variable state.
+SESSION_ACTIVE_MARKER=""
 
 # Check if we're running with aws-vault, if not, re-exec with it
 # This must happen BEFORE argument parsing so arguments are preserved
@@ -88,8 +92,16 @@ fi
 
 # Cleanup function - stops bastion task on exit/interrupt
 cleanup() {
-    # If we're inside the reconnect loop, don't clean up - let the loop handle it
-    if [ "$IN_RECONNECT_LOOP" = true ]; then
+    # If we're inside the interactive session (marker file exists), the exit
+    # was unexpected (broken pipe). Leave the task running so re-running the
+    # script reconnects instantly.
+    if [ -n "$SESSION_ACTIVE_MARKER" ] && [ -f "$SESSION_ACTIVE_MARKER" ]; then
+        rm -f "$SESSION_ACTIVE_MARKER"
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⚠️  Connection lost unexpectedly. Bastion task left running."
+        echo "   Re-run ./bin/bastion to reconnect to the same task."
+        echo ""
         return
     fi
 
@@ -119,17 +131,15 @@ cleanup() {
         echo ""
         echo "👋 Goodbye!"
     fi
+
+    rm -f "$SESSION_ACTIVE_MARKER"
 }
 
-# Ignore SIGPIPE and SIGHUP at the script level - when the SSM WebSocket
-# breaks, signals are delivered to the process group which would kill the
-# shell and bypass the reconnect loop. Ignoring them here means the child
-# process (aws ecs execute-command) still exits with a non-zero code that
-# our reconnect loop can handle.
-trap '' PIPE HUP
-
-# Trap to ensure cleanup on exit, interrupt, or termination
-trap cleanup EXIT INT TERM
+# Trap to ensure cleanup on exit, interrupt, or termination.
+# On INT/TERM: remove the marker first so cleanup knows it's intentional.
+trap cleanup EXIT
+trap 'rm -f "$SESSION_ACTIVE_MARKER"; exit 130' INT
+trap 'rm -f "$SESSION_ACTIVE_MARKER"; exit 143' TERM
 
 echo "🔐 Bastion Access Script"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -373,7 +383,8 @@ else
 fi
 
 # Connect to bastion with auto-reconnect on broken pipe
-IN_RECONNECT_LOOP=true
+# Create marker file: its presence tells cleanup "we're in a session, don't stop the task"
+SESSION_ACTIVE_MARKER=$(mktemp)
 USER_EXITED=false
 MAX_RECONNECTS=30
 RECONNECT_COUNT=0
@@ -445,6 +456,8 @@ while [ "$USER_EXITED" = false ]; do
     echo "   Press Ctrl+C to disconnect instead."
     sleep 2
 done
-IN_RECONNECT_LOOP=false
+
+# Remove marker so cleanup knows this was a normal exit
+rm -f "$SESSION_ACTIVE_MARKER"
 
 # Cleanup handled by trap on EXIT
