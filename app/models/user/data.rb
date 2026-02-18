@@ -65,7 +65,7 @@ class User::Data < ApplicationRecord
     subscription_status.in?(%w[never_subscribed canceled])
   end
 
-  def can_change_tier?
+  def can_change_interval?
     subscription_status.in?(%w[active payment_failed cancelling])
   end
 

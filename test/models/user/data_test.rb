@@ -146,28 +146,28 @@ class User::DataTest < ActiveSupport::TestCase
     refute user.data.can_checkout?
   end
 
-  test "can_change_tier? returns true for active" do
+  test "can_change_interval? returns true for active" do
     user = create(:user)
     user.data.update!(subscription_status: "active")
-    assert user.data.can_change_tier?
+    assert user.data.can_change_interval?
   end
 
-  test "can_change_tier? returns true for payment_failed" do
+  test "can_change_interval? returns true for payment_failed" do
     user = create(:user)
     user.data.update!(subscription_status: "payment_failed")
-    assert user.data.can_change_tier?
+    assert user.data.can_change_interval?
   end
 
-  test "can_change_tier? returns true for cancelling" do
+  test "can_change_interval? returns true for cancelling" do
     user = create(:user)
     user.data.update!(subscription_status: "cancelling")
-    assert user.data.can_change_tier?
+    assert user.data.can_change_interval?
   end
 
-  test "can_change_tier? returns false for never_subscribed" do
+  test "can_change_interval? returns false for never_subscribed" do
     user = create(:user)
     user.data.update!(subscription_status: "never_subscribed")
-    refute user.data.can_change_tier?
+    refute user.data.can_change_interval?
   end
 
   test "timezone defaults to UTC on create" do

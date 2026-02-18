@@ -149,7 +149,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     end
 
     # Check user can change plan
-    unless current_user.data.can_change_tier?
+    unless current_user.data.can_change_interval?
       return render json: {
         error: {
           type: "no_subscription",
