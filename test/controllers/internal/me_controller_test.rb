@@ -12,15 +12,7 @@ class Internal::MeControllerTest < ApplicationControllerTest
     get internal_me_path, as: :json
 
     assert_response :success
-
-    json = response.parsed_body
-    assert_equal @user.handle, json["user"]["handle"]
-    assert_equal @user.email, json["user"]["email"]
-    assert_equal @user.name, json["user"]["name"]
-    assert_equal "standard", json["user"]["membership_type"]
-    assert json["user"].key?("subscription_status")
-    assert json["user"].key?("subscription")
-    assert json["user"].key?("premium_prices")
+    assert_json_response({ user: SerializeUser.(@user) })
   end
 
   test "GET show returns correct membership_type for premium user" do
@@ -29,9 +21,7 @@ class Internal::MeControllerTest < ApplicationControllerTest
     get internal_me_path, as: :json
 
     assert_response :success
-
-    json = response.parsed_body
-    assert_equal "premium", json["user"]["membership_type"]
+    assert_json_response({ user: SerializeUser.(@user) })
   end
 
   test "sets country_code from CF-IPCountry header when nil" do
