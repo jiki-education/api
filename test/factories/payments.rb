@@ -18,11 +18,6 @@ FactoryBot.define do
       }
     end
 
-    trait :max do
-      product { "max" }
-      amount_in_cents { 4999 }
-    end
-
     trait :renewal do
       data do
         {

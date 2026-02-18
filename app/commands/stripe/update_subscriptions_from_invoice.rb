@@ -16,7 +16,8 @@ class Stripe::UpdateSubscriptionsFromInvoice
       # Create new entry (handles incomplete → active transition)
       user_subscriptions << {
         stripe_subscription_id: subscription.id,
-        tier: user.data.membership_type,
+        tier: 'premium',
+        interval: user.data.subscription_interval,
         started_at: Time.current.iso8601,
         ended_at: nil,
         end_reason: nil,

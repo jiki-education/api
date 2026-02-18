@@ -11,11 +11,6 @@ en:
         If you have any questions, just reply to this email.
 
         Jeremy
-    welcome_to_max:
-      subject: "Welcome to Jiki Max!"
-      greeting: "Hi %{name},"
-      body_markdown: |
-        Thank you for subscribing to Jiki Max. You now have access to all Max features.
     subscription_ended:
       subject: "Your Jiki subscription has ended"
       greeting: "Hi %{name},"

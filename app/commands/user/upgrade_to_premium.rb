@@ -5,7 +5,7 @@ class User::UpgradeToPremium
 
   def call
     user.with_lock do
-      return if user.data.premium? || user.data.max?
+      return if user.data.premium?
 
       user.data.update!(membership_type: 'premium')
     end

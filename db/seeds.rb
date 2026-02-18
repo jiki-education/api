@@ -254,8 +254,8 @@ if admin_user
   [
     { months_ago: 4, product: "premium", amount: 1999 },
     { months_ago: 3, product: "premium", amount: 1999 },
-    { months_ago: 2, product: "max", amount: 4999 },
-    { months_ago: 1, product: "max", amount: 4999 }
+    { months_ago: 2, product: "premium", amount: 1999 },
+    { months_ago: 1, product: "premium", amount: 1999 }
   ].each_with_index do |payment_data, index|
     payment_date = payment_data[:months_ago].months.ago
     Payment.find_or_create_by!(payment_processor_id: "in_seed_#{index + 1}") do |p|
@@ -278,8 +278,7 @@ if admin_user
   end
 
   puts "  ✓ Created 4 payments for admin user (#{admin_user.email})"
-  puts "    - 2 premium payments ($19.99 each)"
-  puts "    - 2 max payments ($49.99 each)"
+  puts "    - 4 premium payments ($19.99 each)"
 else
   puts "⚠ Could not create payments - missing admin user"
 end

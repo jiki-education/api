@@ -3,10 +3,6 @@ class PremiumMailerPreview < ActionMailer::Preview
     PremiumMailer.welcome_to_premium(preview_user)
   end
 
-  def welcome_to_max
-    PremiumMailer.welcome_to_max(preview_user)
-  end
-
   def subscription_ended
     PremiumMailer.subscription_ended(preview_user)
   end

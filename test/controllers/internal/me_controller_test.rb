@@ -32,15 +32,4 @@ class Internal::MeControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal "premium", json["user"]["membership_type"]
   end
-
-  test "GET show returns correct membership_type for max user" do
-    @user.data.update!(membership_type: "max")
-
-    get internal_me_path, as: :json
-
-    assert_response :success
-
-    json = response.parsed_body
-    assert_equal "max", json["user"]["membership_type"]
-  end
 end

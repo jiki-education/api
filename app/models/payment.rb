@@ -4,7 +4,7 @@ class Payment < ApplicationRecord
   validates :payment_processor_id, presence: true
   validates :amount_in_cents, presence: true, numericality: { greater_than: 0 }
   validates :currency, presence: true
-  validates :product, presence: true, inclusion: { in: %w[premium max] }
+  validates :product, presence: true, inclusion: { in: %w[premium] }
 
   scope :most_recent_first, -> { order(created_at: :desc) }
 end

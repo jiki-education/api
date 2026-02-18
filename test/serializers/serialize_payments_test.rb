@@ -32,13 +32,13 @@ class SerializePaymentsTest < ActiveSupport::TestCase
   test "serializes multiple payments" do
     user = create(:user)
     payment1 = create(:payment, user:, product: "premium")
-    payment2 = create(:payment, user:, product: "max")
+    payment2 = create(:payment, user:, product: "premium")
 
     result = SerializePayments.([payment1, payment2])
 
     assert_equal 2, result.length
     assert_equal "premium", result[0][:product]
-    assert_equal "max", result[1][:product]
+    assert_equal "premium", result[1][:product]
   end
 
   test "serializes payment with nil external_receipt_url" do

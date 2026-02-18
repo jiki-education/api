@@ -1,7 +1,6 @@
 require "test_helper"
 
 class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
-  # Helper to add items mock with current_period_end to subscription
   def add_items_mock_to_subscription(subscription, period_end, price_id = nil)
     item = mock
     item.stubs(:current_period_end).returns(period_end.to_i) if period_end
@@ -20,10 +19,12 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
       stripe_subscription_id: "sub_123",
       membership_type: "premium",
       subscription_status: "active",
+      subscription_interval: "monthly",
       subscription_valid_until: @period_end,
       subscriptions: [{
         stripe_subscription_id: "sub_123",
         tier: "premium",
+        interval: "monthly",
         started_at: 1.month.ago.iso8601,
         ended_at: nil,
         end_reason: nil,
@@ -36,11 +37,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock
     subscription.stubs(:id).returns("sub_nonexistent")
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription))
 
     assert_nothing_raised do
       Stripe::Webhook::SubscriptionUpdated.(event)
@@ -59,12 +57,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
     add_items_mock_to_subscription(subscription, @period_end)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -73,19 +67,15 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_equal "active", @user.data.subscription_status
   end
 
-  test "updates subscription status to past_due and records payment_failed_at in array" do
+  test "updates subscription status to past_due and records payment_failed_at" do
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("past_due")
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -93,17 +83,17 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_equal "past_due", @user.data.stripe_subscription_status
     assert_equal "payment_failed", @user.data.subscription_status
 
-    # Check payment_failed_at in subscriptions array
     sub_entry = @user.data.subscriptions.first
     refute_nil sub_entry["payment_failed_at"]
   end
 
-  test "does not overwrite payment_failed_at in array if already set" do
+  test "does not overwrite payment_failed_at if already set" do
     original_failed_at = 2.days.ago
     @user.data.update!(
       subscriptions: [{
         stripe_subscription_id: "sub_123",
         tier: "premium",
+        interval: "monthly",
         started_at: 1.month.ago.iso8601,
         ended_at: nil,
         end_reason: nil,
@@ -117,12 +107,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -138,12 +124,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -151,21 +133,15 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_equal "canceled", @user.data.stripe_subscription_status
   end
 
-  test "downgrades to standard tier on unpaid status" do
-    @user.data.update!(membership_type: "max")
-
+  test "downgrades to standard on unpaid status" do
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("unpaid")
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -182,12 +158,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -205,12 +177,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
     add_items_mock_to_subscription(subscription, new_period_end)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -218,61 +186,40 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_in_delta new_period_end.to_i, @user.data.subscription_valid_until.to_i, 1
   end
 
-  test "handles tier change from premium to max" do
-    @user.data.update!(membership_type: "premium")
+  test "handles interval change from monthly to annual" do
+    @user.data.update!(subscription_interval: "monthly")
 
-    price = mock
-    price.stubs(:id).returns(Jiki.config.stripe_max_price_id)
-
-    item = mock
-    item.stubs(:price).returns(price)
-    item.stubs(:current_period_end).returns(@period_end.to_i)
-
-    items_data = mock
-    items_data.stubs(:first).returns(item)
-
-    items = mock
-    items.stubs(:data).returns(items_data)
-
-    subscription = mock
-    subscription.stubs(:id).returns("sub_123")
-    subscription.stubs(:status).returns("active")
-    subscription.stubs(:cancel_at_period_end).returns(false)
-    subscription.stubs(:items).returns(items)
-
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({ 'items' => true })
+    subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
 
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
     @user.data.reload
-    assert_equal "max", @user.data.membership_type
+    assert_equal "annual", @user.data.subscription_interval
+    assert_equal "premium", @user.data.membership_type
 
-    # Check subscriptions array updated
     assert_equal 2, @user.data.subscriptions.length
     old_sub = @user.data.subscriptions.first
     new_sub = @user.data.subscriptions.last
 
-    # Old subscription should be closed with upgraded end_reason
-    assert_equal "premium", old_sub["tier"]
+    assert_equal "monthly", old_sub["interval"]
     refute_nil old_sub["ended_at"]
-    assert_equal "upgraded", old_sub["end_reason"]
+    assert_equal "interval_changed", old_sub["end_reason"]
 
-    # New subscription should be open
-    assert_equal "max", new_sub["tier"]
+    assert_equal "annual", new_sub["interval"]
+    assert_equal "premium", new_sub["tier"]
     assert_nil new_sub["ended_at"]
   end
 
-  test "handles tier change from max to premium" do
+  test "handles interval change from annual to monthly" do
     @user.data.update!(
-      membership_type: "max",
+      subscription_interval: "annual",
       subscriptions: [{
         stripe_subscription_id: "sub_123",
-        tier: "max",
+        tier: "premium",
+        interval: "annual",
         started_at: 1.month.ago.iso8601,
         ended_at: nil,
         end_reason: nil,
@@ -280,72 +227,41 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
       }]
     )
 
-    price = mock
-    price.stubs(:id).returns(Jiki.config.stripe_premium_price_id)
-
-    item = mock
-    item.stubs(:price).returns(price)
-    item.stubs(:current_period_end).returns(@period_end.to_i)
-
-    items_data = mock
-    items_data.stubs(:first).returns(item)
-
-    items = mock
-    items.stubs(:data).returns(items_data)
-
-    subscription = mock
-    subscription.stubs(:id).returns("sub_123")
-    subscription.stubs(:status).returns("active")
-    subscription.stubs(:cancel_at_period_end).returns(false)
-    subscription.stubs(:items).returns(items)
-
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({ 'items' => true })
+    subscription = mock_subscription_with_price(Jiki.config.stripe_premium_monthly_price_id)
 
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
     @user.data.reload
-    assert_equal "premium", @user.data.membership_type
+    assert_equal "monthly", @user.data.subscription_interval
 
-    # Check subscriptions array updated
     assert_equal 2, @user.data.subscriptions.length
     old_sub = @user.data.subscriptions.first
     new_sub = @user.data.subscriptions.last
 
-    # Old subscription should be closed with downgraded end_reason
-    assert_equal "max", old_sub["tier"]
-    assert_equal "downgraded", old_sub["end_reason"]
+    assert_equal "annual", old_sub["interval"]
+    assert_equal "interval_changed", old_sub["end_reason"]
 
-    # New subscription should be open
-    assert_equal "premium", new_sub["tier"]
+    assert_equal "monthly", new_sub["interval"]
     assert_nil new_sub["ended_at"]
   end
 
-  test "does not change tier if price did not change" do
-    @user.data.update!(membership_type: "premium")
-
+  test "does not change interval if price did not change" do
     subscription = mock
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns("active")
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
     @user.data.reload
-    assert_equal "premium", @user.data.membership_type
-    # Should still have only 1 subscription entry
+    assert_equal "monthly", @user.data.subscription_interval
     assert_equal 1, @user.data.subscriptions.length
   end
 
@@ -356,12 +272,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(true)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -378,12 +290,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, @period_end)
     subscription.stubs(:cancel_at_period_end).returns(false)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({})
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -391,18 +299,13 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_equal "active", @user.data.subscription_status
   end
 
-  test "raises ArgumentError for unknown price ID on tier change" do
-    @user.data.update!(membership_type: "premium")
-
+  test "raises ArgumentError for unknown price ID on plan change" do
     price = mock
     price.stubs(:id).returns("price_unknown_xyz")
-
     item = mock
     item.stubs(:price).returns(price)
-
     items_data = mock
     items_data.stubs(:first).returns(item)
-
     items = mock
     items.stubs(:data).returns(items_data)
 
@@ -410,12 +313,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:items).returns(items)
 
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({ 'items' => true })
-
     event = mock
-    event.stubs(:data).returns(event_data)
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
 
     error = assert_raises(ArgumentError) do
       Stripe::Webhook::SubscriptionUpdated.(event)
@@ -425,22 +324,23 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_match(/price_unknown_xyz/, error.message)
   end
 
-  test "is idempotent - does not duplicate new tier entry on retry" do
-    # Simulate webhook already processed once - user has both old and new subscription entries
+  test "is idempotent - does not duplicate entry on retry" do
     @user.data.update!(
-      membership_type: "max",
+      subscription_interval: "annual",
       subscriptions: [
         {
           stripe_subscription_id: "sub_123",
           tier: "premium",
+          interval: "monthly",
           started_at: 2.months.ago.iso8601,
           ended_at: 1.hour.ago.iso8601,
-          end_reason: "upgraded",
+          end_reason: "interval_changed",
           payment_failed_at: nil
         },
         {
           stripe_subscription_id: "sub_123",
-          tier: "max",
+          tier: "premium",
+          interval: "annual",
           started_at: 1.hour.ago.iso8601,
           ended_at: nil,
           end_reason: nil,
@@ -449,8 +349,25 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
       ]
     )
 
+    subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
+
+    event = mock
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
+
+    Stripe::Webhook::SubscriptionUpdated.(event)
+
+    @user.data.reload
+    assert_equal 2, @user.data.subscriptions.length
+
+    annual_sub = @user.data.subscriptions.find { |s| s["interval"] == "annual" }
+    refute_nil annual_sub
+    assert_nil annual_sub["ended_at"]
+  end
+
+  private
+  def mock_subscription_with_price(price_id)
     price = mock
-    price.stubs(:id).returns(Jiki.config.stripe_max_price_id)
+    price.stubs(:id).returns(price_id)
 
     item = mock
     item.stubs(:price).returns(price)
@@ -467,24 +384,6 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:status).returns("active")
     subscription.stubs(:cancel_at_period_end).returns(false)
     subscription.stubs(:items).returns(items)
-
-    event_data = mock
-    event_data.stubs(:object).returns(subscription)
-    event_data.stubs(:previous_attributes).returns({ 'items' => true })
-
-    event = mock
-    event.stubs(:data).returns(event_data)
-
-    # Call webhook again (simulating retry)
-    Stripe::Webhook::SubscriptionUpdated.(event)
-
-    @user.data.reload
-    # Should still have exactly 2 entries (not 3)
-    assert_equal 2, @user.data.subscriptions.length
-
-    # Verify the max tier entry exists and is still open
-    max_sub = @user.data.subscriptions.find { |s| s["tier"] == "max" }
-    refute_nil max_sub
-    assert_nil max_sub["ended_at"]
+    subscription
   end
 end

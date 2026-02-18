@@ -58,11 +58,6 @@ class PaymentTest < ActiveSupport::TestCase
     assert payment.valid?
   end
 
-  test "validates product inclusion - max is valid" do
-    payment = build(:payment, product: "max")
-    assert payment.valid?
-  end
-
   test "validates product inclusion - invalid value rejected" do
     payment = build(:payment, product: "invalid")
     refute payment.valid?

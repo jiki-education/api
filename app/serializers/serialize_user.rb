@@ -22,6 +22,7 @@ class SerializeUser
     return nil if %w[never_subscribed canceled].include?(user.data.subscription_status)
 
     {
+      interval: user.data.subscription_interval,
       in_grace_period: user.data.in_grace_period?,
       grace_period_ends_at: user.data.grace_period_ends_at,
       subscription_valid_until: user.data.subscription_valid_until

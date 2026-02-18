@@ -8,6 +8,7 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
       subscriptions: [{
         'stripe_subscription_id' => "sub_123",
         'tier' => "premium",
+        'interval' => "monthly",
         'started_at' => 1.month.ago.iso8601,
         'ended_at' => nil,
         'end_reason' => nil,
@@ -17,7 +18,6 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
 
     invoice = mock_invoice(subscription: "sub_123")
 
-    # subscription.id not called when entry already exists
     Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, nil)
 
     user.data.reload
@@ -25,11 +25,12 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
     assert_nil sub_entry["payment_failed_at"]
   end
 
-  test "creates subscription entry for incomplete subscription on first payment" do
+  test "creates subscription entry with interval for first payment" do
     user = create(:user)
     user.data.update!(
       stripe_customer_id: "cus_123",
       membership_type: "premium",
+      subscription_interval: "annual",
       subscriptions: []
     )
 
@@ -43,9 +44,9 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
     sub_entry = user.data.subscriptions.first
     assert_equal "sub_123", sub_entry["stripe_subscription_id"]
     assert_equal "premium", sub_entry["tier"]
+    assert_equal "annual", sub_entry["interval"]
     refute_nil sub_entry["started_at"]
     assert_nil sub_entry["ended_at"]
-    assert_nil sub_entry["end_reason"]
     assert_nil sub_entry["payment_failed_at"]
   end
 
@@ -56,6 +57,7 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
       subscriptions: [{
         'stripe_subscription_id' => "sub_123",
         'tier' => "premium",
+        'interval' => "monthly",
         'started_at' => 1.month.ago.iso8601,
         'ended_at' => nil,
         'end_reason' => nil,
@@ -65,7 +67,6 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
 
     invoice = mock_invoice(subscription: "sub_123")
 
-    # subscription.id not called when entry already exists
     Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, nil)
 
     user.data.reload
@@ -80,9 +81,8 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
     )
 
     invoice = mock_invoice(subscription: nil)
-    subscription = nil
 
-    Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, subscription)
+    Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, nil)
 
     user.data.reload
     assert_empty user.data.subscriptions

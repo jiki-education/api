@@ -34,6 +34,7 @@ class SerializeUserTest < ActiveSupport::TestCase
     user.data.update!(
       membership_type: "premium",
       subscription_status: "active",
+      subscription_interval: "monthly",
       subscription_valid_until: valid_until
     )
 
@@ -42,6 +43,7 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "premium", result[:membership_type]
     assert_equal "active", result[:subscription_status]
     refute_nil result[:subscription]
+    assert_equal "monthly", result[:subscription][:interval]
     assert_equal valid_until.iso8601(3), result[:subscription][:subscription_valid_until].iso8601(3)
     refute result[:subscription][:in_grace_period]
     # grace_period_ends_at is present whenever subscription_valid_until is present
@@ -53,14 +55,14 @@ class SerializeUserTest < ActiveSupport::TestCase
     user = create(:user)
     period_end = 3.days.ago # Expired but within 7-day grace period
     user.data.update!(
-      membership_type: "max",
+      membership_type: "premium",
       subscription_status: "payment_failed",
       subscription_valid_until: period_end
     )
 
     result = SerializeUser.(user)
 
-    assert_equal "max", result[:membership_type]
+    assert_equal "premium", result[:membership_type]
     assert_equal "payment_failed", result[:subscription_status]
     refute_nil result[:subscription]
     assert result[:subscription][:in_grace_period]

@@ -9,8 +9,8 @@ class Stripe::Webhook::SubscriptionUpdated
       return
     end
 
-    # Check if price changed (upgrade/downgrade)
-    handle_tier_change if previous_attributes.key?('items')
+    # Check if price changed (interval change)
+    handle_plan_change if previous_attributes.key?('items')
 
     # Check if cancellation was scheduled/unscheduled
     handle_cancellation_change
@@ -30,33 +30,27 @@ class Stripe::Webhook::SubscriptionUpdated
   end
 
   private
-  def update_subscriptions_array!
-    user.data.update!(subscriptions: user_subscriptions)
-  end
-
-  def handle_tier_change
+  def handle_plan_change
     new_price_id = subscription.items.data.first.price.id
-    old_tier = user.data.membership_type
-    new_tier = determine_tier(new_price_id)
+    new_interval = Stripe::DetermineSubscriptionDetails.interval_for_price_id(new_price_id)
+    old_interval = user.data.subscription_interval
 
-    return unless old_tier != new_tier
+    return if old_interval == new_interval
 
     # Close old subscription entry in array by matching subscription ID
-    if (current_sub = user_subscriptions.find { |s| s['stripe_subscription_id'] == subscription.id })
+    if (current_sub = user_subscriptions.find { |s| s['stripe_subscription_id'] == subscription.id && s['ended_at'].nil? })
       current_sub['ended_at'] = Time.current.iso8601
-      # Determine if upgrade or downgrade based on tier hierarchy: standard < premium < max
-      tier_order = { 'standard' => 0, 'premium' => 1, 'max' => 2 }
-      current_sub['end_reason'] = tier_order[new_tier] > tier_order[old_tier] ? 'upgraded' : 'downgraded'
+      current_sub['end_reason'] = 'interval_changed'
     end
 
-    # Open new subscription entry (idempotent - check if already exists with new tier)
-    # This handles webhook retries where the tier change was already recorded
+    # Open new subscription entry (idempotent - check if already exists with new interval)
     unless user_subscriptions.any? do |s|
-      s['stripe_subscription_id'] == subscription.id && s['tier'] == new_tier && s['ended_at'].nil?
+      s['stripe_subscription_id'] == subscription.id && s['interval'] == new_interval && s['ended_at'].nil?
     end
       user_subscriptions << {
         stripe_subscription_id: subscription.id,
-        tier: new_tier,
+        tier: 'premium',
+        interval: new_interval,
         started_at: Time.current.iso8601,
         ended_at: nil,
         end_reason: nil,
@@ -64,25 +58,13 @@ class Stripe::Webhook::SubscriptionUpdated
       }
     end
 
-    # Update subscriptions array first
-    user.data.update!(subscriptions: user_subscriptions)
+    # Update subscriptions array and interval
+    user.data.update!(
+      subscriptions: user_subscriptions,
+      subscription_interval: new_interval
+    )
 
-    # Handle tier change via dedicated commands for upgrades (sends welcome emails)
-    # For downgrades, update membership_type directly (no welcome email)
-    tier_order = { 'standard' => 0, 'premium' => 1, 'max' => 2 }
-    is_upgrade = tier_order[new_tier] > tier_order[old_tier]
-
-    if is_upgrade
-      case new_tier
-      when 'premium' then User::UpgradeToPremium.(user)
-      when 'max' then User::UpgradeToMax.(user)
-      end
-    else
-      # Downgrade - set membership_type directly
-      user.data.update!(membership_type: new_tier)
-    end
-
-    Rails.logger.info("User #{user.id} tier changed: #{old_tier} -> #{new_tier}")
+    Rails.logger.info("User #{user.id} interval changed: #{old_interval} -> #{new_interval}")
   end
 
   def handle_cancellation_change
@@ -91,7 +73,7 @@ class Stripe::Webhook::SubscriptionUpdated
       user.data.update!(subscription_status: 'cancelling')
       Rails.logger.info("User #{user.id} subscription set to cancelling")
     elsif !subscription.cancel_at_period_end && user.data.subscription_status_cancelling?
-      # Cancellation was undone (e.g., via tier change)
+      # Cancellation was undone
       user.data.update!(subscription_status: 'active')
       Rails.logger.info("User #{user.id} subscription cancellation undone")
     end
@@ -145,16 +127,4 @@ class Stripe::Webhook::SubscriptionUpdated
 
   memoize
   def previous_attributes = event.data.previous_attributes || {}
-
-  def determine_tier(price_id)
-    case price_id
-    when Jiki.config.stripe_premium_price_id
-      'premium'
-    when Jiki.config.stripe_max_price_id
-      'max'
-    else
-      raise ArgumentError,
-        "Unknown Stripe price ID: #{price_id}. Expected #{Jiki.config.stripe_premium_price_id} or #{Jiki.config.stripe_max_price_id}"
-    end
-  end
 end

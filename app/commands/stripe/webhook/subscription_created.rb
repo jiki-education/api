@@ -13,12 +13,9 @@ class Stripe::Webhook::SubscriptionCreated
     end
 
     # Sync subscription to user (handles both active and incomplete states)
-    Stripe::SyncSubscriptionToUser.(user, subscription, tier)
+    Stripe::SyncSubscriptionToUser.(user, subscription, interval)
 
-    Rails.logger.info("Subscription created for user #{user.id}: #{tier} (#{subscription.id})")
-
-    # TODO: Queue welcome email when mailers are implemented
-    # SubscriptionMailer.defer(:confirmed, user.id, tier:)
+    Rails.logger.info("Subscription created for user #{user.id}: premium #{interval} (#{subscription.id})")
   end
 
   private
@@ -34,15 +31,5 @@ class Stripe::Webhook::SubscriptionCreated
   def price_id = subscription.items.data.first.price.id
 
   memoize
-  def tier
-    case price_id
-    when Jiki.config.stripe_premium_price_id
-      'premium'
-    when Jiki.config.stripe_max_price_id
-      'max'
-    else
-      raise ArgumentError,
-        "Unknown Stripe price ID: #{price_id}. Expected #{Jiki.config.stripe_premium_price_id} or #{Jiki.config.stripe_max_price_id}"
-    end
-  end
+  def interval = Stripe::DetermineSubscriptionDetails.interval_for_price_id(price_id)
 end

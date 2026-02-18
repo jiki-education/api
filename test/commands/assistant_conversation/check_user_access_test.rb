@@ -9,14 +9,6 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
     assert AssistantConversation::CheckUserAccess.(user, lesson)
   end
 
-  test "max user is always allowed" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
-    lesson = create(:lesson, :exercise)
-
-    assert AssistantConversation::CheckUserAccess.(user, lesson)
-  end
-
   test "standard user with no previous conversation is allowed" do
     user = create(:user)
     user.data.update!(membership_type: "standard")

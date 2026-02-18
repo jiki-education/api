@@ -1,16 +1,16 @@
 class Internal::SubscriptionsController < Internal::BaseController
   # POST /internal/subscriptions/checkout_session
-  # Creates a Stripe Checkout Session for upgrading to Premium or Max
+  # Creates a Stripe Checkout Session for subscribing to Premium
   def checkout_session
-    product = params[:product]
+    interval = params[:interval] || "monthly"
     return_url = params[:return_url]
 
-    # Validate product and get corresponding price_id
-    unless %w[premium max].include?(product)
+    # Validate interval
+    unless %w[monthly annual].include?(interval)
       return render json: {
         error: {
-          type: "invalid_product",
-          message: "Invalid product. Must be 'premium' or 'max'"
+          type: "invalid_interval",
+          message: "Invalid interval. Must be 'monthly' or 'annual'"
         }
       }, status: :bad_request
     end
@@ -20,7 +20,7 @@ class Internal::SubscriptionsController < Internal::BaseController
       return render json: {
         error: {
           type: "existing_subscription",
-          message: "You already have a subscription. Use the update endpoint to change tiers or cancel first."
+          message: "You already have a subscription. Use the update endpoint to change interval or cancel first."
         }
       }, status: :bad_request
     end
@@ -35,11 +35,7 @@ class Internal::SubscriptionsController < Internal::BaseController
       }, status: :bad_request
     end
 
-    if product == "premium"
-      price_id = Jiki.config.stripe_premium_price_id
-    else
-      price_id = Jiki.config.stripe_max_price_id
-    end
+    price_id = Stripe::DetermineSubscriptionDetails.price_id_for(interval)
 
     # Create checkout session
     session = Stripe::CreateCheckoutSession.(current_user, price_id, return_url)
@@ -107,7 +103,7 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     render json: {
       success: result[:success],
-      tier: result[:tier],
+      interval: result[:interval],
       payment_status: result[:payment_status],
       subscription_status: result[:subscription_status]
     }
@@ -138,21 +134,21 @@ class Internal::SubscriptionsController < Internal::BaseController
   end
 
   # POST /internal/subscriptions/update
-  # Updates subscription tier (upgrade/downgrade)
+  # Updates subscription interval (monthly/annual)
   def update
-    product = params[:product]
+    interval = params[:interval]
 
-    # Validate product
-    unless %w[premium max].include?(product)
+    # Validate interval
+    unless %w[monthly annual].include?(interval)
       return render json: {
         error: {
-          type: "invalid_product",
-          message: "Invalid product. Must be 'premium' or 'max'"
+          type: "invalid_interval",
+          message: "Invalid interval. Must be 'monthly' or 'annual'"
         }
       }, status: :bad_request
     end
 
-    # Check user can change tier
+    # Check user can change plan
     unless current_user.data.can_change_tier?
       return render json: {
         error: {
@@ -162,22 +158,22 @@ class Internal::SubscriptionsController < Internal::BaseController
       }, status: :bad_request
     end
 
-    # Check not same tier
-    if current_user.data.membership_type == product
+    # Check not same interval
+    if current_user.data.subscription_interval == interval
       return render json: {
         error: {
-          type: "same_tier",
-          message: "You are already subscribed to #{product}"
+          type: "same_interval",
+          message: "You are already on #{interval} billing"
         }
       }, status: :bad_request
     end
 
     # Update subscription
-    result = Stripe::UpdateSubscription.(current_user, product)
+    result = Stripe::UpdateSubscription.(current_user, interval)
 
     render json: {
       success: result[:success],
-      tier: result[:tier],
+      interval: result[:interval],
       effective_at: result[:effective_at],
       subscription_valid_until: result[:subscription_valid_until]
     }
