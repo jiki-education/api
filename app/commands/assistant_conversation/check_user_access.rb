@@ -4,7 +4,7 @@ class AssistantConversation::CheckUserAccess
   initialize_with :user, :lesson
 
   def call
-    return true if user.has_premium_access?
+    return true if user.premium?
 
     # Standard users: only allowed for their "free" lesson
     most_recent = most_recent_lesson_conversation

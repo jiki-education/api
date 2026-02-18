@@ -1,13 +1,13 @@
 require "test_helper"
 
 class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
-  test "sets active status and updates membership_type for active subscription" do
+  test "sets active status and upgrades to premium for active subscription" do
     user = create(:user)
     user.data.update!(membership_type: "standard")
 
     subscription = mock_subscription(status: "active")
 
-    status = Stripe::SyncSubscriptionToUser.(user, subscription, "premium")
+    status = Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
 
     assert_equal "active", status
     user.data.reload
@@ -15,6 +15,7 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "active", user.data.stripe_subscription_status
     assert_equal "active", user.data.subscription_status
+    assert_equal "monthly", user.data.subscription_interval
     refute_nil user.data.subscription_valid_until
   end
 
@@ -23,12 +24,34 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
 
     subscription = mock_subscription(status: "trialing")
 
-    status = Stripe::SyncSubscriptionToUser.(user, subscription, "max")
+    status = Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
 
     assert_equal "active", status
     user.data.reload
-    assert_equal "max", user.data.membership_type
+    assert_equal "premium", user.data.membership_type
     assert_equal "active", user.data.subscription_status
+  end
+
+  test "sets subscription_interval to annual when specified" do
+    user = create(:user)
+
+    subscription = mock_subscription(status: "active")
+
+    Stripe::SyncSubscriptionToUser.(user, subscription, "annual")
+
+    user.data.reload
+    assert_equal "annual", user.data.subscription_interval
+  end
+
+  test "sets subscription_interval to monthly when specified" do
+    user = create(:user)
+
+    subscription = mock_subscription(status: "active")
+
+    Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
+
+    user.data.reload
+    assert_equal "monthly", user.data.subscription_interval
   end
 
   test "sets incomplete status and preserves membership_type for incomplete subscription" do
@@ -37,11 +60,10 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
 
     subscription = mock_subscription(status: "incomplete")
 
-    status = Stripe::SyncSubscriptionToUser.(user, subscription, "max")
+    status = Stripe::SyncSubscriptionToUser.(user, subscription, "annual")
 
     assert_equal "incomplete", status
     user.data.reload
-    # membership_type should be preserved (user keeps current access)
     assert_equal "premium", user.data.membership_type
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "incomplete", user.data.stripe_subscription_status
@@ -54,27 +76,27 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
 
     subscription = mock_subscription(status: "incomplete")
 
-    status = Stripe::SyncSubscriptionToUser.(user, subscription, "premium")
+    status = Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
 
     assert_equal "incomplete", status
     user.data.reload
-    # membership_type stays standard (no access until payment confirms)
     assert_equal "standard", user.data.membership_type
     assert_equal "incomplete", user.data.subscription_status
   end
 
-  test "adds subscription to subscriptions array" do
+  test "adds subscription to subscriptions array with interval" do
     user = create(:user)
 
     subscription = mock_subscription(status: "active")
 
-    Stripe::SyncSubscriptionToUser.(user, subscription, "premium")
+    Stripe::SyncSubscriptionToUser.(user, subscription, "annual")
 
     user.data.reload
     assert_equal 1, user.data.subscriptions.length
     sub_entry = user.data.subscriptions.first
     assert_equal "sub_123", sub_entry["stripe_subscription_id"]
     assert_equal "premium", sub_entry["tier"]
+    assert_equal "annual", sub_entry["interval"]
     refute_nil sub_entry["started_at"]
     assert_nil sub_entry["ended_at"]
     assert_nil sub_entry["end_reason"]
@@ -88,6 +110,7 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
         {
           "stripe_subscription_id" => "sub_123",
           "tier" => "premium",
+          "interval" => "monthly",
           "started_at" => 1.hour.ago.iso8601,
           "ended_at" => nil,
           "end_reason" => nil,
@@ -98,7 +121,7 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
 
     subscription = mock_subscription(status: "active")
 
-    Stripe::SyncSubscriptionToUser.(user, subscription, "premium")
+    Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
 
     user.data.reload
     assert_equal 1, user.data.subscriptions.length
@@ -111,6 +134,7 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
         {
           "stripe_subscription_id" => "sub_old",
           "tier" => "premium",
+          "interval" => "monthly",
           "started_at" => 1.month.ago.iso8601,
           "ended_at" => 1.day.ago.iso8601,
           "end_reason" => "canceled",
@@ -121,12 +145,13 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
 
     subscription = mock_subscription(status: "active", id: "sub_new")
 
-    Stripe::SyncSubscriptionToUser.(user, subscription, "max")
+    Stripe::SyncSubscriptionToUser.(user, subscription, "annual")
 
     user.data.reload
     assert_equal 2, user.data.subscriptions.length
     assert_equal "sub_new", user.data.subscriptions.last["stripe_subscription_id"]
-    assert_equal "max", user.data.subscriptions.last["tier"]
+    assert_equal "premium", user.data.subscriptions.last["tier"]
+    assert_equal "annual", user.data.subscriptions.last["interval"]
   end
 
   private

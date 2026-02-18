@@ -8,7 +8,7 @@ class Stripe::CreatePaymentFromInvoice
       payment_processor_id: invoice.id,
       amount_in_cents: invoice.amount_paid,
       currency: invoice.currency,
-      product: determine_product,
+      product: 'premium',
       external_receipt_url: invoice.hosted_invoice_url,
       data: {
         stripe_invoice_id: invoice.id,
@@ -25,19 +25,6 @@ class Stripe::CreatePaymentFromInvoice
   end
 
   private
-  def determine_product
-    price_id = subscription_item&.price&.id
-    case price_id
-    when Jiki.config.stripe_premium_price_id
-      'premium'
-    when Jiki.config.stripe_max_price_id
-      'max'
-    else
-      # Fallback to user's current membership type if price ID is not recognized
-      user.data.membership_type == 'max' ? 'max' : 'premium'
-    end
-  end
-
   def subscription_item
     subscription&.items&.data&.first
   end

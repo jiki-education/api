@@ -10,27 +10,9 @@ class User::DowngradeToStandardTest < ActiveSupport::TestCase
     assert user.data.reload.standard?
   end
 
-  test "downgrades max user to standard" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
-
-    User::DowngradeToStandard.(user)
-
-    assert user.data.reload.standard?
-  end
-
   test "sends subscription ended email when downgrading from premium" do
     user = create(:user)
     user.data.update!(membership_type: "premium")
-
-    assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
-      User::DowngradeToStandard.(user)
-    end
-  end
-
-  test "sends subscription ended email when downgrading from max" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
 
     assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
       User::DowngradeToStandard.(user)

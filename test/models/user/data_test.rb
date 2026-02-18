@@ -6,7 +6,6 @@ class User::DataTest < ActiveSupport::TestCase
     user.data.update!(membership_type: "standard")
     assert user.data.standard?
     refute user.data.premium?
-    refute user.data.max?
   end
 
   test "premium? returns true for premium membership" do
@@ -14,15 +13,20 @@ class User::DataTest < ActiveSupport::TestCase
     user.data.update!(membership_type: "premium")
     refute user.data.standard?
     assert user.data.premium?
-    refute user.data.max?
   end
 
-  test "max? returns true for max membership" do
+  test "monthly? returns true for monthly interval" do
     user = create(:user)
-    user.data.update!(membership_type: "max")
-    refute user.data.standard?
-    refute user.data.premium?
-    assert user.data.max?
+    user.data.update!(subscription_interval: "monthly")
+    assert user.data.monthly?
+    refute user.data.annual?
+  end
+
+  test "annual? returns true for annual interval" do
+    user = create(:user)
+    user.data.update!(subscription_interval: "annual")
+    refute user.data.monthly?
+    assert user.data.annual?
   end
 
   test "subscription_paid? returns true for standard tier" do
@@ -124,42 +128,6 @@ class User::DataTest < ActiveSupport::TestCase
     assert_in_delta expected_end.to_i, user.data.grace_period_ends_at.to_i, 1
   end
 
-  test "has_premium_access? returns false for standard" do
-    user = create(:user)
-    user.data.update!(membership_type: "standard")
-    refute user.data.has_premium_access?
-  end
-
-  test "has_premium_access? returns true for premium" do
-    user = create(:user)
-    user.data.update!(membership_type: "premium")
-    assert user.data.has_premium_access?
-  end
-
-  test "has_premium_access? returns true for max" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
-    assert user.data.has_premium_access?
-  end
-
-  test "has_max_access? returns false for standard" do
-    user = create(:user)
-    user.data.update!(membership_type: "standard")
-    refute user.data.has_max_access?
-  end
-
-  test "has_max_access? returns false for premium" do
-    user = create(:user)
-    user.data.update!(membership_type: "premium")
-    refute user.data.has_max_access?
-  end
-
-  test "has_max_access? returns true for max" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
-    assert user.data.has_max_access?
-  end
-
   test "can_checkout? returns true for never_subscribed" do
     user = create(:user)
     user.data.update!(subscription_status: "never_subscribed")
@@ -178,28 +146,28 @@ class User::DataTest < ActiveSupport::TestCase
     refute user.data.can_checkout?
   end
 
-  test "can_change_tier? returns true for active" do
+  test "can_change_interval? returns true for active" do
     user = create(:user)
     user.data.update!(subscription_status: "active")
-    assert user.data.can_change_tier?
+    assert user.data.can_change_interval?
   end
 
-  test "can_change_tier? returns true for payment_failed" do
+  test "can_change_interval? returns true for payment_failed" do
     user = create(:user)
     user.data.update!(subscription_status: "payment_failed")
-    assert user.data.can_change_tier?
+    assert user.data.can_change_interval?
   end
 
-  test "can_change_tier? returns true for cancelling" do
+  test "can_change_interval? returns true for cancelling" do
     user = create(:user)
     user.data.update!(subscription_status: "cancelling")
-    assert user.data.can_change_tier?
+    assert user.data.can_change_interval?
   end
 
-  test "can_change_tier? returns false for never_subscribed" do
+  test "can_change_interval? returns false for never_subscribed" do
     user = create(:user)
     user.data.update!(subscription_status: "never_subscribed")
-    refute user.data.can_change_tier?
+    refute user.data.can_change_interval?
   end
 
   test "timezone defaults to UTC on create" do

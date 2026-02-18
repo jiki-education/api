@@ -34,7 +34,10 @@ class User::Data < ApplicationRecord
   # Membership tier checks
   def standard? = membership_type == "standard"
   def premium? = membership_type == "premium"
-  def max? = membership_type == "max"
+
+  # Billing interval checks
+  def monthly? = subscription_interval == "monthly"
+  def annual? = subscription_interval == "annual"
 
   # Payment status - whether subscription payments are current
   def subscription_paid?
@@ -55,10 +58,6 @@ class User::Data < ApplicationRecord
     subscription_valid_until + 7.days if subscription_valid_until.present?
   end
 
-  # Effective access levels (for feature gating)
-  def has_premium_access? = premium? || max?
-  def has_max_access? = max?
-
   # Subscription state helpers
   def current_subscription = subscriptions.find { |s| s['ended_at'].nil? }
 
@@ -66,7 +65,7 @@ class User::Data < ApplicationRecord
     subscription_status.in?(%w[never_subscribed canceled])
   end
 
-  def can_change_tier?
+  def can_change_interval?
     subscription_status.in?(%w[active payment_failed cancelling])
   end
 

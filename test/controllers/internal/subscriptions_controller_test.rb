@@ -16,8 +16,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   ### checkout_session tests ###
 
-  test "POST checkout_session creates session for premium product" do
-    price_id = Jiki.config.stripe_premium_price_id
+  test "POST checkout_session creates session for monthly interval" do
+    price_id = Jiki.config.stripe_premium_monthly_price_id
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
@@ -25,7 +25,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: return_url },
+      params: { interval: "monthly", return_url: return_url },
       as: :json
 
     assert_response :success
@@ -33,8 +33,40 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "cs_secret_123", json["client_secret"]
   end
 
+  test "POST checkout_session creates session for annual interval" do
+    price_id = Jiki.config.stripe_premium_annual_price_id
+    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
+    session = mock
+    session.stubs(:client_secret).returns("cs_secret_456")
+
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+
+    post internal_subscriptions_checkout_session_path,
+      params: { interval: "annual", return_url: return_url },
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert_equal "cs_secret_456", json["client_secret"]
+  end
+
+  test "POST checkout_session defaults to monthly when no interval given" do
+    price_id = Jiki.config.stripe_premium_monthly_price_id
+    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
+    session = mock
+    session.stubs(:client_secret).returns("cs_secret_123")
+
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+
+    post internal_subscriptions_checkout_session_path,
+      params: { return_url: return_url },
+      as: :json
+
+    assert_response :success
+  end
+
   test "POST checkout_session URL-decodes client_secret from Stripe" do
-    price_id = Jiki.config.stripe_premium_price_id
+    price_id = Jiki.config.stripe_premium_monthly_price_id
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
 
     # Stripe Ruby gem returns URL-encoded client_secret with %2F instead of /
@@ -47,7 +79,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: return_url },
+      params: { interval: "monthly", return_url: return_url },
       as: :json
 
     assert_response :success
@@ -57,51 +89,22 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_includes json["client_secret"], "/", "client_secret should contain decoded forward slashes"
   end
 
-  test "POST checkout_session creates session for max product" do
-    price_id = Jiki.config.stripe_max_price_id
-    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
-    session = mock
-    session.stubs(:client_secret).returns("cs_secret_456")
-
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
-
-    post internal_subscriptions_checkout_session_path,
-      params: { product: "max", return_url: return_url },
-      as: :json
-
-    assert_response :success
-    json = response.parsed_body
-    assert_equal "cs_secret_456", json["client_secret"]
-  end
-
-  test "POST checkout_session rejects invalid product" do
+  test "POST checkout_session rejects invalid interval" do
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "invalid", return_url: return_url },
+      params: { interval: "weekly", return_url: return_url },
       as: :json
 
     assert_response :bad_request
     json = response.parsed_body
-    assert_equal "invalid_product", json["error"]["type"]
-    assert_equal "Invalid product. Must be 'premium' or 'max'", json["error"]["message"]
-  end
-
-  test "POST checkout_session rejects missing product" do
-    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
-
-    post internal_subscriptions_checkout_session_path,
-      params: { return_url: return_url },
-      as: :json
-
-    assert_response :bad_request
-    json = response.parsed_body
-    assert_equal "invalid_product", json["error"]["type"]
+    assert_equal "invalid_interval", json["error"]["type"]
+    assert_equal "Invalid interval. Must be 'monthly' or 'annual'", json["error"]["message"]
   end
 
   test "POST checkout_session rejects missing return_url" do
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium" },
+      params: { interval: "monthly" },
       as: :json
 
     assert_response :bad_request
@@ -112,12 +115,11 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST checkout_session handles Stripe errors gracefully" do
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
-    Jiki.config.stripe_premium_price_id
 
     Stripe::CreateCheckoutSession.expects(:call).raises(StandardError.new("Stripe API error"))
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: return_url },
+      params: { interval: "monthly", return_url: return_url },
       as: :json
 
     assert_response :internal_server_error
@@ -126,7 +128,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   end
 
   test "POST checkout_session accepts valid return_url" do
-    price_id = Jiki.config.stripe_premium_price_id
+    price_id = Jiki.config.stripe_premium_monthly_price_id
     return_url = "#{Jiki.config.frontend_base_url}/custom/path"
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
@@ -134,7 +136,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: return_url },
+      params: { interval: "monthly", return_url: return_url },
       as: :json
 
     assert_response :success
@@ -142,7 +144,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST checkout_session rejects invalid return_url" do
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: "https://evil.com/steal" },
+      params: { interval: "monthly", return_url: "https://evil.com/steal" },
       as: :json
 
     assert_response :bad_request
@@ -157,7 +159,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     bypass_url = "#{uri.scheme}://#{uri.host}.evil.com/callback"
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: bypass_url },
+      params: { interval: "monthly", return_url: bypass_url },
       as: :json
 
     assert_response :bad_request
@@ -172,7 +174,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     bypass_url = "#{different_scheme}://#{uri.host}/callback"
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: bypass_url },
+      params: { interval: "monthly", return_url: bypass_url },
       as: :json
 
     assert_response :bad_request
@@ -186,7 +188,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     bypass_url = "#{uri.scheme}://evil.com@#{uri.host}/callback"
 
     post internal_subscriptions_checkout_session_path,
-      params: { product: "premium", return_url: bypass_url },
+      params: { interval: "monthly", return_url: bypass_url },
       as: :json
 
     assert_response :bad_request
@@ -201,7 +203,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
       success: true,
-      tier: "premium",
+      interval: "monthly",
       payment_status: "paid",
       subscription_status: "active"
     })
@@ -213,7 +215,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :success
     json = response.parsed_body
     assert json["success"]
-    assert_equal "premium", json["tier"]
+    assert_equal "monthly", json["interval"]
     assert_equal "paid", json["payment_status"]
     assert_equal "active", json["subscription_status"]
   end
@@ -223,7 +225,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
     Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
       success: true,
-      tier: "premium",
+      interval: "monthly",
       payment_status: "unpaid",
       subscription_status: "incomplete"
     })
@@ -235,7 +237,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :success
     json = response.parsed_body
     assert json["success"]
-    assert_equal "premium", json["tier"]
+    assert_equal "monthly", json["interval"]
     assert_equal "unpaid", json["payment_status"]
     assert_equal "incomplete", json["subscription_status"]
   end
@@ -344,89 +346,93 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   ### update tests ###
 
-  test "POST update upgrades from premium to max" do
+  test "POST update switches from monthly to annual" do
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "active"
+      subscription_status: "active",
+      subscription_interval: "monthly"
     )
 
     result = {
       success: true,
-      tier: "max",
+      interval: "annual",
       effective_at: "immediate",
-      subscription_valid_until: 1.month.from_now
+      subscription_valid_until: 1.year.from_now
     }
 
-    Stripe::UpdateSubscription.expects(:call).with(@user, "max").returns(result)
+    Stripe::UpdateSubscription.expects(:call).with(@user, "annual").returns(result)
 
     post internal_subscriptions_update_path,
-      params: { product: "max" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :success
     json = response.parsed_body
     assert json["success"]
-    assert_equal "max", json["tier"]
+    assert_equal "annual", json["interval"]
     assert_equal "immediate", json["effective_at"]
     refute_nil json["subscription_valid_until"]
   end
 
-  test "POST update downgrades from max to premium" do
+  test "POST update switches from annual to monthly" do
     @user.data.update!(
-      membership_type: "max",
+      membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "active"
+      subscription_status: "active",
+      subscription_interval: "annual"
     )
 
-    Stripe::UpdateSubscription.expects(:call).with(@user, "premium").returns({
+    Stripe::UpdateSubscription.expects(:call).with(@user, "monthly").returns({
       success: true,
-      tier: "premium"
+      interval: "monthly"
     })
 
     post internal_subscriptions_update_path,
-      params: { product: "premium" },
+      params: { interval: "monthly" },
       as: :json
 
     assert_response :success
     json = response.parsed_body
     assert json["success"]
-    assert_equal "premium", json["tier"]
+    assert_equal "monthly", json["interval"]
   end
 
-  test "POST update allows tier change for payment_failed status" do
+  test "POST update allows interval change for payment_failed status" do
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "payment_failed"
+      subscription_status: "payment_failed",
+      subscription_interval: "monthly"
     )
 
-    Stripe::UpdateSubscription.expects(:call).with(@user, "max").returns({})
+    Stripe::UpdateSubscription.expects(:call).with(@user, "annual").returns({})
 
     post internal_subscriptions_update_path,
-      params: { product: "max" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :success
   end
 
-  test "POST update allows tier change for cancelling status" do
+  test "POST update allows interval change for cancelling status" do
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "cancelling"
+      subscription_status: "cancelling",
+      subscription_interval: "monthly"
     )
 
-    Stripe::UpdateSubscription.expects(:call).with(@user, "max").returns({})
+    Stripe::UpdateSubscription.expects(:call).with(@user, "annual").returns({})
 
     post internal_subscriptions_update_path,
-      params: { product: "max" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :success
   end
 
-  test "POST update rejects invalid product" do
+  test "POST update rejects invalid interval" do
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
@@ -434,40 +440,41 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     )
 
     post internal_subscriptions_update_path,
-      params: { product: "invalid" },
+      params: { interval: "weekly" },
       as: :json
 
     assert_response :bad_request
     json = response.parsed_body
-    assert_equal "invalid_product", json["error"]["type"]
-    assert_equal "Invalid product. Must be 'premium' or 'max'", json["error"]["message"]
+    assert_equal "invalid_interval", json["error"]["type"]
+    assert_equal "Invalid interval. Must be 'monthly' or 'annual'", json["error"]["message"]
   end
 
-  test "POST update rejects same tier" do
+  test "POST update rejects same interval" do
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "active"
+      subscription_status: "active",
+      subscription_interval: "monthly"
     )
 
     post internal_subscriptions_update_path,
-      params: { product: "premium" },
+      params: { interval: "monthly" },
       as: :json
 
     assert_response :bad_request
     json = response.parsed_body
-    assert_equal "same_tier", json["error"]["type"]
-    assert_equal "You are already subscribed to premium", json["error"]["message"]
+    assert_equal "same_interval", json["error"]["type"]
+    assert_equal "You are already on monthly billing", json["error"]["message"]
   end
 
-  test "POST update rejects when user cannot change tier" do
+  test "POST update rejects when user cannot change plan" do
     @user.data.update!(
       membership_type: "standard",
       subscription_status: "never_subscribed"
     )
 
     post internal_subscriptions_update_path,
-      params: { product: "premium" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :bad_request
@@ -482,7 +489,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     )
 
     post internal_subscriptions_update_path,
-      params: { product: "premium" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :bad_request
@@ -494,13 +501,14 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "active"
+      subscription_status: "active",
+      subscription_interval: "monthly"
     )
 
     Stripe::UpdateSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
 
     post internal_subscriptions_update_path,
-      params: { product: "max" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :internal_server_error
@@ -512,13 +520,14 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     @user.data.update!(
       membership_type: "premium",
       stripe_subscription_id: "sub_123",
-      subscription_status: "active"
+      subscription_status: "active",
+      subscription_interval: "monthly"
     )
 
     Stripe::UpdateSubscription.expects(:call).raises(ArgumentError.new("Invalid subscription"))
 
     post internal_subscriptions_update_path,
-      params: { product: "max" },
+      params: { interval: "annual" },
       as: :json
 
     assert_response :unprocessable_entity

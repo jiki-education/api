@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_172056) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -412,6 +412,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_21_152147) do
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "stripe_subscription_status"
+    t.string "subscription_interval", default: "monthly", null: false
     t.integer "subscription_status", default: 0, null: false
     t.datetime "subscription_valid_until"
     t.jsonb "subscriptions", default: [], null: false

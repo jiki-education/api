@@ -1,10 +1,10 @@
 require "test_helper"
 
 class Stripe::CreatePaymentFromInvoiceTest < ActiveSupport::TestCase
-  test "creates payment record with correct attributes for premium" do
+  test "creates payment record with correct attributes" do
     user = create(:user)
     invoice = mock_invoice
-    subscription = mock_subscription(price_id: Jiki.config.stripe_premium_price_id)
+    subscription = mock_subscription
 
     payment = Stripe::CreatePaymentFromInvoice.(user, invoice, subscription)
 
@@ -23,54 +23,6 @@ class Stripe::CreatePaymentFromInvoiceTest < ActiveSupport::TestCase
     refute_nil payment.data["period_end"]
   end
 
-  test "creates payment record with correct attributes for max" do
-    user = create(:user)
-    invoice = mock_invoice(amount_paid: 4999)
-    subscription = mock_subscription(price_id: Jiki.config.stripe_max_price_id)
-
-    payment = Stripe::CreatePaymentFromInvoice.(user, invoice, subscription)
-
-    assert payment.persisted?
-    assert_equal "max", payment.product
-    assert_equal 4999, payment.amount_in_cents
-  end
-
-  test "falls back to user membership type for unknown price id" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
-    invoice = mock_invoice
-    subscription = mock_subscription(price_id: "price_unknown")
-
-    payment = Stripe::CreatePaymentFromInvoice.(user, invoice, subscription)
-
-    assert payment.persisted?
-    assert_equal "max", payment.product
-  end
-
-  test "falls back to premium for unknown price id when user is premium" do
-    user = create(:user)
-    user.data.update!(membership_type: "premium")
-    invoice = mock_invoice
-    subscription = mock_subscription(price_id: "price_unknown")
-
-    payment = Stripe::CreatePaymentFromInvoice.(user, invoice, subscription)
-
-    assert payment.persisted?
-    assert_equal "premium", payment.product
-  end
-
-  test "falls back to premium for unknown price id when user is standard" do
-    user = create(:user)
-    user.data.update!(membership_type: "standard")
-    invoice = mock_invoice
-    subscription = mock_subscription(price_id: "price_unknown")
-
-    payment = Stripe::CreatePaymentFromInvoice.(user, invoice, subscription)
-
-    assert payment.persisted?
-    assert_equal "premium", payment.product
-  end
-
   test "returns existing payment for duplicate payment_processor_id" do
     user = create(:user)
     existing_payment = create(:payment, user:, payment_processor_id: "in_test123")
@@ -85,7 +37,6 @@ class Stripe::CreatePaymentFromInvoiceTest < ActiveSupport::TestCase
 
   test "handles nil subscription gracefully" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
     invoice = mock_invoice(id: "in_nil_sub_test")
 
     payment = Stripe::CreatePaymentFromInvoice.(user, invoice, nil)
@@ -110,12 +61,8 @@ class Stripe::CreatePaymentFromInvoiceTest < ActiveSupport::TestCase
     invoice
   end
 
-  def mock_subscription(price_id: Jiki.config.stripe_premium_price_id)
-    price = mock
-    price.stubs(:id).returns(price_id)
-
+  def mock_subscription
     item = mock
-    item.stubs(:price).returns(price)
     item.stubs(:current_period_start).returns(1.month.ago.to_i)
     item.stubs(:current_period_end).returns(Time.current.to_i)
 

@@ -1,7 +1,7 @@
 class Stripe::SyncSubscriptionToUser
   include Mandate
 
-  initialize_with :user, :subscription, :tier
+  initialize_with :user, :subscription, :interval
 
   def call
     ActiveRecord::Base.transaction do
@@ -16,19 +16,13 @@ class Stripe::SyncSubscriptionToUser
   def status = subscription.status == 'incomplete' ? 'incomplete' : 'active'
 
   def update_user_data!
-    # Handle membership changes via dedicated commands for active subscriptions
-    if status == 'active'
-      case tier
-      when 'premium' then User::UpgradeToPremium.(user)
-      when 'max' then User::UpgradeToMax.(user)
-      end
-    end
-    # For incomplete status, membership_type is unchanged (handled by commands' early return)
+    User::UpgradeToPremium.(user) if status == 'active'
 
     user.data.update!(
       stripe_subscription_id: subscription.id,
       stripe_subscription_status: subscription.status,
       subscription_status: status,
+      subscription_interval: interval,
       subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
     )
   end
@@ -39,7 +33,8 @@ class Stripe::SyncSubscriptionToUser
 
     subscriptions << {
       stripe_subscription_id: subscription.id,
-      tier: tier,
+      tier: 'premium',
+      interval: interval,
       started_at: Time.current.iso8601,
       ended_at: nil,
       end_reason: nil,

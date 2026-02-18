@@ -22,32 +22,22 @@ class Stripe::VerifyCheckoutSession
     subscription_item = subscription.items.data.first
     raise ArgumentError, "Subscription has no items" unless subscription_item
 
-    # Get the tier based on price ID
-    tier = determine_tier(subscription_item.price.id)
+    # Determine the interval from the price ID
+    interval = Stripe::DetermineSubscriptionDetails.interval_for_price_id(subscription_item.price.id)
 
     # Sync subscription to user (handles both active and incomplete states)
-    status = Stripe::SyncSubscriptionToUser.(user, subscription, tier)
+    status = Stripe::SyncSubscriptionToUser.(user, subscription, interval)
 
-    Rails.logger.info("Verified checkout session #{session_id} for user #{user.id}: #{tier} (#{subscription.id}), status: #{status}")
+    Rails.logger.info(
+      "Verified checkout session #{session_id} for user #{user.id}: " \
+      "premium #{interval} (#{subscription.id}), status: #{status}"
+    )
 
     {
       success: true,
-      tier: tier,
+      interval: interval,
       payment_status: session.payment_status,
       subscription_status: status
     }
-  end
-
-  private
-  def determine_tier(price_id)
-    case price_id
-    when Jiki.config.stripe_premium_price_id
-      'premium'
-    when Jiki.config.stripe_max_price_id
-      'max'
-    else
-      raise ArgumentError,
-        "Unknown Stripe price ID: #{price_id}. Expected #{Jiki.config.stripe_premium_price_id} or #{Jiki.config.stripe_max_price_id}"
-    end
   end
 end

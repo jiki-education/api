@@ -28,16 +28,4 @@ class User::UpgradeToPremiumTest < ActiveSupport::TestCase
 
     assert user.data.reload.premium?
   end
-
-  test "returns early if user is already max" do
-    user = create(:user)
-    user.data.update!(membership_type: "max")
-
-    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
-      User::UpgradeToPremium.(user)
-    end
-
-    # Should remain max, not downgrade to premium
-    assert user.data.reload.max?
-  end
 end
