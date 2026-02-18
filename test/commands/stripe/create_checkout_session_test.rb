@@ -15,7 +15,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:create).with(
       ui_mode: 'custom',
       customer: "cus_123",
-      currency: "usd",
+      currency: :usd,
       line_items: [
         {
           price: price_id,
@@ -31,7 +31,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
       }
     ).returns(session)
 
-    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, "usd")
+    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, :usd)
 
     assert_equal session, result
   end
@@ -50,7 +50,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:create).with(
       ui_mode: 'custom',
       customer: "cus_123",
-      currency: "inr",
+      currency: :inr,
       line_items: [
         {
           price: price_id,
@@ -66,7 +66,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
       }
     ).returns(session)
 
-    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, "inr")
+    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, :inr)
 
     assert_equal session, result
   end
@@ -79,6 +79,6 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
     Stripe::GetOrCreateCustomer.expects(:call).with(user).returns(mock(id: "cus_123"))
     ::Stripe::Checkout::Session.stubs(:create).returns(mock)
 
-    Stripe::CreateCheckoutSession.(user, price_id, return_url, "usd")
+    Stripe::CreateCheckoutSession.(user, price_id, return_url, :usd)
   end
 end

@@ -36,7 +36,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     end
 
     price_id = Stripe::DetermineSubscriptionDetails.price_id_for(interval)
-    currency = User::DetermineCurrency.(current_user)
+    currency = current_user.currency
 
     # Create checkout session
     session = Stripe::CreateCheckoutSession.(current_user, price_id, return_url, currency)

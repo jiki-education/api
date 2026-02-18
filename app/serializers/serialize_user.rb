@@ -18,13 +18,10 @@ class SerializeUser
   end
 
   private
-  memoize
-  def currency = User::DetermineCurrency.(user)
-
   def premium_prices_data
-    prices = PRICING[currency.to_sym]
+    prices = PREMIUM_PRICES[user.currency]
     {
-      currency: currency,
+      currency: user.currency,
       monthly: prices[:monthly],
       annual: prices[:annual],
       country_code: user.data.country_code

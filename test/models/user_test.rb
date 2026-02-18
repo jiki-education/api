@@ -157,4 +157,46 @@ class UserTest < ActiveSupport::TestCase
 
     assert_equal 10, user.total_active_days
   end
+
+  test "currency returns usd when country_code is nil" do
+    user = create(:user)
+    assert_nil user.country_code
+
+    assert_equal :usd, user.currency
+  end
+
+  test "currency returns usd for US country" do
+    user = create(:user)
+    user.data.update_column(:country_code, "US")
+
+    assert_equal :usd, user.currency
+  end
+
+  test "currency returns inr for India" do
+    user = create(:user)
+    user.data.update_column(:country_code, "IN")
+
+    assert_equal :inr, user.currency
+  end
+
+  test "currency returns gbp for GB" do
+    user = create(:user)
+    user.data.update_column(:country_code, "GB")
+
+    assert_equal :gbp, user.currency
+  end
+
+  test "currency returns eur for EUR countries" do
+    user = create(:user)
+    user.data.update_column(:country_code, "ES")
+
+    assert_equal :eur, user.currency
+  end
+
+  test "currency returns usd for unknown country" do
+    user = create(:user)
+    user.data.update_column(:country_code, "XX")
+
+    assert_equal :usd, user.currency
+  end
 end

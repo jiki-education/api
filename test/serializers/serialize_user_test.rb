@@ -12,7 +12,7 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "Test User", result[:name]
     assert_equal "never_subscribed", result[:subscription_status]
     assert_nil result[:subscription]
-    assert_equal "usd", result[:premium_prices][:currency]
+    assert_equal :usd, result[:premium_prices][:currency]
     assert_equal 999, result[:premium_prices][:monthly]
     assert_equal 9900, result[:premium_prices][:annual]
     assert_nil result[:premium_prices][:country_code]
@@ -121,7 +121,7 @@ class SerializeUserTest < ActiveSupport::TestCase
 
     result = SerializeUser.(user)
 
-    assert_equal "inr", result[:premium_prices][:currency]
+    assert_equal :inr, result[:premium_prices][:currency]
     assert_equal 19_900, result[:premium_prices][:monthly]
     assert_equal 199_900, result[:premium_prices][:annual]
     assert_equal "IN", result[:premium_prices][:country_code]
@@ -132,7 +132,7 @@ class SerializeUserTest < ActiveSupport::TestCase
 
     result = SerializeUser.(user)
 
-    assert_equal "usd", result[:premium_prices][:currency]
+    assert_equal :usd, result[:premium_prices][:currency]
     assert_equal 999, result[:premium_prices][:monthly]
     assert_equal 9900, result[:premium_prices][:annual]
     assert_nil result[:premium_prices][:country_code]

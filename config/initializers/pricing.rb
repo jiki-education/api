@@ -1,4 +1,4 @@
-PRICING = {
+PREMIUM_PRICES = {
   aed: { monthly: 1999, annual: 19_900 },
   afn: { monthly: 11_900, annual: 119_900 },
   all: { monthly: 39_900, annual: 399_900 },

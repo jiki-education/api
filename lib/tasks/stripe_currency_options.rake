@@ -1,12 +1,12 @@
 namespace :stripe do
-  desc "Set currency_options on Stripe Price objects from PRICING constant"
+  desc "Set currency_options on Stripe Price objects from PREMIUM_PRICES constant"
   task set_currency_options: :environment do
     monthly_price_id = Jiki.config.stripe_premium_monthly_price_id
     annual_price_id = Jiki.config.stripe_premium_annual_price_id
 
-    # Build currency_options from PRICING, excluding USD (the default currency)
+    # Build currency_options from PREMIUM_PRICES, excluding USD (the default currency)
     currency_options = {}
-    PRICING.each do |currency, amounts|
+    PREMIUM_PRICES.each do |currency, amounts|
       next if currency == :usd
 
       currency_options[currency] = {
@@ -20,7 +20,7 @@ namespace :stripe do
 
     # Build annual currency_options
     currency_options = {}
-    PRICING.each do |currency, amounts|
+    PREMIUM_PRICES.each do |currency, amounts|
       next if currency == :usd
 
       currency_options[currency] = {
@@ -32,6 +32,6 @@ namespace :stripe do
     ::Stripe::Price.update(annual_price_id, currency_options: currency_options)
     puts "Annual price updated."
 
-    puts "Done! Currency options set for #{PRICING.size - 1} currencies."
+    puts "Done! Currency options set for #{PREMIUM_PRICES.size - 1} currencies."
   end
 end
