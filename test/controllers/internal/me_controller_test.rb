@@ -20,7 +20,7 @@ class Internal::MeControllerTest < ApplicationControllerTest
     assert_equal "standard", json["user"]["membership_type"]
     assert json["user"].key?("subscription_status")
     assert json["user"].key?("subscription")
-    assert json["user"].key?("pricing")
+    assert json["user"].key?("premium_prices")
   end
 
   test "GET show returns correct membership_type for premium user" do

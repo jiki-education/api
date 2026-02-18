@@ -12,10 +12,10 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "Test User", result[:name]
     assert_equal "never_subscribed", result[:subscription_status]
     assert_nil result[:subscription]
-    assert_equal "usd", result[:pricing][:currency]
-    assert_equal 999, result[:pricing][:monthly_amount_in_cents]
-    assert_equal 9900, result[:pricing][:annual_amount_in_cents]
-    assert_nil result[:pricing][:country_code]
+    assert_equal "usd", result[:premium_prices][:currency]
+    assert_equal 999, result[:premium_prices][:monthly]
+    assert_equal 9900, result[:premium_prices][:annual]
+    assert_nil result[:premium_prices][:country_code]
   end
 
   test "serializes user with canceled status returns nil subscription" do
@@ -121,10 +121,10 @@ class SerializeUserTest < ActiveSupport::TestCase
 
     result = SerializeUser.(user)
 
-    assert_equal "inr", result[:pricing][:currency]
-    assert_equal 19_900, result[:pricing][:monthly_amount_in_cents]
-    assert_equal 199_900, result[:pricing][:annual_amount_in_cents]
-    assert_equal "IN", result[:pricing][:country_code]
+    assert_equal "inr", result[:premium_prices][:currency]
+    assert_equal 19_900, result[:premium_prices][:monthly]
+    assert_equal 199_900, result[:premium_prices][:annual]
+    assert_equal "IN", result[:premium_prices][:country_code]
   end
 
   test "serializes pricing with USD for user without country" do
@@ -132,9 +132,9 @@ class SerializeUserTest < ActiveSupport::TestCase
 
     result = SerializeUser.(user)
 
-    assert_equal "usd", result[:pricing][:currency]
-    assert_equal 999, result[:pricing][:monthly_amount_in_cents]
-    assert_equal 9900, result[:pricing][:annual_amount_in_cents]
-    assert_nil result[:pricing][:country_code]
+    assert_equal "usd", result[:premium_prices][:currency]
+    assert_equal 999, result[:premium_prices][:monthly]
+    assert_equal 9900, result[:premium_prices][:annual]
+    assert_nil result[:premium_prices][:country_code]
   end
 end

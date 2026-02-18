@@ -13,7 +13,7 @@ class SerializeUser
       email_confirmed: user.confirmed?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data,
-      pricing: pricing_data
+      premium_prices: premium_prices_data
     }
   end
 
@@ -21,12 +21,12 @@ class SerializeUser
   memoize
   def currency = User::DetermineCurrency.(user)
 
-  def pricing_data
+  def premium_prices_data
     prices = PRICING[currency.to_sym]
     {
       currency: currency,
-      monthly_amount_in_cents: prices[:monthly],
-      annual_amount_in_cents: prices[:annual],
+      monthly: prices[:monthly],
+      annual: prices[:annual],
       country_code: user.data.country_code
     }
   end
