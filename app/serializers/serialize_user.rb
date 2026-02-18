@@ -12,11 +12,25 @@ class SerializeUser
       provider: user.provider,
       email_confirmed: user.confirmed?,
       subscription_status: user.data.subscription_status,
-      subscription: subscription_data
+      subscription: subscription_data,
+      pricing: pricing_data
     }
   end
 
   private
+  memoize
+  def currency = User::DetermineCurrency.(user)
+
+  def pricing_data
+    prices = PRICING[currency.to_sym]
+    {
+      currency: currency,
+      monthly_amount_in_cents: prices[:monthly],
+      annual_amount_in_cents: prices[:annual],
+      country_code: user.data.country_code
+    }
+  end
+
   def subscription_data
     # Include subscription details when there's an active/pending subscription state
     return nil if %w[never_subscribed canceled].include?(user.data.subscription_status)

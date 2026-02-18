@@ -20,6 +20,7 @@ class Internal::MeControllerTest < ApplicationControllerTest
     assert_equal "standard", json["user"]["membership_type"]
     assert json["user"].key?("subscription_status")
     assert json["user"].key?("subscription")
+    assert json["user"].key?("pricing")
   end
 
   test "GET show returns correct membership_type for premium user" do
@@ -31,5 +32,30 @@ class Internal::MeControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "premium", json["user"]["membership_type"]
+  end
+
+  test "sets country_code from CF-IPCountry header when nil" do
+    assert_nil @user.data.country_code
+
+    get internal_me_path, headers: { "CF-IPCountry" => "IN" }, as: :json
+
+    assert_response :success
+    assert_equal "IN", @user.data.reload.country_code
+  end
+
+  test "does not overwrite existing country_code" do
+    @user.data.update_column(:country_code, "GB")
+
+    get internal_me_path, headers: { "CF-IPCountry" => "IN" }, as: :json
+
+    assert_response :success
+    assert_equal "GB", @user.data.reload.country_code
+  end
+
+  test "ignores XX country code from CF-IPCountry" do
+    get internal_me_path, headers: { "CF-IPCountry" => "XX" }, as: :json
+
+    assert_response :success
+    assert_nil @user.data.reload.country_code
   end
 end

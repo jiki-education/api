@@ -22,7 +22,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+    User::DetermineCurrency.stubs(:call).with(@user).returns("usd")
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, "usd").returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
@@ -39,7 +40,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_456")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+    User::DetermineCurrency.stubs(:call).with(@user).returns("usd")
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, "usd").returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "annual", return_url: return_url },
@@ -56,7 +58,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+    User::DetermineCurrency.stubs(:call).with(@user).returns("usd")
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, "usd").returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { return_url: return_url },
@@ -76,7 +79,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns(url_encoded_secret)
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+    User::DetermineCurrency.stubs(:call).with(@user).returns("usd")
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, "usd").returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
@@ -116,6 +120,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST checkout_session handles Stripe errors gracefully" do
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
 
+    User::DetermineCurrency.stubs(:call).with(@user).returns("usd")
     Stripe::CreateCheckoutSession.expects(:call).raises(StandardError.new("Stripe API error"))
 
     post internal_subscriptions_checkout_session_path,
@@ -133,7 +138,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url).returns(session)
+    User::DetermineCurrency.stubs(:call).with(@user).returns("usd")
+    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, "usd").returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
