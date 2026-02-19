@@ -36,9 +36,10 @@ class Internal::SubscriptionsController < Internal::BaseController
     end
 
     price_id = Stripe::DetermineSubscriptionDetails.price_id_for(interval)
+    currency = current_user.currency
 
     # Create checkout session
-    session = Stripe::CreateCheckoutSession.(current_user, price_id, return_url)
+    session = Stripe::CreateCheckoutSession.(current_user, price_id, return_url, currency)
 
     # Stripe Ruby gem bug: client_secret is URL-encoded in the response
     # We need to decode it before sending to the frontend

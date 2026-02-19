@@ -12,11 +12,22 @@ class SerializeUser
       provider: user.provider,
       email_confirmed: user.confirmed?,
       subscription_status: user.data.subscription_status,
-      subscription: subscription_data
+      subscription: subscription_data,
+      premium_prices: premium_prices_data
     }
   end
 
   private
+  def premium_prices_data
+    prices = PREMIUM_PRICES[user.currency]
+    {
+      currency: user.currency,
+      monthly: prices[:monthly],
+      annual: prices[:annual],
+      country_code: user.data.country_code
+    }
+  end
+
   def subscription_data
     # Include subscription details when there's an active/pending subscription state
     return nil if %w[never_subscribed canceled].include?(user.data.subscription_status)

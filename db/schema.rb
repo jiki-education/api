@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_172056) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_194702) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -393,6 +393,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_172056) do
   end
 
   create_table "user_data", force: :cascade do |t|
+    t.string "country_code", limit: 2
     t.datetime "created_at", null: false
     t.string "email_bounce_reason"
     t.datetime "email_bounced_at"

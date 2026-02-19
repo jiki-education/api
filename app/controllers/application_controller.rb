@@ -4,6 +4,7 @@ class ApplicationController < ActionController::API
 
   before_action :set_current_user_agent
   before_action :set_locale
+  before_action :set_country_code
   before_action :extend_session_cookie!
   before_action :set_sentry_user
   after_action :set_user_id_cookie
@@ -47,6 +48,16 @@ class ApplicationController < ActionController::API
 
   def set_locale
     I18n.locale = params[:locale] || current_user&.locale || I18n.default_locale
+  end
+
+  def set_country_code
+    return unless user_signed_in?
+    return if current_user.data.country_code.present?
+
+    country = request.headers["CF-IPCountry"]
+    return if country.blank? || country == "XX"
+
+    current_user.data.update_column(:country_code, country.upcase[0, 2])
   end
 
   def authenticate_user!

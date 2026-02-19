@@ -12,6 +12,10 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "Test User", result[:name]
     assert_equal "never_subscribed", result[:subscription_status]
     assert_nil result[:subscription]
+    assert_equal :usd, result[:premium_prices][:currency]
+    assert_equal 999, result[:premium_prices][:monthly]
+    assert_equal 9900, result[:premium_prices][:annual]
+    assert_nil result[:premium_prices][:country_code]
   end
 
   test "serializes user with canceled status returns nil subscription" do
@@ -109,5 +113,28 @@ class SerializeUserTest < ActiveSupport::TestCase
     # grace_period_ends_at is present whenever subscription_valid_until is present
     expected_grace_end = valid_until + 7.days
     assert_equal expected_grace_end.iso8601(3), result[:subscription][:grace_period_ends_at].iso8601(3)
+  end
+
+  test "serializes pricing with local currency for Indian user" do
+    user = create(:user)
+    user.data.update_column(:country_code, "IN")
+
+    result = SerializeUser.(user)
+
+    assert_equal :inr, result[:premium_prices][:currency]
+    assert_equal 19_900, result[:premium_prices][:monthly]
+    assert_equal 199_900, result[:premium_prices][:annual]
+    assert_equal "IN", result[:premium_prices][:country_code]
+  end
+
+  test "serializes pricing with USD for user without country" do
+    user = create(:user)
+
+    result = SerializeUser.(user)
+
+    assert_equal :usd, result[:premium_prices][:currency]
+    assert_equal 999, result[:premium_prices][:monthly]
+    assert_equal 9900, result[:premium_prices][:annual]
+    assert_nil result[:premium_prices][:country_code]
   end
 end

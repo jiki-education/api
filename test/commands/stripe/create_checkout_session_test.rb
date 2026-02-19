@@ -15,6 +15,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:create).with(
       ui_mode: 'custom',
       customer: "cus_123",
+      currency: :usd,
       line_items: [
         {
           price: price_id,
@@ -22,9 +23,6 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
         }
       ],
       mode: 'subscription',
-      adaptive_pricing: {
-        enabled: true
-      },
       return_url: return_url,
       subscription_data: {
         metadata: {
@@ -33,15 +31,15 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
       }
     ).returns(session)
 
-    result = Stripe::CreateCheckoutSession.(user, price_id, return_url)
+    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, :usd)
 
     assert_equal session, result
   end
 
-  test "creates checkout session with custom return_url when provided" do
+  test "passes currency to Stripe checkout session" do
     user = create(:user)
     price_id = "price_123"
-    custom_url = "#{Jiki.config.frontend_base_url}/custom/path"
+    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
 
     customer = mock
     customer.stubs(:id).returns("cus_123")
@@ -52,6 +50,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:create).with(
       ui_mode: 'custom',
       customer: "cus_123",
+      currency: :inr,
       line_items: [
         {
           price: price_id,
@@ -59,10 +58,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
         }
       ],
       mode: 'subscription',
-      adaptive_pricing: {
-        enabled: true
-      },
-      return_url: custom_url,
+      return_url: return_url,
       subscription_data: {
         metadata: {
           user_id: user.id
@@ -70,7 +66,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
       }
     ).returns(session)
 
-    result = Stripe::CreateCheckoutSession.(user, price_id, custom_url)
+    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, :inr)
 
     assert_equal session, result
   end
@@ -83,6 +79,6 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
     Stripe::GetOrCreateCustomer.expects(:call).with(user).returns(mock(id: "cus_123"))
     ::Stripe::Checkout::Session.stubs(:create).returns(mock)
 
-    Stripe::CreateCheckoutSession.(user, price_id, return_url)
+    Stripe::CreateCheckoutSession.(user, price_id, return_url, :usd)
   end
 end

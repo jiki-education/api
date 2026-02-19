@@ -52,6 +52,11 @@ class User < ApplicationRecord
   memoize
   def aggregate_activity_data = User::ActivityLog::SyncAndRetrieveAggregates.(self)
 
+  def currency
+    c = COUNTRY_CURRENCIES[country_code]&.to_sym
+    PREMIUM_PRICES.key?(c) ? c : :usd
+  end
+
   # Delegate unknown methods to data record
   def method_missing(name, *args)
     super

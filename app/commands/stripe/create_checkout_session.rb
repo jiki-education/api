@@ -1,7 +1,7 @@
 class Stripe::CreateCheckoutSession
   include Mandate
 
-  initialize_with :user, :price_id, :return_url
+  initialize_with :user, :price_id, :return_url, :currency
 
   def call
     # Get or create Stripe customer
@@ -11,6 +11,7 @@ class Stripe::CreateCheckoutSession
     ::Stripe::Checkout::Session.create(
       ui_mode: 'custom',
       customer: customer.id,
+      currency: currency,
       line_items: [
         {
           price: price_id,
@@ -18,10 +19,6 @@ class Stripe::CreateCheckoutSession
         }
       ],
       mode: 'subscription',
-      adaptive_pricing: {
-        enabled: true
-      },
-
       return_url: return_url,
       subscription_data: {
         metadata: {
