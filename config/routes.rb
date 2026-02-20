@@ -94,7 +94,11 @@ Rails.application.routes.draw do
     # Always have the param as lesson slug - auto-prefixed in the second
     resources :lessons, only: [:show], param: :lesson_slug
     resources :lessons, only: [], param: :slug do
-      resources :exercise_submissions, only: [:create]
+      resources :exercise_submissions, only: [:create] do
+        collection do
+          get :latest
+        end
+      end
     end
 
     # Projects with exercise submissions

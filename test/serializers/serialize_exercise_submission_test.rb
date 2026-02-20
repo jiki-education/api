@@ -9,20 +9,21 @@ class SerializeExerciseSubmissionTest < ActiveSupport::TestCase
 
     create(:exercise_submission_file,
       exercise_submission: submission,
-      filename: "main.rb",
-      digest: "digest1")
+      filename: "main.rb")
     create(:exercise_submission_file,
       exercise_submission: submission,
-      filename: "helper.rb",
-      digest: "digest2")
+      filename: "helper.rb")
+
+    # Reload with includes to avoid N+1 (callers are expected to preload)
+    submission = ExerciseSubmission.includes(files: { content_attachment: :blob }).find(submission.id)
 
     expected = {
       uuid: "abc123",
       context_type: "UserLesson",
       context_slug: "test-lesson",
       files: [
-        { filename: "helper.rb", digest: "digest2" },
-        { filename: "main.rb", digest: "digest1" }
+        { filename: "helper.rb", content: "puts 'hello'" },
+        { filename: "main.rb", content: "puts 'hello'" }
       ]
     }
 
@@ -37,15 +38,14 @@ class SerializeExerciseSubmissionTest < ActiveSupport::TestCase
 
     create(:exercise_submission_file,
       exercise_submission: submission,
-      filename: "solution.rb",
-      digest: "digest3")
+      filename: "solution.rb")
 
     expected = {
       uuid: "def456",
       context_type: "UserProject",
       context_slug: "test-project",
       files: [
-        { filename: "solution.rb", digest: "digest3" }
+        { filename: "solution.rb", content: "puts 'hello'" }
       ]
     }
 
