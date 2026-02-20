@@ -8,7 +8,8 @@ class SerializeLessonTest < ActiveSupport::TestCase
       slug: "hello-world",
       title: "Hello World",
       description: "Learn the basics",
-      type: "exercise"
+      type: "exercise",
+      walkthrough_video_data: nil
     }
 
     assert_equal(expected, SerializeLesson.(lesson, nil))
@@ -24,6 +25,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
       title: "Test Lesson",
       description: "A test lesson",
       type: "video",
+      walkthrough_video_data: nil,
       data: { sources: [{ id: "abc123" }], conversation_allowed: true }
     }
 
