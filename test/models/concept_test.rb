@@ -61,19 +61,32 @@ class ConceptTest < ActiveSupport::TestCase
     assert_equal original_html, concept.content_html
   end
 
-  test "validates video provider must be youtube or mux" do
-    concept = build(:concept, standard_video_provider: "vimeo")
+  test "validates video_data provider must be youtube or mux" do
+    concept = build(:concept, video_data: [{ provider: "vimeo", id: "abc" }])
     refute concept.valid?
 
-    concept.standard_video_provider = "youtube"
+    concept.video_data = [{ provider: "youtube", id: "abc" }]
     assert concept.valid?
 
-    concept.standard_video_provider = "mux"
+    concept.video_data = [{ provider: "mux", id: "abc" }]
     assert concept.valid?
   end
 
-  test "allows nil video provider" do
-    concept = build(:concept, standard_video_provider: nil)
+  test "validates video_data must be an array" do
+    concept = build(:concept, video_data: { provider: "youtube", id: "abc" })
+    refute concept.valid?
+  end
+
+  test "validates video_data entries must have provider and id" do
+    concept = build(:concept, video_data: [{ provider: "youtube" }])
+    refute concept.valid?
+
+    concept.video_data = [{ id: "abc" }]
+    refute concept.valid?
+  end
+
+  test "allows nil video_data" do
+    concept = build(:concept, video_data: nil)
     assert concept.valid?
   end
 

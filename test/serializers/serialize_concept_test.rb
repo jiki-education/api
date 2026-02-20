@@ -7,10 +7,7 @@ class SerializeConceptTest < ActiveSupport::TestCase
       slug: "loops",
       description: "Learn about loops",
       content_markdown: "# Loops",
-      standard_video_provider: "youtube",
-      standard_video_id: "abc123",
-      premium_video_provider: "mux",
-      premium_video_id: "def456")
+      video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }])
 
     result = SerializeConcept.(concept)
 
@@ -18,10 +15,8 @@ class SerializeConceptTest < ActiveSupport::TestCase
     assert_equal "loops", result[:slug]
     assert_equal "Learn about loops", result[:description]
     assert_includes result[:content_html], "Loops"
-    assert_equal "youtube", result[:standard_video_provider]
-    assert_equal "abc123", result[:standard_video_id]
-    assert_equal "mux", result[:premium_video_provider]
-    assert_equal "def456", result[:premium_video_id]
+    expected_video_data = [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
+    assert_equal expected_video_data, result[:video_data]
   end
 
   test "does not include id" do

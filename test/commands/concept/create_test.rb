@@ -16,23 +16,18 @@ class Concept::CreateTest < ActiveSupport::TestCase
     assert concept.persisted?
   end
 
-  test "creates concept with video providers" do
+  test "creates concept with video data" do
+    video_data = [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
     attributes = {
       title: "Strings",
       description: "Learn about strings",
       content_markdown: "# Strings",
-      standard_video_provider: "youtube",
-      standard_video_id: "abc123",
-      premium_video_provider: "mux",
-      premium_video_id: "def456"
+      video_data: video_data
     }
 
     concept = Concept::Create.(attributes)
 
-    assert_equal "youtube", concept.standard_video_provider
-    assert_equal "abc123", concept.standard_video_id
-    assert_equal "mux", concept.premium_video_provider
-    assert_equal "def456", concept.premium_video_id
+    assert_equal video_data, concept.video_data
   end
 
   test "raises validation error for invalid attributes" do

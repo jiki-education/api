@@ -1,5 +1,6 @@
 class Lesson < ApplicationRecord
   include Translatable
+  include HasVideoData
 
   disable_sti!
 
@@ -11,6 +12,8 @@ class Lesson < ApplicationRecord
   has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
 
   self.translatable_fields = %i[title description]
+
+  has_video_data :walkthrough_video_data
 
   serialize :data, coder: JSONWithIndifferentAccess
 

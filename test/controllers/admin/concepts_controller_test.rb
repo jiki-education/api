@@ -114,16 +114,13 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "POST create with video providers" do
+  test "POST create with video data" do
     concept_params = {
       concept: {
         title: "Strings",
         description: "Learn about strings",
         content_markdown: "# Strings",
-        standard_video_provider: "youtube",
-        standard_video_id: "abc123",
-        premium_video_provider: "mux",
-        premium_video_id: "def456"
+        video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
       }
     }
 
