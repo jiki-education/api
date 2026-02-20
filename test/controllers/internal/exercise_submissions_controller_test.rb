@@ -14,8 +14,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   # GET /internal/lessons/:slug/exercise_submissions/latest tests
   test "GET latest returns most recent submission" do
     user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    create(:exercise_submission, context: user_lesson, created_at: 2.days.ago)
-    latest_submission = create(:exercise_submission, context: user_lesson, created_at: 1.day.ago)
+    create(:exercise_submission, context: user_lesson)
+    latest_submission = create(:exercise_submission, context: user_lesson)
     serialized = { uuid: "test", files: [] }
 
     SerializeExerciseSubmission.expects(:call).with(latest_submission).returns(serialized)

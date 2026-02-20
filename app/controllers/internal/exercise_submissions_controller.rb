@@ -15,7 +15,7 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
 
     last_submission = user_lesson.exercise_submissions.
       includes(files: { content_attachment: :blob }).
-      order(created_at: :desc).
+      order(id: :desc).
       first
 
     return render_404(:not_found) unless last_submission
