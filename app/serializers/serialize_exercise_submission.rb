@@ -27,7 +27,7 @@ class SerializeExerciseSubmission
   def serialize_file(file)
     {
       filename: file.filename,
-      digest: file.digest
+      content: file.content.download
     }
   end
 end

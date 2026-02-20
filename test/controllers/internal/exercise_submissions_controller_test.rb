@@ -9,7 +9,47 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   end
 
   guard_incorrect_token! :internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :post
+  guard_incorrect_token! :latest_internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :get
 
+  # GET /internal/lessons/:slug/exercise_submissions/latest tests
+  test "GET latest returns latest submission" do
+    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
+    submission = create(:exercise_submission, context: user_lesson)
+    serialized = { uuid: "test", files: [] }
+
+    SerializeExerciseSubmission.expects(:call).with(submission).returns(serialized)
+
+    get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_response :success
+    assert_json_response({ submission: serialized })
+  end
+
+  test "GET latest returns 404 when user has no user_lesson" do
+    get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_json_error(:not_found)
+  end
+
+  test "GET latest returns 404 when user has no submissions" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+
+    get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_json_error(:not_found)
+  end
+
+  test "GET latest returns 404 for non-existent lesson" do
+    get latest_internal_lesson_exercise_submissions_path(lesson_slug: "nonexistent"),
+      as: :json
+
+    assert_json_error(:not_found, error_type: :lesson_not_found)
+  end
+
+  # POST /internal/lessons/:slug/exercise_submissions tests
   test "POST create successfully creates submission" do
     files = [
       { filename: "main.rb", code: "puts 'hello'" },
