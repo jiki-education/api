@@ -12,12 +12,13 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :latest_internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :get
 
   # GET /internal/lessons/:slug/exercise_submissions/latest tests
-  test "GET latest returns latest submission" do
+  test "GET latest returns most recent submission" do
     user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    submission = create(:exercise_submission, context: user_lesson)
+    create(:exercise_submission, context: user_lesson, created_at: 2.days.ago)
+    latest_submission = create(:exercise_submission, context: user_lesson, created_at: 1.day.ago)
     serialized = { uuid: "test", files: [] }
 
-    SerializeExerciseSubmission.expects(:call).with(submission).returns(serialized)
+    SerializeExerciseSubmission.expects(:call).with(latest_submission).returns(serialized)
 
     get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       as: :json
