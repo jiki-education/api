@@ -16,7 +16,8 @@ class SerializeAdminLessonTest < ActiveSupport::TestCase
       description: "Your first lesson",
       type: "exercise",
       position: 1,
-      data: { slug: "some-exercise", key: "value" }
+      data: { slug: "some-exercise", key: "value" },
+      walkthrough_video_data: nil
     }
 
     assert_equal expected, SerializeAdminLesson.(lesson)

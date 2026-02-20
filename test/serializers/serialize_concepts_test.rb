@@ -2,14 +2,12 @@ require "test_helper"
 
 class SerializeConceptsTest < ActiveSupport::TestCase
   test "serializes basic concept fields" do
+    video_data = [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
     concept = create(:concept,
       title: "Arrays",
       slug: "arrays",
       description: "Learn about arrays",
-      standard_video_provider: "youtube",
-      standard_video_id: "abc123",
-      premium_video_provider: "mux",
-      premium_video_id: "def456")
+      video_data: video_data)
 
     result = SerializeConcepts.([concept])
 
@@ -17,10 +15,7 @@ class SerializeConceptsTest < ActiveSupport::TestCase
     assert_equal "Arrays", result[0][:title]
     assert_equal "arrays", result[0][:slug]
     assert_equal "Learn about arrays", result[0][:description]
-    assert_equal "youtube", result[0][:standard_video_provider]
-    assert_equal "abc123", result[0][:standard_video_id]
-    assert_equal "mux", result[0][:premium_video_provider]
-    assert_equal "def456", result[0][:premium_video_id]
+    assert_equal video_data, result[0][:video_data]
     assert result[0][:user_may_access]
   end
 

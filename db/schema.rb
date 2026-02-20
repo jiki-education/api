@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_194702) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_20_163533) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -92,14 +92,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_194702) do
     t.datetime "created_at", null: false
     t.text "description", null: false
     t.bigint "parent_concept_id"
-    t.string "premium_video_id"
-    t.string "premium_video_provider"
     t.string "slug", null: false
-    t.string "standard_video_id"
-    t.string "standard_video_provider"
     t.string "title", null: false
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
+    t.json "video_data"
     t.index ["parent_concept_id"], name: "index_concepts_on_parent_concept_id"
     t.index ["slug"], name: "index_concepts_on_slug", unique: true
     t.index ["unlocked_by_lesson_id"], name: "index_concepts_on_unlocked_by_lesson_id"
@@ -167,6 +164,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_194702) do
     t.string "title", null: false
     t.string "type", null: false
     t.datetime "updated_at", null: false
+    t.json "walkthrough_video_data"
     t.index ["level_id", "position"], name: "index_lessons_on_level_id_and_position", unique: true
     t.index ["level_id"], name: "index_lessons_on_level_id"
     t.index ["slug"], name: "index_lessons_on_slug", unique: true

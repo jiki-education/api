@@ -13,7 +13,8 @@ class SerializeAdminLessonsTest < ActiveSupport::TestCase
         description: lesson_1.description,
         type: lesson_1.type,
         position: lesson_1.position,
-        data: lesson_1.data
+        data: lesson_1.data,
+        walkthrough_video_data: nil
       },
       {
         id: lesson_2.id,
@@ -22,7 +23,8 @@ class SerializeAdminLessonsTest < ActiveSupport::TestCase
         description: lesson_2.description,
         type: lesson_2.type,
         position: lesson_2.position,
-        data: lesson_2.data
+        data: lesson_2.data,
+        walkthrough_video_data: nil
       }
     ]
 

@@ -12,7 +12,8 @@ class SerializeLesson
       slug: lesson.slug,
       title: content_data[:title],
       description: content_data[:description],
-      type: lesson.type
+      type: lesson.type,
+      walkthrough_video_data: lesson.walkthrough_video_data.presence
     }
     output[:data] = data if include_data
     output

@@ -12,14 +12,14 @@ class SerializeLevelsTest < ActiveSupport::TestCase
         slug: "level-1",
         milestone_summary: "Summary 1",
         lessons: [
-          { slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise" }
+          { slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise", walkthrough_video_data: nil }
         ]
       },
       {
         slug: "level-2",
         milestone_summary: "Summary 2",
         lessons: [
-          { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "video" }
+          { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "video", walkthrough_video_data: nil }
         ]
       }
     ]
@@ -40,7 +40,7 @@ class SerializeLevelsTest < ActiveSupport::TestCase
         slug: "solo",
         milestone_summary: "Solo summary",
         lessons: [
-          { slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", type: "exercise" }
+          { slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", type: "exercise", walkthrough_video_data: nil }
         ]
       }
     ]

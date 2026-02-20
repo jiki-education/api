@@ -56,11 +56,8 @@ class Admin::ConceptsController < Admin::BaseController
       :slug,
       :description,
       :content_markdown,
-      :standard_video_provider,
-      :standard_video_id,
-      :premium_video_provider,
-      :premium_video_id,
-      :parent_concept_id
+      :parent_concept_id,
+      video_data: %i[provider id]
     )
   end
 end

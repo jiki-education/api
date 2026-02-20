@@ -1,11 +1,14 @@
 class Concept < ApplicationRecord
+  include HasVideoData
+
   disable_sti!
 
   extend FriendlyId
   friendly_id :slug, use: [:history]
 
-  VIDEO_PROVIDERS = %w[youtube mux].freeze
   MAX_DEPTH = 10
+
+  has_video_data :video_data
 
   belongs_to :unlocked_by_lesson, class_name: 'Lesson', optional: true
   belongs_to :parent,
@@ -20,8 +23,6 @@ class Concept < ApplicationRecord
   validates :slug, presence: true, uniqueness: true
   validates :description, presence: true
   validates :content_markdown, presence: true
-  validates :standard_video_provider, inclusion: { in: VIDEO_PROVIDERS, allow_nil: true }
-  validates :premium_video_provider, inclusion: { in: VIDEO_PROVIDERS, allow_nil: true }
   validate :validate_no_circular_reference!, on: :update, if: :parent_concept_id_changed?
   validate :validate_depth_within_limit!, if: :parent_concept_id_changed?
 

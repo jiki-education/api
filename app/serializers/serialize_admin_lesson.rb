@@ -11,7 +11,8 @@ class SerializeAdminLesson
       description: lesson.description,
       type: lesson.type,
       position: lesson.position,
-      data: lesson.data
+      data: lesson.data,
+      walkthrough_video_data: lesson.walkthrough_video_data.presence
     }
   end
 end

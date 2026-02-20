@@ -510,10 +510,10 @@ Admin endpoints for managing video production pipelines and nodes. See `.context
         "slug": "variables-ruby",
         "description": "Learn about variables and data types",
         "content_markdown": "# Variables\n\nVariables store data...",
-        "standard_video_provider": "youtube",
-        "standard_video_id": "abc123",
-        "premium_video_provider": "mux",
-        "premium_video_id": "xyz789"
+        "video_data": [
+          {"provider": "youtube", "id": "abc123"},
+          {"provider": "mux", "id": "xyz789"}
+        ]
       }
     }
     ```
@@ -826,10 +826,10 @@ Same as list view plus:
   "title": "Variables in Ruby",
   "slug": "variables-ruby",
   "description": "Learn about variables and data types",
-  "standard_video_provider": "youtube",
-  "standard_video_id": "abc123",
-  "premium_video_provider": "mux",
-  "premium_video_id": "xyz789"
+  "video_data": [
+    {"provider": "youtube", "id": "abc123"},
+    {"provider": "mux", "id": "xyz789"}
+  ]
 }
 ```
 
@@ -841,18 +841,17 @@ Same as list view plus:
   "slug": "variables-ruby",
   "description": "Learn about variables and data types",
   "content_markdown": "# Variables\n\nVariables are used to store data...",
-  "standard_video_provider": "youtube",
-  "standard_video_id": "abc123",
-  "premium_video_provider": "mux",
-  "premium_video_id": "xyz789"
+  "video_data": [
+    {"provider": "youtube", "id": "abc123"},
+    {"provider": "mux", "id": "xyz789"}
+  ]
 }
 ```
 
 **Notes:**
 - The detail view includes `content_markdown` which is not present in the list view
+- `video_data` is an array of videos, each with `provider` and `id`
 - Video providers must be either `"youtube"` or `"mux"` (validated by model)
-- Video IDs are provider-specific identifiers
-- Standard vs premium videos allow different access levels for users
 
 ---
 
