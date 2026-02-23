@@ -22,7 +22,7 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     assert_equal 2, strings_and_colors.position
 
     # Verify lessons were created
-    assert_equal 7, using_functions.lessons.count
+    assert_equal 8, using_functions.lessons.count
     first_lesson = using_functions.lessons.find_by(slug: "maze-solve-basic")
     assert first_lesson
     assert_equal "Solve the Maze", first_lesson.title
@@ -41,9 +41,9 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     # Second run
     Level::CreateAllFromJson.(course, file_path.to_s)
 
-    # Verify counts haven't changed (5 levels, 25 lessons total: 7 + 5 + 3 + 4 + 6)
-    assert_equal 5, Level.count
-    assert_equal 25, Lesson.count
+    # Verify counts haven't changed (17 levels, 122 lessons total)
+    assert_equal 17, Level.count
+    assert_equal 122, Lesson.count
   end
 
   test "raises error for non-existent file" do

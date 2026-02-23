@@ -63,7 +63,8 @@ class Level::CreateAllFromJson
         title: lesson_data["title"],
         description: lesson_data["description"] || "",
         type: lesson_data["type"],
-        data: lesson_data["data"] || {}
+        data: lesson_data["data"] || {},
+        walkthrough_video_data: lesson_data["walkthrough_video_data"]
       )
     end
   end
