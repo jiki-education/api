@@ -14,6 +14,7 @@ class UserLesson < ApplicationRecord
   validates :user_id, uniqueness: { scope: :lesson_id }
   validates :difficulty_rating, inclusion: { in: 1..5 }, allow_nil: true
   validates :fun_rating, inclusion: { in: 1..5 }, allow_nil: true
+  validates :walkthrough_video_watched_percentage, inclusion: { in: 0..100 }, allow_nil: true
 
   scope :completed, -> { where.not(completed_at: nil) }
 

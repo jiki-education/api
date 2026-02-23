@@ -10,6 +10,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
       status: "completed",
       difficulty_rating: nil,
       fun_rating: nil,
+      walkthrough_video_watched_percentage: nil,
       conversation: [],
       data: {}
     }
@@ -26,6 +27,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
       status: "started",
       difficulty_rating: nil,
       fun_rating: nil,
+      walkthrough_video_watched_percentage: nil,
       conversation: [],
       data: {}
     }
@@ -41,6 +43,15 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
 
     assert_equal 3, result[:difficulty_rating]
     assert_equal 5, result[:fun_rating]
+  end
+
+  test "serializes walkthrough_video_watched_percentage when present" do
+    lesson = create(:lesson, :video, slug: "hello-world")
+    user_lesson = create(:user_lesson, lesson: lesson, walkthrough_video_watched_percentage: 75)
+
+    result = SerializeUserLesson.(user_lesson)
+
+    assert_equal 75, result[:walkthrough_video_watched_percentage]
   end
 
   test "includes last_submission for exercise lesson with submission" do
