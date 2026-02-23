@@ -32,7 +32,7 @@ puts "Created course: #{course.title}"
 curriculum_file = File.join(Rails.root, "db", "seeds", "curriculum.json")
 puts "Loading levels from #{curriculum_file}..."
 
-Level::CreateAllFromJson.call(course, curriculum_file, delete_existing: false)
+Level::CreateAllFromJson.call(course, curriculum_file, delete_existing: true)
 
 puts "✓ Successfully loaded levels and lessons!"
 
