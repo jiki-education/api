@@ -10,7 +10,7 @@
         {
           "slug": "welcome-to-jiki",
           "title": "Welcome to Jiki",
-          "description": "Get started with your coding journey",
+          "description": "Meet Jiki and learn the basics of how coding works.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -19,14 +19,14 @@
         {
           "slug": "maze-solve-basic",
           "title": "Solve the Maze",
-          "description": "Learn how to call functions to solve a maze",
+          "description": "Guide Jiki through a maze using simple instructions.",
           "type": "exercise",
           "data": {"slug": "maze-solve-basic"}
         },
         {
           "slug": "using-functions-video",
           "title": "Using Functions",
-          "description": "Learn what functions are and how they work",
+          "description": "Learn about functions, the little machines that make things happen.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -35,14 +35,14 @@
         {
           "slug": "space-invaders-solve-basic",
           "title": "Space Invaders",
-          "description": "Use functions to defeat aliens in Space Invaders",
+          "description": "Shoot down some aliens in your first taste of Space Invaders.",
           "type": "exercise",
           "data": {"slug": "space-invaders-solve-basic"}
         },
         {
           "slug": "functions-taking-inputs",
           "title": "Functions Taking Inputs (Numbers)",
-          "description": "Learn how to use functions that take inputs",
+          "description": "Learn how to give extra information to functions.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -51,21 +51,21 @@
         {
           "slug": "maze-solve-walk",
           "title": "Maze Solve Walk",
-          "description": "Use functions with inputs to navigate the maze",
+          "description": "Navigate the maze using a function that walks multiple steps.",
           "type": "exercise",
           "data": {"slug": "maze-solve-walk"}
         },
         {
           "slug": "fix-wall",
           "title": "Fix the Wall",
-          "description": "Use functions with inputs to fix a wall",
+          "description": "Patch up the gaps in a broken wall with rectangles.",
           "type": "exercise",
           "data": {"slug": "fix-wall"}
         },
         {
           "slug": "snowman-basic",
           "title": "Snowman Basic",
-          "description": "Draw a snowman using functions with inputs",
+          "description": "Build a snowman from three circles.",
           "type": "exercise",
           "data": {"slug": "snowman-basic"}
         }
@@ -81,7 +81,7 @@
         {
           "slug": "strings-intro",
           "title": "Strings",
-          "description": "Learn how to use strings and colors in your programs",
+          "description": "Learn how to use text in your programs.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -90,35 +90,35 @@
         {
           "slug": "foxy-face",
           "title": "Foxy Face",
-          "description": "Draw a fox face using triangles and colors",
+          "description": "Build a geometric fox face from colourful triangles.",
           "type": "exercise",
           "data": {"slug": "foxy-face"}
         },
         {
           "slug": "penguin",
           "title": "Penguin",
-          "description": "Draw a cute penguin using different shapes and colors",
+          "description": "Complete a symmetrical penguin drawing.",
           "type": "exercise",
           "data": {"slug": "penguin"}
         },
         {
           "slug": "sunshine",
           "title": "Sunshine",
-          "description": "Draw a sunny scene using functions with inputs",
+          "description": "Add a bright sun to a weather scene.",
           "type": "exercise",
           "data": {"slug": "sunshine"}
         },
         {
           "slug": "cloud-rain-sun",
           "title": "Cloud, Rain and Sun",
-          "description": "Create a weather scene with clouds, rain and sun",
+          "description": "Create a full weather scene with clouds, rain and sunshine.",
           "type": "exercise",
           "data": {"slug": "cloud-rain-sun"}
         },
         {
           "slug": "jumbled-house",
           "title": "Jumbled House",
-          "description": "Fix a mixed-up house drawing using shapes and colors",
+          "description": "Rearrange the pieces of a jumbled-up house.",
           "type": "exercise",
           "data": {"slug": "jumbled-house"}
         }
@@ -134,7 +134,7 @@
         {
           "slug": "introducing-repeat-loop",
           "title": "Repeat Loop",
-          "description": "Learn how to use loops to repeat actions in your programs",
+          "description": "Learn how to tell Jiki to do things multiple times.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -143,7 +143,7 @@
         {
           "slug": "maze-solve-repeat",
           "title": "Maze Solve Repeat",
-          "description": "Use a repeat loop to solve the maze more efficiently",
+          "description": "Refactor a maze solution to use loops instead of repeated code.",
           "type": "exercise",
           "data": {"slug": "maze-solve-repeat"},
           "walkthrough_video_data": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -151,14 +151,14 @@
         {
           "slug": "golf-rolling-ball-loop",
           "title": "Golf Rolling Ball Loop",
-          "description": "Use a repeat loop to animate a rolling golf ball",
+          "description": "Roll a golf ball into the hole using a loop.",
           "type": "exercise",
           "data": {"slug": "golf-rolling-ball-loop"}
         },
         {
           "slug": "space-invaders-repeat",
           "title": "Space Invaders Repeat",
-          "description": "Use loops to defeat waves of aliens more efficiently",
+          "description": "Use loops to efficiently destroy a wave of aliens.",
           "type": "exercise",
           "data": {"slug": "space-invaders-repeat"}
         }
@@ -174,7 +174,7 @@
         {
           "slug": "creating-and-using-variables",
           "title": "Creating/Using Variables",
-          "description": "Learn how to create variables and use them to store values",
+          "description": "Learn how to save and retrieve information in your programs.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -183,21 +183,21 @@
         {
           "slug": "snowman",
           "title": "Snowman",
-          "description": "Draw a snowman using variables",
+          "description": "Set the right variable values to build a snowman.",
           "type": "exercise",
           "data": {"slug": "snowman"}
         },
         {
           "slug": "traffic-lights",
           "title": "Traffic Light",
-          "description": "Create a traffic light using variables",
+          "description": "Draw a traffic light using variables for position and size.",
           "type": "exercise",
           "data": {"slug": "traffic-lights"}
         },
         {
           "slug": "arithmetic-and-variables",
           "title": "Arithmetic + Variables",
-          "description": "Learn how to use arithmetic with variables",
+          "description": "Learn how to do maths with variables.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -206,21 +206,21 @@
         {
           "slug": "relational-sun",
           "title": "Relational Sun",
-          "description": "Use relational variables to draw a sun",
+          "description": "Position a sun where everything's calculated from variables.",
           "type": "exercise",
           "data": {"slug": "relational-sun"}
         },
         {
           "slug": "relational-snowman",
           "title": "Relational Snowman",
-          "description": "Use relational variables to draw a snowman",
+          "description": "Rebuild your snowman so all sizes scale from one variable.",
           "type": "exercise",
           "data": {"slug": "relational-snowman"}
         },
         {
           "slug": "relational-traffic-lights",
           "title": "Relational Traffic Lights",
-          "description": "Use relational variables to create traffic lights",
+          "description": "Rebuild your traffic light so everything scales together.",
           "type": "exercise",
           "data": {"slug": "relational-traffic-lights"}
         }
@@ -236,7 +236,7 @@
         {
           "slug": "updating-variables",
           "title": "Updating Variables",
-          "description": "Learn how to update variables to track changing values",
+          "description": "Learn how to change variable values as your code runs.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -245,21 +245,21 @@
         {
           "slug": "plant-the-flowers",
           "title": "Plant the Flowers",
-          "description": "Use updating variables to plant flowers",
+          "description": "Plant a row of flowers across the garden, one by one.",
           "type": "exercise",
           "data": {"slug": "plant-the-flowers"}
         },
         {
           "slug": "golf-rolling-ball-state",
           "title": "Rolling Ball",
-          "description": "Animate a rolling golf ball using state",
+          "description": "Roll a golf ball into the hole by tracking its position.",
           "type": "exercise",
           "data": {"slug": "golf-rolling-ball-state"}
         },
         {
           "slug": "finish-wall",
           "title": "Finish the Wall",
-          "description": "Use updating variables to complete the wall",
+          "description": "Lay a row of bricks using a loop and a position variable.",
           "type": "exercise",
           "data": {"slug": "finish-wall"}
         }
@@ -275,7 +275,7 @@
         {
           "slug": "functions-that-return-things-video",
           "title": "Functions That Return Things",
-          "description": "Learn how functions can return values for you to use",
+          "description": "Learn how functions can give information back to you.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -284,21 +284,21 @@
         {
           "slug": "dnd-roll",
           "title": "DND Roll",
-          "description": "Use return values to roll dice",
+          "description": "Roll some dice and strike a goblin in a D&D adventure.",
           "type": "exercise",
           "data": {"slug": "dnd-roll"}
         },
         {
           "slug": "gold-panning",
           "title": "Gold Panning",
-          "description": "Use return values to pan for gold",
+          "description": "Pan for gold nuggets in a river and sell what you find.",
           "type": "exercise",
           "data": {"slug": "gold-panning"}
         },
         {
           "slug": "colors-hsl-and-rgb",
           "title": "Colors (HSL and RGB)",
-          "description": "Learn about HSL and RGB color models",
+          "description": "Learn different ways to specify exact colours.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -307,14 +307,14 @@
         {
           "slug": "rainbow",
           "title": "Rainbow",
-          "description": "Create a colorful rainbow using HSL colors",
+          "description": "Paint a rainbow from 100 colourful vertical bars.",
           "type": "exercise",
           "data": {"slug": "rainbow"}
         },
         {
           "slug": "animation-intro",
           "title": "Animation",
-          "description": "Learn how to create animations",
+          "description": "Learn how to make things move on screen.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -323,14 +323,14 @@
         {
           "slug": "sunset",
           "title": "Sunset",
-          "description": "Draw a beautiful sunset scene with color gradients",
+          "description": "Animate a beautiful sunset scene.",
           "type": "exercise",
           "data": {"slug": "sunset"}
         },
         {
           "slug": "random-numbers",
           "title": "Random Numbers",
-          "description": "Learn how to use random numbers in your programs",
+          "description": "Learn how to add randomness to your programs.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -339,14 +339,14 @@
         {
           "slug": "random-salad",
           "title": "Random Salad",
-          "description": "Use random numbers to create a salad",
+          "description": "Toss together a random salad from different ingredients.",
           "type": "exercise",
           "data": {"slug": "random-salad"}
         },
         {
           "slug": "scope-intro",
           "title": "Scope",
-          "description": "Learn about variable scope",
+          "description": "Learn what happens to variables inside and outside of code blocks.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -355,21 +355,21 @@
         {
           "slug": "rainbow-splodges",
           "title": "Rainbow Splodges",
-          "description": "Create rainbow splodges using scope",
+          "description": "Splatter hundreds of colourful splodges across the canvas.",
           "type": "exercise",
           "data": {"slug": "rainbow-splodges"}
         },
         {
           "slug": "stock-market",
           "title": "Stock Market",
-          "description": "Simulate a stock market using scope and state",
+          "description": "Track your investment as the stock market randomly rises and falls.",
           "type": "exercise",
           "data": {"slug": "stock-market"}
         },
         {
           "slug": "scenarios-intro",
           "title": "Scenarios",
-          "description": "Learn about scenarios in programming",
+          "description": "Learn how to run your code with different starting conditions.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -378,21 +378,21 @@
         {
           "slug": "plant-the-flowers-scenarios",
           "title": "Plant the Flowers - Scenarios",
-          "description": "Use scenarios to plant flowers in different ways",
+          "description": "Plant flowers in different garden layouts.",
           "type": "exercise",
           "data": {"slug": "plant-the-flowers-scenarios"}
         },
         {
           "slug": "cityscape-skyscraper",
           "title": "Skyscraper",
-          "description": "Build a skyscraper in a cityscape",
+          "description": "Build a skyscraper on the city grid.",
           "type": "exercise",
           "data": {"slug": "cityscape-skyscraper"}
         },
         {
           "slug": "loops-in-loops",
           "title": "Loops in Loops",
-          "description": "Learn how to use nested loops",
+          "description": "Learn how to put loops inside other loops.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -401,14 +401,14 @@
         {
           "slug": "space-invaders-nested-repeat",
           "title": "Space Invaders Nested Repeat",
-          "description": "Use nested loops to defeat aliens",
+          "description": "Fill the screen with rows and columns of aliens, then destroy them all.",
           "type": "exercise",
           "data": {"slug": "space-invaders-nested-repeat"}
         },
         {
           "slug": "cityscape-skyline",
           "title": "Skyline",
-          "description": "Create a city skyline using nested loops",
+          "description": "Build a whole city skyline of random buildings.",
           "type": "exercise",
           "data": {"slug": "cityscape-skyline"}
         }
@@ -424,7 +424,7 @@
         {
           "slug": "if-statements-video",
           "title": "If Statements",
-          "description": "Learn how to use if statements to make decisions",
+          "description": "Learn how to make your code do different things in different situations.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -433,21 +433,21 @@
         {
           "slug": "bouncer",
           "title": "Bouncer",
-          "description": "Use if statements to control entry",
+          "description": "Decide who's old enough to get into the club.",
           "type": "exercise",
           "data": {"slug": "bouncer"}
         },
         {
           "slug": "space-invaders-conditional",
           "title": "Space Invaders Conditionals",
-          "description": "Use conditionals in Space Invaders",
+          "description": "Only shoot when there's an alien in your sights.",
           "type": "exercise",
           "data": {"slug": "space-invaders-conditional"}
         },
         {
           "slug": "else-and-else-if",
           "title": "Else and Else If",
-          "description": "Learn how to use else and else if for multiple conditions",
+          "description": "Learn how to handle multiple different conditions.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -456,14 +456,14 @@
         {
           "slug": "bouncer-wristbands",
           "title": "Bouncer Wristbands",
-          "description": "Use else if to assign different wristbands",
+          "description": "Give clubbers the right coloured wristband based on their age.",
           "type": "exercise",
           "data": {"slug": "bouncer-wristbands"}
         },
         {
           "slug": "digital-clock",
           "title": "Digital Clock",
-          "description": "Create a digital clock using conditionals",
+          "description": "Display the correct time on a 12-hour digital clock.",
           "type": "exercise",
           "data": {"slug": "digital-clock"}
         }
@@ -479,7 +479,7 @@
         {
           "slug": "and-or-video",
           "title": "And / Or",
-          "description": "Learn how to combine conditions with and/or",
+          "description": "Learn how to combine conditions together.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -488,21 +488,21 @@
         {
           "slug": "bouncer-dress-code",
           "title": "Bouncer Dress Code",
-          "description": "Use and/or to enforce a dress code",
+          "description": "Check both age and outfit before letting people in.",
           "type": "exercise",
           "data": {"slug": "bouncer-dress-code"}
         },
         {
           "slug": "golf-shot-checker",
           "title": "Shot Checker",
-          "description": "Check golf shots using complex conditionals",
+          "description": "Work out whether a golf shot landed close enough to sink.",
           "type": "exercise",
           "data": {"slug": "golf-shot-checker"}
         },
         {
           "slug": "modulo-and-not",
           "title": "Modulo and Not",
-          "description": "Learn about modulo and the not operator",
+          "description": "Learn about remainders and how to flip conditions.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -511,14 +511,14 @@
         {
           "slug": "rock-paper-scissors-determine-winner",
           "title": "Rock Paper Scissors - Determine Winner",
-          "description": "Determine the winner of rock paper scissors",
+          "description": "Determine the winner of a Rock Paper Scissors game.",
           "type": "exercise",
           "data": {"slug": "rock-paper-scissors-determine-winner"}
         },
         {
           "slug": "repeat-without-input",
           "title": "Repeat Without an Input",
-          "description": "Learn how to use repeat loops without inputs",
+          "description": "Learn how to loop without knowing how many times upfront.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -527,7 +527,7 @@
         {
           "slug": "maze-automated-solve",
           "title": "Solve the Maze Programatically",
-          "description": "Write code to solve the maze automatically",
+          "description": "Write code that navigates any maze by itself.",
           "type": "exercise",
           "data": {"slug": "maze-automated-solve"}
         }
@@ -543,7 +543,7 @@
         {
           "slug": "using-if-and-state",
           "title": "Using If and State Together",
-          "description": "Learn how to combine if statements with state",
+          "description": "Learn how to combine conditions with changing data.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -552,14 +552,14 @@
         {
           "slug": "build-wall",
           "title": "Build the Wall",
-          "description": "Use conditionals and state to build a wall",
+          "description": "Build a wall from scratch, brick by brick, row by row.",
           "type": "exercise",
           "data": {"slug": "build-wall"}
         },
         {
           "slug": "scroll-and-shoot",
           "title": "Scroll and Shoot",
-          "description": "Create a scroll and shoot game using conditionals and state",
+          "description": "Scroll through Space Invaders and take out the aliens.",
           "type": "exercise",
           "data": {"slug": "scroll-and-shoot"}
         }
@@ -575,7 +575,7 @@
         {
           "slug": "writing-your-own-functions",
           "title": "Writing Your Own Functions",
-          "description": "Learn how to define your own functions",
+          "description": "Learn how to create your own reusable machines.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -584,21 +584,21 @@
         {
           "slug": "maze-turn-around",
           "title": "Turn Around",
-          "description": "Write a function to turn around in the maze",
+          "description": "Create a turn-around function for the maze.",
           "type": "exercise",
           "data": {"slug": "maze-turn-around"}
         },
         {
           "slug": "battle-procedures",
           "title": "Battle Procedures",
-          "description": "Write functions for battle procedures",
+          "description": "Extract your shooting logic into a reusable function.",
           "type": "exercise",
           "data": {"slug": "battle-procedures"}
         },
         {
           "slug": "adding-inputs-to-functions",
           "title": "Adding Inputs to Your Functions",
-          "description": "Learn how to add inputs to your functions",
+          "description": "Learn how to make your functions accept inputs.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -607,14 +607,14 @@
         {
           "slug": "maze-walk",
           "title": "Walk",
-          "description": "Write a walk function with inputs",
+          "description": "Create a walk function that moves multiple steps at once.",
           "type": "exercise",
           "data": {"slug": "maze-walk"}
         },
         {
           "slug": "adding-returns-to-functions",
           "title": "Adding Returns to Your Functions",
-          "description": "Learn how to return values from your functions",
+          "description": "Learn how to make your functions give back results.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -623,35 +623,35 @@
         {
           "slug": "even-or-odd",
           "title": "Even or Odd",
-          "description": "Write a function that returns whether a number is even or odd",
+          "description": "Write a function that works out whether a number is even or odd.",
           "type": "exercise",
           "data": {"slug": "even-or-odd"}
         },
         {
           "slug": "triangle",
           "title": "Triangle",
-          "description": "Write a function to determine triangle types",
+          "description": "Classify a triangle as equilateral, isosceles or scalene.",
           "type": "exercise",
           "data": {"slug": "triangle"}
         },
         {
           "slug": "leap",
           "title": "Leap Year",
-          "description": "Write a function to check if a year is a leap year",
+          "description": "Work out whether a year is a leap year.",
           "type": "exercise",
           "data": {"slug": "leap"}
         },
         {
           "slug": "collatz-conjecture",
           "title": "Collatz Conjecture",
-          "description": "Implement the Collatz conjecture",
+          "description": "Explore a famous maths puzzle with your own function.",
           "type": "exercise",
           "data": {"slug": "collatz-conjecture"}
         },
         {
           "slug": "look-around",
           "title": "Look Around",
-          "description": "Write a function to look around in the maze",
+          "description": "Build the functions that check what's around you in the maze.",
           "type": "exercise",
           "data": {"slug": "look-around"}
         }
@@ -667,7 +667,7 @@
         {
           "slug": "string-concatenation-and-templates",
           "title": "String Concatenation and Templates",
-          "description": "Learn how to combine strings and use templates",
+          "description": "Learn how to join bits of text together.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -676,21 +676,21 @@
         {
           "slug": "hello",
           "title": "Hello",
-          "description": "Create a greeting using string concatenation",
+          "description": "Say hello to the world with your first string function.",
           "type": "exercise",
           "data": {"slug": "hello"}
         },
         {
           "slug": "two-fer",
           "title": "Two-Fer",
-          "description": "Share with two-fer using string templates",
+          "description": "Share some cake: \"One for you, one for me.\"",
           "type": "exercise",
           "data": {"slug": "two-fer"}
         },
         {
           "slug": "raindrops",
           "title": "Raindrop Sounds",
-          "description": "Convert numbers to raindrop sounds",
+          "description": "Turn numbers into raindrop sounds: Pling, Plang and Plong.",
           "type": "exercise",
           "data": {"slug": "raindrops"}
         }
@@ -706,7 +706,7 @@
         {
           "slug": "string-indexing",
           "title": "String Indexing",
-          "description": "Learn how to access individual characters in strings",
+          "description": "Learn how to access individual characters in text.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -715,14 +715,14 @@
         {
           "slug": "three-letter-acronym",
           "title": "Three Letter Acronym",
-          "description": "Create three letter acronyms using string indexing",
+          "description": "Build an acronym from the first letter of three words.",
           "type": "exercise",
           "data": {"slug": "three-letter-acronym"}
         },
         {
           "slug": "iterating-through-strings",
           "title": "Iterating Through Strings",
-          "description": "Learn how to iterate through each character in a string",
+          "description": "Learn how to go through text one character at a time.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -731,42 +731,42 @@
         {
           "slug": "tile-search",
           "title": "Contains",
-          "description": "Search for tiles using string iteration",
+          "description": "Search through a rack of tiles to find a specific letter.",
           "type": "exercise",
           "data": {"slug": "tile-search"}
         },
         {
           "slug": "tile-rack",
           "title": "Index Of",
-          "description": "Find tile positions using string iteration",
+          "description": "Find exactly where a letter sits on the tile rack.",
           "type": "exercise",
           "data": {"slug": "tile-rack"}
         },
         {
           "slug": "sign-price",
           "title": "Sign Painter Price",
-          "description": "Calculate sign painting prices using string iteration",
+          "description": "Calculate the cost of painting a sign, letter by letter.",
           "type": "exercise",
           "data": {"slug": "sign-price"}
         },
         {
           "slug": "reverse-string",
           "title": "Reverse String",
-          "description": "Reverse a string using iteration",
+          "description": "Flip a piece of text backwards.",
           "type": "exercise",
           "data": {"slug": "reverse-string"}
         },
         {
           "slug": "driving-test",
           "title": "Driving Test",
-          "description": "Simulate a driving test using string iteration",
+          "description": "Mark a driving theory test and decide if they passed.",
           "type": "exercise",
           "data": {"slug": "driving-test"}
         },
         {
           "slug": "hamming",
           "title": "Hamming",
-          "description": "Calculate the Hamming distance between two strings",
+          "description": "Count the differences between two DNA strands.",
           "type": "exercise",
           "data": {"slug": "hamming"}
         }
@@ -782,7 +782,7 @@
         {
           "slug": "using-multiple-functions-together",
           "title": "Using Multiple Functions Together",
-          "description": "Learn how to combine functions to solve problems",
+          "description": "Learn how to combine functions to solve bigger problems.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -791,21 +791,21 @@
         {
           "slug": "niche-named-party",
           "title": "Niche Named Party",
-          "description": "Use multiple functions to manage a party guest list",
+          "description": "Work out who's allowed into a very exclusive party.",
           "type": "exercise",
           "data": {"slug": "niche-named-party"}
         },
         {
           "slug": "lower-pangram",
           "title": "Simple Pangram",
-          "description": "Check if a string is a pangram using multiple functions",
+          "description": "Check if a sentence uses every letter of the alphabet.",
           "type": "exercise",
           "data": {"slug": "lower-pangram"}
         },
         {
           "slug": "alphanumeric",
           "title": "Alphanumeric",
-          "description": "Check if a string is alphanumeric",
+          "description": "Build functions to classify text as letters, numbers or both.",
           "type": "exercise",
           "data": {"slug": "alphanumeric"}
         }
@@ -821,7 +821,7 @@
         {
           "slug": "methods-and-properties-video",
           "title": "Methods and Properties",
-          "description": "Learn about methods and properties",
+          "description": "Learn how to use built-in tools that come attached to data.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -830,14 +830,14 @@
         {
           "slug": "pangram",
           "title": "Pangram",
-          "description": "Check if a string is a pangram using methods",
+          "description": "Check if a sentence contains every letter of the alphabet, regardless of case.",
           "type": "exercise",
           "data": {"slug": "pangram"}
         },
         {
           "slug": "nucleotide",
           "title": "Nucleotide",
-          "description": "Work with nucleotides using methods and properties",
+          "description": "Count how many times a specific nucleotide appears in a DNA strand.",
           "type": "exercise",
           "data": {"slug": "nucleotide"}
         }
@@ -853,7 +853,7 @@
         {
           "slug": "advanced-loops-video",
           "title": "Advanced Loops",
-          "description": "Learn about for loops, continue, break, and more",
+          "description": "Learn proper JavaScript loops with more control and flexibility.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -862,7 +862,7 @@
         {
           "slug": "isbn-verifier",
           "title": "ISBN Verifier",
-          "description": "Verify ISBN numbers using advanced loops",
+          "description": "Check whether a book's ISBN number is valid.",
           "type": "exercise",
           "data": {"slug": "isbn-verifier"}
         }
@@ -878,7 +878,7 @@
         {
           "slug": "arrays-intro",
           "title": "Arrays",
-          "description": "Learn how to create and use arrays",
+          "description": "Learn how to store collections of things in lists.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -887,42 +887,42 @@
         {
           "slug": "weather-symbols-part-1",
           "title": "Symbols Part 1",
-          "description": "Work with weather symbols using arrays",
+          "description": "Map weather descriptions to the right combination of symbols.",
           "type": "exercise",
           "data": {"slug": "weather-symbols-part-1"}
         },
         {
           "slug": "weather-symbols-part-2",
           "title": "Symbols Part 2",
-          "description": "Continue working with weather symbols",
+          "description": "Draw weather scenes from lists of elements.",
           "type": "exercise",
           "data": {"slug": "weather-symbols-part-2"}
         },
         {
           "slug": "guest-list",
           "title": "Guest List",
-          "description": "Manage a guest list using arrays",
+          "description": "Check if someone's name is on the guest list.",
           "type": "exercise",
           "data": {"slug": "guest-list"}
         },
         {
           "slug": "after-party",
           "title": "After Party",
-          "description": "Manage an after party guest list",
+          "description": "Check the VIP list when celebrities only give their first name.",
           "type": "exercise",
           "data": {"slug": "after-party"}
         },
         {
           "slug": "formal-dinner",
           "title": "Formal Dinner",
-          "description": "Solve a formal dinner guest list",
+          "description": "Match guests to the dinner list using their honorific and surname.",
           "type": "exercise",
           "data": {"slug": "formal-dinner"}
         },
         {
           "slug": "building-arrays",
           "title": "Building Arrays",
-          "description": "Learn how to build arrays from scratch",
+          "description": "Learn how to build up lists piece by piece.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -931,21 +931,21 @@
         {
           "slug": "lunchbox",
           "title": "Pack a Lunch",
-          "description": "Build an array by packing a lunchbox",
+          "description": "Fill a lunchbox with the right combination of items.",
           "type": "exercise",
           "data": {"slug": "lunchbox"}
         },
         {
           "slug": "stars",
           "title": "Stars",
-          "description": "Create star patterns using arrays",
+          "description": "Build a growing pattern of stars.",
           "type": "exercise",
           "data": {"slug": "stars"}
         },
         {
           "slug": "collecting-from-arrays",
           "title": "Collecting from Arrays",
-          "description": "Learn how to collect and filter items from arrays",
+          "description": "Learn how to pick out the items you need from a list.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -954,35 +954,35 @@
         {
           "slug": "meal-prep",
           "title": "Meal Prep",
-          "description": "Prepare meals by collecting from arrays",
+          "description": "Work out which ingredients you need to buy for your recipe.",
           "type": "exercise",
           "data": {"slug": "meal-prep"}
         },
         {
           "slug": "process-guess",
           "title": "Wordle Process Guess",
-          "description": "Process a Wordle guess using arrays",
+          "description": "Check a Wordle guess and work out which letters are correct.",
           "type": "exercise",
           "data": {"slug": "process-guess"}
         },
         {
           "slug": "extract-words",
           "title": "Extract Words",
-          "description": "Extract words from text using arrays",
+          "description": "Pull individual words out of a sentence.",
           "type": "exercise",
           "data": {"slug": "extract-words"}
         },
         {
           "slug": "chop-shop",
           "title": "The Chop Shop",
-          "description": "Chop up data using arrays",
+          "description": "Work out if the barber has time for one more customer.",
           "type": "exercise",
           "data": {"slug": "chop-shop"}
         },
         {
           "slug": "wordle-process-game",
           "title": "Wordle Introduction",
-          "description": "Turn a guess into squares",
+          "description": "Process a whole Wordle game, colouring each guess row by row.",
           "type": "exercise",
           "data": {"slug": "wordle-process-game"}
         }
@@ -998,7 +998,7 @@
         {
           "slug": "dictionaries-intro",
           "title": "Dictionaries",
-          "description": "Learn how to create and use dictionaries",
+          "description": "Learn how to store data with named labels.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -1007,21 +1007,21 @@
         {
           "slug": "lookup-time",
           "title": "Lookup Time",
-          "description": "Use dictionaries for fast lookups",
+          "description": "Look up the current time for a city.",
           "type": "exercise",
           "data": {"slug": "lookup-time"}
         },
         {
           "slug": "scrabble-score",
           "title": "Scrabble Score",
-          "description": "Calculate Scrabble scores using dictionaries",
+          "description": "Calculate the score for a Scrabble word.",
           "type": "exercise",
           "data": {"slug": "scrabble-score"}
         },
         {
           "slug": "changing-dictionaries",
           "title": "Changing Dictionaries",
-          "description": "Learn how to modify dictionaries",
+          "description": "Learn how to update and modify dictionaries.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -1030,28 +1030,28 @@
         {
           "slug": "rna-transcription",
           "title": "RNA Transcription",
-          "description": "Transcribe DNA to RNA using dictionaries",
+          "description": "Convert a DNA sequence into its RNA complement.",
           "type": "exercise",
           "data": {"slug": "rna-transcription"}
         },
         {
           "slug": "protein-translation",
           "title": "Protein Translation",
-          "description": "Translate RNA into proteins using dictionaries",
+          "description": "Translate RNA sequences into proteins.",
           "type": "exercise",
           "data": {"slug": "protein-translation"}
         },
         {
           "slug": "spotify",
           "title": "Spotify Data",
-          "description": "Work with Spotify data using dictionaries",
+          "description": "Parse your listening data from Spotify.",
           "type": "exercise",
           "data": {"slug": "spotify"}
         },
         {
           "slug": "building-dictionaries",
           "title": "Building Dictionaries",
-          "description": "Learn how to build dictionaries from scratch",
+          "description": "Learn how to build up dictionaries from scratch.",
           "type": "video",
           "data": {
             "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
@@ -1060,21 +1060,21 @@
         {
           "slug": "word-count",
           "title": "Word Count",
-          "description": "Count words using dictionaries",
+          "description": "Count how many times each word appears in a sentence.",
           "type": "exercise",
           "data": {"slug": "word-count"}
         },
         {
           "slug": "llm-response",
           "title": "LLM Response",
-          "description": "Process LLM responses using dictionaries",
+          "description": "Parse and format the response from an AI chatbot.",
           "type": "exercise",
           "data": {"slug": "llm-response"}
         },
         {
           "slug": "nucleotide-count",
           "title": "Nucleotide Count",
-          "description": "Count nucleotides using dictionaries",
+          "description": "Count all the different nucleotides in a DNA strand.",
           "type": "exercise",
           "data": {"slug": "nucleotide-count"}
         }
