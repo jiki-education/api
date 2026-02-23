@@ -12,6 +12,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :internal_user_lesson_path, args: ["solve-a-maze"], method: :get
   guard_incorrect_token! :start_internal_user_lesson_path, args: ["solve-a-maze"], method: :post
   guard_incorrect_token! :complete_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
+  guard_incorrect_token! :rate_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
 
   # GET /v1/user_lessons/:slug tests
   test "GET show returns user lesson progress" do
@@ -251,6 +252,36 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
         events: []
       }
     })
+  end
+
+  # PATCH /v1/user_lessons/:slug/rate tests
+  test "PATCH rate successfully sets ratings" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+
+    UserLesson::SetRatings.expects(:call).with(@current_user, @lesson, 3, 5)
+
+    patch rate_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      params: { difficulty_rating: 3, fun_rating: 5 },
+      as: :json
+
+    assert_response :success
+    assert_json_response({})
+  end
+
+  test "PATCH rate returns 404 for non-existent lesson" do
+    patch rate_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
+      params: { difficulty_rating: 3, fun_rating: 5 },
+      as: :json
+
+    assert_json_error(:not_found, error_type: :lesson_not_found)
+  end
+
+  test "PATCH rate returns 422 when user_lesson not found" do
+    patch rate_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      params: { difficulty_rating: 3, fun_rating: 5 },
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :user_lesson_not_found)
   end
 
   # Error handler tests

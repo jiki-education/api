@@ -7,6 +7,8 @@ class SerializeUserLesson
     {
       lesson_slug: user_lesson.lesson.slug,
       status: status,
+      difficulty_rating: user_lesson.difficulty_rating,
+      fun_rating: user_lesson.fun_rating,
       conversation: conversation,
       data: data
     }

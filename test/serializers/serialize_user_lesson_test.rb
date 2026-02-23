@@ -8,6 +8,8 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     expected = {
       lesson_slug: "hello-world",
       status: "completed",
+      difficulty_rating: nil,
+      fun_rating: nil,
       conversation: [],
       data: {}
     }
@@ -22,11 +24,23 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     expected = {
       lesson_slug: "hello-world",
       status: "started",
+      difficulty_rating: nil,
+      fun_rating: nil,
       conversation: [],
       data: {}
     }
 
     assert_equal(expected, SerializeUserLesson.(user_lesson))
+  end
+
+  test "serializes ratings when present" do
+    lesson = create(:lesson, :video, slug: "hello-world")
+    user_lesson = create(:user_lesson, lesson: lesson, difficulty_rating: 3, fun_rating: 5)
+
+    result = SerializeUserLesson.(user_lesson)
+
+    assert_equal 3, result[:difficulty_rating]
+    assert_equal 5, result[:fun_rating]
   end
 
   test "includes last_submission for exercise lesson with submission" do

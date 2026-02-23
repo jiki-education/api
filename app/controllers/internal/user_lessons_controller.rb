@@ -32,4 +32,12 @@ class Internal::UserLessonsController < Internal::BaseController
   rescue UserLevelNotFoundError
     render_422(:user_level_not_found)
   end
+
+  def rate
+    UserLesson::SetRatings.(current_user, @lesson, params[:difficulty_rating], params[:fun_rating])
+
+    render json: {}
+  rescue UserLessonNotFoundError
+    render_422(:user_lesson_not_found)
+  end
 end
