@@ -42,12 +42,13 @@ Understanding the core models and concepts in Jiki:
 
 ## API Endpoints
 
-The API is organized into four main namespaces:
+The API is organized into these namespaces:
 
-- **`/auth/*`** - Authentication endpoints (signup, login, logout, password reset) - No auth required
-- **`/external/*`** - Public unauthenticated endpoints for marketing/preview - No auth required
-- **`/internal/*`** - Authenticated user endpoints (lessons, progress, submissions) - Auth required
+- **`/auth/*`** - Authentication endpoints (signup, login, logout, password reset, 2FA, OAuth) - No auth required
+- **`/external/*`** - Public unauthenticated endpoints (marketing/preview, email preferences) - No auth required
+- **`/internal/*`** - Authenticated user endpoints (lessons, progress, submissions, settings, subscriptions) - Auth required
 - **`/admin/*`** - Admin-only endpoints (content management, user management) - Auth + admin required
+- **`/webhooks/*`** - Webhook receivers (Stripe, SES) - Signature-verified
 
 See Serializers below for Lesson, UserLesson, etc.
 These should have equivalent fe types.
@@ -60,7 +61,7 @@ These should have equivalent fe types.
 
 - **POST** `/auth/login` - Sign in and receive JWT token
   - **Params (required):** `email`, `password`
-  - **Response:** JWT token in `Authorization` header
+  - **Response:** JWT token in `Authorization` header (or 2FA challenge if enabled)
 
 - **DELETE** `/auth/logout` - Sign out (invalidate token)
   - **Response:** 204 No Content
@@ -69,136 +70,184 @@ These should have equivalent fe types.
   - **Params (required):** `email`
   - **Response:** 200 OK
 
+- **GET** `/auth/confirmation` - Confirm email address
+  - **Params (required):** `confirmation_token` (in query string)
+
+- **POST** `/auth/google` - Sign in via Google OAuth
+  - **Params (required):** `code`
+  - **Response:** JWT token in `Authorization` header (or 2FA challenge if enabled)
+
+- **POST** `/auth/verify-2fa` - Verify 2FA OTP code during login
+  - **Params (required):** `otp_code` (session must contain `otp_user_id`)
+  - **Response:** `{ status: "success", user: User }`
+
+- **POST** `/auth/setup-2fa` - Complete 2FA setup with OTP code
+  - **Params (required):** `otp_code` (session must contain `otp_user_id`)
+  - **Response:** `{ status: "success", user: User }`
+
+- **POST** `/auth/unsubscribe/:token` - Unsubscribe from emails via token
+  - **Params (required):** `token` (in URL)
+  - **Response:** `{ unsubscribed: true, email: "..." }`
+
+- **POST** `/auth/account_deletion/request` - Request account deletion (auth required)
+  - **Response:** `{}`
+
+- **POST** `/auth/account_deletion/confirm` - Confirm account deletion
+  - **Params (required):** `token`
+  - **Response:** `{}`
+
+- **GET** `/auth/discourse/sso` - Discourse SSO redirect
+  - **Params (required):** `sso`, `sig` (Discourse SSO params)
+  - **Response:** Redirect to Discourse or frontend login
+
 ### External Endpoints (`/external/*`)
 
-Public endpoints accessible without authentication. Used for marketing and preview purposes.
+Public endpoints accessible without authentication.
 
 #### Concepts
 
-- **GET** `/external/concepts` - Browse all concepts without authentication
+- **GET** `/external/concepts` - Browse all concepts
   - **Query Params (optional):** `title` (filter), `page`, `per`
-  - **Response:**
-    ```json
-    {
-      "results": [Concept, Concept, ...],
-      "meta": {
-        "current_page": 1,
-        "total_pages": 3,
-        "total_count": 60
-      }
-    }
-    ```
+  - **Response:** `{ results: [Concept, ...], meta: { current_page, total_pages, total_count } }`
 
-- **GET** `/external/concepts/:concept_slug` - View any concept without authentication
-  - **Params (required):** `concept_slug` (in URL)
-  - **Response:**
-    ```json
-    {
-      "concept": Concept
-    }
-    ```
+- **GET** `/external/concepts/:concept_slug` - View a concept
+  - **Response:** `{ concept: Concept }`
+
+#### Email Preferences
+
+- **GET** `/external/email_preferences/:token` - View email preferences
+  - **Response:** `{ email_preferences: EmailPreferences }`
+
+- **PATCH** `/external/email_preferences/:token` - Update email preferences
+  - **Params (optional):** `newsletters`, `event_emails`, `milestone_emails`, `activity_emails`
+  - **Response:** `{ email_preferences: EmailPreferences }`
+
+- **POST** `/external/email_preferences/:token/unsubscribe_all` - Unsubscribe from all emails
+  - **Response:** `{ email_preferences: EmailPreferences }`
+
+- **POST** `/external/email_preferences/:token/subscribe_all` - Subscribe to all emails
+  - **Response:** `{ email_preferences: EmailPreferences }`
 
 ### Internal Endpoints (`/internal/*`)
 
 Authenticated user endpoints. All require Bearer token in `Authorization` header.
 
+#### User & Profile
+
+- **GET** `/internal/me` - Get current user
+  - **Response:** `{ user: User }`
+
+- **GET** `/internal/profile` - Get current user's profile
+  - **Response:** `{ profile: Profile }`
+
+- **PUT** `/internal/profile/avatar` - Upload avatar
+  - **Content-Type:** `multipart/form-data`
+  - **Params (required):** `avatar` (file, max 5MB, jpeg/png/gif/webp)
+  - **Response:** `{ profile: Profile }`
+
+- **DELETE** `/internal/profile/avatar` - Delete avatar
+  - **Response:** `{ profile: Profile }`
+
+#### Settings
+
+- **GET** `/internal/settings` - Get current user's settings
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/name` - Update name
+  - **Params (required):** `value`
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/email` - Update email
+  - **Params (required):** `value`
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/password` - Update password
+  - **Params (required):** `value`
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/locale` - Update locale
+  - **Params (required):** `value`
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/handle` - Update handle
+  - **Params (required):** `value`
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/streaks` - Toggle streaks
+  - **Params (required):** `enabled`
+  - **Response:** `{ settings: Settings }`
+
+- **PATCH** `/internal/settings/notifications/:slug` - Update notification preference
+  - **Params (required):** `slug` (in URL), `value`
+  - **Response:** `{ settings: Settings }`
+
+#### Courses
+
+- **GET** `/internal/courses` - List all courses (no auth required)
+  - **Response:** `{ courses: [Course, ...] }`
+
+- **GET** `/internal/courses/:id` - Show a course (no auth required)
+  - **Response:** `{ course: Course }`
+
+#### User Courses
+
+- **GET** `/internal/user_courses` - List user's enrolled courses
+  - **Response:** `{ user_courses: [UserCourse, ...] }`
+
+- **GET** `/internal/user_courses/:id` - Show user course progress
+  - **Response:** `{ user_course: UserCourse }`
+
+- **POST** `/internal/user_courses/:id/enroll` - Enroll in a course
+  - **Response:** `{ user_course: UserCourse }`
+
+- **PATCH** `/internal/user_courses/:id/language` - Set course programming language
+  - **Params (required):** `language`
+  - **Response:** `{ user_course: UserCourse }`
+
 #### Levels
 
-- **GET** `/internal/levels` - Get all levels with nested lessons (basic info only)
-  - **Response:**
-    ```json
-    {
-      "levels": [Level, Level, ...]
-    }
-    ```
+- **GET** `/internal/levels` - Get all levels with nested lessons
+  - **Query Params (required):** `course_slug`
+  - **Response:** `{ levels: [Level, ...] }`
 
-#### Lessons
-
-- **GET** `/internal/lessons/:slug` - Get a single lesson with full data
-  - **Params (required):** `slug` (in URL)
-  - **Response:**
-    ```json
-    {
-      "lesson": Lesson
-    }
-    ```
+- **GET** `/internal/levels/:id/milestone` - Get level milestone data
+  - **Query Params (required):** `course_slug`
+  - **Response:** `{ milestone: LevelMilestone }`
 
 #### User Levels
 
-- **GET** `/internal/user_levels` - Get current user's levels with progress
-  - **Response:**
-    ```json
-    {
-      "user_levels": [UserLevel, UserLevel, ...]
-    }
-    ```
+- **GET** `/internal/user_levels` - Get current user's level progress
+  - **Query Params (required):** `course_slug`
+  - **Response:** `{ user_levels: [UserLevel, ...] }`
+
+- **PATCH** `/internal/user_levels/:level_slug/complete` - Complete a level
+  - **Query Params (required):** `course_slug`
+  - **Response:** `{}`
+
+#### Lessons
+
+- **GET** `/internal/lessons/:lesson_slug` - Get a single lesson with full data
+  - **Response:** `{ lesson: Lesson }`
 
 #### User Lessons
 
-- **GET** `/internal/user_lessons/:lesson_slug` - Get user's progress on a specific lesson
-  - **Params (required):** `lesson_slug` (in URL)
-  - **Response:**
-    ```json
-    {
-      "user_lesson": UserLesson
-    }
-    ```
-  - **Error:** Returns 404 if user hasn't started the lesson
-
-#### Concepts
-
-- **GET** `/internal/concepts` - Get concepts unlocked for current user
-  - **Query Params (optional):** `title` (filter), `page`, `per`
-  - **Response:**
-    ```json
-    {
-      "results": [Concept, Concept, ...],
-      "meta": {
-        "current_page": 1,
-        "total_pages": 2,
-        "total_count": 45
-      }
-    }
-    ```
-  - **Notes:** Only returns concepts the user has unlocked through lesson completion
-
-- **GET** `/internal/concepts/:concept_slug` - Get a single unlocked concept
-  - **Params (required):** `concept_slug` (in URL)
-  - **Response:**
-    ```json
-    {
-      "concept": Concept
-    }
-    ```
-  - **Error:** Returns 403 Forbidden if concept is locked for the user
-
-#### Projects
-
-- **GET** `/internal/projects` - Get projects available to current user
-  - **Query Params (optional):** `title` (filter), `page`, `per`
-  - **Response:**
-    ```json
-    {
-      "results": [Project, Project, ...],
-      "meta": {
-        "current_page": 1,
-        "total_pages": 1,
-        "total_count": 5
-      }
-    }
-    ```
+- **GET** `/internal/user_lessons/:lesson_slug` - Get user's progress on a lesson
+  - **Response:** `{ user_lesson: UserLesson }`
+  - **Error:** 404 if user hasn't started the lesson
 
 - **POST** `/internal/user_lessons/:lesson_slug/start` - Start a lesson
-  - **Params (required):** `lesson_slug` (in URL)
   - **Response:** `{}`
 
 - **PATCH** `/internal/user_lessons/:lesson_slug/complete` - Complete a lesson
-  - **Params (required):** `lesson_slug` (in URL)
+  - **Response:** `{}`
+
+- **PATCH** `/internal/user_lessons/:lesson_slug/rate` - Rate a lesson
+  - **Params (required):** `difficulty_rating`, `fun_rating`
   - **Response:** `{}`
 
 #### Exercise Submissions
 
-- **POST** `/internal/lessons/:slug/exercise_submissions` - Submit code for a lesson-based exercise
+- **POST** `/internal/lessons/:slug/exercise_submissions` - Submit code for a lesson exercise
   - **Params (required):** `slug` (lesson slug in URL), `submission` (object with `files` array)
   - **Request Body:**
     ```json
@@ -212,330 +261,212 @@ Authenticated user endpoints. All require Bearer token in `Authorization` header
     }
     ```
   - **Response:** `{}` (201 Created)
-  - **Notes:**
-    - Creates ExerciseSubmission with UserLesson as polymorphic context
-    - Creates or updates the UserLesson for the current user
 
-- **POST** `/internal/projects/:slug/exercise_submissions` - Submit code for a project-based exercise
-  - **Params (required):** `slug` (project slug in URL), `submission` (object with `files` array)
+- **GET** `/internal/lessons/:slug/exercise_submissions/latest` - Get latest submission for a lesson
+  - **Response:** `{ submission: ExerciseSubmission }`
+
+- **POST** `/internal/projects/:slug/exercise_submissions` - Submit code for a project exercise
   - **Request Body:** Same format as lesson submissions
   - **Response:** `{}` (201 Created)
-  - **Notes:**
-    - Creates ExerciseSubmission with UserProject as polymorphic context
-    - Creates or updates the UserProject for the current user
 
 **Common features for exercise submission endpoints:**
 - Files are stored using Active Storage
 - Each file gets a digest calculated using XXHash64 for deduplication
 - UTF-8 encoding is automatically sanitized
-- **Error responses** (422 Unprocessable Entity):
-  - `duplicate_filename` - Multiple files with same filename
-  - `file_too_large` - File exceeds size limit
-  - `too_many_files` - Exceeds maximum file count
-  - `invalid_submission` - Invalid submission format
+- **Error responses** (422 Unprocessable Entity): `duplicate_filename`, `file_too_large`, `too_many_files`, `invalid_submission`
+
+#### Projects
+
+- **GET** `/internal/projects` - Get projects available to current user
+  - **Query Params (optional):** `title` (filter), `page`, `per`
+  - **Response:** `{ results: [Project, ...], meta: { current_page, total_pages, total_count } }`
+
+- **GET** `/internal/projects/:project_slug` - Get a single project
+  - **Response:** `{ project: Project }`
+
+#### User Projects
+
+- **GET** `/internal/user_projects/:project_slug` - Get user's progress on a project
+  - **Response:** `{ user_project: UserProject }`
+
+#### Concepts
+
+- **GET** `/internal/concepts` - Get concepts unlocked for current user
+  - **Query Params (optional):** `title` (filter), `page`, `per`
+  - **Response:** `{ results: [Concept, ...], meta: { current_page, total_pages, total_count } }`
+  - **Notes:** Only returns concepts the user has unlocked through lesson completion
+
+- **GET** `/internal/concepts/:concept_slug` - Get a single unlocked concept
+  - **Response:** `{ concept: Concept }`
+  - **Error:** 403 if concept is locked for the user
+
+#### Badges
+
+- **GET** `/internal/badges` - Get all badges for current user
+  - **Response:** `{ badges: [Badge, ...], num_locked_secret_badges: 3 }`
+
+- **PATCH** `/internal/badges/:id/reveal` - Reveal a secret badge
+  - **Response:** `{ badge: AcquiredBadge }`
+
+#### Assistant Conversations
+
+- **POST** `/internal/assistant_conversations` - Create a new AI assistant conversation
+  - **Params (required):** `lesson_slug`
+  - **Response:** `{ token: "..." }`
+
+- **POST** `/internal/assistant_conversations/user_messages` - Record a user message
+  - **Params (required):** `context_type`, `context_identifier`, `content`, `timestamp`
+  - **Response:** `{}`
+
+- **POST** `/internal/assistant_conversations/assistant_messages` - Record an assistant message
+  - **Params (required):** `context_type`, `context_identifier`, `content`, `timestamp`, `signature`
+  - **Response:** `{}`
+
+#### Subscriptions
+
+- **POST** `/internal/subscriptions/checkout_session` - Create Stripe checkout session
+  - **Params (optional):** `interval` (default: `"monthly"`), `return_url`
+  - **Response:** `{ client_secret: "..." }`
+
+- **POST** `/internal/subscriptions/verify_checkout` - Verify a checkout session
+  - **Params (required):** `session_id`
+  - **Response:** `{ success: true, interval: "monthly", payment_status: "paid", subscription_status: "active" }`
+
+- **POST** `/internal/subscriptions/portal_session` - Create Stripe customer portal session
+  - **Response:** `{ url: "..." }`
+
+- **POST** `/internal/subscriptions/update` - Update subscription interval
+  - **Params (required):** `interval`
+  - **Response:** `{ success: true, interval: "yearly", effective_at: "...", subscription_valid_until: "..." }`
+
+- **DELETE** `/internal/subscriptions/cancel` - Cancel subscription
+  - **Response:** `{ success: true, cancels_at: "..." }`
+
+- **POST** `/internal/subscriptions/reactivate` - Reactivate a cancelling subscription
+  - **Response:** `{ success: true, subscription_valid_until: "..." }`
+
+#### Payments
+
+- **GET** `/internal/payments` - List payment history
+  - **Response:** `{ payments: [Payment, ...] }`
 
 ### Admin Endpoints (`/admin/*`)
 
 All admin endpoints require authentication and admin privileges (403 Forbidden for non-admin users).
 
-#### Email Templates
+#### Users
 
-- **GET** `/admin/email_templates` - List all email templates
-  - **Response:**
-    ```json
-    {
-      "email_templates": [
-        {
-          "id": 1,
-          "type": "level_completion",
-          "slug": "level-1",
-          "locale": "en"
-        }
-      ]
-    }
-    ```
+- **GET** `/admin/users` - List users with pagination
+  - **Query Params (optional):** `name`, `email` (filters), `page`, `per`
+  - **Response:** `{ results: [AdminUser, ...], meta: { current_page, total_pages, total_count } }`
 
-- **GET** `/admin/email_templates/types` - Get available email template types
-  - **Response:**
-    ```json
-    {
-      "types": ["level_completion"]
-    }
-    ```
+- **GET** `/admin/users/:id` - Get a single user
+  - **Response:** `{ user: AdminUser }`
 
-- **GET** `/admin/email_templates/summary` - Get summary of all templates grouped by type and slug
-  - **Response:**
-    ```json
-    {
-      "email_templates": [
-        {
-          "type": "level_completion",
-          "slug": "level-1",
-          "locales": ["en", "hu"]
-        },
-        {
-          "type": "level_completion",
-          "slug": "level-2",
-          "locales": ["en"]
-        }
-      ],
-      "locales": {
-        "supported": ["en", "hu"],
-        "wip": ["fr"]
-      }
-    }
-    ```
+- **PATCH** `/admin/users/:id` - Update a user
+  - **Params:** `user[email]`
+  - **Response:** `{ user: AdminUser }`
 
-- **GET** `/admin/email_templates/:id` - Get a single email template with full data
-  - **Params (required):** `id` (in URL)
-  - **Response:**
-    ```json
-    {
-      "email_template": {
-        "id": 1,
-        "type": "level_completion",
-        "slug": "level-1",
-        "locale": "en",
-        "subject": "Congratulations!",
-        "body_mjml": "<mjml>...</mjml>",
-        "body_text": "Congratulations on completing level 1!"
-      }
-    }
-    ```
-
-- **POST** `/admin/email_templates` - Create a new email template
-  - **Params (required):** `email_template` object
-  - **Request Body:**
-    ```json
-    {
-      "email_template": {
-        "type": "level_completion",
-        "slug": "level-1",
-        "locale": "en",
-        "subject": "Congratulations!",
-        "body_mjml": "<mjml>...</mjml>",
-        "body_text": "Congratulations!"
-      }
-    }
-    ```
-  - **Response:** Created template (same format as GET single)
-  - **Status:** 201 Created
-
-- **PATCH** `/admin/email_templates/:id` - Update an email template
-  - **Params (required):** `id` (in URL), `email_template` object with fields to update
-  - **Request Body:**
-    ```json
-    {
-      "email_template": {
-        "subject": "New Subject",
-        "body_mjml": "<mjml>...</mjml>"
-      }
-    }
-    ```
-  - **Response:** Updated template (same format as GET single)
-
-- **DELETE** `/admin/email_templates/:id` - Delete an email template
-  - **Params (required):** `id` (in URL)
+- **DELETE** `/admin/users/:id` - Delete a user
   - **Response:** 204 No Content
 
-#### Video Production
+#### Levels
 
-Admin endpoints for managing video production pipelines and nodes. See `.context/video_production.md` for detailed implementation guide.
+- **GET** `/admin/levels` - List levels with pagination
+  - **Query Params (required):** `course_slug`
+  - **Query Params (optional):** `title`, `slug` (filters), `page`, `per`
+  - **Response:** `{ results: [AdminLevel, ...], meta: { current_page, total_pages, total_count } }`
 
-**Pipelines:**
+- **POST** `/admin/levels` - Create a level
+  - **Query Params (required):** `course_slug`
+  - **Params (required):** `level[title, description, position, slug, milestone_summary, milestone_content]`
+  - **Response:** `{ level: AdminLevel }` (201 Created)
 
-- **GET** `/admin/video_production/pipelines` - List all pipelines with pagination
-  - **Query Params (optional):** `page`, `per` (default: 25)
-  - **Response:**
-    ```json
-    {
-      "results": [Pipeline, Pipeline, ...],
-      "meta": {
-        "current_page": 1,
-        "total_pages": 5,
-        "total_count": 120
-      }
-    }
-    ```
+- **PATCH** `/admin/levels/:id` - Update a level
+  - **Query Params (required):** `course_slug`
+  - **Params:** `level[title, description, position, slug, milestone_summary, milestone_content]`
+  - **Response:** `{ level: AdminLevel }`
 
-- **GET** `/admin/video_production/pipelines/:uuid` - Get a single pipeline with all nodes
-  - **Params (required):** `uuid` (in URL)
-  - **Response:**
-    ```json
-    {
-      "pipeline": Pipeline (with nodes array)
-    }
-    ```
+#### Lessons (nested under levels)
 
-- **POST** `/admin/video_production/pipelines` - Create a new pipeline
-  - **Params (required):** `pipeline` object with `title`, `version`, `config`, `metadata`
-  - **Response:** Created pipeline
-  - **Status:** 201 Created
+- **GET** `/admin/levels/:level_id/lessons` - List lessons in a level
+  - **Response:** `{ lessons: [AdminLesson, ...] }`
 
-- **PATCH** `/admin/video_production/pipelines/:uuid` - Update a pipeline
-  - **Params (required):** `uuid` (in URL), `pipeline` object with fields to update
-  - **Response:** Updated pipeline
+- **POST** `/admin/levels/:level_id/lessons` - Create a lesson
+  - **Params (required):** `lesson[slug, title, description, type, position, data]`
+  - **Response:** `{ lesson: AdminLesson }` (201 Created)
 
-- **DELETE** `/admin/video_production/pipelines/:uuid` - Delete a pipeline (cascades to nodes)
-  - **Params (required):** `uuid` (in URL)
-  - **Response:** 204 No Content
+- **PATCH** `/admin/levels/:level_id/lessons/:id` - Update a lesson
+  - **Params:** `lesson[slug, title, description, type, position, data]`
+  - **Response:** `{ lesson: AdminLesson }`
 
-**Nodes:**
+#### Translations
 
-- **GET** `/admin/video_production/pipelines/:pipeline_uuid/nodes` - List all nodes in a pipeline
-  - **Params (required):** `pipeline_uuid` (in URL)
-  - **Response:**
-    ```json
-    {
-      "nodes": [Node, Node, ...]
-    }
-    ```
+- **POST** `/admin/levels/:level_id/translations/translate` - Queue level translation
+  - **Response:** `{ level_slug: "...", queued_locales: [...] }` (202 Accepted)
 
-- **GET** `/admin/video_production/pipelines/:pipeline_uuid/nodes/:uuid` - Get a single node
-  - **Params (required):** `pipeline_uuid` and `uuid` (in URL)
-  - **Response:**
-    ```json
-    {
-      "node": Node
-    }
-    ```
-
-- **POST** `/admin/video_production/pipelines/:pipeline_uuid/nodes` - Create a new node
-  - **Params (required):** `pipeline_uuid` (in URL), `node` object with `title`, `type`, `inputs`, `config`, `asset`
-  - **Response:** Created node
-  - **Status:** 201 Created
-  - **Notes:** Validates inputs against node type schema
-
-- **PATCH** `/admin/video_production/pipelines/:pipeline_uuid/nodes/:uuid` - Update a node
-  - **Params (required):** `pipeline_uuid` and `uuid` (in URL), `node` object with fields to update
-  - **Response:** Updated node
-  - **Notes:** Resets status to `pending` if structure fields change; validates inputs
-
-- **DELETE** `/admin/video_production/pipelines/:pipeline_uuid/nodes/:uuid` - Delete a node
-  - **Params (required):** `pipeline_uuid` and `uuid` (in URL)
-  - **Response:** 204 No Content
-  - **Notes:** Removes references from other nodes' inputs
+- **POST** `/admin/lessons/:lesson_id/translations/translate` - Queue lesson translation
+  - **Response:** `{ lesson_slug: "...", queued_locales: [...] }` (202 Accepted)
 
 #### Projects
 
 - **GET** `/admin/projects` - List all projects with pagination
-  - **Query Params (optional):** `title` (filter), `page`, `per` (default: 25)
-  - **Response:**
-    ```json
-    {
-      "results": [Project, Project, ...],
-      "meta": {
-        "current_page": 1,
-        "total_pages": 5,
-        "total_count": 120
-      }
-    }
-    ```
+  - **Query Params (optional):** `title` (filter), `page`, `per`
+  - **Response:** `{ results: [AdminProject, ...], meta: { current_page, total_pages, total_count } }`
 
 - **GET** `/admin/projects/:id` - Get a single project
-  - **Params (required):** `id` (in URL)
-  - **Response:**
-    ```json
-    {
-      "project": Project
-    }
-    ```
+  - **Response:** `{ project: AdminProject }`
 
-- **POST** `/admin/projects` - Create a new project
-  - **Params (required):** `project` object with fields
-  - **Request Body:**
-    ```json
-    {
-      "project": {
-        "title": "Build a Todo App",
-        "slug": "build-todo-app",
-        "description": "Create a full-featured todo application",
-        "exercise_slug": "todo-app",
-        "unlocked_by_lesson_id": 42
-      }
-    }
-    ```
-  - **Response:** Created project (same format as GET single)
-  - **Status:** 201 Created
+- **POST** `/admin/projects` - Create a project
+  - **Params (required):** `project[title, slug, description, exercise_slug]`
+  - **Response:** `{ project: AdminProject }` (201 Created)
 
 - **PATCH** `/admin/projects/:id` - Update a project
-  - **Params (required):** `id` (in URL), `project` object with fields to update
-  - **Request Body:**
-    ```json
-    {
-      "project": {
-        "title": "Updated Title",
-        "description": "Updated description"
-      }
-    }
-    ```
-  - **Response:** Updated project (same format as GET single)
+  - **Response:** `{ project: AdminProject }`
 
 - **DELETE** `/admin/projects/:id` - Delete a project
-  - **Params (required):** `id` (in URL)
   - **Response:** 204 No Content
 
 #### Concepts
 
 - **GET** `/admin/concepts` - List all concepts with pagination
-  - **Query Params (optional):** `title` (filter), `page`, `per` (default: 25)
-  - **Response:**
-    ```json
-    {
-      "results": [Concept, Concept, ...],
-      "meta": {
-        "current_page": 1,
-        "total_pages": 3,
-        "total_count": 60
-      }
-    }
-    ```
+  - **Query Params (optional):** `title` (filter), `page`, `per`
+  - **Response:** `{ results: [AdminConcept, ...], meta: { current_page, total_pages, total_count } }`
 
 - **GET** `/admin/concepts/:id` - Get a single concept
-  - **Params (required):** `id` (in URL)
-  - **Response:**
-    ```json
-    {
-      "concept": Concept
-    }
-    ```
+  - **Response:** `{ concept: AdminConcept }`
 
-- **POST** `/admin/concepts` - Create a new concept
-  - **Params (required):** `concept` object with fields
-  - **Request Body:**
-    ```json
-    {
-      "concept": {
-        "title": "Variables in Ruby",
-        "slug": "variables-ruby",
-        "description": "Learn about variables and data types",
-        "content_markdown": "# Variables\n\nVariables store data...",
-        "video_data": [
-          {"provider": "youtube", "id": "abc123"},
-          {"provider": "mux", "id": "xyz789"}
-        ]
-      }
-    }
-    ```
-  - **Response:** Created concept (same format as GET single)
-  - **Status:** 201 Created
+- **POST** `/admin/concepts` - Create a concept
+  - **Params (required):** `concept[title, slug, description, content_markdown, video_data]`
+  - **Response:** `{ concept: AdminConcept }` (201 Created)
 
 - **PATCH** `/admin/concepts/:id` - Update a concept
-  - **Params (required):** `id` (in URL), `concept` object with fields to update
-  - **Request Body:**
-    ```json
-    {
-      "concept": {
-        "title": "Updated Title",
-        "content_markdown": "# Updated Content"
-      }
-    }
-    ```
-  - **Response:** Updated concept (same format as GET single)
+  - **Response:** `{ concept: AdminConcept }`
 
 - **DELETE** `/admin/concepts/:id` - Delete a concept
-  - **Params (required):** `id` (in URL)
   - **Response:** 204 No Content
+
+#### Images
+
+- **POST** `/admin/images` - Upload an image
+  - **Content-Type:** `multipart/form-data`
+  - **Params (required):** `image` (file)
+  - **Response:** `{ url: "..." }` (201 Created)
+
+### Webhooks (`/webhooks/*`)
+
+Unauthenticated endpoints with signature verification.
+
+- **POST** `/webhooks/stripe` - Stripe webhook receiver
+  - Verified via `HTTP_STRIPE_SIGNATURE` header
+
+- **POST** `/webhooks/ses` - AWS SES webhook receiver (via SNS)
+  - Verified via SNS signature
+
+### Other
+
+- **GET** `/health-check` - ECS/ALB health check
+  - **Response:** `{ ruok: true, sanity_data: { user: "..." } }`
 
 ---
 
@@ -554,8 +485,7 @@ All API responses use serializers to format data consistently. Below are the dat
     {
       "slug": "hello-world",
       "type": "exercise"
-    },
-    ...
+    }
   ]
 }
 ```
@@ -666,127 +596,6 @@ The UserLevel serializer inlines lesson data for optimal query performance:
 - File content can be retrieved separately via Active Storage
 
 ### Admin Serializers
-
-#### EmailTemplate
-
-**List View (SerializeEmailTemplates):**
-```json
-{
-  "id": 1,
-  "type": "level_completion",
-  "slug": "level-1",
-  "locale": "en"
-}
-```
-
-**Detail View (SerializeEmailTemplate):**
-```json
-{
-  "id": 1,
-  "type": "level_completion",
-  "slug": "level-1",
-  "locale": "en",
-  "subject": "Congratulations on completing Level 1!",
-  "body_mjml": "<mjml><mj-body>...</mj-body></mjml>",
-  "body_text": "Congratulations on completing Level 1!\n\nYou've made great progress..."
-}
-```
-
-**Notes:**
-- The list view (used by `GET /admin/email_templates`) returns basic info only
-- The detail view (used by `GET /show`, `POST /create`, `PATCH /update`) includes full email content
-- `type` must be one of the available types (see `GET /types` endpoint)
-- `slug` + `locale` + `type` combination must be unique
-
-#### VideoProduction::Pipeline
-
-**List View (SerializeAdminVideoProductionPipelines):**
-```json
-{
-  "uuid": "123e4567-e89b-12d3-a456-426614174000",
-  "title": "Ruby Basics Course",
-  "version": "1.0",
-  "config": {
-    "storage": {
-      "bucket": "jiki-videos-dev",
-      "prefix": "pipelines/123/"
-    },
-    "workingDirectory": "./output"
-  },
-  "metadata": {
-    "totalCost": 25.50,
-    "estimatedTotalCost": 30.00,
-    "progress": {
-      "completed": 5,
-      "in_progress": 2,
-      "pending": 3,
-      "failed": 0,
-      "total": 10
-    }
-  },
-  "created_at": "2025-10-15T12:00:00Z",
-  "updated_at": "2025-10-15T14:30:00Z"
-}
-```
-
-**Detail View (SerializeAdminVideoProductionPipeline with `include_nodes: true`):**
-Same as list view plus:
-```json
-{
-  ...,
-  "nodes": [Node, Node, ...]
-}
-```
-
-#### VideoProduction::Node
-
-**SerializeAdminVideoProductionNode:**
-```json
-{
-  "uuid": "abc-123",
-  "pipeline_uuid": "123e4567-e89b-12d3-a456-426614174000",
-  "title": "Merge Video Segments",
-  "type": "merge-videos",
-  "status": "completed",
-  "inputs": {
-    "segments": ["node-uuid-1", "node-uuid-2"]
-  },
-  "config": {
-    "provider": "ffmpeg"
-  },
-  "asset": null,
-  "metadata": {
-    "startedAt": "2025-10-15T13:00:00Z",
-    "completedAt": "2025-10-15T13:05:00Z",
-    "cost": 0.05,
-    "jobId": "job-123"
-  },
-  "output": {
-    "type": "video",
-    "s3Key": "pipelines/123/nodes/abc/output.mp4",
-    "duration": 120.5,
-    "size": 10485760
-  },
-  "created_at": "2025-10-15T12:00:00Z",
-  "updated_at": "2025-10-15T13:05:00Z"
-}
-```
-
-**Node Types:**
-- `asset` - Static file references (no inputs)
-- `talking-head` - HeyGen talking head videos
-- `generate-animation` - Veo 3 / Runway animations
-- `generate-voiceover` - ElevenLabs text-to-speech
-- `render-code` - Remotion code screen animations
-- `mix-audio` - FFmpeg audio replacement
-- `merge-videos` - FFmpeg video concatenation
-- `compose-video` - FFmpeg picture-in-picture overlays
-
-**Node Status Values:**
-- `pending` - Not yet started
-- `in_progress` - Currently executing
-- `completed` - Successfully finished
-- `failed` - Execution failed (see metadata.error)
 
 #### Project
 

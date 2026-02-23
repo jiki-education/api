@@ -4,7 +4,6 @@
 
 # Create an admin user
 admin_user = User.find_or_create_by!(email: "ihid@jiki.io") do |u|
-  u.admin = true
   u.handle = "iHiD"
   u.name = "Jeremy Walker"
   u.password = "password"

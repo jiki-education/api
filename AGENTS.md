@@ -14,6 +14,10 @@ This app integrates with a front end, which is a monorepo available for you to r
 
 This API is deployed onto ECS servers and a Postgres Aurora Serverless 2 database. It uses Terraform to deploy. You can read the full terraform config at `../terraform`.
 
+### Launch Checklist
+
+See `LAUNCH.md` for pre-launch tasks and email copy requirements.
+
 ### Local Development
 
 The local server is started via `./bin/dev`. This is nearly always running - you should NOT run it yourself.
