@@ -13,6 +13,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :start_internal_user_lesson_path, args: ["solve-a-maze"], method: :post
   guard_incorrect_token! :complete_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
   guard_incorrect_token! :rate_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
+  guard_incorrect_token! :walkthrough_video_percentage_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
 
   # GET /v1/user_lessons/:slug tests
   test "GET show returns user lesson progress" do
@@ -279,6 +280,36 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "PATCH rate returns 422 when user_lesson not found" do
     patch rate_internal_user_lesson_path(lesson_slug: @lesson.slug),
       params: { difficulty_rating: 3, fun_rating: 5 },
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :user_lesson_not_found)
+  end
+
+  # PATCH /v1/user_lessons/:slug/walkthrough_video_percentage tests
+  test "PATCH walkthrough_video_percentage delegates to command" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+
+    UserLesson::SetWalkthroughVideoPercentage.expects(:call).with(@current_user, @lesson, 50)
+
+    patch walkthrough_video_percentage_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      params: { percentage: 50 },
+      as: :json
+
+    assert_response :success
+    assert_json_response({})
+  end
+
+  test "PATCH walkthrough_video_percentage returns 404 for non-existent lesson" do
+    patch walkthrough_video_percentage_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
+      params: { percentage: 50 },
+      as: :json
+
+    assert_json_error(:not_found, error_type: :lesson_not_found)
+  end
+
+  test "PATCH walkthrough_video_percentage returns 422 when user_lesson not found" do
+    patch walkthrough_video_percentage_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      params: { percentage: 50 },
       as: :json
 
     assert_json_error(:unprocessable_entity, error_type: :user_lesson_not_found)

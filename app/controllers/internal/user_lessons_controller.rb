@@ -40,4 +40,12 @@ class Internal::UserLessonsController < Internal::BaseController
   rescue UserLessonNotFoundError
     render_422(:user_lesson_not_found)
   end
+
+  def walkthrough_video_percentage
+    UserLesson::SetWalkthroughVideoPercentage.(current_user, @lesson, params[:percentage])
+
+    render json: {}
+  rescue UserLessonNotFoundError
+    render_422(:user_lesson_not_found)
+  end
 end

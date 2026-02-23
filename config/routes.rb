@@ -112,6 +112,7 @@ Rails.application.routes.draw do
         post :start
         patch :complete
         patch :rate
+        patch :walkthrough_video_percentage
       end
     end
 
