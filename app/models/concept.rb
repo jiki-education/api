@@ -66,6 +66,10 @@ class Concept < ApplicationRecord
     children_count.positive?
   end
 
+  # Returns the parent, children, and siblings of this concept.
+  # For root concepts (parent_concept_id is NULL), SQL's NULL equality
+  # semantics naturally exclude the parent and sibling clauses,
+  # so only children are returned.
   def related_concepts
     Concept.where(
       "id = :parent_id OR parent_concept_id = :self_id OR (parent_concept_id = :parent_id AND id != :self_id)",

@@ -28,8 +28,18 @@ class SerializeConcept
   end
 
   def serialize_related_lessons
-    concept.lessons.map do |lesson|
-      SerializeLesson.(lesson, nil)
+    lessons = concept.lessons.to_a
+    return [] if lessons.empty?
+
+    locale = I18n.locale
+    translations = if locale.to_s != 'en'
+                     Lesson::Translation.where(lesson_id: lessons.map(&:id), locale: locale).index_by(&:lesson_id)
+                   end
+
+    lessons.map do |lesson|
+      model = translations ? (translations[lesson.id] || lesson) : lesson
+      content = Lesson.translatable_fields.index_with { |field| model.public_send(field) }
+      SerializeLesson.(lesson, nil, content: content)
     end
   end
 
