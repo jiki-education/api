@@ -49,4 +49,24 @@ class SerializeAdminConceptTest < ActiveSupport::TestCase
 
     assert_empty result[:ancestors]
   end
+
+  test "includes lesson_ids" do
+    concept = create(:concept)
+    lesson1 = create(:lesson, :exercise)
+    lesson2 = create(:lesson, :video)
+    create(:lesson_concept, concept: concept, lesson: lesson1)
+    create(:lesson_concept, concept: concept, lesson: lesson2)
+
+    result = SerializeAdminConcept.(concept)
+
+    assert_equal [lesson1.id, lesson2.id].sort, result[:lesson_ids].sort
+  end
+
+  test "lesson_ids is empty when no lessons associated" do
+    concept = create(:concept)
+
+    result = SerializeAdminConcept.(concept)
+
+    assert_empty result[:lesson_ids]
+  end
 end

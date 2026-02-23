@@ -138,4 +138,30 @@ class LessonTest < ActiveSupport::TestCase
 
     assert lesson.valid?
   end
+
+  # Lesson concepts association tests
+  test "can have many concepts through lesson_concepts" do
+    lesson = create(:lesson, :exercise)
+    concept1 = create(:concept)
+    concept2 = create(:concept)
+
+    create(:lesson_concept, lesson: lesson, concept: concept1)
+    create(:lesson_concept, lesson: lesson, concept: concept2)
+
+    assert_equal 2, lesson.concepts.count
+    assert_includes lesson.concepts, concept1
+    assert_includes lesson.concepts, concept2
+  end
+
+  test "destroying lesson destroys lesson_concepts but not concepts" do
+    lesson = create(:lesson, :exercise)
+    concept = create(:concept)
+    create(:lesson_concept, lesson: lesson, concept: concept)
+
+    assert_difference "LessonConcept.count", -1 do
+      assert_no_difference "Concept.count" do
+        lesson.destroy!
+      end
+    end
+  end
 end

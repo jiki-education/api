@@ -73,4 +73,62 @@ class SerializeConceptTest < ActiveSupport::TestCase
 
     assert_empty result[:ancestors]
   end
+
+  test "includes related_lessons serialized via SerializeLesson" do
+    concept = create(:concept)
+    lesson1 = create(:lesson, :exercise)
+    lesson2 = create(:lesson, :video)
+    create(:lesson_concept, concept: concept, lesson: lesson1)
+    create(:lesson_concept, concept: concept, lesson: lesson2)
+
+    result = SerializeConcept.(concept)
+
+    expected_lessons = [
+      SerializeLesson.(lesson1, nil),
+      SerializeLesson.(lesson2, nil)
+    ]
+    assert_equal expected_lessons, result[:related_lessons]
+  end
+
+  test "related_lessons is empty when no lessons associated" do
+    concept = create(:concept)
+
+    result = SerializeConcept.(concept)
+
+    assert_empty result[:related_lessons]
+  end
+
+  test "includes related_concepts with children" do
+    parent = create(:concept, title: "Parent", slug: "parent", description: "Parent desc")
+    create(:concept, title: "Child 1", slug: "child-1", description: "Child 1 desc", parent: parent)
+    create(:concept, title: "Child 2", slug: "child-2", description: "Child 2 desc", parent: parent)
+
+    result = SerializeConcept.(parent.reload)
+
+    assert_equal 2, result[:related_concepts].length
+    assert_includes result[:related_concepts], { title: "Child 1", slug: "child-1", description: "Child 1 desc" }
+    assert_includes result[:related_concepts], { title: "Child 2", slug: "child-2", description: "Child 2 desc" }
+  end
+
+  test "includes related_concepts with parent and siblings for leaf" do
+    parent = create(:concept, title: "Parent", slug: "parent", description: "Parent desc")
+    child1 = create(:concept, title: "Child 1", slug: "child-1", description: "Child 1 desc", parent: parent)
+    create(:concept, title: "Child 2", slug: "child-2", description: "Child 2 desc", parent: parent)
+
+    result = SerializeConcept.(child1)
+
+    assert_equal 2, result[:related_concepts].length
+    slugs = result[:related_concepts].map { |rc| rc[:slug] }
+    assert_includes slugs, "parent"
+    assert_includes slugs, "child-2"
+    refute_includes slugs, "child-1"
+  end
+
+  test "related_concepts is empty for isolated root concept" do
+    concept = create(:concept)
+
+    result = SerializeConcept.(concept)
+
+    assert_empty result[:related_concepts]
+  end
 end

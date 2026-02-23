@@ -18,6 +18,8 @@ class Concept < ApplicationRecord
     counter_cache: :children_count,
     inverse_of: :children
   has_many :children, class_name: 'Concept', foreign_key: :parent_concept_id, dependent: :nullify, inverse_of: :parent
+  has_many :lesson_concepts, dependent: :destroy
+  has_many :lessons, through: :lesson_concepts
 
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
@@ -62,6 +64,14 @@ class Concept < ApplicationRecord
 
   def has_children?
     children_count.positive?
+  end
+
+  def related_concepts
+    Concept.where(
+      "id = :parent_id OR parent_concept_id = :self_id OR (parent_concept_id = :parent_id AND id != :self_id)",
+      parent_id: parent_concept_id,
+      self_id: id
+    ).limit(6)
   end
 
   private

@@ -10,6 +10,8 @@ class Lesson < ApplicationRecord
   has_one :unlocked_concept, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_one :unlocked_project, class_name: 'Project', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
+  has_many :lesson_concepts, dependent: :destroy
+  has_many :concepts, through: :lesson_concepts
 
   self.translatable_fields = %i[title description]
 
