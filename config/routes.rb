@@ -111,6 +111,7 @@ Rails.application.routes.draw do
       member do
         post :start
         patch :complete
+        patch :rate
       end
     end
 
