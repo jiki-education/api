@@ -90,6 +90,36 @@ class SerializeConceptTest < ActiveSupport::TestCase
     assert_equal expected_lessons, result[:related_lessons]
   end
 
+  test "related_lessons uses translations for non-English locale" do
+    concept = create(:concept)
+    lesson = create(:lesson, :exercise, title: "English Title", description: "English desc")
+    create(:lesson_concept, concept: concept, lesson: lesson)
+    translation = create(:lesson_translation, lesson: lesson, locale: "hu",
+      title: "Magyar cím", description: "Magyar leírás")
+
+    I18n.with_locale(:hu) do
+      result = SerializeConcept.(concept)
+
+      assert_equal 1, result[:related_lessons].length
+      assert_equal translation.title, result[:related_lessons][0][:title]
+      assert_equal translation.description, result[:related_lessons][0][:description]
+    end
+  end
+
+  test "related_lessons falls back to English when translation missing for locale" do
+    concept = create(:concept)
+    lesson = create(:lesson, :exercise, title: "English Title", description: "English desc")
+    create(:lesson_concept, concept: concept, lesson: lesson)
+
+    I18n.with_locale(:hu) do
+      result = SerializeConcept.(concept)
+
+      assert_equal 1, result[:related_lessons].length
+      assert_equal "English Title", result[:related_lessons][0][:title]
+      assert_equal "English desc", result[:related_lessons][0][:description]
+    end
+  end
+
   test "related_lessons is empty when no lessons associated" do
     concept = create(:concept)
 
