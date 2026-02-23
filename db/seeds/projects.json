@@ -2,70 +2,70 @@
   {
     "slug": "structured-house",
     "title": "Structured House",
-    "description": "Build a well-structured house using variables and relational values. Apply everything you've learned about variables to create an organized drawing!",
+    "description": "Build a house where every piece is positioned with variables.",
     "exercise_slug": "structured-house",
     "unlocked_by_lesson_slug": "relational-traffic-lights"
   },
   {
     "slug": "sprouting-flower",
     "title": "Sprouting Flower",
-    "description": "Create a beautiful animation of a flower sprouting and growing using state and colors. Bring nature to life with code!",
+    "description": "Animate a flower growing from the ground.",
     "exercise_slug": "sprouting-flower",
     "unlocked_by_lesson_slug": "sunset"
   },
   {
     "slug": "rainbow-ball",
     "title": "Rainbow Ball",
-    "description": "Create a bouncing rainbow ball using conditionals and state. Combine colors and movement for a dynamic animation!",
+    "description": "Animate a bouncing ball that leaves a colourful rainbow trail.",
     "exercise_slug": "rainbow-ball",
     "unlocked_by_lesson_slug": "scroll-and-shoot"
   },
   {
     "slug": "caesar-cipher",
     "title": "Caesar Cipher",
-    "description": "Implement the classic Caesar cipher encryption using multiple functions working together. Encode and decode secret messages!",
+    "description": "Encrypt a secret message using an ancient Roman cipher.",
     "exercise_slug": "caesar-cipher",
     "unlocked_by_lesson_slug": "alphanumeric"
   },
   {
     "slug": "acronym",
     "title": "Acronym",
-    "description": "Convert phrases into their acronym form using advanced loops. Practice breaking down strings and building results!",
+    "description": "Build acronyms from phrases and titles.",
     "exercise_slug": "acronym",
     "unlocked_by_lesson_slug": "isbn-verifier"
   },
   {
     "slug": "alien-detector",
     "title": "Alien Detector",
-    "description": "Build an alien detector using arrays. Search through data to find hidden aliens!",
+    "description": "Track and destroy every last alien in Space Invaders.",
     "exercise_slug": "alien-detector",
     "unlocked_by_lesson_slug": "formal-dinner"
   },
   {
     "slug": "matching-socks",
     "title": "Matching Socks",
-    "description": "Match pairs of socks from a pile using arrays. Practice collecting and comparing array elements!",
+    "description": "Find matching pairs of socks across two laundry baskets.",
     "exercise_slug": "matching-socks",
     "unlocked_by_lesson_slug": "wordle-process-game"
   },
   {
     "slug": "tic-tac-toe",
     "title": "Tic Tac Toe",
-    "description": "Build a tic tac toe game using dictionaries. Track game state and determine winners!",
+    "description": "Build the full game logic for Tic Tac Toe.",
     "exercise_slug": "tic-tac-toe",
     "unlocked_by_lesson_slug": "word-count"
   },
   {
     "slug": "sieve",
     "title": "Sieve of Eratosthenes",
-    "description": "Implement the Sieve of Eratosthenes algorithm to find prime numbers using dictionaries!",
+    "description": "Find all the prime numbers using an ancient algorithm.",
     "exercise_slug": "sieve",
     "unlocked_by_lesson_slug": "llm-response"
   },
   {
     "slug": "emoji-collector",
     "title": "Emoji Collector",
-    "description": "Collect and organize emojis using dictionaries. Build and query your emoji collection!",
+    "description": "Navigate mazes collecting emojis and tallying up your haul.",
     "exercise_slug": "emoji-collector",
     "unlocked_by_lesson_slug": "nucleotide-count"
   }
