@@ -335,4 +335,65 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     parent_result = response_data["results"].find { |c| c["title"] == "Parent" }
     assert_equal 2, parent_result["children_count"]
   end
+
+  # Lesson association tests
+
+  test "POST create with lesson_ids associates lessons" do
+    lesson1 = create(:lesson, :exercise)
+    lesson2 = create(:lesson, :video)
+
+    concept_params = {
+      concept: {
+        title: "New Concept",
+        description: "A concept with lessons",
+        content_markdown: "# Content",
+        lesson_ids: [lesson1.id, lesson2.id]
+      }
+    }
+
+    assert_difference "Concept.count", 1 do
+      assert_difference "LessonConcept.count", 2 do
+        post admin_concepts_path, params: concept_params, as: :json
+      end
+    end
+
+    assert_response :created
+    concept = Concept.last
+    assert_equal [lesson1.id, lesson2.id].sort, concept.lesson_ids.sort
+  end
+
+  test "PATCH update with lesson_ids replaces lesson associations" do
+    concept = create(:concept)
+    old_lesson = create(:lesson, :exercise)
+    new_lesson = create(:lesson, :video)
+    create(:lesson_concept, concept: concept, lesson: old_lesson)
+
+    update_params = {
+      concept: {
+        lesson_ids: [new_lesson.id]
+      }
+    }
+
+    patch admin_concept_path(concept.id), params: update_params, as: :json
+
+    assert_response :success
+    assert_equal [new_lesson.id], concept.reload.lesson_ids
+  end
+
+  test "PATCH update with empty lesson_ids removes all associations" do
+    concept = create(:concept)
+    lesson = create(:lesson, :exercise)
+    create(:lesson_concept, concept: concept, lesson: lesson)
+
+    update_params = {
+      concept: {
+        lesson_ids: []
+      }
+    }
+
+    patch admin_concept_path(concept.id), params: update_params, as: :json
+
+    assert_response :success
+    assert_empty concept.reload.lesson_ids
+  end
 end

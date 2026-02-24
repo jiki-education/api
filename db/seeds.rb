@@ -96,6 +96,33 @@ else
   puts "⚠ No concepts.json found at #{concepts_file}"
 end
 
+# Link lessons to concepts (practices relationship)
+puts "\nLinking lessons to concepts..."
+curriculum_data = JSON.parse(File.read(curriculum_file), symbolize_names: true)
+lesson_concept_count = 0
+
+curriculum_data[:levels].each do |level_data|
+  level_data[:lessons]&.each do |lesson_data|
+    next unless lesson_data[:practices_concepts].present?
+
+    lesson = Lesson.find_by(slug: lesson_data[:slug])
+    next unless lesson
+
+    lesson_data[:practices_concepts].each do |concept_slug|
+      concept = Concept.find_by(slug: concept_slug)
+      unless concept
+        puts "  ⚠ Concept '#{concept_slug}' not found for lesson '#{lesson_data[:slug]}'"
+        next
+      end
+
+      LessonConcept.find_or_create_by!(lesson: lesson, concept: concept)
+      lesson_concept_count += 1
+    end
+  end
+end
+
+puts "✓ Created #{lesson_concept_count} lesson-concept link(s)!"
+
 # Load projects
 puts "\nLoading projects..."
 projects_file = File.join(Rails.root, "db", "seeds", "projects.json")

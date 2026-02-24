@@ -132,6 +132,29 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "GET index filters by parent_slug parameter" do
+    Prosopite.finish
+    parent = create(:concept, title: "Arrays")
+    child = create(:concept, title: "Array Push", parent_concept_id: parent.id)
+    create(:concept, title: "Strings")
+
+    Concept::UnlockForUser.(child, @current_user)
+
+    get internal_concepts_path(parent_slug: parent.slug), as: :json
+
+    assert_response :success
+    assert_json_response({
+      results: SerializeConcepts.([child], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        unlocked_count: 1,
+        events: []
+      }
+    })
+  end
+
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
     concept_a = create(:concept, title: "Concept A")

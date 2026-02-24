@@ -57,7 +57,8 @@ class Admin::ConceptsController < Admin::BaseController
       :description,
       :content_markdown,
       :parent_concept_id,
-      video_data: %i[provider id]
+      video_data: %i[provider id],
+      lesson_ids: []
     )
   end
 end
