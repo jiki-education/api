@@ -8,6 +8,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
   # Authentication guards
   guard_incorrect_token! :internal_concepts_path, method: :get
   guard_incorrect_token! :internal_concept_path, args: ["some-concept"], method: :get
+  guard_incorrect_token! :unlocked_internal_concepts_path, method: :get
 
   # GET /v1/concepts (index) tests
   test "GET index returns all concepts ordered by unlocked first" do
@@ -252,5 +253,30 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     get internal_concept_path(concept_slug: "original-slug"), as: :json
 
     assert_json_error(:forbidden, error_type: :concept_locked)
+  end
+
+  # GET /internal/concepts/unlocked tests
+  test "GET unlocked returns slugs of unlocked concepts" do
+    concept_arrays = create(:concept, title: "Arrays", slug: "arrays")
+    concept_strings = create(:concept, title: "Strings", slug: "strings")
+    create(:concept, title: "Hashes", slug: "hashes")
+
+    Concept::UnlockForUser.(concept_arrays, @current_user)
+    Concept::UnlockForUser.(concept_strings, @current_user)
+
+    get unlocked_internal_concepts_path, as: :json
+
+    assert_response :success
+    parsed = JSON.parse(response.body)
+    assert_equal %w[arrays strings].sort, parsed["unlocked_slugs"].sort
+  end
+
+  test "GET unlocked returns empty array when no concepts unlocked" do
+    create(:concept, title: "Arrays", slug: "arrays")
+
+    get unlocked_internal_concepts_path, as: :json
+
+    assert_response :success
+    assert_json_response({ unlocked_slugs: [] })
   end
 end

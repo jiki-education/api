@@ -25,4 +25,9 @@ class Internal::ConceptsController < Internal::BaseController
       concept: SerializeConcept.(@concept)
     }
   end
+
+  def unlocked
+    unlocked_slugs = Concept.where(id: current_user.unlocked_concept_ids).pluck(:slug)
+    render json: { unlocked_slugs: unlocked_slugs }
+  end
 end
