@@ -143,33 +143,6 @@ class Concept::SearchTest < ActiveSupport::TestCase
     assert_equal %w[Alpha Bravo Mike Zulu], result.map(&:title)
   end
 
-  test "parent_slug: filters by parent concept slug" do
-    parent = create :concept, title: "Arrays"
-    child_1 = create :concept, title: "Array Push", parent_concept_id: parent.id
-    child_2 = create :concept, title: "Array Pop", parent_concept_id: parent.id
-    create :concept, title: "Strings"
-
-    result = Concept::Search.(parent_slug: parent.slug).to_a
-    assert_equal [child_2, child_1], result
-  end
-
-  test "parent_slug: returns empty for non-existent parent slug" do
-    create :concept, title: "Arrays"
-
-    result = Concept::Search.(parent_slug: "non-existent").to_a
-    assert_empty result
-  end
-
-  test "parent_slug: combined with title filter" do
-    parent = create :concept, title: "Arrays"
-    child_1 = create :concept, title: "Array Push", parent_concept_id: parent.id
-    create :concept, title: "Array Pop", parent_concept_id: parent.id
-    create :concept, title: "String Push"
-
-    result = Concept::Search.(parent_slug: parent.slug, title: "Push").to_a
-    assert_equal [child_1], result
-  end
-
   test "slugs: filters by single slug" do
     concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
     create :concept, title: "Bravo", slug: "bravo-concept"

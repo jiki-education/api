@@ -13,5 +13,9 @@ class UserLesson::SetWalkthroughVideoPercentage
 
   private
   memoize
-  def user_lesson = UserLesson::Find.(user, lesson)
+  def user_lesson
+    UserLesson::Find.(user, lesson)
+  rescue ActiveRecord::RecordNotFound
+    raise UserLessonNotFoundError
+  end
 end

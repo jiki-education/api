@@ -5,7 +5,6 @@ class Internal::ConceptsController < Internal::BaseController
     concepts = Concept::Search.(
       title: params[:title],
       slugs: params[:slugs],
-      parent_slug: params[:parent_slug],
       page: params[:page],
       per: params[:per],
       user: current_user

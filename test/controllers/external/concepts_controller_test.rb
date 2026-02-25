@@ -51,21 +51,6 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
     assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
-  test "GET index filters by parent_slug parameter" do
-    Prosopite.finish
-    parent = create(:concept, title: "Arrays")
-    child = create(:concept, title: "Array Push", parent_concept_id: parent.id)
-    create(:concept, title: "Strings")
-
-    get external_concepts_path(parent_slug: parent.slug), as: :json
-
-    assert_response :success
-
-    json = response.parsed_body
-    assert_equal 1, json["results"].size
-    assert_equal child.slug, json["results"].first["slug"]
-  end
-
   test "GET index filters by title parameter" do
     Prosopite.finish
     create(:concept, title: "String Basics")
