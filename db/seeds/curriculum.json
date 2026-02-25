@@ -21,8 +21,7 @@
           "title": "Solve the Maze",
           "description": "Guide Jiki through a maze using simple instructions.",
           "type": "exercise",
-          "data": {"slug": "maze-solve-basic"},
-          "practices_concepts": ["functions"]
+          "data": {"slug": "maze-solve-basic"}
         },
         {
           "slug": "using-functions-video",
@@ -38,8 +37,7 @@
           "title": "Space Invaders",
           "description": "Shoot down some aliens in your first taste of Space Invaders.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-solve-basic"},
-          "practices_concepts": ["functions"]
+          "data": {"slug": "space-invaders-solve-basic"}
         },
         {
           "slug": "functions-taking-inputs",
@@ -55,24 +53,21 @@
           "title": "Maze Solve Walk",
           "description": "Navigate the maze using a function that walks multiple steps.",
           "type": "exercise",
-          "data": {"slug": "maze-solve-walk"},
-          "practices_concepts": ["function-inputs"]
+          "data": {"slug": "maze-solve-walk"}
         },
         {
           "slug": "fix-wall",
           "title": "Fix the Wall",
           "description": "Patch up the gaps in a broken wall with rectangles.",
           "type": "exercise",
-          "data": {"slug": "fix-wall"},
-          "practices_concepts": ["function-inputs"]
+          "data": {"slug": "fix-wall"}
         },
         {
           "slug": "snowman-basic",
           "title": "Snowman Basic",
           "description": "Build a snowman from three circles.",
           "type": "exercise",
-          "data": {"slug": "snowman-basic"},
-          "practices_concepts": ["function-inputs"]
+          "data": {"slug": "snowman-basic"}
         }
       ]
     },
@@ -97,40 +92,35 @@
           "title": "Foxy Face",
           "description": "Build a geometric fox face from colourful triangles.",
           "type": "exercise",
-          "data": {"slug": "foxy-face"},
-          "practices_concepts": ["strings", "colors"]
+          "data": {"slug": "foxy-face"}
         },
         {
           "slug": "penguin",
           "title": "Penguin",
           "description": "Complete a symmetrical penguin drawing.",
           "type": "exercise",
-          "data": {"slug": "penguin"},
-          "practices_concepts": ["strings", "colors"]
+          "data": {"slug": "penguin"}
         },
         {
           "slug": "sunshine",
           "title": "Sunshine",
           "description": "Add a bright sun to a weather scene.",
           "type": "exercise",
-          "data": {"slug": "sunshine"},
-          "practices_concepts": ["strings", "colors"]
+          "data": {"slug": "sunshine"}
         },
         {
           "slug": "cloud-rain-sun",
           "title": "Cloud, Rain and Sun",
           "description": "Create a full weather scene with clouds, rain and sunshine.",
           "type": "exercise",
-          "data": {"slug": "cloud-rain-sun"},
-          "practices_concepts": ["strings", "colors"]
+          "data": {"slug": "cloud-rain-sun"}
         },
         {
           "slug": "jumbled-house",
           "title": "Jumbled House",
           "description": "Rearrange the pieces of a jumbled-up house.",
           "type": "exercise",
-          "data": {"slug": "jumbled-house"},
-          "practices_concepts": ["strings", "colors", "function-inputs"]
+          "data": {"slug": "jumbled-house"}
         }
       ]
     },
@@ -156,24 +146,21 @@
           "description": "Refactor a maze solution to use loops instead of repeated code.",
           "type": "exercise",
           "data": {"slug": "maze-solve-repeat"},
-          "walkthrough_video_data": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}],
-          "practices_concepts": ["repeat"]
+          "walkthrough_video_data": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
         },
         {
           "slug": "golf-rolling-ball-loop",
           "title": "Golf Rolling Ball Loop",
           "description": "Roll a golf ball into the hole using a loop.",
           "type": "exercise",
-          "data": {"slug": "golf-rolling-ball-loop"},
-          "practices_concepts": ["repeat"]
+          "data": {"slug": "golf-rolling-ball-loop"}
         },
         {
           "slug": "space-invaders-repeat",
           "title": "Space Invaders Repeat",
           "description": "Use loops to efficiently destroy a wave of aliens.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-repeat"},
-          "practices_concepts": ["repeat"]
+          "data": {"slug": "space-invaders-repeat"}
         }
       ]
     },
@@ -198,16 +185,14 @@
           "title": "Snowman",
           "description": "Set the right variable values to build a snowman.",
           "type": "exercise",
-          "data": {"slug": "snowman"},
-          "practices_concepts": ["variables"]
+          "data": {"slug": "snowman"}
         },
         {
           "slug": "traffic-lights",
           "title": "Traffic Light",
           "description": "Draw a traffic light using variables for position and size.",
           "type": "exercise",
-          "data": {"slug": "traffic-lights"},
-          "practices_concepts": ["variables"]
+          "data": {"slug": "traffic-lights"}
         },
         {
           "slug": "arithmetic-and-variables",
@@ -223,24 +208,21 @@
           "title": "Relational Sun",
           "description": "Position a sun where everything's calculated from variables.",
           "type": "exercise",
-          "data": {"slug": "relational-sun"},
-          "practices_concepts": ["arithmetic", "variables"]
+          "data": {"slug": "relational-sun"}
         },
         {
           "slug": "relational-snowman",
           "title": "Relational Snowman",
           "description": "Rebuild your snowman so all sizes scale from one variable.",
           "type": "exercise",
-          "data": {"slug": "relational-snowman"},
-          "practices_concepts": ["arithmetic", "variables"]
+          "data": {"slug": "relational-snowman"}
         },
         {
           "slug": "relational-traffic-lights",
           "title": "Relational Traffic Lights",
           "description": "Rebuild your traffic light so everything scales together.",
           "type": "exercise",
-          "data": {"slug": "relational-traffic-lights"},
-          "practices_concepts": ["arithmetic", "variables"]
+          "data": {"slug": "relational-traffic-lights"}
         }
       ]
     },
@@ -265,24 +247,21 @@
           "title": "Plant the Flowers",
           "description": "Plant a row of flowers across the garden, one by one.",
           "type": "exercise",
-          "data": {"slug": "plant-the-flowers"},
-          "practices_concepts": ["state", "repeat"]
+          "data": {"slug": "plant-the-flowers"}
         },
         {
           "slug": "golf-rolling-ball-state",
           "title": "Rolling Ball",
           "description": "Roll a golf ball into the hole by tracking its position.",
           "type": "exercise",
-          "data": {"slug": "golf-rolling-ball-state"},
-          "practices_concepts": ["state", "repeat"]
+          "data": {"slug": "golf-rolling-ball-state"}
         },
         {
           "slug": "finish-wall",
           "title": "Finish the Wall",
           "description": "Lay a row of bricks using a loop and a position variable.",
           "type": "exercise",
-          "data": {"slug": "finish-wall"},
-          "practices_concepts": ["state", "repeat"]
+          "data": {"slug": "finish-wall"}
         }
       ]
     },
@@ -307,16 +286,14 @@
           "title": "DND Roll",
           "description": "Roll some dice and strike a goblin in a D&D adventure.",
           "type": "exercise",
-          "data": {"slug": "dnd-roll"},
-          "practices_concepts": ["return-values", "variables"]
+          "data": {"slug": "dnd-roll"}
         },
         {
           "slug": "gold-panning",
           "title": "Gold Panning",
           "description": "Pan for gold nuggets in a river and sell what you find.",
           "type": "exercise",
-          "data": {"slug": "gold-panning"},
-          "practices_concepts": ["return-values", "state"]
+          "data": {"slug": "gold-panning"}
         },
         {
           "slug": "colors-hsl-and-rgb",
@@ -332,8 +309,7 @@
           "title": "Rainbow",
           "description": "Paint a rainbow from 100 colourful vertical bars.",
           "type": "exercise",
-          "data": {"slug": "rainbow"},
-          "practices_concepts": ["hsl", "state", "repeat"]
+          "data": {"slug": "rainbow"}
         },
         {
           "slug": "animation-intro",
@@ -349,8 +325,7 @@
           "title": "Sunset",
           "description": "Animate a beautiful sunset scene.",
           "type": "exercise",
-          "data": {"slug": "sunset"},
-          "practices_concepts": ["animation", "rgb", "state"]
+          "data": {"slug": "sunset"}
         },
         {
           "slug": "random-numbers",
@@ -366,8 +341,7 @@
           "title": "Random Salad",
           "description": "Toss together a random salad from different ingredients.",
           "type": "exercise",
-          "data": {"slug": "random-salad"},
-          "practices_concepts": ["random", "variables"]
+          "data": {"slug": "random-salad"}
         },
         {
           "slug": "scope-intro",
@@ -383,16 +357,14 @@
           "title": "Rainbow Splodges",
           "description": "Splatter hundreds of colourful splodges across the canvas.",
           "type": "exercise",
-          "data": {"slug": "rainbow-splodges"},
-          "practices_concepts": ["scope", "random", "repeat"]
+          "data": {"slug": "rainbow-splodges"}
         },
         {
           "slug": "stock-market",
           "title": "Stock Market",
           "description": "Track your investment as the stock market randomly rises and falls.",
           "type": "exercise",
-          "data": {"slug": "stock-market"},
-          "practices_concepts": ["scope", "state", "random"]
+          "data": {"slug": "stock-market"}
         },
         {
           "slug": "scenarios-intro",
@@ -408,16 +380,14 @@
           "title": "Plant the Flowers - Scenarios",
           "description": "Plant flowers in different garden layouts.",
           "type": "exercise",
-          "data": {"slug": "plant-the-flowers-scenarios"},
-          "practices_concepts": ["scenarios", "return-values", "arithmetic"]
+          "data": {"slug": "plant-the-flowers-scenarios"}
         },
         {
           "slug": "cityscape-skyscraper",
           "title": "Skyscraper",
           "description": "Build a skyscraper on the city grid.",
           "type": "exercise",
-          "data": {"slug": "cityscape-skyscraper"},
-          "practices_concepts": ["scenarios", "repeat", "return-values"]
+          "data": {"slug": "cityscape-skyscraper"}
         },
         {
           "slug": "loops-in-loops",
@@ -433,16 +403,14 @@
           "title": "Space Invaders Nested Repeat",
           "description": "Fill the screen with rows and columns of aliens, then destroy them all.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-nested-repeat"},
-          "practices_concepts": ["nested-loops"]
+          "data": {"slug": "space-invaders-nested-repeat"}
         },
         {
           "slug": "cityscape-skyline",
           "title": "Skyline",
           "description": "Build a whole city skyline of random buildings.",
           "type": "exercise",
-          "data": {"slug": "cityscape-skyline"},
-          "practices_concepts": ["nested-loops", "random"]
+          "data": {"slug": "cityscape-skyline"}
         }
       ]
     },
@@ -467,16 +435,14 @@
           "title": "Bouncer",
           "description": "Decide who's old enough to get into the club.",
           "type": "exercise",
-          "data": {"slug": "bouncer"},
-          "practices_concepts": ["if"]
+          "data": {"slug": "bouncer"}
         },
         {
           "slug": "space-invaders-conditional",
           "title": "Space Invaders Conditionals",
           "description": "Only shoot when there's an alien in your sights.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-conditional"},
-          "practices_concepts": ["if", "repeat"]
+          "data": {"slug": "space-invaders-conditional"}
         },
         {
           "slug": "else-and-else-if",
@@ -492,16 +458,14 @@
           "title": "Bouncer Wristbands",
           "description": "Give clubbers the right coloured wristband based on their age.",
           "type": "exercise",
-          "data": {"slug": "bouncer-wristbands"},
-          "practices_concepts": ["else-if"]
+          "data": {"slug": "bouncer-wristbands"}
         },
         {
           "slug": "digital-clock",
           "title": "Digital Clock",
           "description": "Display the correct time on a 12-hour digital clock.",
           "type": "exercise",
-          "data": {"slug": "digital-clock"},
-          "practices_concepts": ["if", "else-if", "return-values"]
+          "data": {"slug": "digital-clock"}
         }
       ]
     },
@@ -526,16 +490,14 @@
           "title": "Bouncer Dress Code",
           "description": "Check both age and outfit before letting people in.",
           "type": "exercise",
-          "data": {"slug": "bouncer-dress-code"},
-          "practices_concepts": ["and", "or", "if"]
+          "data": {"slug": "bouncer-dress-code"}
         },
         {
           "slug": "golf-shot-checker",
           "title": "Shot Checker",
           "description": "Work out whether a golf shot landed close enough to sink.",
           "type": "exercise",
-          "data": {"slug": "golf-shot-checker"},
-          "practices_concepts": ["and", "or", "if"]
+          "data": {"slug": "golf-shot-checker"}
         },
         {
           "slug": "modulo-and-not",
@@ -551,8 +513,7 @@
           "title": "Rock Paper Scissors - Determine Winner",
           "description": "Determine the winner of a Rock Paper Scissors game.",
           "type": "exercise",
-          "data": {"slug": "rock-paper-scissors-determine-winner"},
-          "practices_concepts": ["if", "and", "or"]
+          "data": {"slug": "rock-paper-scissors-determine-winner"}
         },
         {
           "slug": "repeat-without-input",
@@ -568,8 +529,7 @@
           "title": "Solve the Maze Programatically",
           "description": "Write code that navigates any maze by itself.",
           "type": "exercise",
-          "data": {"slug": "maze-automated-solve"},
-          "practices_concepts": ["repeat-while", "if", "return-values"]
+          "data": {"slug": "maze-automated-solve"}
         }
       ]
     },
@@ -594,16 +554,14 @@
           "title": "Build the Wall",
           "description": "Build a wall from scratch, brick by brick, row by row.",
           "type": "exercise",
-          "data": {"slug": "build-wall"},
-          "practices_concepts": ["if", "state", "repeat"]
+          "data": {"slug": "build-wall"}
         },
         {
           "slug": "scroll-and-shoot",
           "title": "Scroll and Shoot",
           "description": "Scroll through Space Invaders and take out the aliens.",
           "type": "exercise",
-          "data": {"slug": "scroll-and-shoot"},
-          "practices_concepts": ["if", "state", "repeat"]
+          "data": {"slug": "scroll-and-shoot"}
         }
       ]
     },
@@ -628,16 +586,14 @@
           "title": "Turn Around",
           "description": "Create a turn-around function for the maze.",
           "type": "exercise",
-          "data": {"slug": "maze-turn-around"},
-          "practices_concepts": ["custom-functions"]
+          "data": {"slug": "maze-turn-around"}
         },
         {
           "slug": "battle-procedures",
           "title": "Battle Procedures",
           "description": "Extract your shooting logic into a reusable function.",
           "type": "exercise",
-          "data": {"slug": "battle-procedures"},
-          "practices_concepts": ["custom-functions"]
+          "data": {"slug": "battle-procedures"}
         },
         {
           "slug": "adding-inputs-to-functions",
@@ -653,8 +609,7 @@
           "title": "Walk",
           "description": "Create a walk function that moves multiple steps at once.",
           "type": "exercise",
-          "data": {"slug": "maze-walk"},
-          "practices_concepts": ["parameters", "repeat"]
+          "data": {"slug": "maze-walk"}
         },
         {
           "slug": "adding-returns-to-functions",
@@ -670,40 +625,35 @@
           "title": "Even or Odd",
           "description": "Write a function that works out whether a number is even or odd.",
           "type": "exercise",
-          "data": {"slug": "even-or-odd"},
-          "practices_concepts": ["returns", "modulo"]
+          "data": {"slug": "even-or-odd"}
         },
         {
           "slug": "triangle",
           "title": "Triangle",
           "description": "Classify a triangle as equilateral, isosceles or scalene.",
           "type": "exercise",
-          "data": {"slug": "triangle"},
-          "practices_concepts": ["returns", "if"]
+          "data": {"slug": "triangle"}
         },
         {
           "slug": "leap",
           "title": "Leap Year",
           "description": "Work out whether a year is a leap year.",
           "type": "exercise",
-          "data": {"slug": "leap"},
-          "practices_concepts": ["returns", "modulo", "and", "or"]
+          "data": {"slug": "leap"}
         },
         {
           "slug": "collatz-conjecture",
           "title": "Collatz Conjecture",
           "description": "Explore a famous maths puzzle with your own function.",
           "type": "exercise",
-          "data": {"slug": "collatz-conjecture"},
-          "practices_concepts": ["returns", "repeat-while", "state"]
+          "data": {"slug": "collatz-conjecture"}
         },
         {
           "slug": "look-around",
           "title": "Look Around",
           "description": "Build the functions that check what's around you in the maze.",
           "type": "exercise",
-          "data": {"slug": "look-around"},
-          "practices_concepts": ["returns", "if"]
+          "data": {"slug": "look-around"}
         }
       ]
     },
@@ -728,24 +678,21 @@
           "title": "Hello",
           "description": "Say hello to the world with your first string function.",
           "type": "exercise",
-          "data": {"slug": "hello"},
-          "practices_concepts": ["string-concatenation", "returns"]
+          "data": {"slug": "hello"}
         },
         {
           "slug": "two-fer",
           "title": "Two-Fer",
           "description": "Share some cake: \"One for you, one for me.\"",
           "type": "exercise",
-          "data": {"slug": "two-fer"},
-          "practices_concepts": ["string-concatenation", "if"]
+          "data": {"slug": "two-fer"}
         },
         {
           "slug": "raindrops",
           "title": "Raindrop Sounds",
           "description": "Turn numbers into raindrop sounds: Pling, Plang and Plong.",
           "type": "exercise",
-          "data": {"slug": "raindrops"},
-          "practices_concepts": ["string-concatenation", "modulo", "if"]
+          "data": {"slug": "raindrops"}
         }
       ]
     },
@@ -770,8 +717,7 @@
           "title": "Three Letter Acronym",
           "description": "Build an acronym from the first letter of three words.",
           "type": "exercise",
-          "data": {"slug": "three-letter-acronym"},
-          "practices_concepts": ["string-indexing"]
+          "data": {"slug": "three-letter-acronym"}
         },
         {
           "slug": "iterating-through-strings",
@@ -787,48 +733,42 @@
           "title": "Contains",
           "description": "Search through a rack of tiles to find a specific letter.",
           "type": "exercise",
-          "data": {"slug": "tile-search"},
-          "practices_concepts": ["string-iteration", "returns"]
+          "data": {"slug": "tile-search"}
         },
         {
           "slug": "tile-rack",
           "title": "Index Of",
           "description": "Find exactly where a letter sits on the tile rack.",
           "type": "exercise",
-          "data": {"slug": "tile-rack"},
-          "practices_concepts": ["string-iteration", "state"]
+          "data": {"slug": "tile-rack"}
         },
         {
           "slug": "sign-price",
           "title": "Sign Painter Price",
           "description": "Calculate the cost of painting a sign, letter by letter.",
           "type": "exercise",
-          "data": {"slug": "sign-price"},
-          "practices_concepts": ["string-iteration", "state"]
+          "data": {"slug": "sign-price"}
         },
         {
           "slug": "reverse-string",
           "title": "Reverse String",
           "description": "Flip a piece of text backwards.",
           "type": "exercise",
-          "data": {"slug": "reverse-string"},
-          "practices_concepts": ["string-iteration", "string-concatenation"]
+          "data": {"slug": "reverse-string"}
         },
         {
           "slug": "driving-test",
           "title": "Driving Test",
           "description": "Mark a driving theory test and decide if they passed.",
           "type": "exercise",
-          "data": {"slug": "driving-test"},
-          "practices_concepts": ["string-iteration", "if", "state"]
+          "data": {"slug": "driving-test"}
         },
         {
           "slug": "hamming",
           "title": "Hamming",
           "description": "Count the differences between two DNA strands.",
           "type": "exercise",
-          "data": {"slug": "hamming"},
-          "practices_concepts": ["string-iteration", "string-indexing", "state"]
+          "data": {"slug": "hamming"}
         }
       ]
     },
@@ -853,24 +793,21 @@
           "title": "Niche Named Party",
           "description": "Work out who's allowed into a very exclusive party.",
           "type": "exercise",
-          "data": {"slug": "niche-named-party"},
-          "practices_concepts": ["function-composition", "string-iteration"]
+          "data": {"slug": "niche-named-party"}
         },
         {
           "slug": "lower-pangram",
           "title": "Simple Pangram",
           "description": "Check if a sentence uses every letter of the alphabet.",
           "type": "exercise",
-          "data": {"slug": "lower-pangram"},
-          "practices_concepts": ["function-composition", "string-iteration"]
+          "data": {"slug": "lower-pangram"}
         },
         {
           "slug": "alphanumeric",
           "title": "Alphanumeric",
           "description": "Build functions to classify text as letters, numbers or both.",
           "type": "exercise",
-          "data": {"slug": "alphanumeric"},
-          "practices_concepts": ["function-composition", "returns"]
+          "data": {"slug": "alphanumeric"}
         }
       ]
     },
@@ -895,16 +832,14 @@
           "title": "Pangram",
           "description": "Check if a sentence contains every letter of the alphabet, regardless of case.",
           "type": "exercise",
-          "data": {"slug": "pangram"},
-          "practices_concepts": ["methods", "string-iteration"]
+          "data": {"slug": "pangram"}
         },
         {
           "slug": "nucleotide",
           "title": "Nucleotide",
           "description": "Count how many times a specific nucleotide appears in a DNA strand.",
           "type": "exercise",
-          "data": {"slug": "nucleotide"},
-          "practices_concepts": ["methods", "string-iteration"]
+          "data": {"slug": "nucleotide"}
         }
       ]
     },
@@ -929,8 +864,7 @@
           "title": "ISBN Verifier",
           "description": "Check whether a book's ISBN number is valid.",
           "type": "exercise",
-          "data": {"slug": "isbn-verifier"},
-          "practices_concepts": ["for-loop", "string-iteration"]
+          "data": {"slug": "isbn-verifier"}
         }
       ]
     },
@@ -955,40 +889,35 @@
           "title": "Symbols Part 1",
           "description": "Map weather descriptions to the right combination of symbols.",
           "type": "exercise",
-          "data": {"slug": "weather-symbols-part-1"},
-          "practices_concepts": ["arrays", "if"]
+          "data": {"slug": "weather-symbols-part-1"}
         },
         {
           "slug": "weather-symbols-part-2",
           "title": "Symbols Part 2",
           "description": "Draw weather scenes from lists of elements.",
           "type": "exercise",
-          "data": {"slug": "weather-symbols-part-2"},
-          "practices_concepts": ["arrays", "if"]
+          "data": {"slug": "weather-symbols-part-2"}
         },
         {
           "slug": "guest-list",
           "title": "Guest List",
           "description": "Check if someone's name is on the guest list.",
           "type": "exercise",
-          "data": {"slug": "guest-list"},
-          "practices_concepts": ["arrays", "string-iteration"]
+          "data": {"slug": "guest-list"}
         },
         {
           "slug": "after-party",
           "title": "After Party",
           "description": "Check the VIP list when celebrities only give their first name.",
           "type": "exercise",
-          "data": {"slug": "after-party"},
-          "practices_concepts": ["arrays", "string-indexing"]
+          "data": {"slug": "after-party"}
         },
         {
           "slug": "formal-dinner",
           "title": "Formal Dinner",
           "description": "Match guests to the dinner list using their honorific and surname.",
           "type": "exercise",
-          "data": {"slug": "formal-dinner"},
-          "practices_concepts": ["arrays", "string-iteration"]
+          "data": {"slug": "formal-dinner"}
         },
         {
           "slug": "building-arrays",
@@ -1004,16 +933,14 @@
           "title": "Pack a Lunch",
           "description": "Fill a lunchbox with the right combination of items.",
           "type": "exercise",
-          "data": {"slug": "lunchbox"},
-          "practices_concepts": ["array-building", "if"]
+          "data": {"slug": "lunchbox"}
         },
         {
           "slug": "stars",
           "title": "Stars",
           "description": "Build a growing pattern of stars.",
           "type": "exercise",
-          "data": {"slug": "stars"},
-          "practices_concepts": ["array-building", "string-concatenation", "repeat"]
+          "data": {"slug": "stars"}
         },
         {
           "slug": "collecting-from-arrays",
@@ -1029,40 +956,35 @@
           "title": "Meal Prep",
           "description": "Work out which ingredients you need to buy for your recipe.",
           "type": "exercise",
-          "data": {"slug": "meal-prep"},
-          "practices_concepts": ["array-collecting"]
+          "data": {"slug": "meal-prep"}
         },
         {
           "slug": "process-guess",
           "title": "Wordle Process Guess",
           "description": "Check a Wordle guess and work out which letters are correct.",
           "type": "exercise",
-          "data": {"slug": "process-guess"},
-          "practices_concepts": ["array-collecting", "string-indexing"]
+          "data": {"slug": "process-guess"}
         },
         {
           "slug": "extract-words",
           "title": "Extract Words",
           "description": "Pull individual words out of a sentence.",
           "type": "exercise",
-          "data": {"slug": "extract-words"},
-          "practices_concepts": ["array-collecting", "string-iteration"]
+          "data": {"slug": "extract-words"}
         },
         {
           "slug": "chop-shop",
           "title": "The Chop Shop",
           "description": "Work out if the barber has time for one more customer.",
           "type": "exercise",
-          "data": {"slug": "chop-shop"},
-          "practices_concepts": ["array-collecting", "if"]
+          "data": {"slug": "chop-shop"}
         },
         {
           "slug": "wordle-process-game",
           "title": "Wordle Introduction",
           "description": "Process a whole Wordle game, colouring each guess row by row.",
           "type": "exercise",
-          "data": {"slug": "wordle-process-game"},
-          "practices_concepts": ["arrays", "array-collecting", "repeat"]
+          "data": {"slug": "wordle-process-game"}
         }
       ]
     },
@@ -1087,16 +1009,14 @@
           "title": "Lookup Time",
           "description": "Look up the current time for a city.",
           "type": "exercise",
-          "data": {"slug": "lookup-time"},
-          "practices_concepts": ["dictionaries"]
+          "data": {"slug": "lookup-time"}
         },
         {
           "slug": "scrabble-score",
           "title": "Scrabble Score",
           "description": "Calculate the score for a Scrabble word.",
           "type": "exercise",
-          "data": {"slug": "scrabble-score"},
-          "practices_concepts": ["dictionaries", "string-iteration"]
+          "data": {"slug": "scrabble-score"}
         },
         {
           "slug": "changing-dictionaries",
@@ -1112,24 +1032,21 @@
           "title": "RNA Transcription",
           "description": "Convert a DNA sequence into its RNA complement.",
           "type": "exercise",
-          "data": {"slug": "rna-transcription"},
-          "practices_concepts": ["dictionaries", "string-iteration"]
+          "data": {"slug": "rna-transcription"}
         },
         {
           "slug": "protein-translation",
           "title": "Protein Translation",
           "description": "Translate RNA sequences into proteins.",
           "type": "exercise",
-          "data": {"slug": "protein-translation"},
-          "practices_concepts": ["dictionaries", "string-iteration"]
+          "data": {"slug": "protein-translation"}
         },
         {
           "slug": "spotify",
           "title": "Spotify Data",
           "description": "Parse your listening data from Spotify.",
           "type": "exercise",
-          "data": {"slug": "spotify"},
-          "practices_concepts": ["dictionary-mutation"]
+          "data": {"slug": "spotify"}
         },
         {
           "slug": "building-dictionaries",
@@ -1145,24 +1062,21 @@
           "title": "Word Count",
           "description": "Count how many times each word appears in a sentence.",
           "type": "exercise",
-          "data": {"slug": "word-count"},
-          "practices_concepts": ["dictionary-building", "string-iteration"]
+          "data": {"slug": "word-count"}
         },
         {
           "slug": "llm-response",
           "title": "LLM Response",
           "description": "Parse and format the response from an AI chatbot.",
           "type": "exercise",
-          "data": {"slug": "llm-response"},
-          "practices_concepts": ["dictionaries", "dictionary-building"]
+          "data": {"slug": "llm-response"}
         },
         {
           "slug": "nucleotide-count",
           "title": "Nucleotide Count",
           "description": "Count all the different nucleotides in a DNA strand.",
           "type": "exercise",
-          "data": {"slug": "nucleotide-count"},
-          "practices_concepts": ["dictionary-building", "string-iteration"]
+          "data": {"slug": "nucleotide-count"}
         }
       ]
     }

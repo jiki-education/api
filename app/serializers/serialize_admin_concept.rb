@@ -12,7 +12,6 @@ class SerializeAdminConcept
       content_markdown: concept.content_markdown,
       video_data: concept.video_data,
       children_count: concept.children_count,
-      lesson_ids: concept.lesson_ids,
       ancestors: serialize_ancestors
     }
   end

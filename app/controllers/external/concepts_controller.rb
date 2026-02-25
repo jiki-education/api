@@ -4,7 +4,6 @@ class External::ConceptsController < ApplicationController
   def index
     concepts = Concept::Search.(
       title: params[:title],
-      parent_slug: params[:parent_slug],
       page: params[:page],
       per: params[:per],
       user: nil

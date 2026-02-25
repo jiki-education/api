@@ -6,10 +6,9 @@ class Concept::Search
 
   def self.default_per = DEFAULT_PER
 
-  def initialize(title: nil, slugs: nil, parent_slug: nil, page: nil, per: nil, user: nil)
+  def initialize(title: nil, slugs: nil, page: nil, per: nil, user: nil)
     @title = title
     @slugs = slugs
-    @parent_slug = parent_slug
     @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
     @per = per.present? && per.to_i.positive? ? per.to_i : self.class.default_per
     @user = user
@@ -20,14 +19,13 @@ class Concept::Search
 
     apply_title_filter!
     apply_slugs_filter!
-    apply_parent_slug_filter!
     apply_user_specific_ordering!
 
     @concepts.page(page).per(per)
   end
 
   private
-  attr_reader :title, :slugs, :parent_slug, :page, :per, :user
+  attr_reader :title, :slugs, :page, :per, :user
 
   def apply_title_filter!
     return if title.blank?
@@ -42,13 +40,6 @@ class Concept::Search
     return if slug_array.empty?
 
     @concepts = @concepts.where(slug: slug_array)
-  end
-
-  def apply_parent_slug_filter!
-    return if parent_slug.blank?
-
-    parent_id = Concept.where(slug: parent_slug).pick(:id)
-    @concepts = parent_id ? @concepts.where(parent_concept_id: parent_id) : Concept.none
   end
 
   def apply_user_specific_ordering!
