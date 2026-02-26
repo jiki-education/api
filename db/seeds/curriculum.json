@@ -13,7 +13,7 @@
           "description": "Meet Jiki and learn the basics of how coding works.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -29,7 +29,7 @@
           "description": "Learn about functions, the little machines that make things happen.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -45,7 +45,7 @@
           "description": "Learn how to give extra information to functions.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -84,7 +84,7 @@
           "description": "Learn how to use text in your programs.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -137,7 +137,7 @@
           "description": "Learn how to tell Jiki to do things multiple times.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -177,7 +177,7 @@
           "description": "Learn how to save and retrieve information in your programs.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -200,7 +200,7 @@
           "description": "Learn how to do maths with variables.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -239,7 +239,7 @@
           "description": "Learn how to change variable values as your code runs.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -278,7 +278,7 @@
           "description": "Learn how functions can give information back to you.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -301,7 +301,7 @@
           "description": "Learn different ways to specify exact colours.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -317,7 +317,7 @@
           "description": "Learn how to make things move on screen.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -333,7 +333,7 @@
           "description": "Learn how to add randomness to your programs.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -349,7 +349,7 @@
           "description": "Learn what happens to variables inside and outside of code blocks.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -372,7 +372,7 @@
           "description": "Learn how to run your code with different starting conditions.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -395,7 +395,7 @@
           "description": "Learn how to put loops inside other loops.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -427,7 +427,7 @@
           "description": "Learn how to make your code do different things in different situations.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -450,7 +450,7 @@
           "description": "Learn how to handle multiple different conditions.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -482,7 +482,7 @@
           "description": "Learn how to combine conditions together.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -505,7 +505,7 @@
           "description": "Learn about remainders and how to flip conditions.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -521,7 +521,7 @@
           "description": "Learn how to loop without knowing how many times upfront.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -546,7 +546,7 @@
           "description": "Learn how to combine conditions with changing data.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -578,7 +578,7 @@
           "description": "Learn how to create your own reusable machines.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -601,7 +601,7 @@
           "description": "Learn how to make your functions accept inputs.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -617,7 +617,7 @@
           "description": "Learn how to make your functions give back results.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -670,7 +670,7 @@
           "description": "Learn how to join bits of text together.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -709,7 +709,7 @@
           "description": "Learn how to access individual characters in text.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -725,7 +725,7 @@
           "description": "Learn how to go through text one character at a time.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -785,7 +785,7 @@
           "description": "Learn how to combine functions to solve bigger problems.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -824,7 +824,7 @@
           "description": "Learn how to use built-in tools that come attached to data.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -856,7 +856,7 @@
           "description": "Learn proper JavaScript loops with more control and flexibility.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -881,7 +881,7 @@
           "description": "Learn how to store collections of things in lists.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -925,7 +925,7 @@
           "description": "Learn how to build up lists piece by piece.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -948,7 +948,7 @@
           "description": "Learn how to pick out the items you need from a list.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -1001,7 +1001,7 @@
           "description": "Learn how to store data with named labels.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -1024,7 +1024,7 @@
           "description": "Learn how to update and modify dictionaries.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {
@@ -1054,7 +1054,7 @@
           "description": "Learn how to build up dictionaries from scratch.",
           "type": "video",
           "data": {
-            "sources": [{"host": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
         },
         {

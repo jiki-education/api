@@ -2,7 +2,7 @@ require "test_helper"
 
 class SerializeAdminConceptTest < ActiveSupport::TestCase
   test "serializes concept with all fields" do
-    video_sources = [{ host: "mux", id: "abc123" }]
+    video_sources = [{ provider: "mux", id: "abc123" }]
     lesson = create(:lesson, :video, data: { sources: video_sources })
     concept = create(:concept,
       title: "Loops",
