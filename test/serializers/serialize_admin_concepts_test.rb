@@ -3,11 +3,12 @@ require "test_helper"
 class SerializeAdminConceptsTest < ActiveSupport::TestCase
   test "serializes collection with all fields" do
     video_data = [{ provider: "youtube", id: "abc123" }]
+    lesson = create(:lesson, :exercise, walkthrough_video_data: video_data)
     concept = create(:concept,
       title: "Loops",
       slug: "loops",
       description: "Learn about loops",
-      video_data: video_data)
+      unlocked_by_lesson: lesson)
 
     result = SerializeAdminConcepts.([concept])
 

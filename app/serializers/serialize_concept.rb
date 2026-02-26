@@ -9,7 +9,7 @@ class SerializeConcept
       slug: concept.slug,
       description: concept.description,
       content_html: concept.content_html,
-      video_data: concept.video_data,
+      video_data: concept.unlocked_by_lesson&.walkthrough_video_data,
       children_count: concept.children_count,
       ancestors: serialize_ancestors
     }

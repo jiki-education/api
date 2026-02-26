@@ -2,12 +2,14 @@ require "test_helper"
 
 class SerializeAdminConceptTest < ActiveSupport::TestCase
   test "serializes concept with all fields" do
+    lesson = create(:lesson, :exercise,
+      walkthrough_video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }])
     concept = create(:concept,
       title: "Loops",
       slug: "loops",
       description: "Learn about loops",
       content_markdown: "# Loops",
-      video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }])
+      unlocked_by_lesson: lesson)
 
     result = SerializeAdminConcept.(concept)
 

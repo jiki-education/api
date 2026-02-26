@@ -2,12 +2,14 @@ require "test_helper"
 
 class SerializeConceptTest < ActiveSupport::TestCase
   test "serializes concept with all fields" do
+    lesson = create(:lesson, :exercise,
+      walkthrough_video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }])
     concept = create(:concept,
       title: "Loops",
       slug: "loops",
       description: "Learn about loops",
       content_markdown: "# Loops",
-      video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }])
+      unlocked_by_lesson: lesson)
 
     result = SerializeConcept.(concept)
 
@@ -17,6 +19,14 @@ class SerializeConceptTest < ActiveSupport::TestCase
     assert_includes result[:content_html], "Loops"
     expected_video_data = [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
     assert_equal expected_video_data, result[:video_data]
+  end
+
+  test "video_data is nil when no unlocked_by_lesson" do
+    concept = create(:concept)
+
+    result = SerializeConcept.(concept)
+
+    assert_nil result[:video_data]
   end
 
   test "does not include id" do

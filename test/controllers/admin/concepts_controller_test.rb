@@ -114,26 +114,6 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "POST create with video data" do
-    concept_params = {
-      concept: {
-        title: "Strings",
-        description: "Learn about strings",
-        content_markdown: "# Strings",
-        video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
-      }
-    }
-
-    post admin_concepts_path, params: concept_params, as: :json
-
-    assert_response :created
-
-    concept = Concept.last
-    assert_json_response({
-      concept: SerializeAdminConcept.(concept)
-    })
-  end
-
   test "POST create returns validation error for invalid attributes" do
     concept_params = {
       concept: {
