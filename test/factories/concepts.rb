@@ -4,10 +4,6 @@ FactoryBot.define do
     sequence(:description) { |n| "A brief description of Concept #{n}" }
     sequence(:content_markdown) { |n| "# Concept #{n}\n\nThis is the content for Concept #{n}." }
 
-    trait :with_video_data do
-      video_data { [{ provider: "youtube", id: "dQw4w9WgXcQ" }, { provider: "mux", id: "abc123def456" }] }
-    end
-
     trait :with_parent do
       association :parent, factory: :concept
     end

@@ -1,14 +1,10 @@
 class Concept < ApplicationRecord
-  include HasVideoData
-
   disable_sti!
 
   extend FriendlyId
   friendly_id :slug, use: [:history]
 
   MAX_DEPTH = 10
-
-  has_video_data :video_data
 
   belongs_to :unlocked_by_lesson, class_name: 'Lesson', optional: true
   belongs_to :parent,

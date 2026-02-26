@@ -10,7 +10,7 @@ class SerializeAdminConcept
       slug: concept.slug,
       description: concept.description,
       content_markdown: concept.content_markdown,
-      video_data: concept.video_data,
+      video_data: concept.unlocked_by_lesson&.data&.[](:sources),
       children_count: concept.children_count,
       ancestors: serialize_ancestors
     }

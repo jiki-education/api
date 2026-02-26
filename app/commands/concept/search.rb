@@ -15,7 +15,7 @@ class Concept::Search
   end
 
   def call
-    @concepts = Concept.order(:title)
+    @concepts = Concept.includes(:unlocked_by_lesson).order(:title)
 
     apply_title_filter!
     apply_slugs_filter!

@@ -9,7 +9,6 @@ class SerializeConcepts
         title: concept.title,
         slug: concept.slug,
         description: concept.description,
-        video_data: concept.video_data,
         children_count: concept.children_count,
         user_may_access: user_may_access?(concept)
       }

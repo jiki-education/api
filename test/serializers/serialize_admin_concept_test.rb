@@ -2,12 +2,14 @@ require "test_helper"
 
 class SerializeAdminConceptTest < ActiveSupport::TestCase
   test "serializes concept with all fields" do
+    video_sources = [{ provider: "mux", id: "abc123" }]
+    lesson = create(:lesson, :video, data: { sources: video_sources })
     concept = create(:concept,
       title: "Loops",
       slug: "loops",
       description: "Learn about loops",
       content_markdown: "# Loops",
-      video_data: [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }])
+      unlocked_by_lesson: lesson)
 
     result = SerializeAdminConcept.(concept)
 
@@ -16,8 +18,7 @@ class SerializeAdminConceptTest < ActiveSupport::TestCase
     assert_equal "loops", result[:slug]
     assert_equal "Learn about loops", result[:description]
     assert_equal "# Loops", result[:content_markdown]
-    expected_video_data = [{ provider: "youtube", id: "abc123" }, { provider: "mux", id: "def456" }]
-    assert_equal expected_video_data, result[:video_data]
+    assert_equal video_sources, result[:video_data]
   end
 
   test "includes children_count" do
