@@ -102,13 +102,6 @@
           "data": {"slug": "penguin"}
         },
         {
-          "slug": "sunshine",
-          "title": "Sunshine",
-          "description": "Add a bright sun to a weather scene.",
-          "type": "exercise",
-          "data": {"slug": "sunshine"}
-        },
-        {
           "slug": "cloud-rain-sun",
           "title": "Cloud, Rain and Sun",
           "description": "Create a full weather scene with clouds, rain and sunshine.",
@@ -374,6 +367,13 @@
           "data": {
             "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
           }
+        },
+        {
+          "slug": "golf-scenarios",
+          "title": "Golf Shot Scenarios",
+          "description": "Roll a ball to the correct spot.",
+          "type": "exercise",
+          "data": {"slug": "golf-scenarios"}
         },
         {
           "slug": "plant-the-flowers-scenarios",
@@ -959,11 +959,11 @@
           "data": {"slug": "meal-prep"}
         },
         {
-          "slug": "process-guess",
+          "slug": "wordle-process-guess",
           "title": "Wordle Process Guess",
           "description": "Check a Wordle guess and work out which letters are correct.",
           "type": "exercise",
-          "data": {"slug": "process-guess"}
+          "data": {"slug": "wordle-process-guess"}
         },
         {
           "slug": "extract-words",
