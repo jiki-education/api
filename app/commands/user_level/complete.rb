@@ -1,7 +1,7 @@
 class UserLevel::Complete
   include Mandate
 
-  initialize_with :user, :level
+  initialize_with :user_level
 
   def call
     user_level.with_lock do
@@ -19,16 +19,16 @@ class UserLevel::Complete
       create_next_user_level!
 
       # Send completion email asynchronously after transaction completes
-      send_completion_email!(user_level)
+      send_completion_email!
     end
 
     user_level
   end
 
-  memoize
-  def user_level = UserLevel::Find.(user, level)
-
   private
+  delegate :user, to: :user_level
+  delegate :level, to: :user_level
+
   def validate_all_lessons_complete!
     total_lessons = level.lessons.count
     completed_lessons = UserLesson.where(user: user, lesson: level.lessons).
@@ -46,7 +46,7 @@ class UserLevel::Complete
     UserLevel::Start.(user, next_level)
   end
 
-  def send_completion_email!(user_level)
+  def send_completion_email!
     User::SendEmail.(user_level) do
       ProgressionMailer.level_completed(user_level).deliver_later
     end
