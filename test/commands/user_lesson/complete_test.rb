@@ -8,10 +8,9 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)
 
-    result = UserLesson::Complete.(user, lesson)
+    UserLesson::Complete.(user, lesson)
 
-    assert_equal user_lesson.id, result.id
-    assert result.completed_at.present?
+    assert user_lesson.reload.completed_at.present?
   end
 
   test "raises error if user_lesson doesn't exist" do
@@ -28,12 +27,13 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     level = create(:level)
     lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
-    create(:user_lesson, user:, lesson:)
+    user_lesson = create(:user_lesson, user:, lesson:)
 
     time_before = Time.current
-    user_lesson = UserLesson::Complete.(user, lesson)
+    UserLesson::Complete.(user, lesson)
     time_after = Time.current
 
+    user_lesson.reload
     assert user_lesson.completed_at >= time_before
     assert user_lesson.completed_at <= time_after
   end
@@ -46,10 +46,10 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user_lesson = create(:user_lesson, user:, lesson:, completed_at: 1.day.ago)
     old_completed_at = user_lesson.completed_at
 
-    result = UserLesson::Complete.(user, lesson)
+    UserLesson::Complete.(user, lesson)
 
     # Timestamp should not change on re-completion (idempotent)
-    assert_equal old_completed_at.to_i, result.completed_at.to_i
+    assert_equal old_completed_at.to_i, user_lesson.reload.completed_at.to_i
   end
 
   test "delegates to UserLesson::Find for lookup" do
@@ -64,19 +64,6 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     UserLesson::Complete.(user, lesson)
   end
 
-  test "returns the completed user_lesson" do
-    user = create(:user)
-    level = create(:level)
-    lesson = create(:lesson, :exercise, level:)
-    create(:user_level, user:, level:)
-    create(:user_lesson, user:, lesson:)
-
-    result = UserLesson::Complete.(user, lesson)
-
-    assert_instance_of UserLesson, result
-    assert result.completed_at.present?
-  end
-
   test "preserves created_at when completing" do
     user = create(:user)
     level = create(:level)
@@ -86,9 +73,9 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     user_lesson = create(:user_lesson, user:, lesson:)
     user_lesson.update_column(:created_at, created_time)
 
-    result = UserLesson::Complete.(user, lesson)
+    UserLesson::Complete.(user, lesson)
 
-    assert_equal created_time.to_i, result.created_at.to_i
+    assert_equal created_time.to_i, user_lesson.reload.created_at.to_i
   end
 
   test "logs activity" do
@@ -131,9 +118,9 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
   test "clears existing current_user_lesson on user_level" do
     user_level = create(:user_level)
-    lesson1 = create(:lesson, :exercise, level: user_level.level, slug: "first-lesson")
-    lesson2 = create(:lesson, :exercise, level: user_level.level, slug: "second-lesson")
-    user_lesson1 = create(:user_lesson, user: user_level.user, lesson: lesson1)
+    lesson1 = create(:lesson, :exercise, level: user_level.level, slug: "first-lesson", position: 1)
+    lesson2 = create(:lesson, :exercise, level: user_level.level, slug: "second-lesson", position: 2)
+    user_lesson1 = create(:user_lesson, user: user_level.user, lesson: lesson1, completed_at: Time.current)
     create(:user_lesson, user: user_level.user, lesson: lesson2)
     user_level.update!(current_user_lesson: user_lesson1)
 
@@ -298,7 +285,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal "second-lesson", lesson_unlocked_events.first[:data][:lesson_slug]
   end
 
-  test "does not emit lesson_unlocked event when it is the last lesson in the level" do
+  test "does not emit lesson_unlocked event when it is the last lesson and no next level" do
     user = create(:user)
     level = create(:level)
     lesson = create(:lesson, :exercise, level:, slug: "only-lesson", position: 1)
@@ -311,6 +298,26 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     events = Current.events || []
     lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
     assert_equal 0, lesson_unlocked_events.length
+  end
+
+  test "emits lesson_unlocked event for first lesson of next level when completing last lesson" do
+    user = create(:user)
+    course = create(:course)
+    level1 = create(:level, course:, position: 1, slug: "level-one")
+    level2 = create(:level, course:, position: 2, slug: "level-two")
+    lesson1 = create(:lesson, :exercise, level: level1, slug: "level1-lesson", position: 1)
+    create(:lesson, :exercise, level: level2, slug: "level2-first-lesson", position: 1)
+    create(:user_course, user:, course:)
+    create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson: lesson1)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson1)
+
+    events = Current.events || []
+    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
+    assert_equal 1, lesson_unlocked_events.length
+    assert_equal "level2-first-lesson", lesson_unlocked_events.first[:data][:lesson_slug]
   end
 
   test "lesson_unlocked event contains correct slug for next lesson by position" do
@@ -330,20 +337,74 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal "lesson-three", lesson_unlocked_event[:data][:lesson_slug]
   end
 
-  test "does not emit lesson_unlocked event for next level's lessons" do
+  # Level auto-completion tests
+  test "auto-completes level when completing the last lesson" do
     user = create(:user)
-    level1 = create(:level, position: 1, slug: "level-one")
-    level2 = create(:level, position: 2, slug: "level-two")
-    lesson1 = create(:lesson, :exercise, level: level1, slug: "level1-lesson", position: 1)
-    create(:lesson, :exercise, level: level2, slug: "level2-lesson", position: 1)
-    create(:user_level, user:, level: level1)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:, position: 1)
+    user_level = create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    UserLesson::Complete.(user, lesson)
+
+    assert user_level.reload.completed_at.present?
+  end
+
+  test "auto-completes level when completing last of multiple lessons" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, :exercise, level:, position: 1)
+    lesson2 = create(:lesson, :exercise, level:, position: 2)
+    user_level = create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson1, completed_at: Time.current)
+    create(:user_lesson, user:, lesson: lesson2)
+
+    UserLesson::Complete.(user, lesson2)
+
+    assert user_level.reload.completed_at.present?
+  end
+
+  test "does not auto-complete level when non-last lesson is completed" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, :exercise, level:, position: 1)
+    create(:lesson, :exercise, level:, position: 2)
+    user_level = create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson: lesson1)
 
-    Current.reset
     UserLesson::Complete.(user, lesson1)
 
-    events = Current.events || []
-    lesson_unlocked_events = events.select { |e| e[:type] == "lesson_unlocked" }
-    assert_equal 0, lesson_unlocked_events.length
+    assert_nil user_level.reload.completed_at
+  end
+
+  test "auto-completing level creates next user_level" do
+    user = create(:user)
+    course = create(:course)
+    level1 = create(:level, course:, position: 1)
+    level2 = create(:level, course:, position: 2)
+    lesson = create(:lesson, :exercise, level: level1, position: 1)
+    create(:user_course, user:, course:)
+    create(:user_level, user:, level: level1)
+    create(:user_lesson, user:, lesson:)
+
+    UserLesson::Complete.(user, lesson)
+
+    next_user_level = UserLevel.find_by(user:, level: level2)
+    refute_nil next_user_level
+    assert_nil next_user_level.completed_at
+  end
+
+  test "idempotent lesson completion does not re-trigger level completion" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:, position: 1)
+    user_level = create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: 1.day.ago)
+    user_level.update!(completed_at: 1.day.ago)
+    old_completed_at = user_level.completed_at
+
+    UserLesson::Complete.(user, lesson)
+
+    assert_equal old_completed_at.to_i, user_level.reload.completed_at.to_i
   end
 end
