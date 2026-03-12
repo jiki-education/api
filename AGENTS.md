@@ -274,6 +274,7 @@ Always read `test/test_helper.rb` to understand available helpers and configurat
 - **Never** `git reset --hard`, `git checkout .`, or any command that loses uncommitted changes.
 - **Never** use slashes in branch names. Use hyphens instead (e.g., `add-login-page` not `add/login-page`).
 - **Never** reset, checkout, or discard content in files you haven't edited yourself.
+- **Never** amend commits unless explicitely instructed. Just add new commits to PRs.
 
 ---
 
