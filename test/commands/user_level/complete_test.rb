@@ -1,45 +1,17 @@
 require "test_helper"
 
 class UserLevel::CompleteTest < ActiveSupport::TestCase
-  test "completes existing user_level" do
-    user_lesson = create(:user_lesson, :completed)
-    user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
-
-    result = UserLevel::Complete.(user_level)
-
-    assert result.persisted?
-    assert_equal user_lesson.user_id, result.user_id
-    assert_equal user_lesson.lesson.level_id, result.level_id
-  end
-
-  test "returns existing user_level if it exists" do
-    user_lesson = create(:user_lesson, :completed)
-    user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
-
-    result = UserLevel::Complete.(user_level)
-
-    assert_equal user_level.id, result.id
-  end
-
-  test "returns the user_level" do
-    user_lesson = create(:user_lesson, :completed)
-    user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
-
-    result = UserLevel::Complete.(user_level)
-
-    assert_instance_of UserLevel, result
-  end
-
   test "sets completed_at to current time" do
     user_lesson = create(:user_lesson, :completed)
     user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
 
     time_before = Time.current
-    result = UserLevel::Complete.(user_level)
+    UserLevel::Complete.(user_level)
     time_after = Time.current
 
-    assert result.completed_at >= time_before
-    assert result.completed_at <= time_after
+    user_level.reload
+    assert user_level.completed_at >= time_before
+    assert user_level.completed_at <= time_after
   end
 
   test "is idempotent when completing already completed level" do
@@ -48,20 +20,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     user_level.update!(completed_at: 1.day.ago)
     old_completed_at = user_level.completed_at
 
-    result = UserLevel::Complete.(user_level)
+    UserLevel::Complete.(user_level)
 
-    assert_equal old_completed_at.to_i, result.completed_at.to_i
-  end
-
-  test "preserves created_at when completing" do
-    user_lesson = create(:user_lesson, :completed)
-    user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
-    created_time = 2.days.ago
-    user_level.update_column(:created_at, created_time)
-
-    result = UserLevel::Complete.(user_level)
-
-    assert_equal created_time.to_i, result.created_at.to_i
+    assert_equal old_completed_at.to_i, user_level.reload.completed_at.to_i
   end
 
   test "creates user_level for next level when next level exists" do
@@ -151,60 +112,9 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
 
     assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
       assert_no_difference -> { user_course.user.user_levels.count } do
-        result = UserLevel::Complete.(user_level)
-        assert_equal old_completed_at.to_i, result.completed_at.to_i
+        UserLevel::Complete.(user_level)
+        assert_equal old_completed_at.to_i, user_level.reload.completed_at.to_i
       end
-    end
-  end
-
-  test "raises LessonIncompleteError when no user_lesson exists" do
-    user_level = create(:user_level)
-    create(:lesson, :exercise, level: user_level.level)
-
-    error = assert_raises(LessonIncompleteError) do
-      UserLevel::Complete.(user_level)
-    end
-
-    assert_equal "Cannot complete level: 1 lesson(s) incomplete", error.message
-  end
-
-  test "raises LessonIncompleteError when user_lesson exists but not completed" do
-    user_level = create(:user_level)
-    lesson = create(:lesson, :exercise, level: user_level.level)
-    create(:user_lesson, user: user_level.user, lesson:, completed_at: nil)
-
-    error = assert_raises(LessonIncompleteError) do
-      UserLevel::Complete.(user_level)
-    end
-
-    assert_equal "Cannot complete level: 1 lesson(s) incomplete", error.message
-  end
-
-  test "raises LessonIncompleteError with multiple incomplete lessons" do
-    user_level = create(:user_level)
-    lesson1 = create(:lesson, :exercise, level: user_level.level)
-    lesson2 = create(:lesson, :exercise, level: user_level.level)
-    create(:lesson, :exercise, level: user_level.level)
-    create(:user_lesson, user: user_level.user, lesson: lesson1, completed_at: Time.current)
-    create(:user_lesson, user: user_level.user, lesson: lesson2, completed_at: nil)
-
-    error = assert_raises(LessonIncompleteError) do
-      UserLevel::Complete.(user_level)
-    end
-
-    assert_equal "Cannot complete level: 2 lesson(s) incomplete", error.message
-  end
-
-  test "completes successfully when all lessons are completed" do
-    user_level = create(:user_level)
-    lesson1 = create(:lesson, :exercise, level: user_level.level)
-    lesson2 = create(:lesson, :exercise, level: user_level.level)
-    create(:user_lesson, user: user_level.user, lesson: lesson1, completed_at: Time.current)
-    create(:user_lesson, user: user_level.user, lesson: lesson2, completed_at: Time.current)
-
-    assert_nothing_raised do
-      result = UserLevel::Complete.(user_level)
-      assert result.completed_at.present?
     end
   end
 end

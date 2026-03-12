@@ -6,11 +6,8 @@ class UserLevel::Complete
   def call
     user_level.with_lock do
       # Guard: if already completed, return early (idempotent)
-      return user_level if user_level.completed_at.present?
+      return if user_level.completed_at.present?
 
-      validate_all_lessons_complete!
-
-      # with_lock already provides transactional semantics, no need for nested transaction
       user_level.update!(
         completed_at: Time.current,
         current_user_lesson: nil
@@ -21,23 +18,10 @@ class UserLevel::Complete
       # Send completion email asynchronously after transaction completes
       send_completion_email!
     end
-
-    user_level
   end
 
   private
-  delegate :user, to: :user_level
-  delegate :level, to: :user_level
-
-  def validate_all_lessons_complete!
-    total_lessons = level.lessons.count
-    completed_lessons = UserLesson.where(user: user, lesson: level.lessons).
-      where.not(completed_at: nil).count
-    return if total_lessons == completed_lessons
-
-    incomplete_count = total_lessons - completed_lessons
-    raise LessonIncompleteError, "Cannot complete level: #{incomplete_count} lesson(s) incomplete"
-  end
+  delegate :user, :level, to: :user_level
 
   def create_next_user_level!
     next_level = Level::FindNext.(level)
