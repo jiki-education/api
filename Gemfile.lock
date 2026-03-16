@@ -302,7 +302,7 @@ GEM
     minitest-retry (0.3.1)
       minitest (>= 5.0)
     mjml-rails (4.16.0)
-    mocha (3.0.2)
+    mocha (3.1.0)
       ruby2_keywords (>= 0.0.5)
     mrml (1.10.0-aarch64-linux)
     mrml (1.10.0-aarch64-linux-musl)
