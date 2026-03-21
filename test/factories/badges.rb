@@ -7,6 +7,7 @@ FactoryBot.define do
     member
     maze_navigator
     early_bird
+    night_owl
   ].each do |type|
     factory "#{type}_badge", class: "Badges::#{type.to_s.camelize}Badge"
   end
