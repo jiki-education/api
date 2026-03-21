@@ -112,7 +112,7 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
   end
 
   test "delegates secret to badge" do
-    badge = create(:test_secret_badge)
+    badge = create(:early_bird_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
     assert acquired_badge.secret

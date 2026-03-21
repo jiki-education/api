@@ -8,7 +8,7 @@ class BadgeTest < ActiveSupport::TestCase
 
     assert_equal 1, Badge.count
     assert_equal 'Member', badge.name
-    assert_equal 'logo', badge.icon
+    assert_equal 'member', badge.icon
     assert_equal 'Joined Jiki', badge.description
     refute badge.secret
     assert_instance_of Badges::MemberBadge, badge

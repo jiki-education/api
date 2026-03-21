@@ -39,6 +39,7 @@ class UserLesson::Complete
 
     # Check for badges that might be awarded (badge's award_to? determines eligibility)
     AwardBadgeJob.perform_later(user, 'maze_navigator')
+    AwardBadgeJob.perform_later(user, 'scenario_handler')
 
     # Log activity for streak tracking
     User::ActivityLog::LogActivity.(user, Date.current)

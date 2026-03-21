@@ -13,7 +13,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   test "GET index returns all non-secret badges and excludes secret badges" do
     create(:member_badge)
     create(:maze_navigator_badge)
-    create(:test_secret_badge)
+    create(:early_bird_badge)
 
     get internal_badges_path, as: :json
 
@@ -25,7 +25,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   end
 
   test "GET index includes acquired secret badges" do
-    secret_badge = create(:test_secret_badge)
+    secret_badge = create(:early_bird_badge)
     create(:user_acquired_badge, user: @current_user, badge: secret_badge)
 
     get internal_badges_path, as: :json
@@ -40,7 +40,7 @@ class Internal::BadgesControllerTest < ApplicationControllerTest
   test "GET index returns badges with correct states" do
     create(:member_badge)
     unrevealed_badge = create(:maze_navigator_badge)
-    revealed_badge = create(:test_secret_badge)
+    revealed_badge = create(:early_bird_badge)
 
     create(:user_acquired_badge, user: @current_user, badge: unrevealed_badge, revealed: false)
     create(:user_acquired_badge, :revealed, user: @current_user, badge: revealed_badge)
