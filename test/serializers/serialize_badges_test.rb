@@ -5,35 +5,35 @@ class SerializeBadgesTest < ActiveSupport::TestCase
     user = create(:user)
     create(:member_badge)
     create(:maze_navigator_badge)
-    create(:test_secret_badge)
+    create(:early_bird_badge)
 
     result = SerializeBadges.(user)
 
     badge_names = result.map { |b| b[:name] }
     assert_includes badge_names, "Member"
     assert_includes badge_names, "Maze Navigator"
-    refute_includes badge_names, "Secret Badge"
+    refute_includes badge_names, "Early Bird"
   end
 
   test "includes acquired secret badges" do
     user = create(:user)
-    secret_badge = create(:test_secret_badge)
+    secret_badge = create(:early_bird_badge)
     create(:user_acquired_badge, user:, badge: secret_badge)
 
     result = SerializeBadges.(user)
 
     badge_names = result.map { |b| b[:name] }
-    assert_includes badge_names, "Secret Badge"
+    assert_includes badge_names, "Early Bird"
   end
 
   test "excludes non-acquired secret badges" do
     user = create(:user)
-    create(:test_secret_badge)
+    create(:early_bird_badge)
 
     result = SerializeBadges.(user)
 
     badge_names = result.map { |b| b[:name] }
-    refute_includes badge_names, "Secret Badge"
+    refute_includes badge_names, "Early Bird"
   end
 
   test "sets state to locked for non-acquired badges" do
@@ -87,7 +87,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
     user = create(:user)
     badge1 = create(:member_badge)
     badge2 = create(:maze_navigator_badge)
-    badge3 = create(:test_secret_badge)
+    badge3 = create(:early_bird_badge)
     create(:user_acquired_badge, user:, badge: badge3) # Acquire secret badge so it's included
 
     result = SerializeBadges.(user)
