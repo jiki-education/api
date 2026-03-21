@@ -82,7 +82,7 @@ class Badges::NightOwlBadgeTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(timezone: "Asia/Karachi") # UTC+5
     lesson = create(:lesson, :exercise)
-    # 10pm UTC = 3am in Asia/Karachi (UTC+5) - should be true (3am is night owl time)
+    # 10pm UTC = 3am in Asia/Karachi (UTC+5) - 3am is outside the 9pm-2:30am window
     create(:user_lesson, :completed, user:, lesson:, completed_at: Time.utc(2026, 3, 21, 22, 0, 0))
 
     refute badge.award_to?(user)

@@ -5,6 +5,7 @@ module Badges
                 "There's something magical about coding when the world is asleep!",
       secret: true
 
+    # Loads completed lessons into memory since timezone conversion can't easily be done in SQL
     def award_to?(user)
       user.user_lessons.completed.any? do |ul|
         night_owl_time?(ul.completed_at, user.timezone)
