@@ -134,19 +134,19 @@
           }
         },
         {
+          "slug": "golf-rolling-ball-loop",
+          "title": "Golf Rolling Ball Loop",
+          "description": "Roll a golf ball into the hole using a loop.",
+          "type": "exercise",
+          "data": {"slug": "golf-rolling-ball-loop"}
+        },
+        {
           "slug": "maze-solve-repeat",
           "title": "Maze Solve Repeat",
           "description": "Refactor a maze solution to use loops instead of repeated code.",
           "type": "exercise",
           "data": {"slug": "maze-solve-repeat"},
           "walkthrough_video_data": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
-        },
-        {
-          "slug": "golf-rolling-ball-loop",
-          "title": "Golf Rolling Ball Loop",
-          "description": "Roll a golf ball into the hole using a loop.",
-          "type": "exercise",
-          "data": {"slug": "golf-rolling-ball-loop"}
         },
         {
           "slug": "space-invaders-repeat",
@@ -376,11 +376,11 @@
           "data": {"slug": "golf-scenarios"}
         },
         {
-          "slug": "plant-the-flowers-scenarios",
-          "title": "Plant the Flowers - Scenarios",
+          "slug": "owners-bouquets",
+          "title": "Owner's Bouquets",
           "description": "Plant flowers in different garden layouts.",
           "type": "exercise",
-          "data": {"slug": "plant-the-flowers-scenarios"}
+          "data": {"slug": "owners-bouquets"}
         },
         {
           "slug": "cityscape-skyscraper",

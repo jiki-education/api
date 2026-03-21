@@ -170,7 +170,8 @@ badge_classes = [
   Badges::FirstLessonBadge,
   Badges::EarlyBirdBadge,
   Badges::LevelCompletionistBadge,
-  Badges::RapidLearnerBadge
+  Badges::RapidLearnerBadge,
+  Badges::ScenarioHandlerBadge
 ]
 
 badge_classes.each do |badge_class|
