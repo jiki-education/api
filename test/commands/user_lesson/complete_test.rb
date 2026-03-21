@@ -239,6 +239,18 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     end
   end
 
+  test "enqueues scenario handler badge job on lesson completion" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'scenario_handler']) do
+      UserLesson::Complete.(user, lesson)
+    end
+  end
+
   test "awards maze navigator badge only when criteria is met" do
     user = create(:user)
     level = create(:level)
