@@ -68,5 +68,12 @@
     "description": "Navigate mazes collecting emojis and tallying up your haul.",
     "exercise_slug": "emoji-collector",
     "unlocked_by_lesson_slug": "nucleotide-count"
+  },
+  {
+    "slug": "cityscape-skyline",
+    "title": "Cityscape Skyline",
+    "description": "Build a city skyline with rows of skyscrapers.",
+    "exercise_slug": "cityscape-skyline",
+    "unlocked_by_lesson_slug": "cityscape-skyscraper"
   }
 ]
