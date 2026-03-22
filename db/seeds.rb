@@ -168,7 +168,8 @@ badge_classes = [
   Badges::MazeNavigatorBadge,
   Badges::FirstLessonBadge,
   Badges::EarlyBirdBadge,
-  Badges::ScenarioHandlerBadge
+  Badges::ScenarioHandlerBadge,
+  Badges::NightOwlBadge
 ]
 
 badge_classes.each do |badge_class|
