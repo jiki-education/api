@@ -41,9 +41,9 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     # Second run
     Level::CreateAllFromJson.(course, file_path.to_s)
 
-    # Verify counts haven't changed (17 levels, 122 lessons total)
+    # Verify counts haven't changed (17 levels, 121 lessons total)
     assert_equal 17, Level.count
-    assert_equal 122, Lesson.count
+    assert_equal 121, Lesson.count
   end
 
   test "raises error for non-existent file" do
