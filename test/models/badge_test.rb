@@ -8,7 +8,6 @@ class BadgeTest < ActiveSupport::TestCase
 
     assert_equal 1, Badge.count
     assert_equal 'Member', badge.name
-    assert_equal 'member', badge.icon
     assert_equal 'Joined Jiki', badge.description
     refute badge.secret
     assert_instance_of Badges::MemberBadge, badge
@@ -54,7 +53,7 @@ class BadgeTest < ActiveSupport::TestCase
 
   test "award_to? must be implemented by subclasses" do
     # Create a badge instance directly (bypassing factory) to test the base class
-    badge = Badge.new(name: "Test", icon: "test", description: "test", type: "Badge")
+    badge = Badge.new(name: "Test", description: "test", type: "Badge")
     user = create(:user)
 
     assert_raises NotImplementedError do

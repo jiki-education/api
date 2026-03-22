@@ -1,7 +1,7 @@
 module Badges
   class NightOwlBadge < Badge
-    seed "Night Owl", "owl", "Completed a lesson in the wee hours",
-      fun_fact: "Jeremy grew up coding late into the night." \
+    seed "Night Owl", "Completed a lesson in the late-night hours",
+      fun_fact: "Jeremy grew up coding late into the night. " \
                 "There's something magical about coding when the world is asleep!",
       secret: true
 

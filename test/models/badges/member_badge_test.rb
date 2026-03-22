@@ -5,7 +5,6 @@ class Badges::MemberBadgeTest < ActiveSupport::TestCase
     badge = Badge.find_by_slug!('member') # rubocop:disable Rails/DynamicFindBy
 
     assert_equal 'Member', badge.name
-    assert_equal 'member', badge.icon
     assert_equal 'Joined Jiki', badge.description
     refute badge.secret
   end
