@@ -5,7 +5,6 @@ class Badges::MazeNavigatorBadgeTest < ActiveSupport::TestCase
     badge = Badge.find_by_slug!('maze_navigator') # rubocop:disable Rails/DynamicFindBy
 
     assert_equal 'Maze Navigator', badge.name
-    assert_equal 'maze', badge.icon
     assert_equal 'Completed the Solve a Maze lesson', badge.description
     refute badge.secret
   end

@@ -5,7 +5,6 @@ class Badges::ScenarioHandlerBadgeTest < ActiveSupport::TestCase
     badge = Badge.find_by_slug!('scenario_handler') # rubocop:disable Rails/DynamicFindBy
 
     assert_equal 'Scenario Handler', badge.name
-    assert_equal 'scenario_handler', badge.icon
     assert_equal "Solve an Exercise with Scenarios", badge.description
     refute badge.secret
   end

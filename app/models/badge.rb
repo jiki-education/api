@@ -9,10 +9,9 @@ class Badge < ApplicationRecord
   self.translatable_fields = %i[name description fun_fact email_subject email_content_markdown]
 
   # Class method to store badge metadata
-  def self.seed(name, icon, description, fun_fact: nil, secret: false)
+  def self.seed(name, description, fun_fact: nil, secret: false)
     @seed_data = {
       name:,
-      icon:,
       description:,
       fun_fact:,
       secret:
@@ -41,7 +40,6 @@ class Badge < ApplicationRecord
     next unless seed_data
 
     self.name = seed_data[:name]
-    self.icon = seed_data[:icon]
     self.description = seed_data[:description]
     self.fun_fact = seed_data[:fun_fact]
     self.secret = seed_data[:secret]

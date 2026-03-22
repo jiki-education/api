@@ -1,6 +1,6 @@
 module Badges
   class MazeNavigatorBadge < Badge
-    seed "Maze Navigator", "maze", "Completed the Solve a Maze lesson",
+    seed "Maze Navigator", "Completed the Solve a Maze lesson",
       fun_fact: "Maze-solving algorithms are used in robotics, game AI, and even GPS navigation!"
 
     def award_to?(user)

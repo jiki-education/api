@@ -1,6 +1,6 @@
 module Badges
   class EarlyBirdBadge < Badge
-    seed "Early Bird", "early_bird", "Joined during early access",
+    seed "Early Bird", "Joined during early access",
       fun_fact: "Early adopters help shape the future of products. Thank you for believing in us!",
       secret: true
 

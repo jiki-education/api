@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_26_104614) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_21_215424) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -75,7 +75,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_26_104614) do
     t.string "email_image_url", default: "", null: false
     t.text "email_subject", default: "", null: false
     t.text "fun_fact"
-    t.string "icon", null: false
     t.string "name", null: false
     t.integer "num_awardees", default: 0, null: false
     t.boolean "secret", default: false, null: false

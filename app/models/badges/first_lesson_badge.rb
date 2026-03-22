@@ -1,6 +1,6 @@
 module Badges
   class FirstLessonBadge < Badge
-    seed "First Steps", "first_lesson", "Completed your first lesson",
+    seed "First Steps", "Completed your first lesson",
       fun_fact: "The hardest part of any journey is taking the first step. You did it!"
 
     def award_to?(user)
