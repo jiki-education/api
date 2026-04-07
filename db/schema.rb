@@ -141,6 +141,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_08_163016) do
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
+  create_table "lesson_concepts", force: :cascade do |t|
+    t.bigint "concept_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "lesson_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["concept_id"], name: "index_lesson_concepts_on_concept_id"
+    t.index ["lesson_id", "concept_id"], name: "index_lesson_concepts_on_lesson_id_and_concept_id", unique: true
+    t.index ["lesson_id"], name: "index_lesson_concepts_on_lesson_id"
+  end
+
   create_table "lesson_translations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description", null: false
@@ -511,6 +521,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_08_163016) do
   add_foreign_key "concepts", "concepts", column: "parent_concept_id", on_delete: :nullify
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
+  add_foreign_key "lesson_concepts", "concepts"
+  add_foreign_key "lesson_concepts", "lessons"
   add_foreign_key "lesson_translations", "lessons"
   add_foreign_key "lessons", "levels"
   add_foreign_key "level_translations", "levels"
