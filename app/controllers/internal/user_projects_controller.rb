@@ -11,4 +11,14 @@ class Internal::UserProjectsController < Internal::BaseController
       user_project: SerializeUserProject.(user_project)
     }
   end
+
+  def complete
+    user_project = UserProject.find_by(user: current_user, project: @project)
+
+    return render_404(:user_project_not_found) unless user_project
+
+    UserProject::Complete.(user_project)
+
+    render json: {}
+  end
 end

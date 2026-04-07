@@ -114,7 +114,11 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :user_projects, only: [:show], param: :project_slug
+    resources :user_projects, only: [:show], param: :project_slug do
+      member do
+        patch :complete
+      end
+    end
 
     resources :user_videos, only: %i[index show update], param: :slug
 
