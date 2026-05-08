@@ -76,6 +76,10 @@ class ApplicationController < ActionController::API
     Rails.logger.warn "[DEV AUTH] Authenticated as user #{user.id} via URL parameter"
   end
 
+  def require_premium!
+    render_403(:premium_required) unless current_user&.premium?
+  end
+
   def use_lesson!
     @lesson = Lesson.find_by!(slug: params[:lesson_slug])
   rescue ActiveRecord::RecordNotFound

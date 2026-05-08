@@ -3,6 +3,7 @@ require "test_helper"
 class Internal::UserProjectsControllerTest < ApplicationControllerTest
   setup do
     setup_user
+    @current_user.data.update!(membership_type: "premium")
     @project = create(:project)
   end
 
@@ -35,5 +36,14 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_json_error(:not_found, error_type: :project_not_found)
+  end
+
+  test "GET show returns 403 for non-premium user" do
+    @current_user.data.update!(membership_type: "standard")
+
+    get internal_user_project_path(project_slug: @project.slug),
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :premium_required)
   end
 end

@@ -1,4 +1,5 @@
 class Internal::UserProjectsController < Internal::BaseController
+  before_action :require_premium!
   before_action :use_project!
 
   def show

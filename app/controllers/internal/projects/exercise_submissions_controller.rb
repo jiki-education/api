@@ -1,4 +1,5 @@
 class Internal::Projects::ExerciseSubmissionsController < Internal::BaseController
+  before_action :require_premium!
   before_action :use_project!
 
   rescue_from DuplicateFilenameError, with: :render_duplicate_filename_error
