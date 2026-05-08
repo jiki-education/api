@@ -114,6 +114,8 @@ Rails.application.routes.draw do
 
     resources :user_projects, only: [:show], param: :project_slug
 
+    resources :user_videos, only: %i[index update], param: :slug
+
     resources :concepts, only: %i[index show], param: :concept_slug do
       collection do
         get :unlocked
