@@ -175,6 +175,25 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "GET index is accessible to non-premium users" do
+    Prosopite.finish
+    @current_user.data.update!(membership_type: "standard")
+    project = create(:project, title: "Calculator")
+
+    get internal_projects_path, as: :json
+
+    assert_response :success
+    assert_json_response({
+      results: SerializeProjects.([project], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
+  end
+
   # GET /v1/projects/:slug (show) tests
   test "GET show returns project by slug" do
     Prosopite.finish
