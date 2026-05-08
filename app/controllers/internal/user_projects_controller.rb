@@ -15,7 +15,7 @@ class Internal::UserProjectsController < Internal::BaseController
   def complete
     user_project = UserProject.find_by(user: current_user, project: @project)
 
-    return render_404(:user_project_not_found) unless user_project
+    return render_422(:user_project_not_found) unless user_project
 
     UserProject::Complete.(user_project)
 
