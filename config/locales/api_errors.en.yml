@@ -6,6 +6,7 @@ en:
     unconfirmed: "Please confirm your email address"
     forbidden: "Admin access required"
     access_denied: "Access denied"
+    premium_required: "This feature is only available to premium members"
     invalid_signature: "Invalid signature"
 
     # Token errors

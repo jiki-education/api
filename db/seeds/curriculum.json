@@ -936,15 +936,6 @@
           "data": {"slug": "stars"}
         },
         {
-          "slug": "collecting-from-arrays",
-          "title": "Collecting from Arrays",
-          "description": "Learn how to pick out the items you need from a list.",
-          "type": "video",
-          "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
-          }
-        },
-        {
           "slug": "meal-prep",
           "title": "Meal Prep",
           "description": "Work out which ingredients you need to buy for your recipe.",
@@ -1040,15 +1031,6 @@
           "description": "Parse your listening data from Spotify.",
           "type": "exercise",
           "data": {"slug": "spotify"}
-        },
-        {
-          "slug": "building-dictionaries",
-          "title": "Building Dictionaries",
-          "description": "Learn how to build up dictionaries from scratch.",
-          "type": "video",
-          "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
-          }
         },
         {
           "slug": "word-count",

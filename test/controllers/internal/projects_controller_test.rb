@@ -3,6 +3,7 @@ require "test_helper"
 class Internal::ProjectsControllerTest < ApplicationControllerTest
   setup do
     setup_user
+    @current_user.data.update!(membership_type: "premium")
   end
 
   # Authentication guards
@@ -174,6 +175,25 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "GET index is accessible to non-premium users" do
+    Prosopite.finish
+    @current_user.data.update!(membership_type: "standard")
+    project = create(:project, title: "Calculator")
+
+    get internal_projects_path, as: :json
+
+    assert_response :success
+    assert_json_response({
+      results: SerializeProjects.([project], for_user: @current_user),
+      meta: {
+        current_page: 1,
+        total_pages: 1,
+        total_count: 1,
+        events: []
+      }
+    })
+  end
+
   # GET /v1/projects/:slug (show) tests
   test "GET show returns project by slug" do
     Prosopite.finish
@@ -193,5 +213,15 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
     get internal_project_path(project_slug: "non-existent"), as: :json
 
     assert_json_error(:not_found, error_type: :project_not_found)
+  end
+
+  test "GET show returns 403 for non-premium user" do
+    Prosopite.finish
+    @current_user.data.update!(membership_type: "standard")
+    project = create(:project, slug: "calculator")
+
+    get internal_project_path(project_slug: project.slug), as: :json
+
+    assert_json_error(:forbidden, error_type: :premium_required)
   end
 end

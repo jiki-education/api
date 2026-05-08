@@ -3,6 +3,7 @@ require "test_helper"
 class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
+    @current_user.data.update!(membership_type: "premium")
     @project = create(:project)
     # Pre-create UserProject so it doesn't emit events during tests
     create(:user_project, user: @current_user, project: @project)
@@ -138,6 +139,17 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
         message: /File 'large.rb' is too large/
       }
     })
+  end
+
+  test "POST create returns 403 for non-premium user" do
+    @current_user.data.update!(membership_type: "standard")
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    post internal_project_exercise_submissions_path(project_slug: @project.slug),
+      params: { submission: { files: } },
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :premium_required)
   end
 
   test "POST create returns 422 for empty files array" do

@@ -1,4 +1,5 @@
 class Internal::ProjectsController < Internal::BaseController
+  before_action :require_premium!, only: [:show]
   before_action :use_project!, only: [:show]
 
   def index
