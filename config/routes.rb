@@ -44,6 +44,8 @@ Rails.application.routes.draw do
 
   # External (public, unauthenticated) endpoints
   namespace :external do
+    resource :pricing, only: [:show], controller: 'pricing'
+
     resources :concepts, only: %i[index show], param: :concept_slug
 
     resources :email_preferences, only: %i[show update], param: :token do
