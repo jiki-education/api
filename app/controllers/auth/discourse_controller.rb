@@ -5,7 +5,7 @@ class Auth::DiscourseController < ApplicationController
     unless user_signed_in?
       frontend_login_url = "#{Jiki.config.frontend_base_url}/auth/login"
       return_url = request.original_url
-      redirect_to "#{frontend_login_url}?return_to=#{CGI.escape(return_url)}", allow_other_host: true
+      redirect_to "#{frontend_login_url}?return_to=#{URI.encode_www_form_component(return_url)}", allow_other_host: true
       return
     end
 

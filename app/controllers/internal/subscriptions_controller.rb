@@ -44,7 +44,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     # Stripe Ruby gem bug: client_secret is URL-encoded in the response
     # We need to decode it before sending to the frontend
     # See: https://github.com/stripe/stripe-ruby/issues (URL encoding bug)
-    client_secret = CGI.unescape(session.client_secret)
+    client_secret = URI.decode_www_form_component(session.client_secret)
 
     render json: {
       client_secret: client_secret
