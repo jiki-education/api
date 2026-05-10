@@ -50,7 +50,17 @@ class UserIdCookieTest < ApplicationControllerTest
   test "cookie is cleared when logging out without an active session" do
     # If the browser still has a stale jiki_user_id cookie but no Rails session,
     # hitting logout must still send a deletion cookie so the client clears it.
-    cookies[ApplicationController::USER_ID_COOKIE_NAME] = "stale-value"
+    # Get a real signed cookie with the right domain by logging in, then
+    # discard the session so we're in the "stale cookie, no session" state.
+    post user_session_path, params: {
+      user: { email: "test@example.com", password: "password123" }
+    }, as: :json
+    assert_response :ok
+    set_cookie = jiki_user_id_cookie
+    set_domain = set_cookie[/domain=([^;]+)/, 1]
+
+    reset!
+    cookies[ApplicationController::USER_ID_COOKIE_NAME] = set_cookie[/\Ajiki_user_id=([^;]*)/, 1]
     delete destroy_user_session_path, as: :json
 
     delete_cookie = jiki_user_id_cookie
@@ -61,11 +71,23 @@ class UserIdCookieTest < ApplicationControllerTest
       delete_cookie.match?(/expires=.*1970/i),
       "Expected cookie to be deleted, got: #{delete_cookie}"
     )
+    delete_domain = delete_cookie[/domain=([^;]+)/, 1]
+    assert_equal set_domain, delete_domain, "Deletion cookie domain should match set cookie domain (got #{delete_domain.inspect})"
   end
 
   test "cookie is cleared on 401 from authenticated endpoint" do
-    # If the browser has a stale jiki_user_id cookie, hitting an authenticated
-    # endpoint must send a deletion cookie so CloudFlare/frontend stay in sync.
+    # First, log in to get a real signed cookie with the right domain set.
+    post user_session_path, params: {
+      user: { email: "test@example.com", password: "password123" }
+    }, as: :json
+    assert_response :ok
+    set_cookie = jiki_user_id_cookie
+    set_domain = set_cookie[/domain=([^;]+)/, 1]
+
+    # Now hit an authenticated endpoint with no session (simulating expired
+    # session but stale cookie still in the browser).
+    reset!
+    cookies[ApplicationController::USER_ID_COOKIE_NAME] = set_cookie[/\Ajiki_user_id=([^;]*)/, 1]
     get internal_me_path, as: :json
     assert_response :unauthorized
 
@@ -77,6 +99,8 @@ class UserIdCookieTest < ApplicationControllerTest
       delete_cookie.match?(/expires=.*1970/i),
       "Expected cookie to be deleted, got: #{delete_cookie}"
     )
+    delete_domain = delete_cookie[/domain=([^;]+)/, 1]
+    assert_equal set_domain, delete_domain, "Deletion cookie domain should match set cookie domain (got #{delete_domain.inspect})"
   end
 
   test "cookie is set when user confirms email" do
