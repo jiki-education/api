@@ -1,6 +1,6 @@
 class Internal::UserVideosController < Internal::BaseController
   def index
-    user_videos = current_user.user_videos.order(:slug)
+    user_videos = current_user.user_videos.order(:uuid)
 
     render json: {
       user_videos: user_videos.map { SerializeUserVideo.(_1) }
@@ -8,7 +8,7 @@ class Internal::UserVideosController < Internal::BaseController
   end
 
   def show
-    user_video = current_user.user_videos.find_by!(slug: params[:slug])
+    user_video = current_user.user_videos.find_by!(uuid: params[:uuid])
 
     render json: { user_video: SerializeUserVideo.(user_video) }
   rescue ActiveRecord::RecordNotFound
@@ -16,7 +16,7 @@ class Internal::UserVideosController < Internal::BaseController
   end
 
   def update
-    user_video = UserVideo::SetWatchedPercentage.(current_user, params[:slug], params[:watched_percentage])
+    user_video = UserVideo::SetWatchedPercentage.(current_user, params[:uuid], params[:watched_percentage])
 
     render json: { user_video: SerializeUserVideo.(user_video) }
   end
