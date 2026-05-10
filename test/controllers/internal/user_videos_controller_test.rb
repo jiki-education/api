@@ -4,6 +4,7 @@ class Internal::UserVideosControllerTest < ApplicationControllerTest
   setup { setup_user }
 
   guard_incorrect_token! :internal_user_videos_path, method: :get
+  guard_incorrect_token! :internal_user_video_path, args: ["building-basics-01"], method: :get
   guard_incorrect_token! :internal_user_video_path, args: ["building-basics-01"], method: :patch
 
   # GET /v1/user_videos
@@ -28,6 +29,28 @@ class Internal::UserVideosControllerTest < ApplicationControllerTest
 
     assert_response :success
     assert_json_response({ user_videos: [] })
+  end
+
+  # GET /v1/user_videos/:slug
+  test "GET show returns the user's video" do
+    user_video = create(:user_video, user: @current_user, slug: "intro", watched_percentage: 50)
+    create(:user_video, user: create(:user), slug: "intro", watched_percentage: 10)
+
+    get internal_user_video_path(slug: "intro"), as: :json
+
+    assert_response :success
+    assert_json_response({ user_video: SerializeUserVideo.(user_video) })
+  end
+
+  test "GET show returns 404 when user has no video for slug" do
+    create(:user_video, user: create(:user), slug: "intro", watched_percentage: 10)
+
+    get internal_user_video_path(slug: "intro"), as: :json
+
+    assert_response :not_found
+    assert_json_response({
+      error: { type: "user_video_not_found", message: "User video not found" }
+    })
   end
 
   # PATCH /v1/user_videos/:slug
