@@ -20,8 +20,8 @@ class Internal::UserVideosControllerTest < ApplicationControllerTest
     assert_response :success
     assert_json_response({
       user_videos: [
-        SerializeUserVideo.(v2),
-        SerializeUserVideo.(v1)
+        SerializeUserVideo.(v1),
+        SerializeUserVideo.(v2)
       ]
     })
   end
