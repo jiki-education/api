@@ -27,6 +27,7 @@ en:
     badge_not_found: "Badge not found"
     email_template_not_found: "Email template not found"
     user_project_not_found: "User project not found"
+    user_video_not_found: "User video not found"
     validation_error: "Validation failed"
 
     # File submission errors

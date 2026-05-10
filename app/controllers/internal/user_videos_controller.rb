@@ -7,6 +7,14 @@ class Internal::UserVideosController < Internal::BaseController
     }
   end
 
+  def show
+    user_video = current_user.user_videos.find_by!(slug: params[:slug])
+
+    render json: { user_video: SerializeUserVideo.(user_video) }
+  rescue ActiveRecord::RecordNotFound
+    render_404(:user_video_not_found)
+  end
+
   def update
     user_video = UserVideo::SetWatchedPercentage.(current_user, params[:slug], params[:watched_percentage])
 
