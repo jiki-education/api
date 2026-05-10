@@ -17,7 +17,7 @@ class Auth::AccountDeletionsController < ApplicationController
 
     # Sign out if logged in and clear cookies
     sign_out(current_user) if user_signed_in?
-    cookies.delete(:jiki_user_id, domain: :all)
+    cookies.delete(ApplicationController::USER_ID_COOKIE_NAME, domain: :all)
 
     render json: {}, status: :ok
   rescue AccountDeletion::ValidateDeletionToken::InvalidTokenError
