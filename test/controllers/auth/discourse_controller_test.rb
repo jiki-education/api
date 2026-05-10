@@ -22,7 +22,7 @@ class Auth::DiscourseControllerTest < ApplicationControllerTest
     assert_equal "app.jiki.io", redirect_uri.host
     assert_equal "/auth/login", redirect_uri.path
 
-    return_to = CGI.parse(redirect_uri.query)["return_to"].first
+    return_to = URI.decode_www_form(redirect_uri.query).to_h["return_to"]
     assert_includes return_to, "auth/discourse/sso"
     assert_includes return_to, "sso="
     assert_includes return_to, "sig="
@@ -43,22 +43,22 @@ class Auth::DiscourseControllerTest < ApplicationControllerTest
 
     # Parse the redirect URL to verify the payload
     redirect_uri = URI.parse(response.location)
-    query_params = CGI.parse(redirect_uri.query)
+    query_params = URI.decode_www_form(redirect_uri.query).to_h
 
-    response_sso = query_params["sso"].first
-    response_sig = query_params["sig"].first
+    response_sso = query_params["sso"]
+    response_sig = query_params["sig"]
 
     # Verify signature is valid
     expected_sig = OpenSSL::HMAC.hexdigest("SHA256", @secret, response_sso)
     assert_equal expected_sig, response_sig
 
     # Decode and verify payload contents
-    decoded_payload = CGI.parse(Base64.decode64(response_sso))
-    assert_equal @user.email, decoded_payload["email"].first
-    assert_equal @user.name, decoded_payload["name"].first
-    assert_equal @user.handle, decoded_payload["username"].first
-    assert_equal @user.id.to_s, decoded_payload["external_id"].first
-    assert_equal nonce, decoded_payload["nonce"].first
+    decoded_payload = URI.decode_www_form(Base64.decode64(response_sso)).to_h
+    assert_equal @user.email, decoded_payload["email"]
+    assert_equal @user.name, decoded_payload["name"]
+    assert_equal @user.handle, decoded_payload["username"]
+    assert_equal @user.id.to_s, decoded_payload["external_id"]
+    assert_equal nonce, decoded_payload["nonce"]
   end
 
   test "GET sso preserves original SSO params in return_to URL for unauthenticated users" do
@@ -72,18 +72,18 @@ class Auth::DiscourseControllerTest < ApplicationControllerTest
     assert_response :redirect
 
     redirect_uri = URI.parse(response.location)
-    return_to = CGI.parse(redirect_uri.query)["return_to"].first
+    return_to = URI.decode_www_form(redirect_uri.query).to_h["return_to"]
     return_to_uri = URI.parse(return_to)
-    return_to_params = CGI.parse(return_to_uri.query)
+    return_to_params = URI.decode_www_form(return_to_uri.query).to_h
 
     # Verify the original SSO params are preserved
-    assert_equal sso_payload[:sso], return_to_params["sso"].first
-    assert_equal sso_payload[:sig], return_to_params["sig"].first
+    assert_equal sso_payload[:sso], return_to_params["sso"]
+    assert_equal sso_payload[:sig], return_to_params["sig"]
   end
 
   private
   def build_sso_payload(nonce:, return_sso_url: "https://forum.jiki.io/session/sso_login")
-    raw_payload = "nonce=#{nonce}&return_sso_url=#{CGI.escape(return_sso_url)}"
+    raw_payload = "nonce=#{nonce}&return_sso_url=#{URI.encode_www_form_component(return_sso_url)}"
     sso = Base64.strict_encode64(raw_payload)
     sig = OpenSSL::HMAC.hexdigest("SHA256", @secret, sso)
 
