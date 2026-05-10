@@ -47,6 +47,38 @@ class UserIdCookieTest < ApplicationControllerTest
     )
   end
 
+  test "cookie is cleared when logging out without an active session" do
+    # If the browser still has a stale jiki_user_id cookie but no Rails session,
+    # hitting logout must still send a deletion cookie so the client clears it.
+    cookies[ApplicationController::USER_ID_COOKIE_NAME] = "stale-value"
+    delete destroy_user_session_path, as: :json
+
+    delete_cookie = jiki_user_id_cookie
+    assert delete_cookie.present?, "Expected deletion cookie in Set-Cookie header"
+    assert(
+      delete_cookie.include?("jiki_user_id=;") ||
+      delete_cookie.include?("max-age=0") ||
+      delete_cookie.match?(/expires=.*1970/i),
+      "Expected cookie to be deleted, got: #{delete_cookie}"
+    )
+  end
+
+  test "cookie is cleared on 401 from authenticated endpoint" do
+    # If the browser has a stale jiki_user_id cookie, hitting an authenticated
+    # endpoint must send a deletion cookie so CloudFlare/frontend stay in sync.
+    get internal_me_path, as: :json
+    assert_response :unauthorized
+
+    delete_cookie = jiki_user_id_cookie
+    assert delete_cookie.present?, "Expected deletion cookie in Set-Cookie header"
+    assert(
+      delete_cookie.include?("jiki_user_id=;") ||
+      delete_cookie.include?("max-age=0") ||
+      delete_cookie.match?(/expires=.*1970/i),
+      "Expected cookie to be deleted, got: #{delete_cookie}"
+    )
+  end
+
   test "cookie is set when user confirms email" do
     unconfirmed_user = create(:user, :unconfirmed, email: "unconfirmed@example.com")
     token = unconfirmed_user.confirmation_token

@@ -2,6 +2,8 @@ class ApplicationController < ActionController::API
   include ActionController::Cookies
   include MetaResponseWrapper
 
+  USER_ID_COOKIE_NAME = :jiki_user_id
+
   before_action :set_current_user_agent
   before_action :set_locale
   before_action :set_country_code
@@ -15,7 +17,7 @@ class ApplicationController < ActionController::API
   # Next.js frontend for server-side auth checks.
   def set_user_id_cookie
     if user_signed_in?
-      cookies.signed[:jiki_user_id] = {
+      cookies.signed[USER_ID_COOKIE_NAME] = {
         value: current_user.id,
         domain: :all,
         expires: 10.years,
@@ -24,7 +26,7 @@ class ApplicationController < ActionController::API
         secure: Rails.env.production?
       }
     else
-      cookies.delete(:jiki_user_id, domain: :all)
+      cookies.delete(USER_ID_COOKIE_NAME, domain: :all)
     end
   end
 
