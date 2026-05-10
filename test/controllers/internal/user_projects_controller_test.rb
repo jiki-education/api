@@ -76,26 +76,42 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
     assert_json_error(:not_found, error_type: :project_not_found)
   end
 
-  test "PATCH complete returns 422 when project not started" do
+  test "PATCH complete returns 404 when project not started" do
     patch complete_internal_user_project_path(project_slug: @project.slug),
       as: :json
 
-    assert_json_error(:unprocessable_entity, error_type: :user_project_not_found)
+    assert_json_error(:not_found, error_type: :user_project_not_found)
+  end
+
+  test "PATCH complete returns 403 for non-premium user" do
+    @current_user.data.update!(membership_type: "standard")
+
+    patch complete_internal_user_project_path(project_slug: @project.slug),
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :premium_required)
   end
 
   test "PATCH complete is idempotent" do
-    create(:user_project, user: @current_user, project: @project)
+    user_project = create(:user_project, user: @current_user, project: @project)
 
-    patch complete_internal_user_project_path(project_slug: @project.slug),
-      as: :json
-
-    assert_response :success
-
-    assert_no_difference "UserProject.count" do
+    freeze_time do
       patch complete_internal_user_project_path(project_slug: @project.slug),
         as: :json
+
+      assert_response :success
+      assert_equal Time.current, user_project.reload.completed_at
     end
 
-    assert_response :success
+    original_completed_at = user_project.completed_at
+
+    travel 1.hour do
+      patch complete_internal_user_project_path(project_slug: @project.slug),
+        as: :json
+
+      assert_response :success
+    end
+
+    assert_equal original_completed_at, user_project.reload.completed_at
   end
 end
