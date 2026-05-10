@@ -1,7 +1,7 @@
 class UserVideo::SetWatchedPercentage
   include Mandate
 
-  initialize_with :user, :slug, :percentage
+  initialize_with :user, :uuid, :percentage
 
   def call
     clamped = percentage.to_i.clamp(0, 100)
@@ -17,6 +17,6 @@ class UserVideo::SetWatchedPercentage
   private
   memoize
   def user_video
-    UserVideo.find_or_create_by!(user:, slug:)
+    UserVideo.find_or_create_by!(user:, uuid:)
   end
 end

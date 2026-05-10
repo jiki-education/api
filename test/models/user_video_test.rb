@@ -5,22 +5,24 @@ class UserVideoTest < ActiveSupport::TestCase
     assert build(:user_video).valid?
   end
 
-  test "requires slug" do
-    user_video = build(:user_video, slug: nil)
+  test "requires uuid" do
+    user_video = build(:user_video, uuid: nil)
     refute user_video.valid?
   end
 
-  test "unique user and slug combination" do
+  test "unique user and uuid combination" do
     user = create(:user)
-    create(:user_video, user:, slug: "building-basics-01")
-    duplicate = build(:user_video, user:, slug: "building-basics-01")
+    uuid = SecureRandom.uuid
+    create(:user_video, user:, uuid:)
+    duplicate = build(:user_video, user:, uuid:)
 
     refute duplicate.valid?
   end
 
-  test "same slug allowed for different users" do
-    create(:user_video, user: create(:user), slug: "building-basics-01")
-    other = build(:user_video, user: create(:user), slug: "building-basics-01")
+  test "same uuid allowed for different users" do
+    uuid = SecureRandom.uuid
+    create(:user_video, user: create(:user), uuid:)
+    other = build(:user_video, user: create(:user), uuid:)
 
     assert other.valid?
   end

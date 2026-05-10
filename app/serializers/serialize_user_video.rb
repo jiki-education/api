@@ -5,7 +5,7 @@ class SerializeUserVideo
 
   def call
     {
-      slug: user_video.slug,
+      uuid: user_video.uuid,
       watched_percentage: user_video.watched_percentage,
       status: user_video.completed_at ? "completed" : "started",
       completed_at: user_video.completed_at&.iso8601
