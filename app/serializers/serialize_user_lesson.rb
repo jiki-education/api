@@ -52,5 +52,8 @@ class SerializeUserLesson
         }
       end
     }
+  rescue ActiveStorage::FileNotFoundError => e
+    Sentry.capture_exception(e, extra: { exercise_submission_id: last_submission&.id })
+    nil
   end
 end
