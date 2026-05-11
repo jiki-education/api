@@ -599,7 +599,7 @@
         },
         {
           "slug": "maze-walk",
-          "title": "Walk",
+          "title": "Learn to Walk",
           "description": "Create a walk function that moves multiple steps at once.",
           "type": "exercise",
           "data": {"slug": "maze-walk"}
