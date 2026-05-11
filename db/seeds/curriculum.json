@@ -50,7 +50,7 @@
         },
         {
           "slug": "maze-solve-walk",
-          "title": "Maze Solve Walk",
+          "title": "Take a Walk",
           "description": "Navigate the maze using a function that walks multiple steps.",
           "type": "exercise",
           "data": {"slug": "maze-solve-walk"}
