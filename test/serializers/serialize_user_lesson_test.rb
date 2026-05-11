@@ -149,6 +149,8 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     file.content.attach(io: StringIO.new("puts 'Hello'"), filename: "solution.rb")
 
     ActiveStorage::Blob.any_instance.stubs(:download).raises(ActiveStorage::FileNotFoundError)
+    Sentry.expects(:capture_exception).with(instance_of(ActiveStorage::FileNotFoundError),
+      extra: { exercise_submission_id: submission.id })
 
     result = SerializeUserLesson.(user_lesson)
 
