@@ -141,6 +141,20 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     assert_equal "main code", result[:data][:last_submission][:files][1][:content]
   end
 
+  test "returns nil last_submission when a file blob is missing from storage" do
+    lesson = create(:lesson, :exercise, slug: "hello-world")
+    user_lesson = create(:user_lesson, lesson:)
+    submission = create(:exercise_submission, context: user_lesson)
+    file = create(:exercise_submission_file, exercise_submission: submission, filename: "solution.rb")
+    file.content.attach(io: StringIO.new("puts 'Hello'"), filename: "solution.rb")
+
+    ActiveStorage::Blob.any_instance.stubs(:download).raises(ActiveStorage::FileNotFoundError)
+
+    result = SerializeUserLesson.(user_lesson)
+
+    assert_nil result[:data][:last_submission]
+  end
+
   test "includes conversation messages when conversation exists" do
     lesson = create(:lesson, :video, slug: "hello-world")
     user_lesson = create(:user_lesson, lesson:)

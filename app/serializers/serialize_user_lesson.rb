@@ -52,5 +52,7 @@ class SerializeUserLesson
         }
       end
     }
+  rescue ActiveStorage::FileNotFoundError
+    nil
   end
 end
