@@ -15,7 +15,8 @@ class SerializeUserLevels
         user_lessons: rows.map do |row|
           {
             lesson_slug: row[:lesson_slug],
-            status: row[:completed_at].present? ? "completed" : "started"
+            status: row[:completed_at].present? ? "completed" : "started",
+            walkthrough_video_watched_percentage: row[:walkthrough_video_watched_percentage]
           }
         end
       }
@@ -41,15 +42,17 @@ class SerializeUserLevels
         "levels.slug",
         "lessons.slug",
         "user_lessons.completed_at",
+        "user_lessons.walkthrough_video_watched_percentage",
         "user_levels.completed_at"
       )
 
     # Map pluck results (arrays) to hashes for easier access
-    results.map do |level_slug, lesson_slug, lesson_completed_at, user_level_completed_at|
+    results.map do |level_slug, lesson_slug, lesson_completed_at, walkthrough_video_watched_percentage, user_level_completed_at|
       {
         level_slug: level_slug,
         lesson_slug: lesson_slug,
         completed_at: lesson_completed_at,
+        walkthrough_video_watched_percentage: walkthrough_video_watched_percentage,
         user_level_completed_at: user_level_completed_at
       }
     end
