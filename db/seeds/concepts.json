@@ -2,8 +2,8 @@
   {
     "slug": "using-functions",
     "title": "Using Functions",
-    "description": "Call built-in functions to make things happen.",
-    "content_markdown": "# Using Functions\n\nFunctions are little machines you call to make things happen. You'll learn how to invoke them in your code.",
+    "description": "Use built-in functions to make things happen.",
+    "content_markdown": "# Using Functions\n\nFunctions are little machines you use to make things happen. You'll learn how to use them in your code.",
     "parent_slug": null,
     "unlocked_by_lesson_slug": "using-functions"
   },
@@ -11,7 +11,7 @@
     "slug": "using-functions-with-inputs",
     "title": "Using Functions With Inputs",
     "description": "Pass inputs (arguments) to functions to control their behaviour.",
-    "content_markdown": "# Using Functions With Inputs\n\nMany functions take inputs that change what they do. You'll learn how to pass values into a function when you call it.",
+    "content_markdown": "# Using Functions With Inputs\n\nMany functions take inputs that change what they do. You'll learn how to pass values into a function when you use it.",
     "parent_slug": "using-functions",
     "unlocked_by_lesson_slug": "function-inputs"
   },
@@ -306,7 +306,7 @@
   {
     "slug": "methods",
     "title": "Methods",
-    "description": "Call functions that come attached to a value.",
+    "description": "Use functions that come attached to a value.",
     "content_markdown": "# Methods\n\nMethods are functions that belong to a value, like `.length` or `.toUpperCase()`.",
     "parent_slug": null,
     "unlocked_by_lesson_slug": "methods-and-strings"

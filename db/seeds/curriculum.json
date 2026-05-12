@@ -5,7 +5,7 @@
       "title": "Using Functions",
       "description": "Learn how to use functions with and without inputs.",
       "milestone_summary": "Congratulations! You've completed your first level and learned how to use functions with and without inputs.",
-      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to call functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
+      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to use functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
       "lessons": [
         {
           "slug": "welcome-to-jiki",
