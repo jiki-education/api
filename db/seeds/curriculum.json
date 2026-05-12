@@ -5,7 +5,7 @@
       "title": "Using Functions",
       "description": "Learn how to use functions with and without inputs.",
       "milestone_summary": "Congratulations! You've completed your first level and learned how to use functions with and without inputs.",
-      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to call functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
+      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to use functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
       "lessons": [
         {
           "slug": "welcome-to-jiki",
@@ -24,7 +24,7 @@
           "data": {"slug": "maze-solve-basic"}
         },
         {
-          "slug": "using-functions-video",
+          "slug": "using-functions",
           "title": "Using Functions",
           "description": "Learn about functions, the little machines that make things happen.",
           "type": "video",
@@ -40,7 +40,7 @@
           "data": {"slug": "space-invaders-solve-basic"}
         },
         {
-          "slug": "functions-taking-inputs",
+          "slug": "function-inputs",
           "title": "Functions Taking Inputs (Numbers)",
           "description": "Learn how to give extra information to functions.",
           "type": "video",
@@ -79,7 +79,7 @@
       "milestone_content": "# Great Progress! 🎨\n\nYou've mastered using strings and colors in your programs!\n\n## What you've learned:\n- How to use strings to work with text and names\n- How to use colors to make your drawings more vibrant\n- How to combine shapes and colors to create complex images\n\n## Next steps:\n- Continue building on these skills\n- Create even more complex and colorful programs\n- Keep experimenting with different combinations!\n\nYou're becoming a skilled programmer. Keep it up!",
       "lessons": [
         {
-          "slug": "strings-intro",
+          "slug": "strings",
           "title": "Strings",
           "description": "Learn how to use text in your programs.",
           "type": "video",
@@ -125,7 +125,7 @@
       "milestone_content": "# Fantastic Work! 🔁\n\nYou've mastered the repeat loop - one of the most powerful tools in programming!\n\n## What you've learned:\n- How to use loops to repeat actions\n- How to write more efficient code with less repetition\n- How to solve problems that require doing the same thing multiple times\n\n## Next steps:\n- Apply loops to more complex challenges\n- Combine loops with everything else you've learned\n- Keep building your programming skills!\n\nYou're making excellent progress. Keep going!",
       "lessons": [
         {
-          "slug": "introducing-repeat-loop",
+          "slug": "repeat-loop",
           "title": "Repeat Loop",
           "description": "Learn how to tell Jiki to do things multiple times.",
           "type": "video",
@@ -165,7 +165,7 @@
       "milestone_content": "# Outstanding Work! 📦\n\nYou've mastered variables - a fundamental building block of programming!\n\n## What you've learned:\n- How to create and use variables to store values\n- How to make your code more flexible and reusable\n- How to change values in one place and see results everywhere\n- How variables make complex programs easier to manage\n\n## Next steps:\n- Use variables in more complex programs\n- Combine variables with loops and functions\n- Keep building your programming toolkit!\n\nYou're becoming a real programmer now. Keep going!",
       "lessons": [
         {
-          "slug": "creating-and-using-variables",
+          "slug": "creating-variables",
           "title": "Creating/Using Variables",
           "description": "Learn how to save and retrieve information in your programs.",
           "type": "video",
@@ -188,7 +188,7 @@
           "data": {"slug": "traffic-lights"}
         },
         {
-          "slug": "arithmetic-and-variables",
+          "slug": "variables-together",
           "title": "Arithmetic + Variables",
           "description": "Learn how to do maths with variables.",
           "type": "video",
@@ -266,7 +266,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Functions That Return Things level. Keep going!",
       "lessons": [
         {
-          "slug": "functions-that-return-things-video",
+          "slug": "functions-that-return-things",
           "title": "Functions That Return Things",
           "description": "Learn how functions can give information back to you.",
           "type": "video",
@@ -289,7 +289,7 @@
           "data": {"slug": "gold-panning"}
         },
         {
-          "slug": "colors-hsl-and-rgb",
+          "slug": "colors",
           "title": "Colors (HSL and RGB)",
           "description": "Learn different ways to specify exact colours.",
           "type": "video",
@@ -305,7 +305,7 @@
           "data": {"slug": "rainbow"}
         },
         {
-          "slug": "animation-intro",
+          "slug": "animation",
           "title": "Animation",
           "description": "Learn how to make things move on screen.",
           "type": "video",
@@ -337,7 +337,7 @@
           "data": {"slug": "random-salad"}
         },
         {
-          "slug": "scope-intro",
+          "slug": "scope",
           "title": "Scope",
           "description": "Learn what happens to variables inside and outside of code blocks.",
           "type": "video",
@@ -360,7 +360,7 @@
           "data": {"slug": "stock-market"}
         },
         {
-          "slug": "scenarios-intro",
+          "slug": "scenarios",
           "title": "Scenarios",
           "description": "Learn how to run your code with different starting conditions.",
           "type": "video",
@@ -390,7 +390,7 @@
           "data": {"slug": "cityscape-skyscraper"}
         },
         {
-          "slug": "loops-in-loops",
+          "slug": "nested-loops",
           "title": "Loops in Loops",
           "description": "Learn how to put loops inside other loops.",
           "type": "video",
@@ -415,7 +415,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Conditionals level. Keep going!",
       "lessons": [
         {
-          "slug": "if-statements-video",
+          "slug": "if-statements",
           "title": "If Statements",
           "description": "Learn how to make your code do different things in different situations.",
           "type": "video",
@@ -438,7 +438,7 @@
           "data": {"slug": "space-invaders-conditional"}
         },
         {
-          "slug": "else-and-else-if",
+          "slug": "else-statements",
           "title": "Else and Else If",
           "description": "Learn how to handle multiple different conditions.",
           "type": "video",
@@ -470,7 +470,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Complex Conditionals level. Keep going!",
       "lessons": [
         {
-          "slug": "and-or-video",
+          "slug": "and-or",
           "title": "And / Or",
           "description": "Learn how to combine conditions together.",
           "type": "video",
@@ -493,7 +493,7 @@
           "data": {"slug": "golf-shot-checker"}
         },
         {
-          "slug": "modulo-and-not",
+          "slug": "remainder",
           "title": "Modulo and Not",
           "description": "Learn about remainders and how to flip conditions.",
           "type": "video",
@@ -509,7 +509,7 @@
           "data": {"slug": "rock-paper-scissors-determine-winner"}
         },
         {
-          "slug": "repeat-without-input",
+          "slug": "repeat-without-count",
           "title": "Repeat Without an Input",
           "description": "Learn how to loop without knowing how many times upfront.",
           "type": "video",
@@ -566,7 +566,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Make Your Own Functions level. Keep going!",
       "lessons": [
         {
-          "slug": "writing-your-own-functions",
+          "slug": "making-functions",
           "title": "Writing Your Own Functions",
           "description": "Learn how to create your own reusable machines.",
           "type": "video",
@@ -589,7 +589,7 @@
           "data": {"slug": "battle-procedures"}
         },
         {
-          "slug": "adding-inputs-to-functions",
+          "slug": "making-functions-with-inputs",
           "title": "Adding Inputs to Your Functions",
           "description": "Learn how to make your functions accept inputs.",
           "type": "video",
@@ -605,7 +605,7 @@
           "data": {"slug": "maze-walk"}
         },
         {
-          "slug": "adding-returns-to-functions",
+          "slug": "making-functions-with-return-values",
           "title": "Adding Returns to Your Functions",
           "description": "Learn how to make your functions give back results.",
           "type": "video",
@@ -658,7 +658,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the String Manipulation level. Keep going!",
       "lessons": [
         {
-          "slug": "string-concatenation-and-templates",
+          "slug": "string-concatenation",
           "title": "String Concatenation and Templates",
           "description": "Learn how to join bits of text together.",
           "type": "video",
@@ -713,7 +713,7 @@
           "data": {"slug": "three-letter-acronym"}
         },
         {
-          "slug": "iterating-through-strings",
+          "slug": "string-iteration",
           "title": "Iterating Through Strings",
           "description": "Learn how to go through text one character at a time.",
           "type": "video",
@@ -812,7 +812,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Methods and Properties level. Keep going!",
       "lessons": [
         {
-          "slug": "methods-and-properties-video",
+          "slug": "methods-and-strings",
           "title": "Methods and Properties",
           "description": "Learn how to use built-in tools that come attached to data.",
           "type": "video",
@@ -844,7 +844,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Advanced Loops level. Keep going!",
       "lessons": [
         {
-          "slug": "advanced-loops-video",
+          "slug": "for-while-loops",
           "title": "Advanced Loops",
           "description": "Learn proper JavaScript loops with more control and flexibility.",
           "type": "video",
@@ -869,7 +869,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Lists level. Keep going!",
       "lessons": [
         {
-          "slug": "arrays-intro",
+          "slug": "arrays",
           "title": "Arrays",
           "description": "Learn how to store collections of things in lists.",
           "type": "video",
@@ -944,7 +944,7 @@
         },
         {
           "slug": "wordle-process-guess",
-          "title": "Wordle Process Guess",
+          "title": "Wordle: Process Guess",
           "description": "Check a Wordle guess and work out which letters are correct.",
           "type": "exercise",
           "data": {"slug": "wordle-process-guess"}
@@ -965,7 +965,7 @@
         },
         {
           "slug": "wordle-process-game",
-          "title": "Wordle Introduction",
+          "title": "Wordle: Play a Game",
           "description": "Process a whole Wordle game, colouring each guess row by row.",
           "type": "exercise",
           "data": {"slug": "wordle-process-game"}
@@ -980,7 +980,7 @@
       "milestone_content": "# Level Complete!\n\nYou've completed the Dictionaries level. Keep going!",
       "lessons": [
         {
-          "slug": "dictionaries-intro",
+          "slug": "dictionaries",
           "title": "Dictionaries",
           "description": "Learn how to store data with named labels.",
           "type": "video",
@@ -1003,7 +1003,7 @@
           "data": {"slug": "scrabble-score"}
         },
         {
-          "slug": "changing-dictionaries",
+          "slug": "updating-dictionaries",
           "title": "Changing Dictionaries",
           "description": "Learn how to update and modify dictionaries.",
           "type": "video",
