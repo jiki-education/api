@@ -54,6 +54,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock
+    stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_different")
 
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
@@ -68,6 +69,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock
+    stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("open")
 
@@ -84,6 +86,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock
+    stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("complete")
     stripe_session.stubs(:subscription).returns(nil)
@@ -101,6 +104,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock
+    stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("complete")
     stripe_session.stubs(:subscription).returns("sub_123")
@@ -150,9 +154,10 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   private
-  def mock_stripe_session(payment_status: "paid")
+  def mock_stripe_session(payment_status: "paid", user_id: nil, customer: "cus_123")
     session = mock
-    session.stubs(:customer).returns("cus_123")
+    session.stubs(:metadata).returns(user_id ? { user_id: user_id.to_s } : nil)
+    session.stubs(:customer).returns(customer)
     session.stubs(:status).returns("complete")
     session.stubs(:subscription).returns("sub_123")
     session.stubs(:payment_status).returns(payment_status)

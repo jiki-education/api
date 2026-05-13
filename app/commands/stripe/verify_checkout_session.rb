@@ -4,28 +4,22 @@ class Stripe::VerifyCheckoutSession
   initialize_with :user, :session_id
 
   def call
-    # Retrieve the session from Stripe
     session = ::Stripe::Checkout::Session.retrieve(session_id)
 
-    # Verify the session belongs to the current user
-    raise SecurityError, "Checkout session does not belong to current user" unless session.customer == user.data.stripe_customer_id
+    verify_ownership!(session)
 
-    # Check if session is complete and has a subscription
     raise ArgumentError, "Checkout session is not complete (status: #{session.status})" unless session.status == "complete"
-
     raise ArgumentError, "Checkout session has no subscription" unless session.subscription.present?
 
-    # Retrieve the full subscription object to get all details
+    persist_customer_id!(session)
+
     subscription = ::Stripe::Subscription.retrieve(session.subscription)
 
-    # Get the subscription item (should only be one for our use case)
     subscription_item = subscription.items.data.first
     raise ArgumentError, "Subscription has no items" unless subscription_item
 
-    # Determine the interval from the price ID
     interval = Stripe::DetermineSubscriptionDetails.interval_for_price_id(subscription_item.price.id)
 
-    # Sync subscription to user (handles both active and incomplete states)
     status = Stripe::SyncSubscriptionToUser.(user, subscription, interval)
 
     Rails.logger.info(
@@ -39,5 +33,25 @@ class Stripe::VerifyCheckoutSession
       payment_status: session.payment_status,
       subscription_status: status
     }
+  end
+
+  private
+  def verify_ownership!(session)
+    metadata_user_id = session.metadata&.[](:user_id) || session.metadata&.[]('user_id')
+
+    if metadata_user_id.present?
+      return if metadata_user_id.to_s == user.id.to_s
+    elsif user.data.stripe_customer_id.present? && session.customer == user.data.stripe_customer_id
+      return
+    end
+
+    raise SecurityError, "Checkout session does not belong to current user"
+  end
+
+  def persist_customer_id!(session)
+    return if user.data.stripe_customer_id.present?
+    return if session.customer.blank?
+
+    user.data.update!(stripe_customer_id: session.customer)
   end
 end
