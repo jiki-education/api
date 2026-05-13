@@ -8,8 +8,11 @@
       %mj-section{ "padding": "0 48px" }
       %mj-text{ "color": "#334155", "font-size": "16px", "line-height": "1.6", "padding": "0 0 10px 0" }
       %mj-class{ name: "h2", "font-size": "20px", "font-weight": "600", "color": "#1e293b", "padding": "8px 0" }
+    %mj-style
+      :plain
+        a { font-weight: 500; }
 
-  %mj-body{ "background-color": "#f0f1f5" }
+  %mj-body{ "background-color": "#ffffff" }
     = render 'mailers/shared/header', header_image: @header_image.presence || "jiki-header.jpg"
     = yield
     = render 'mailers/shared/footer', user: @user, unsubscribe_key: @unsubscribe_key

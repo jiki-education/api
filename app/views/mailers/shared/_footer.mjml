@@ -6,20 +6,14 @@
 
 %mj-section{ "background-color": "#ffffff", "padding-bottom": "24px" }
   %mj-column
-    %mj-text{ align: "center", "font-size": "28px", "font-weight": "700", color: "#667eea" }
-      JIKI
-
     %mj-text{ align: "center", "font-size": "14px", color: "#64748b" }
-      Copyright © #{Time.current.year} Jiki. All rights reserved.
-
-    %mj-text{ align: "center", "font-size": "14px", color: "#64748b" }
-      You are receiving this email because you have registered an account at Jiki.
+      != 'You are receiving this email because you have an account at <a href="https://jiki.io" style="color: #64748b; text-decoration: underline; font-weight: 500;">Jiki</a>.'
       - if user&.unsubscribe_token
         Want to change how you receive these emails? You can
-        %a{ href: unsubscribe_url(token: user.unsubscribe_token), style: "color: #64748b; text-decoration: underline;" }
+        %a{ href: unsubscribe_url(token: user.unsubscribe_token), style: "color: #64748b; text-decoration: underline; font-weight: 500;" }
           update your preferences
         - if unsubscribe_key.present?
           or
-          %a{ href: unsubscribe_url(token: user.unsubscribe_token, key: unsubscribe_key), style: "color: #64748b; text-decoration: underline;" }
+          %a{ href: unsubscribe_url(token: user.unsubscribe_token, key: unsubscribe_key), style: "color: #64748b; text-decoration: underline; font-weight: 500;" }
             unsubscribe
           from this list.
