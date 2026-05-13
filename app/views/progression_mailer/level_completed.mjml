@@ -4,7 +4,7 @@
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     %mj-text
-      Hi #{@user.name},
+      Hi there!
 
     - if @image_url.present?
       %mj-image{ src: @image_url, alt: @level.title, width: "100%" }

@@ -1,6 +1,6 @@
 class AccountMailerPreview < ActionMailer::Preview
   def welcome
-    AccountMailer.welcome(preview_user, login_url: "https://jiki.dev/login")
+    AccountMailer.welcome(preview_user)
   end
 
   def account_deletion_confirmation
