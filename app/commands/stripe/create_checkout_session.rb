@@ -4,13 +4,8 @@ class Stripe::CreateCheckoutSession
   initialize_with :user, :price_id, :return_url, :currency
 
   def call
-    # Get or create Stripe customer
-    customer = Stripe::GetOrCreateCustomer.(user)
-
-    # Create checkout session
-    ::Stripe::Checkout::Session.create(
-      ui_mode: 'custom',
-      customer: customer.id,
+    args = {
+      ui_mode: 'elements',
       currency: currency,
       line_items: [
         {
@@ -20,11 +15,24 @@ class Stripe::CreateCheckoutSession
       ],
       mode: 'subscription',
       return_url: return_url,
+      metadata: {
+        user_id: user.id
+      },
       subscription_data: {
         metadata: {
           user_id: user.id
         }
       }
-    )
+    }
+
+    if user.data.stripe_customer_id.present?
+      customer = Stripe::GetOrCreateCustomer.(user)
+      args[:customer] = customer.id
+      args[:customer_update] = { address: 'auto', name: 'auto' }
+    else
+      args[:customer_email] = user.email
+    end
+
+    ::Stripe::Checkout::Session.create(**args)
   end
 end
