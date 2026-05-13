@@ -794,13 +794,6 @@
           "description": "Check if a sentence uses every letter of the alphabet.",
           "type": "exercise",
           "data": {"slug": "lower-pangram"}
-        },
-        {
-          "slug": "alphanumeric",
-          "title": "Alphanumeric",
-          "description": "Build functions to classify text as letters, numbers or both.",
-          "type": "exercise",
-          "data": {"slug": "alphanumeric"}
         }
       ]
     },
@@ -858,6 +851,13 @@
           "description": "Check whether a book's ISBN number is valid.",
           "type": "exercise",
           "data": {"slug": "isbn-verifier"}
+        },
+        {
+          "slug": "alphanumeric",
+          "title": "Alphanumeric",
+          "description": "Build functions to classify text as letters, numbers or both.",
+          "type": "exercise",
+          "data": {"slug": "alphanumeric"}
         }
       ]
     },
