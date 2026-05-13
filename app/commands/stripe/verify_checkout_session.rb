@@ -49,9 +49,12 @@ class Stripe::VerifyCheckoutSession
   end
 
   def persist_customer_id!(session)
-    return if user.data.stripe_customer_id.present?
     return if session.customer.blank?
 
-    user.data.update!(stripe_customer_id: session.customer)
+    user.data.with_lock do
+      next if user.data.stripe_customer_id.present?
+
+      user.data.update!(stripe_customer_id: session.customer)
+    end
   end
 end
