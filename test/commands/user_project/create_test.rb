@@ -32,35 +32,4 @@ class UserProject::CreateTest < ActiveSupport::TestCase
     assert_nil user_project.started_at
     assert_nil user_project.completed_at
   end
-
-  test "emits project_unlocked event when project is newly created" do
-    user = create(:user)
-    project = create(:project, slug: "calculator", title: "Calculator")
-
-    Current.reset
-    UserProject::Create.(user, project)
-
-    events = Current.events
-    assert_equal 1, events.length
-
-    event = events.first
-    assert_equal "project_unlocked", event[:type]
-    assert_equal "calculator", event[:data][:project][:slug]
-    assert_equal "Calculator", event[:data][:project][:title]
-  end
-
-  test "does not emit event when user_project already exists (idempotent)" do
-    user = create(:user)
-    project = create(:project)
-
-    # Create once
-    UserProject::Create.(user, project)
-
-    # Reset events and create again
-    Current.reset
-    UserProject::Create.(user, project)
-
-    # Should not emit event on second call
-    assert_nil Current.events
-  end
 end

@@ -19,20 +19,46 @@ class SerializeProjects
   def statuses
     return Hash.new(nil) unless for_user
 
-    # Fetch user_projects data in a single query
-    user_projects_data = UserProject.
-      where(user_id: for_user.id, project_id: projects.map(&:id)).
-      pluck(:project_id, :started_at, :completed_at)
+    projects.each_with_object({}) do |project, hash|
+      row = user_project_rows[project.id]
 
-    # Build a hash of project_id => status with default value :locked
-    user_projects_data.each_with_object(Hash.new(:locked)) do |(project_id, started_at, completed_at), hash|
-      if completed_at.present?
-        hash[project_id] = :completed
-      elsif started_at.present?
-        hash[project_id] = :started
+      if row && row[:completed_at].present?
+        hash[project.id] =
+          :completed
+      elsif row && row[:started_at].present?
+        hash[project.id] =
+          :started
+      elsif unlocked_project_ids.include?(project.id)
+        hash[project.id] =
+          :unlocked
       else
-        hash[project_id] = :unlocked
+        hash[project.id] =
+          :locked
       end
     end
+  end
+
+  memoize
+  def user_project_rows
+    UserProject.
+      where(user_id: for_user.id, project_id: projects.map(&:id)).
+      pluck(:project_id, :started_at, :completed_at).
+      to_h { |project_id, started_at, completed_at| [project_id, { started_at:, completed_at: }] }
+  end
+
+  # A project is unlocked when it has no unlocking lesson, or the user has
+  # completed the lesson that unlocks it.
+  memoize
+  def unlocked_project_ids
+    completed_lesson_ids = UserLesson.
+      where(user_id: for_user.id, lesson_id: projects.map(&:unlocked_by_lesson_id).compact).
+      where.not(completed_at: nil).
+      pluck(:lesson_id).
+      to_set
+
+    projects.
+      select { |p| p.unlocked_by_lesson_id.nil? || completed_lesson_ids.include?(p.unlocked_by_lesson_id) }.
+      map(&:id).
+      to_set
   end
 end

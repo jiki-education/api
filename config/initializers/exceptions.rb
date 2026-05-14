@@ -35,6 +35,7 @@ class UserLevelNotFoundError < RuntimeError; end
 class UserLessonNotFoundError < RuntimeError; end
 class LessonInProgressError < RuntimeError; end
 class LevelNotCompletedError < RuntimeError; end
+class ProjectLockedError < RuntimeError; end
 
 # Badge errors
 class BadgeCriteriaNotFulfilledError < RuntimeError; end

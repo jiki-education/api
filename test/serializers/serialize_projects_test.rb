@@ -22,65 +22,73 @@ class SerializeProjectsTest < ActiveSupport::TestCase
     }, result[1])
   end
 
-  test "serializes projects with user showing locked status" do
-    project1 = create :project, slug: "calculator", title: "Calculator", description: "Build a calculator"
-    project2 = create :project, slug: "todo", title: "Todo App", description: "Build a todo app"
+  test "locked when the unlocking lesson has not been completed" do
+    lesson = create :lesson, :exercise
+    project = create :project, slug: "calculator", title: "Calculator", description: "Build a calculator",
+      unlocked_by_lesson: lesson
     user = create :user
-
-    result = SerializeProjects.([project1, project2], for_user: user)
-
-    assert_equal 2, result.length
-    assert_equal :locked, result[0][:status]
-    assert_equal :locked, result[1][:status]
-  end
-
-  test "serializes projects with user showing unlocked status" do
-    project = create :project, slug: "calculator", title: "Calculator", description: "Build a calculator"
-    user = create :user
-    create :user_project, user:, project:, started_at: nil, completed_at: nil
 
     result = SerializeProjects.([project], for_user: user)
 
-    assert_equal 1, result.length
+    assert_equal :locked, result[0][:status]
+  end
+
+  test "unlocked when the project has no unlocking lesson" do
+    project = create :project, unlocked_by_lesson: nil
+    user = create :user
+
+    result = SerializeProjects.([project], for_user: user)
+
     assert_equal :unlocked, result[0][:status]
   end
 
-  test "serializes projects with user showing started status" do
-    project = create :project, slug: "calculator", title: "Calculator", description: "Build a calculator"
+  test "unlocked when the user has completed the unlocking lesson" do
+    lesson = create :lesson, :exercise
+    project = create :project, unlocked_by_lesson: lesson
+    user = create :user
+    create :user_lesson, user:, lesson:, completed_at: Time.current
+
+    result = SerializeProjects.([project], for_user: user)
+
+    assert_equal :unlocked, result[0][:status]
+  end
+
+  test "started when a user_project row has started_at" do
+    project = create :project
     user = create :user
     create :user_project, user:, project:, started_at: Time.current, completed_at: nil
 
     result = SerializeProjects.([project], for_user: user)
 
-    assert_equal 1, result.length
     assert_equal :started, result[0][:status]
   end
 
-  test "serializes projects with user showing completed status" do
-    project = create :project, slug: "calculator", title: "Calculator", description: "Build a calculator"
+  test "completed when a user_project row has completed_at" do
+    project = create :project
     user = create :user
     create :user_project, user:, project:, started_at: 2.days.ago, completed_at: Time.current
 
     result = SerializeProjects.([project], for_user: user)
 
-    assert_equal 1, result.length
     assert_equal :completed, result[0][:status]
   end
 
   test "serializes mixed project statuses efficiently" do
-    project1 = create :project, slug: "calc", title: "Calculator", description: "Calc"
-    project2 = create :project, slug: "todo", title: "Todo", description: "Todo"
-    project3 = create :project, slug: "chat", title: "Chat", description: "Chat"
-    project4 = create :project, slug: "blog", title: "Blog", description: "Blog"
+    locked_lesson = create :lesson, :exercise
+    project_locked = create :project, slug: "locked", title: "Locked", description: "Locked",
+      unlocked_by_lesson: locked_lesson
+    project_unlocked = create :project, slug: "unlocked", title: "Unlocked", description: "Unlocked"
+    project_started = create :project, slug: "started", title: "Started", description: "Started"
+    project_completed = create :project, slug: "completed", title: "Completed", description: "Completed"
     user = create :user
 
-    # Different statuses
-    create :user_project, user:, project: project2, started_at: nil, completed_at: nil # unlocked
-    create :user_project, user:, project: project3, started_at: 2.days.ago, completed_at: nil # started
-    create :user_project, user:, project: project4, started_at: 3.days.ago, completed_at: 1.day.ago # completed
-    # project1 has no user_project, so it's locked
+    create :user_project, user:, project: project_started, started_at: 2.days.ago, completed_at: nil
+    create :user_project, user:, project: project_completed, started_at: 3.days.ago, completed_at: 1.day.ago
 
-    result = SerializeProjects.([project1, project2, project3, project4], for_user: user)
+    result = SerializeProjects.(
+      [project_locked, project_unlocked, project_started, project_completed],
+      for_user: user
+    )
 
     assert_equal 4, result.length
     assert_equal :locked, result[0][:status]

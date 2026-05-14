@@ -27,10 +27,10 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
     assert_json_response({})
   end
 
-  test "POST create finds or creates UserProject" do
+  test "POST create starts the UserProject" do
     files = [{ filename: "solution.rb", code: "# code" }]
 
-    UserProject::Create.expects(:call).with(
+    UserProject::Start.expects(:call).with(
       @current_user,
       @project
     ).returns(create(:user_project))
@@ -42,11 +42,23 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
     assert_response :created
   end
 
+  test "POST create returns 403 when project is locked" do
+    lesson = create(:lesson, :exercise)
+    @project.update!(unlocked_by_lesson: lesson)
+    files = [{ filename: "solution.rb", code: "# code" }]
+
+    post internal_project_exercise_submissions_path(project_slug: @project.slug),
+      params: { submission: { files: } },
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :project_locked)
+  end
+
   test "POST create calls ExerciseSubmission::Create" do
     user_project = UserProject.find_by!(user: @current_user, project: @project)
     files = [{ filename: "test.rb", code: "puts 'test'" }]
 
-    UserProject::Create.stubs(:call).returns(user_project)
+    UserProject::Start.stubs(:call).returns(user_project)
 
     ExerciseSubmission::Create.expects(:call).with do |up, file_params|
       up == user_project &&
