@@ -1,7 +1,7 @@
 class AssistantConversation::CheckUserAccess
   include Mandate
 
-  initialize_with :user, :lesson
+  initialize_with :user, :context
 
   def call
     return true if user.premium?
@@ -13,7 +13,7 @@ class AssistantConversation::CheckUserAccess
     return true if most_recent.nil?
 
     # If previous conversation exists, must be same lesson
-    most_recent.context_id == lesson.id && most_recent.context_type == 'Lesson'
+    most_recent.context_id == context.id && most_recent.context_type == context.class.name
   end
 
   private

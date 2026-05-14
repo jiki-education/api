@@ -11,6 +11,7 @@ class SerializeUserLesson
       fun_rating: user_lesson.fun_rating,
       walkthrough_video_watched_percentage: user_lesson.walkthrough_video_watched_percentage,
       conversation: conversation,
+      conversation_allowed: conversation_allowed,
       data: data
     }
   end
@@ -21,6 +22,10 @@ class SerializeUserLesson
   end
 
   def conversation = user_lesson.assistant_conversation&.messages || []
+
+  def conversation_allowed
+    AssistantConversation::CheckUserAccess.(user_lesson.user, user_lesson.lesson)
+  end
 
   def data
     case user_lesson.lesson.type

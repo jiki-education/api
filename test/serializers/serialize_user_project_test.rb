@@ -9,6 +9,7 @@ class SerializeUserProjectTest < ActiveSupport::TestCase
       project_slug: "calculator",
       status: "completed",
       conversation: [],
+      conversation_allowed: true,
       data: { last_submission: nil }
     }
 
@@ -23,6 +24,7 @@ class SerializeUserProjectTest < ActiveSupport::TestCase
       project_slug: "calculator",
       status: "started",
       conversation: [],
+      conversation_allowed: true,
       data: { last_submission: nil }
     }
 

@@ -33,7 +33,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     get internal_user_lesson_path(lesson_slug: @lesson.slug),
       as: :json
 
-    assert_json_error(:not_found)
+    assert_json_error(:not_found, error_type: :user_lesson_not_found)
   end
 
   test "GET show returns 404 for non-existent lesson" do

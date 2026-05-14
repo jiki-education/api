@@ -64,6 +64,36 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     assert_json_error(:not_found, error_type: :lesson_not_found)
   end
 
+  test "POST create returns conversation token for project" do
+    @current_user.data.update!(membership_type: "premium")
+    project = create(:project, slug: "calculator", exercise_slug: "jiki/calculator")
+
+    post internal_assistant_conversations_path,
+      params: { project_slug: "calculator" },
+      as: :json
+
+    assert_response :success
+    payload = JWT.decode(
+      response.parsed_body["token"],
+      Jiki.secrets.jwt_secret,
+      true,
+      { algorithm: 'HS256' }
+    ).first
+    assert_equal @current_user.id, payload['sub']
+    assert_equal "calculator", payload['project_slug']
+    assert_equal "jiki/calculator", payload['exercise_slug']
+
+    assert_equal project, AssistantConversation.last.context
+  end
+
+  test "POST create returns 404 for non-existent project" do
+    post internal_assistant_conversations_path,
+      params: { project_slug: "non-existent" },
+      as: :json
+
+    assert_json_error(:not_found, error_type: :project_not_found)
+  end
+
   test "POST create creates assistant conversation record" do
     @current_user.data.update!(membership_type: "premium")
 
