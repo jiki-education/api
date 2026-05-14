@@ -4,10 +4,8 @@
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     %mj-text
-      = t('.greeting', name: @user.name || @user.email)
-
-    %mj-text
+      = t('.greeting')
       = markdown_to_html(t('.body_markdown'))
 
-    %mj-button{ "background-color": "#cc0000", "color": "#ffffff", "font-size": "16px", "font-weight": "bold", "border-radius": "4px", "padding": "15px 30px", "href": @confirmation_url }
+    %mj-button{ "background-color": "#cc0000", "color": "#ffffff", "font-size": "16px", "font-weight": "500", "border-radius": "8px", "padding": "15px 30px", "href": @confirmation_url }
       = t('.cta')

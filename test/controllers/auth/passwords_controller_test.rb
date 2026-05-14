@@ -51,7 +51,7 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
 
     mail = ActionMailer::Base.deliveries.last
     assert_equal "Jelszó visszaállítása", mail.subject
-    assert_match "Szia József,", mail.html_part.body.to_s
+    assert_match "Szia,", mail.html_part.body.to_s
   end
 
   test "POST password reset with non-existent email still returns success (security)" do

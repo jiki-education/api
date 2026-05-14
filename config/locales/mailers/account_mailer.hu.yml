@@ -2,7 +2,7 @@ hu:
   account_mailer:
     welcome:
       subject: "Üdvözlünk a Jiki-nél!"
-      greeting: "Szia %{name},"
+      greeting: "Szia,"
       body_markdown: |
         Üdvözlünk a [Jiki](https://jiki.io)-nél! Nagyon örülök, hogy itt vagy.
 
@@ -12,11 +12,12 @@ hu:
 
         Jó szórakozást és élvezd az utat!
 
-        Jeremy
+        Üdv,  
+        Jeremy és a csapat
     account_deletion_confirmation:
       subject: "Fiók törlésének megerősítése"
       preview: "Kérjük, erősítsd meg, hogy véglegesen törölni szeretnéd a Jiki fiókodat"
-      greeting: "Szia %{name},"
+      greeting: "Szia,"
       body_markdown: |
         Kaptunk egy kérést a Jiki fiókod törlésére.
 

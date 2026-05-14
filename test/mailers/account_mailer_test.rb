@@ -9,12 +9,12 @@ class AccountMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Hi John Doe,", mail.html_part.body.to_s
-    assert_match "Jiki is designed to take you from complete beginner to confident coder", mail.html_part.body.to_s
+    assert_match "Hi there,", mail.html_part.body.to_s
+    assert_match "Jiki has been designed to take you from complete beginner to confident coder", mail.html_part.body.to_s
     assert_match "https://jiki.io", mail.html_part.body.to_s
 
-    assert_match "Hi John Doe,", mail.text_part.body.to_s
-    assert_match "Jiki is designed to take you from complete beginner to confident coder", mail.text_part.body.to_s
+    assert_match "Hi there,", mail.text_part.body.to_s
+    assert_match "Jiki has been designed to take you from complete beginner to confident coder", mail.text_part.body.to_s
   end
 
   test "welcome email renders with Hungarian locale" do
@@ -25,11 +25,11 @@ class AccountMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Szia János Kovács,", mail.html_part.body.to_s
+    assert_match "Szia,", mail.html_part.body.to_s
     assert_match "strukturált, lineáris tanulási útvonalat kínál", mail.html_part.body.to_s
     assert_match "https://jiki.io", mail.html_part.body.to_s
 
-    assert_match "Szia János Kovács,", mail.text_part.body.to_s
+    assert_match "Szia,", mail.text_part.body.to_s
     assert_match "strukturált, lineáris tanulási útvonalat kínál", mail.text_part.body.to_s
   end
 
@@ -62,23 +62,7 @@ class AccountMailerTest < ActionMailer::TestCase
     mail = AccountMailer.welcome(user)
 
     assert_equal "Welcome to Jiki!", mail.subject
-    assert_match "Hi #{ERB::Util.html_escape(user.name)},", mail.html_part.body.to_s
-  end
-
-  test "welcome email uses user name in greeting" do
-    user = create(:user, name: "Test User")
-    mail = AccountMailer.welcome(user)
-
-    assert_match "Hi Test User,", mail.html_part.body.to_s
-    assert_match "Hi Test User,", mail.text_part.body.to_s
-  end
-
-  test "welcome email correctly escapes user names with apostrophes in HTML" do
-    user = create(:user, name: "Graig D'Amore")
-    mail = AccountMailer.welcome(user)
-
-    assert_match "Hi Graig D&#39;Amore,", mail.html_part.body.to_s
-    assert_match "Hi Graig D'Amore,", mail.text_part.body.to_s
+    assert_match "Hi there,", mail.html_part.body.to_s
   end
 
   test "welcome email includes Jiki link" do

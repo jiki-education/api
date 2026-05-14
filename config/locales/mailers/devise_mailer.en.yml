@@ -4,15 +4,15 @@ en:
       confirmation_instructions:
         subject: "Confirm Your Email Address"
         preview: "Confirm your email address for your Jiki account"
-        greeting: "Hi %{name},"
+        greeting: "Hi there,"
         body_markdown: |
-          Please confirm your email address by clicking the button below.
+          Please confirm your email address is real by clicking the button below.
         cta: "Confirm My Email"
         footer: "If you didn't create a Jiki account, you can safely ignore this email."
       reset_password_instructions:
         subject: "Reset Your Password"
         preview: "Reset your password for your Jiki account"
-        greeting: "Hi %{name},"
+        greeting: "Hi there,"
         body_markdown: |
           We received a request to reset your password for your Jiki account.
         cta: "Reset My Password"
