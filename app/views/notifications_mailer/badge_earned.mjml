@@ -4,10 +4,14 @@
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     %mj-text
-      Hi there!
+      Hi there,
 
     - if @image_url.present?
       %mj-image{ src: @image_url, alt: @badge.name, width: "100%" }
 
     %mj-text
       = markdown_to_html(@content_markdown)
+      %p
+        Cheers,
+        %br
+        Jeremy &amp; Team

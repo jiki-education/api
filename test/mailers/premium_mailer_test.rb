@@ -10,10 +10,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Hi John Doe,", mail.html_part.body.to_s
+    assert_match "Hi there,", mail.html_part.body.to_s
     assert_match "Thank you for subscribing to Jiki Premium", mail.html_part.body.to_s
 
-    assert_match "Hi John Doe,", mail.text_part.body.to_s
+    assert_match "Hi there,", mail.text_part.body.to_s
     assert_match "Thank you for subscribing to Jiki Premium", mail.text_part.body.to_s
   end
 
@@ -46,10 +46,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal ["hello@mail.jiki.io"], mail.from
     assert_equal [user.email], mail.to
 
-    assert_match "Hi John Doe,", mail.html_part.body.to_s
+    assert_match "Hi there,", mail.html_part.body.to_s
     assert_match "Your Jiki Premium subscription has ended", mail.html_part.body.to_s
 
-    assert_match "Hi John Doe,", mail.text_part.body.to_s
+    assert_match "Hi there,", mail.text_part.body.to_s
     assert_match "Your Jiki Premium subscription has ended", mail.text_part.body.to_s
   end
 
@@ -71,15 +71,6 @@ class PremiumMailerTest < ActionMailer::TestCase
 
     assert_match(/<table/, html_body)
     refute_match(/<mj-/, html_body)
-  end
-
-  # Edge cases
-  test "welcome_to_premium email correctly escapes user names with apostrophes in HTML" do
-    user = create(:user, name: "Graig D'Amore")
-    mail = PremiumMailer.welcome_to_premium(user)
-
-    assert_match "Hi Graig D&#39;Amore,", mail.html_part.body.to_s
-    assert_match "Hi Graig D'Amore,", mail.text_part.body.to_s
   end
 
   test "emails do not include unsubscribe headers" do

@@ -4,7 +4,7 @@ hu:
       confirmation_instructions:
         subject: "Erősítsd meg az e-mail címedet"
         preview: "Erősítsd meg az e-mail címedet a Jiki fiókodhoz"
-        greeting: "Szia %{name},"
+        greeting: "Szia,"
         body_markdown: |
           Kérjük, erősítsd meg az e-mail címedet az alábbi gombra kattintva.
         cta: "E-mail cím megerősítése"
@@ -12,7 +12,7 @@ hu:
       reset_password_instructions:
         subject: "Jelszó visszaállítása"
         preview: "Állítsd vissza jelszavadat a Jiki fiókodhoz"
-        greeting: "Szia %{name},"
+        greeting: "Szia,"
         body_markdown: |
           Kaptunk egy kérést a Jiki fiókod jelszavának visszaállítására.
         cta: "Jelszó visszaállítása"
