@@ -2,7 +2,8 @@ require "test_helper"
 
 class SerializeUserTest < ActiveSupport::TestCase
   test "serializes user with standard membership and never_subscribed status" do
-    user = create(:user, handle: "test_user", email: "test@example.com", name: "Test User")
+    user = create(:user, handle: "test_user", email: "test@example.com", name: "Test User",
+      avatar_url: "https://example.com/avatar.png")
 
     result = SerializeUser.(user)
 
@@ -10,6 +11,7 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "standard", result[:membership_type]
     assert_equal "test@example.com", result[:email]
     assert_equal "Test User", result[:name]
+    assert_equal "https://example.com/avatar.png", result[:avatar_url]
     assert_equal "never_subscribed", result[:subscription_status]
     assert_nil result[:subscription]
     assert_equal :usd, result[:premium_prices][:currency]
