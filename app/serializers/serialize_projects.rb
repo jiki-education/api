@@ -19,23 +19,17 @@ class SerializeProjects
   def statuses
     return Hash.new(nil) unless for_user
 
-    projects.each_with_object({}) do |project, hash|
-      row = user_project_rows[project.id]
+    projects.to_h { |project| [project.id, status_for(project)] }
+  end
 
-      if row && row[:completed_at].present?
-        hash[project.id] =
-          :completed
-      elsif row && row[:started_at].present?
-        hash[project.id] =
-          :started
-      elsif unlocked_project_ids.include?(project.id)
-        hash[project.id] =
-          :unlocked
-      else
-        hash[project.id] =
-          :locked
-      end
-    end
+  def status_for(project)
+    row = user_project_rows[project.id]
+
+    return :completed if row && row[:completed_at].present?
+    return :started if row && row[:started_at].present?
+    return :unlocked if unlocked_project_ids.include?(project.id)
+
+    :locked
   end
 
   memoize
