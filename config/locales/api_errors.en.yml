@@ -39,6 +39,7 @@ en:
     # User progression errors
     lesson_in_progress: "Complete current lesson before starting a new one"
     level_not_completed: "Complete the current level first"
+    project_locked: "Complete the lesson that unlocks this project first"
     user_lesson_not_found: "User lesson not found"
     user_level_not_found: "User level not found"
     language_already_chosen: "Language has already been chosen"

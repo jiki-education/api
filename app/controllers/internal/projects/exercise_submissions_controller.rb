@@ -6,10 +6,11 @@ class Internal::Projects::ExerciseSubmissionsController < Internal::BaseControll
   rescue_from FileTooLargeError, with: :render_file_too_large_error
   rescue_from TooManyFilesError, with: :render_too_many_files_error
   rescue_from InvalidSubmissionError, with: :render_invalid_submission_error
+  rescue_from ProjectLockedError, with: :render_project_locked_error
 
   def create
-    # Find or create UserProject for current user and project
-    user_project = UserProject::Create.(current_user, @project)
+    # Start the project for current user (idempotent, validates unlock)
+    user_project = UserProject::Start.(current_user, @project)
 
     # Create submission with UserProject as context
     ExerciseSubmission::Create.(
@@ -59,5 +60,9 @@ class Internal::Projects::ExerciseSubmissionsController < Internal::BaseControll
         message: exception.message
       }
     }, status: :unprocessable_entity
+  end
+
+  def render_project_locked_error(_exception)
+    render_403(:project_locked)
   end
 end

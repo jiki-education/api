@@ -34,8 +34,10 @@ class UserLesson::Complete
     # Unlock concept if this lesson unlocks one
     Concept::UnlockForUser.(lesson.unlocked_concept, user) if lesson.unlocked_concept
 
-    # Unlock project if this lesson unlocks one
-    UserProject::Create.(user, lesson.unlocked_project) if lesson.unlocked_project
+    # Emit unlock event if this lesson unlocks a project. The project becomes
+    # unlocked by virtue of this lesson being completed - no UserProject row is
+    # created here (the row is created when the user actually starts it).
+    emit_project_unlocked_event! if lesson.unlocked_project
 
     # Check for badges that might be awarded (badge's award_to? determines eligibility)
     AwardBadgeJob.perform_later(user, 'maze_navigator')
@@ -50,6 +52,10 @@ class UserLesson::Complete
     return unless next_lesson
 
     Current.add_event(:lesson_unlocked, { lesson_slug: next_lesson.slug })
+  end
+
+  def emit_project_unlocked_event!
+    Current.add_event(:project_unlocked, { project: SerializeProject.(lesson.unlocked_project) })
   end
 
   memoize

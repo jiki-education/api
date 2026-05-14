@@ -8,6 +8,7 @@ class SerializeUserProject
       project_slug: user_project.project.slug,
       status: status,
       conversation: conversation,
+      conversation_allowed: conversation_allowed,
       data: data
     }
   end
@@ -18,6 +19,10 @@ class SerializeUserProject
   end
 
   def conversation = user_project.assistant_conversation&.messages || []
+
+  def conversation_allowed
+    AssistantConversation::CheckUserAccess.(user_project.user, user_project.project)
+  end
 
   def data
     { last_submission: exercise_data_last_submission }
@@ -40,5 +45,8 @@ class SerializeUserProject
         }
       end
     }
+  rescue ActiveStorage::FileNotFoundError => e
+    Sentry.capture_exception(e, extra: { exercise_submission_id: last_submission&.id })
+    nil
   end
 end

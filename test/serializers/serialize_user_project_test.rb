@@ -9,6 +9,7 @@ class SerializeUserProjectTest < ActiveSupport::TestCase
       project_slug: "calculator",
       status: "completed",
       conversation: [],
+      conversation_allowed: true,
       data: { last_submission: nil }
     }
 
@@ -23,6 +24,7 @@ class SerializeUserProjectTest < ActiveSupport::TestCase
       project_slug: "calculator",
       status: "started",
       conversation: [],
+      conversation_allowed: true,
       data: { last_submission: nil }
     }
 
@@ -58,6 +60,22 @@ class SerializeUserProjectTest < ActiveSupport::TestCase
     assert_equal "started", result[:status]
     assert_empty result[:conversation]
     assert result[:data].key?(:last_submission)
+    assert_nil result[:data][:last_submission]
+  end
+
+  test "returns nil last_submission when a file blob is missing from storage" do
+    project = create(:project, slug: "calculator")
+    user_project = create(:user_project, project:)
+    submission = create(:exercise_submission, context: user_project)
+    file = create(:exercise_submission_file, exercise_submission: submission, filename: "calculator.rb")
+    file.content.attach(io: StringIO.new("class Calculator\nend"), filename: "calculator.rb")
+
+    ActiveStorage::Blob.any_instance.stubs(:download).raises(ActiveStorage::FileNotFoundError)
+    Sentry.expects(:capture_exception).with(instance_of(ActiveStorage::FileNotFoundError),
+      extra: { exercise_submission_id: submission.id })
+
+    result = SerializeUserProject.(user_project)
+
     assert_nil result[:data][:last_submission]
   end
 

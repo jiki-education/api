@@ -4,7 +4,7 @@ class Internal::UserLessonsController < Internal::BaseController
   def show
     user_lesson = UserLesson.find_by(user: current_user, lesson: @lesson)
 
-    return render_404(:not_found) unless user_lesson
+    return render_404(:user_lesson_not_found) unless user_lesson
 
     render json: {
       user_lesson: SerializeUserLesson.(user_lesson)

@@ -178,52 +178,49 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal initial_count, user.data.unlocked_concept_ids.length
   end
 
-  test "unlocks project when lesson has unlocked_project" do
+  test "emits project_unlocked event when lesson has unlocked_project" do
     user = create(:user)
     level = create(:level)
-    project = create(:project)
+    project = create(:project, slug: "calculator", title: "Calculator")
     lesson = create(:lesson, :exercise, level:)
     project.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
-    assert_difference -> { user.user_projects.count }, 1 do
-      UserLesson::Complete.(user, lesson)
-    end
-
-    assert_includes user.projects, project
-  end
-
-  test "does not unlock project when lesson has no unlocked_project" do
-    user = create(:user)
-    level = create(:level)
-    lesson = create(:lesson, :exercise, level:)
-    create(:user_level, user:, level:)
-    create(:user_lesson, user:, lesson:)
-
-    assert_no_difference -> { user.user_projects.count } do
-      UserLesson::Complete.(user, lesson)
-    end
-  end
-
-  test "project unlocking is idempotent" do
-    user = create(:user)
-    level = create(:level)
-    project = create(:project)
-    lesson = create(:lesson, :exercise, level:)
-    project.update!(unlocked_by_lesson: lesson)
-    create(:user_level, user:, level:)
-    create(:user_lesson, user:, lesson:)
-
-    # Complete lesson twice
+    Current.reset
     UserLesson::Complete.(user, lesson)
-    initial_count = user.user_projects.count
+
+    event = Current.events.find { |e| e[:type] == "project_unlocked" }
+    assert event
+    assert_equal "calculator", event[:data][:project][:slug]
+    assert_equal "Calculator", event[:data][:project][:title]
+  end
+
+  test "does not create a UserProject row when unlocking a project" do
+    user = create(:user)
+    level = create(:level)
+    project = create(:project)
+    lesson = create(:lesson, :exercise, level:)
+    project.update!(unlocked_by_lesson: lesson)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
 
     assert_no_difference -> { user.user_projects.count } do
       UserLesson::Complete.(user, lesson)
     end
+  end
 
-    assert_equal initial_count, user.user_projects.count
+  test "does not emit project_unlocked event when lesson has no unlocked_project" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson)
+
+    assert_nil((Current.events || []).find { |e| e[:type] == "project_unlocked" })
   end
 
   # Badge tests

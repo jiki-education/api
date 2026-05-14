@@ -116,6 +116,7 @@ Rails.application.routes.draw do
 
     resources :user_projects, only: [:show], param: :project_slug do
       member do
+        post :start
         patch :complete
       end
     end

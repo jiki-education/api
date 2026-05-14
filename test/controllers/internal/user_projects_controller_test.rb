@@ -9,6 +9,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
 
   # Authentication guards
   guard_incorrect_token! :internal_user_project_path, args: ["calculator"], method: :get
+  guard_incorrect_token! :start_internal_user_project_path, args: ["calculator"], method: :post
   guard_incorrect_token! :complete_internal_user_project_path, args: ["calculator"], method: :patch
 
   # GET /v1/user_projects/:slug tests
@@ -46,6 +47,69 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_json_error(:forbidden, error_type: :premium_required)
+  end
+
+  # POST /v1/user_projects/:slug/start tests
+  test "POST start creates and starts the user project" do
+    freeze_time do
+      post start_internal_user_project_path(project_slug: @project.slug),
+        as: :json
+
+      assert_response :success
+      assert_json_response({})
+
+      user_project = UserProject.find_by!(user: @current_user, project: @project)
+      assert_equal Time.current, user_project.started_at
+    end
+  end
+
+  test "POST start delegates to UserProject::Start command" do
+    UserProject::Start.expects(:call).with(@current_user, @project)
+
+    post start_internal_user_project_path(project_slug: @project.slug),
+      as: :json
+
+    assert_response :success
+  end
+
+  test "POST start is idempotent" do
+    post start_internal_user_project_path(project_slug: @project.slug), as: :json
+    original_started_at = UserProject.find_by!(user: @current_user, project: @project).started_at
+
+    travel 1.hour do
+      post start_internal_user_project_path(project_slug: @project.slug), as: :json
+      assert_response :success
+    end
+
+    assert_equal original_started_at,
+      UserProject.find_by!(user: @current_user, project: @project).started_at
+  end
+
+  test "POST start returns 404 for non-existent project" do
+    post start_internal_user_project_path(project_slug: "non-existent-slug"),
+      as: :json
+
+    assert_json_error(:not_found, error_type: :project_not_found)
+  end
+
+  test "POST start returns 403 for non-premium user" do
+    @current_user.data.update!(membership_type: "standard")
+
+    post start_internal_user_project_path(project_slug: @project.slug),
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :premium_required)
+  end
+
+  test "POST start returns 403 when project is locked" do
+    lesson = create(:lesson, :exercise)
+    @project.update!(unlocked_by_lesson: lesson)
+
+    post start_internal_user_project_path(project_slug: @project.slug),
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :project_locked)
+    assert_equal 0, UserProject.count
   end
 
   # PATCH /v1/user_projects/:slug/complete tests

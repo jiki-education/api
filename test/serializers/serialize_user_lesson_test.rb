@@ -12,6 +12,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
       fun_rating: nil,
       walkthrough_video_watched_percentage: nil,
       conversation: [],
+      conversation_allowed: true,
       data: {}
     }
 
@@ -29,6 +30,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
       fun_rating: nil,
       walkthrough_video_watched_percentage: nil,
       conversation: [],
+      conversation_allowed: true,
       data: {}
     }
 

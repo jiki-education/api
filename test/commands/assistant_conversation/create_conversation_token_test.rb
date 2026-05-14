@@ -80,4 +80,20 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
     payload = JWT.decode(token, Jiki.secrets.jwt_secret, true, { algorithm: 'HS256' }).first
     assert_equal "my-exercise-slug", payload['exercise_slug']
   end
+
+  test "creates conversation token for project context" do
+    user = create(:user)
+    user.data.update!(membership_type: "premium")
+    project = create(:project, slug: "calculator", exercise_slug: "jiki/calculator")
+
+    token = AssistantConversation::CreateConversationToken.(user, project)
+
+    assert token.present?
+
+    payload = JWT.decode(token, Jiki.secrets.jwt_secret, true, { algorithm: 'HS256' }).first
+    assert_equal user.id, payload['sub']
+    assert_equal "calculator", payload['project_slug']
+    assert_equal "jiki/calculator", payload['exercise_slug']
+    assert_nil payload['lesson_slug']
+  end
 end

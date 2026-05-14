@@ -22,7 +22,6 @@ class SerializeLesson
   private
   def data
     d = lesson.data.dup
-    d[:conversation_allowed] = AssistantConversation::CheckUserAccess.(user, lesson)
 
     return d unless d[:sources].present? && language.present?
 

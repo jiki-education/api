@@ -56,4 +56,42 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
     # lesson2 should be allowed
     assert AssistantConversation::CheckUserAccess.(user, lesson2)
   end
+
+  test "premium user is always allowed for project context" do
+    user = create(:user)
+    user.data.update!(membership_type: "premium")
+    project = create(:project)
+
+    assert AssistantConversation::CheckUserAccess.(user, project)
+  end
+
+  test "standard user with no previous conversation is allowed for project context" do
+    user = create(:user)
+    user.data.update!(membership_type: "standard")
+    project = create(:project)
+
+    assert AssistantConversation::CheckUserAccess.(user, project)
+  end
+
+  test "standard user with existing lesson conversation is denied for project context" do
+    user = create(:user)
+    user.data.update!(membership_type: "standard")
+    lesson = create(:lesson, :exercise)
+    project = create(:project)
+    create(:assistant_conversation, user:, context: lesson)
+
+    refute AssistantConversation::CheckUserAccess.(user, project)
+  end
+
+  test "standard user's project conversations do not consume the free lesson allowance" do
+    user = create(:user)
+    user.data.update!(membership_type: "standard")
+    project = create(:project)
+    lesson = create(:lesson, :exercise)
+    create(:assistant_conversation, user:, context: project)
+
+    # Project conversations are excluded from the free-lesson gate, so the
+    # lesson is still allowed as the user's free one.
+    assert AssistantConversation::CheckUserAccess.(user, lesson)
+  end
 end
