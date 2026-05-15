@@ -4,15 +4,18 @@ class UserLesson::Start
   initialize_with :user, :lesson
 
   def call
-    ActiveRecord::Base.transaction do
-      validate_can_start_lesson!
+    # Short-circuit before validation: re-starting an existing UserLesson
+    # (started or completed) is an idempotent no-op, regardless of where
+    # the user currently is in the course.
+    existing = UserLesson.find_by(user:, lesson:)
+    return existing if existing
 
-      UserLesson.find_create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
-        # Only update tracking pointers on first creation
-        if user_lesson.just_created?
-          user_level.update!(current_user_lesson: user_lesson)
-          user_course.update!(current_user_level: user_level)
-        end
+    validate_can_start_lesson!
+
+    ActiveRecord::Base.transaction do
+      UserLesson.create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
+        user_level.update!(current_user_lesson: user_lesson)
+        user_course.update!(current_user_level: user_level)
       end
     end
   end
