@@ -14,8 +14,11 @@ class UserLesson::Start
 
     ActiveRecord::Base.transaction do
       UserLesson.create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
-        user_level.update!(current_user_lesson: user_lesson)
-        user_course.update!(current_user_level: user_level)
+        # Guard against a concurrent request winning the race in create_or_find_by!
+        if user_lesson.just_created?
+          user_level.update!(current_user_lesson: user_lesson)
+          user_course.update!(current_user_level: user_level)
+        end
       end
     end
   end

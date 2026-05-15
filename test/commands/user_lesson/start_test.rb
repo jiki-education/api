@@ -111,10 +111,11 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     completed_user_lesson2 = create(:user_lesson, user: user_course.user, lesson: lesson2, completed_at: Time.current)
     user_course.update!(current_user_level: user_level1)
 
+    result = nil
     assert_nothing_raised do
-      UserLesson::Start.(user_course.user, lesson2)
+      result = UserLesson::Start.(user_course.user, lesson2)
     end
-    assert_equal completed_user_lesson2.id, UserLesson.find_by(user: user_course.user, lesson: lesson2).id
+    assert_equal completed_user_lesson2.id, result.id
   end
 
   test "allows starting lesson in current level" do
