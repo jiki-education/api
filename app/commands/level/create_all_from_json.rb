@@ -50,7 +50,9 @@ class Level::CreateAllFromJson
         title: level_data["title"],
         description: level_data["description"],
         milestone_summary: level_data["milestone_summary"],
-        milestone_content: level_data["milestone_content"]
+        milestone_content: level_data["milestone_content"],
+        milestone_email_subject: level_data["milestone_email_subject"].to_s,
+        milestone_email_content_markdown: level_data["milestone_email_content_markdown"].to_s
       )
     end
   end
