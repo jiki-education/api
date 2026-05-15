@@ -99,6 +99,25 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     assert_equal "Complete the current level before starting lessons in the next level", error.message
   end
 
+  test "is idempotent for a completed lesson in a different level than current" do
+    user_course = create(:user_course)
+    level1 = create(:level, course: user_course.course, position: 1)
+    level2 = create(:level, course: user_course.course, position: 2)
+    lesson1 = create(:lesson, :exercise, level: level1)
+    lesson2 = create(:lesson, :exercise, level: level2)
+    user_level1 = create(:user_level, user: user_course.user, level: level1)
+    create(:user_level, user: user_course.user, level: level2)
+    create(:user_lesson, user: user_course.user, lesson: lesson1, completed_at: Time.current)
+    completed_user_lesson2 = create(:user_lesson, user: user_course.user, lesson: lesson2, completed_at: Time.current)
+    user_course.update!(current_user_level: user_level1)
+
+    result = nil
+    assert_nothing_raised do
+      result = UserLesson::Start.(user_course.user, lesson2)
+    end
+    assert_equal completed_user_lesson2.id, result.id
+  end
+
   test "allows starting lesson in current level" do
     user_level = create(:user_level)
     lesson = create(:lesson, :exercise, level: user_level.level)
