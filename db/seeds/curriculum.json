@@ -6,6 +6,8 @@
       "description": "Learn how to use functions with and without inputs.",
       "milestone_summary": "Congratulations! You've completed your first level and learned how to use functions with and without inputs.",
       "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to use functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
+      "milestone_email_subject": "Congratulations on hitting the first Milestone",
+      "milestone_email_content_markdown": "Great work on completing the first level of Jiki's Coding Fundamentals course.\n\nIt might not feel like you're doing much \"real\" coding yet, but you've just picked up one of the most important skills in programming. You'll be using functions hundreds of times a day from here on, so this really is the foundation for everything else.\n\nNext we'll look at using colours to draw, and then we'll start mixing some logic into the process. Have fun!",
       "lessons": [
         {
           "slug": "welcome-to-jiki",
@@ -77,6 +79,8 @@
       "description": "Learn how to use strings and colors to make your programs more colorful and expressive.",
       "milestone_summary": "Excellent work! You've learned how to use strings and colors to create colorful drawings.",
       "milestone_content": "# Great Progress! 🎨\n\nYou've mastered using strings and colors in your programs!\n\n## What you've learned:\n- How to use strings to work with text and names\n- How to use colors to make your drawings more vibrant\n- How to combine shapes and colors to create complex images\n\n## Next steps:\n- Continue building on these skills\n- Create even more complex and colorful programs\n- Keep experimenting with different combinations!\n\nYou're becoming a skilled programmer. Keep it up!",
+      "milestone_email_subject": "Enjoyed Drawing?",
+      "milestone_email_content_markdown": "Great work on this level, and on your first proper bit of drawing.\n\nYou've now added strings and colours to your toolkit, which means your programs can start handling text and producing things that actually look good on screen.\n\nOver the next few lessons we'll start bringing in some logic, so you can move beyond linear instructions and add some variety and intelligence into your programs. Have fun!",
       "lessons": [
         {
           "slug": "strings",
@@ -123,6 +127,8 @@
       "description": "Learn how to repeat actions using loops to make your code more efficient.",
       "milestone_summary": "Great job! You've learned how to use repeat loops to make your programs more powerful and efficient.",
       "milestone_content": "# Fantastic Work! 🔁\n\nYou've mastered the repeat loop - one of the most powerful tools in programming!\n\n## What you've learned:\n- How to use loops to repeat actions\n- How to write more efficient code with less repetition\n- How to solve problems that require doing the same thing multiple times\n\n## Next steps:\n- Apply loops to more complex challenges\n- Combine loops with everything else you've learned\n- Keep building your programming skills!\n\nYou're making excellent progress. Keep going!",
+      "milestone_email_subject": "Feeling Loopy after all that Looping?",
+      "milestone_email_content_markdown": "Great work on this level. Loops are a fundamental building block of programming, and hopefully they're starting to feel pretty comfortable.\n\nThere are other types of loops we'll look at later in the course, but the repeat loop will be your companion for the next few lessons.\n\nNext up are variables, which is the idea of storing and retrieving values as your program runs. Have fun!",
       "lessons": [
         {
           "slug": "repeat-loop",
@@ -163,6 +169,8 @@
       "description": "Learn how to store and reuse values using variables.",
       "milestone_summary": "Excellent! You've learned how to use variables to store and reuse values in your programs.",
       "milestone_content": "# Outstanding Work! 📦\n\nYou've mastered variables - a fundamental building block of programming!\n\n## What you've learned:\n- How to create and use variables to store values\n- How to make your code more flexible and reusable\n- How to change values in one place and see results everywhere\n- How variables make complex programs easier to manage\n\n## Next steps:\n- Use variables in more complex programs\n- Combine variables with loops and functions\n- Keep building your programming toolkit!\n\nYou're becoming a real programmer now. Keep going!",
+      "milestone_email_subject": "Variables in the bag",
+      "milestone_email_content_markdown": "Great work on getting variables under your belt.\n\nVariables are one of those ideas that's pretty simple on the surface, but they're going to underpin almost everything you write from now on. The ability to store a value, give it a name, and use it later is what turns code from a fixed list of instructions into something genuinely flexible.\n\nNext we'll look at how variables change over time, which is what programmers call \"state\". Have fun!",
       "lessons": [
         {
           "slug": "creating-variables",
@@ -225,6 +233,8 @@
       "description": "Learn how to update variables and track changing values over time.",
       "milestone_summary": "Amazing! You've learned how to use variables to track state and create dynamic programs.",
       "milestone_content": "# Incredible Progress! 📈\n\nYou've mastered using variables to track state - a crucial programming skill!\n\n## What you've learned:\n- How to update variables to track changing values\n- How to use state to make your programs dynamic\n- How to combine all your skills to create complex programs\n\n## Next steps:\n- Apply state management to more complex challenges\n- Keep experimenting and having fun!\n\nYou're well on your way to mastering programming. Keep it up!",
+      "milestone_email_subject": "State of play",
+      "milestone_email_content_markdown": "Great work on this one. You can now track values that change as your program runs, which is a real step up from where you were a couple of levels ago.\n\nThis idea of state is going to keep coming back throughout the course, and it gets more interesting every time we combine it with something new.\n\nNext is a meaty level. We'll look at functions that return values, and then explore colours, randomness, animation, scope, and nested loops along the way. Have fun!",
       "lessons": [
         {
           "slug": "updating-variables",
@@ -264,6 +274,8 @@
       "description": "Learn how functions can return values, and explore colors, animation, randomness, scope, scenarios, and nested loops.",
       "milestone_summary": "Congratulations! You've mastered functions that return things and explored many powerful programming concepts.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Functions That Return Things level. Keep going!",
+      "milestone_email_subject": "Quite the haul",
+      "milestone_email_content_markdown": "Brilliant work on a packed level. Functions that return values, HSL and RGB colours, animation, random numbers, scope, scenarios, and loops within loops. That's a lot of new ideas to add to your toolkit in one go.\n\nDon't worry if some of them still feel a bit hazy. They'll all come back in different contexts later in the course, and each time they'll get more familiar.\n\nNext we'll start making decisions in code using if statements. This is where your programs really start to feel intelligent. Have fun!",
       "lessons": [
         {
           "slug": "functions-that-return-things",
@@ -413,6 +425,8 @@
       "description": "Learn how to make decisions in your code using if statements and else clauses.",
       "milestone_summary": "Congratulations! You've learned how to use conditionals to make decisions in your programs.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Conditionals level. Keep going!",
+      "milestone_email_subject": "If, then, what?",
+      "milestone_email_content_markdown": "Nice work on the conditionals level. Hopefully if and else are starting to feel pretty natural.\n\nConditionals are one of the most important ideas in programming. Almost every interesting program needs to make decisions based on what's true at the time, and you've now got the basic tools to do that.\n\nNext we'll look at more powerful ways of writing conditions, combining them together with and/or, plus a few related ideas like modulo. Have fun!",
       "lessons": [
         {
           "slug": "if-statements",
@@ -468,6 +482,8 @@
       "description": "Learn about logical operators, modulo, and more advanced conditional patterns.",
       "milestone_summary": "Congratulations! You've mastered complex conditionals and logical operators.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Complex Conditionals level. Keep going!",
+      "milestone_email_subject": "Logical next steps",
+      "milestone_email_content_markdown": "Great work on a tricky level. You've now got and/or, modulo, and looping without a count under your belt.\n\nThese are the kinds of tools that let you write conditions that actually match real-world logic, rather than having to break everything down into tiny separate checks.\n\nNext we'll combine conditionals with state, which is where your programs start being able to respond to what's happening as they run. Have fun!",
       "lessons": [
         {
           "slug": "and-or",
@@ -532,6 +548,8 @@
       "description": "Learn how to combine conditionals with state to create dynamic, responsive programs.",
       "milestone_summary": "Congratulations! You've learned to combine conditionals and state together.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Conditionals and State level. Keep going!",
+      "milestone_email_subject": "Programs that respond",
+      "milestone_email_content_markdown": "Great work. Combining conditionals with state is where your programs really start to feel alive, responding to what's happening rather than just following a fixed script.\n\nThis is roughly the level of complexity you'll be writing at for the rest of the course, so everything you've practised here will keep coming back.\n\nNext up is a big one: writing your own functions. Up until now you've been using functions someone else wrote. From here on, you'll be writing your own. Have fun!",
       "lessons": [
         {
           "slug": "using-if-and-state",
@@ -564,6 +582,8 @@
       "description": "Learn how to write your own functions with inputs and return values.",
       "milestone_summary": "Congratulations! You've learned to write your own functions.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Make Your Own Functions level. Keep going!",
+      "milestone_email_subject": "Now you're in charge",
+      "milestone_email_content_markdown": "Brilliant work. Writing your own functions is a real shift. You're no longer just using the tools on the shelf, you're building new ones.\n\nThis is one of the most important skills in all of programming. Good code is mostly about breaking problems down into small, well-named functions, and you've now got everything you need to start doing that.\n\nNext we'll get back to strings and look at how to stick them together and slot values into them. Have fun!",
       "lessons": [
         {
           "slug": "making-functions",
@@ -656,6 +676,8 @@
       "description": "Learn how to concatenate strings and use template literals.",
       "milestone_summary": "Congratulations! You've learned to manipulate strings.",
       "milestone_content": "# Level Complete!\n\nYou've completed the String Manipulation level. Keep going!",
+      "milestone_email_subject": "Strings, attached",
+      "milestone_email_content_markdown": "Nice work on this one. Concatenation and templates are pretty simple ideas, but they come up constantly, especially anywhere you're producing output for a person to read.\n\nYou'll be using these techniques in pretty much every program you write from here on.\n\nNext we'll look at how to dig into strings character by character, and how to loop through their contents. Have fun!",
       "lessons": [
         {
           "slug": "string-concatenation",
@@ -695,6 +717,8 @@
       "description": "Learn how to index into and iterate through strings.",
       "milestone_summary": "Congratulations! You've learned to iterate through strings.",
       "milestone_content": "# Level Complete!\n\nYou've completed the String Iteration level. Keep going!",
+      "milestone_email_subject": "Letter by letter",
+      "milestone_email_content_markdown": "Great work. Hopefully indexing and looping through strings is starting to make sense.\n\nBeing able to look at individual characters and walk through text systematically opens up a huge range of problems you can now solve. A lot of real-world programming is about exactly this kind of work.\n\nNext we'll look at how to combine multiple functions together to tackle more complex tasks. Have fun!",
       "lessons": [
         {
           "slug": "string-indexing",
@@ -771,6 +795,8 @@
       "description": "Learn how to combine multiple functions to solve complex problems.",
       "milestone_summary": "Congratulations! You've learned to use multiple functions together.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Using Multiple Functions Together level. Keep going!",
+      "milestone_email_subject": "Better together",
+      "milestone_email_content_markdown": "Great work on this level. Combining functions to solve bigger problems is what professional programming actually looks like day to day. You break a problem into pieces, write a small function for each piece, and then put them together.\n\nYou're now doing this for real.\n\nNext we'll look at methods and properties, which is a slightly different way of working with values. Have fun!",
       "lessons": [
         {
           "slug": "using-multiple-functions-together",
@@ -803,6 +829,8 @@
       "description": "Learn about methods and properties on objects.",
       "milestone_summary": "Congratulations! You've learned about methods and properties.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Methods and Properties level. Keep going!",
+      "milestone_email_subject": "Methods to the madness",
+      "milestone_email_content_markdown": "Nice work. Methods and properties are a slightly different style to what you've seen so far. Instead of passing a value into a function, you call a function on the value itself. The idea takes a little getting used to, but it's used everywhere, so it'll start feeling natural pretty quickly.\n\nNext we'll look at some more powerful kinds of loops: for loops, while loops, break, and continue. Have fun!",
       "lessons": [
         {
           "slug": "methods-and-strings",
@@ -835,6 +863,8 @@
       "description": "Learn about for loops, continue, break, and other advanced loop concepts.",
       "milestone_summary": "Congratulations! You've mastered advanced loops.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Advanced Loops level. Keep going!",
+      "milestone_email_subject": "More than just repeat",
+      "milestone_email_content_markdown": "Great work. You've now got for loops, while loops, break, and continue under your belt. These are the loops you'll reach for most often outside of this course, so they're well worth the time you've put in.\n\nEach one has a slightly different job, and getting a feel for which to reach for will come with practice.\n\nNext we'll look at lists, which is how programs store and work with collections of things. Have fun!",
       "lessons": [
         {
           "slug": "for-while-loops",
@@ -867,6 +897,8 @@
       "description": "Learn how to work with arrays to store and manipulate collections of data.",
       "milestone_summary": "Congratulations! You've learned to work with lists and arrays.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Lists level. Keep going!",
+      "milestone_email_subject": "Quite the collection",
+      "milestone_email_content_markdown": "Brilliant work. Lists (or arrays, as a lot of programmers call them) are one of the most useful tools in any language. Pretty much any time you're dealing with more than one of something, you'll reach for a list.\n\nYou've now got a good grasp of how to read from them, build them up, and work through their contents.\n\nNext, and finally, we'll look at dictionaries. These let you store values against named keys rather than just positions. Have fun!",
       "lessons": [
         {
           "slug": "arrays",
@@ -978,6 +1010,8 @@
       "description": "Learn how to use dictionaries to store key-value pairs.",
       "milestone_summary": "Congratulations! You've learned to work with dictionaries.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Dictionaries level. Keep going!",
+      "milestone_email_subject": "That's a wrap",
+      "milestone_email_content_markdown": "And that's the last level of Coding Fundamentals. Hopefully dictionaries are feeling like a useful tool to add to the mix alongside lists.\n\nThis is a real achievement. You've now covered every core building block of programming: functions, variables, state, conditionals, loops, strings, lists, and dictionaries. Everything else from here is combinations and refinements of what you already know.\n\nWe're really proud of you for getting this far. Have fun!",
       "lessons": [
         {
           "slug": "dictionaries",

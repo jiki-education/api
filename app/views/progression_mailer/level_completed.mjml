@@ -3,13 +3,11 @@
 
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
-    %mj-text
-      Hi there,
-
     - if @image_url.present?
       %mj-image{ src: @image_url, alt: @level.title, width: "100%" }
 
     %mj-text
+      %p Hi there,
       = markdown_to_html(@content_markdown)
       %p
         Cheers,
