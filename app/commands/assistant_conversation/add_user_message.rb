@@ -5,7 +5,7 @@ class AssistantConversation::AddUserMessage
 
   def call
     AssistantConversation::AddMessage.(conversation, "user", content, timestamp)
-    AwardBadgeJob.perform_later(user, 'collaborator')
+    AwardBadgeJob.perform_later(user, 'sidekick')
   end
 
   memoize
