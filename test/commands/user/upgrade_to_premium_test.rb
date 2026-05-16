@@ -28,4 +28,12 @@ class User::UpgradeToPremiumTest < ActiveSupport::TestCase
 
     assert user.data.reload.premium?
   end
+
+  test "enqueues premium badge award when upgrading" do
+    user = create(:user)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'premium']) do
+      User::UpgradeToPremium.(user)
+    end
+  end
 end
