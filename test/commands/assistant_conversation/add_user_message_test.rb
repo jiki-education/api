@@ -13,4 +13,16 @@ class AssistantConversation::AddUserMessageTest < ActiveSupport::TestCase
 
     AssistantConversation::AddUserMessage.(user, lesson, content, timestamp)
   end
+
+  test "enqueues collaborator badge award" do
+    user = create(:user)
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
+    conversation = build_stubbed(:assistant_conversation)
+    AssistantConversation::FindOrCreate.stubs(:call).returns(conversation)
+    AssistantConversation::AddMessage.stubs(:call)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'collaborator']) do
+      AssistantConversation::AddUserMessage.(user, lesson, "hi", "2026-01-01T00:00:00Z")
+    end
+  end
 end
