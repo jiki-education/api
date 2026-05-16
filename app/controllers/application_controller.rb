@@ -2,7 +2,7 @@ class ApplicationController < ActionController::API
   include ActionController::Cookies
   include MetaResponseWrapper
 
-  USER_ID_COOKIE_NAME = :jiki_user_id
+  USER_ID_COOKIE_NAME = :"jiki_user_id_#{Rails.env}"
 
   before_action :set_current_user_agent
   before_action :set_locale
