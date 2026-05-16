@@ -1,6 +1,6 @@
 module Badges
-  class CollaboratorBadge < Badge
-    seed "Collaborator", "Sent your first message to Jiki",
+  class SidekickBadge < Badge
+    seed "Sidekick", "Sent your first message to Jiki",
       fun_fact: "Two heads are better than one. Thanks for chatting with Jiki!"
 
     def award_to?(user)
