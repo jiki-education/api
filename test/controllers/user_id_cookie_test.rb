@@ -40,7 +40,7 @@ class UserIdCookieTest < ApplicationControllerTest
 
     # Verify it's actually a deletion (empty value or past expiry)
     assert(
-      delete_cookie.include?("jiki_user_id=;") ||
+      delete_cookie.include?("jiki_user_id_test=;") ||
       delete_cookie.include?("max-age=0") ||
       delete_cookie.match?(/expires=.*1970/i), # Unix epoch = deletion
       "Expected cookie to be deleted, got: #{delete_cookie}"
@@ -60,13 +60,13 @@ class UserIdCookieTest < ApplicationControllerTest
     set_domain = set_cookie[/domain=([^;]+)/, 1]
 
     reset!
-    cookies[ApplicationController::USER_ID_COOKIE_NAME] = set_cookie[/\Ajiki_user_id=([^;]*)/, 1]
+    cookies[ApplicationController::USER_ID_COOKIE_NAME] = set_cookie[/\Ajiki_user_id_test=([^;]*)/, 1]
     delete destroy_user_session_path, as: :json
 
     delete_cookie = jiki_user_id_cookie
     assert delete_cookie.present?, "Expected deletion cookie in Set-Cookie header"
     assert(
-      delete_cookie.include?("jiki_user_id=;") ||
+      delete_cookie.include?("jiki_user_id_test=;") ||
       delete_cookie.include?("max-age=0") ||
       delete_cookie.match?(/expires=.*1970/i),
       "Expected cookie to be deleted, got: #{delete_cookie}"
@@ -87,14 +87,14 @@ class UserIdCookieTest < ApplicationControllerTest
     # Now hit an authenticated endpoint with no session (simulating expired
     # session but stale cookie still in the browser).
     reset!
-    cookies[ApplicationController::USER_ID_COOKIE_NAME] = set_cookie[/\Ajiki_user_id=([^;]*)/, 1]
+    cookies[ApplicationController::USER_ID_COOKIE_NAME] = set_cookie[/\Ajiki_user_id_test=([^;]*)/, 1]
     get internal_me_path, as: :json
     assert_response :unauthorized
 
     delete_cookie = jiki_user_id_cookie
     assert delete_cookie.present?, "Expected deletion cookie in Set-Cookie header"
     assert(
-      delete_cookie.include?("jiki_user_id=;") ||
+      delete_cookie.include?("jiki_user_id_test=;") ||
       delete_cookie.include?("max-age=0") ||
       delete_cookie.match?(/expires=.*1970/i),
       "Expected cookie to be deleted, got: #{delete_cookie}"
@@ -180,13 +180,13 @@ class UserIdCookieTest < ApplicationControllerTest
 
     # Set-Cookie can be an array or a string
     cookie_headers = [cookie_headers] unless cookie_headers.is_a?(Array)
-    cookie_headers.find { |c| c.start_with?("jiki_user_id=") }
+    cookie_headers.find { |c| c.start_with?("jiki_user_id_test=") }
   end
 
   def assert_cookie_set
     cookie = jiki_user_id_cookie
     assert cookie.present?, "Expected jiki_user_id cookie to be set"
-    refute cookie.start_with?("jiki_user_id=;"), "Cookie should have a value, not be empty"
+    refute cookie.start_with?("jiki_user_id_test=;"), "Cookie should have a value, not be empty"
   end
 
   def assert_cookie_cleared
@@ -196,7 +196,7 @@ class UserIdCookieTest < ApplicationControllerTest
 
     # If the cookie is present, it should be a deletion (empty value or max-age=0)
     assert(
-      cookie.start_with?("jiki_user_id=;") || cookie.include?("max-age=0"),
+      cookie.start_with?("jiki_user_id_test=;") || cookie.include?("max-age=0"),
       "Expected jiki_user_id cookie to be cleared, got: #{cookie}"
     )
   end
