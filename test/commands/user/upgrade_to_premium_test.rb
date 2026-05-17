@@ -36,4 +36,37 @@ class User::UpgradeToPremiumTest < ActiveSupport::TestCase
       User::UpgradeToPremium.(user)
     end
   end
+
+  test "defers upgraded_to_premium event on upgrade" do
+    user = create(:user, created_at: 7.days.ago)
+
+    Analytics::TrackEvent.expects(:defer).with(
+      user,
+      "upgraded_to_premium",
+      properties: { source: "stripe_checkout", days_since_signup: 7 }
+    )
+
+    User::UpgradeToPremium.(user)
+  end
+
+  test "uses provided source in event" do
+    user = create(:user, created_at: 3.days.ago)
+
+    Analytics::TrackEvent.expects(:defer).with(
+      user,
+      "upgraded_to_premium",
+      properties: { source: "admin_grant", days_since_signup: 3 }
+    )
+
+    User::UpgradeToPremium.(user, source: "admin_grant")
+  end
+
+  test "does not fire event when user already premium" do
+    user = create(:user)
+    user.data.update!(membership_type: "premium")
+
+    Analytics::TrackEvent.expects(:defer).never
+
+    User::UpgradeToPremium.(user)
+  end
 end
