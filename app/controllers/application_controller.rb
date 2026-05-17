@@ -126,7 +126,7 @@ class ApplicationController < ActionController::API
     return nil unless params[:attribution].respond_to?(:permit)
 
     params.require(:attribution).
-      permit(:referrer, :landing_url, :utm_source, :utm_medium, :utm_campaign, :captured_at).
+      permit(:referrer, :landing_path, :utm_source, :utm_medium, :utm_campaign, :captured_at).
       to_h.
       compact
   end

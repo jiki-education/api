@@ -6,6 +6,8 @@ class Analytics::TrackEvent
   initialize_with :user, :event, properties: {}
 
   def call
+    return unless PostHog.initialized?
+
     PostHog.capture(
       distinct_id: user.id.to_s,
       event: event,

@@ -49,64 +49,59 @@ end
 # IMPORTANT: Use PostHog.init once — creating multiple clients can cause dropped events.
 # PostHog.init provides a singleton-like pattern; use PostHog.capture, PostHog.identify, etc.
 
-PostHog.init do |config|
-  # ============================================================================
-  # REQUIRED CONFIGURATION
-  # ============================================================================
+# Only initialize PostHog in production. In dev/test we skip init entirely so
+# the posthog-rails at_exit shutdown hook (which calls flush and can hang on
+# network failures) never runs.
+if Rails.env.production?
+  PostHog.init do |config|
+    # ============================================================================
+    # REQUIRED CONFIGURATION
+    # ============================================================================
 
-  # Your PostHog project API key (required)
-  # Get this from: PostHog Project Settings > API Keys
-  # https://app.posthog.com/settings/project-details#variables
-  config.api_key = Jiki.config.posthog_api_key
+    # Your PostHog project API key (required)
+    # Get this from: PostHog Project Settings > API Keys
+    # https://app.posthog.com/settings/project-details#variables
+    config.api_key = Jiki.config.posthog_api_key
 
-  # ============================================================================
-  # OPTIONAL CONFIGURATION
-  # ============================================================================
+    # ============================================================================
+    # OPTIONAL CONFIGURATION
+    # ============================================================================
 
-  # For PostHog Cloud, use: https://us.i.posthog.com or https://eu.i.posthog.com
-  config.host = Jiki.config.posthog_host
+    # For PostHog Cloud, use: https://us.i.posthog.com or https://eu.i.posthog.com
+    config.host = Jiki.config.posthog_host
 
-  # Personal API key (optional, but required for local feature flag evaluation)
-  # Get this from: PostHog Settings > Personal API Keys
-  # https://app.posthog.com/settings/user-api-keys
-  config.personal_api_key = ENV.fetch('POSTHOG_PERSONAL_API_KEY', nil)
+    # Personal API key (optional, but required for local feature flag evaluation)
+    # Get this from: PostHog Settings > Personal API Keys
+    # https://app.posthog.com/settings/user-api-keys
+    config.personal_api_key = ENV.fetch('POSTHOG_PERSONAL_API_KEY', nil)
 
-  # Maximum number of events to queue before dropping (default: 10000)
-  config.max_queue_size = 10_000
+    # Maximum number of events to queue before dropping (default: 10000)
+    config.max_queue_size = 10_000
 
-  # Feature flags polling interval in seconds (default: 30)
-  config.feature_flags_polling_interval = 30
+    # Feature flags polling interval in seconds (default: 30)
+    config.feature_flags_polling_interval = 30
 
-  # Feature flag request timeout in seconds (default: 3)
-  config.feature_flag_request_timeout_seconds = 3
+    # Feature flag request timeout in seconds (default: 3)
+    config.feature_flag_request_timeout_seconds = 3
 
-  # Error callback - called when PostHog encounters an error
-  # config.on_error = proc { |status, message|
-  #   Rails.logger.error("[PostHog] Error #{status}: #{message}")
-  # }
+    # Error callback - called when PostHog encounters an error
+    # config.on_error = proc { |status, message|
+    #   Rails.logger.error("[PostHog] Error #{status}: #{message}")
+    # }
 
-  # Before send callback - modify or filter events before sending
-  # Return nil to prevent the event from being sent
-  # config.before_send = proc { |event|
-  #   # Filter out test users
-  #   return nil if event[:properties]&.dig('$user_email')&.end_with?('@test.com')
-  #
-  #   # Add custom properties to all events
-  #   event[:properties] ||= {}
-  #   event[:properties]['environment'] = Rails.env
-  #
-  #   event
-  # }
-
-  # ============================================================================
-  # ENVIRONMENT-SPECIFIC CONFIGURATION
-  # ============================================================================
-
-  # Only send events in production; no-op everywhere else
-  config.test_mode = true unless Rails.env.production?
-
-  # Optional: Disable in development
-  # config.test_mode = true if Rails.env.test? || Rails.env.development?
+    # Before send callback - modify or filter events before sending
+    # Return nil to prevent the event from being sent
+    # config.before_send = proc { |event|
+    #   # Filter out test users
+    #   return nil if event[:properties]&.dig('$user_email')&.end_with?('@test.com')
+    #
+    #   # Add custom properties to all events
+    #   event[:properties] ||= {}
+    #   event[:properties]['environment'] = Rails.env
+    #
+    #   event
+    # }
+  end
 end
 
 # ============================================================================

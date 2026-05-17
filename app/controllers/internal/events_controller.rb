@@ -1,7 +1,12 @@
 class Internal::EventsController < Internal::BaseController
   ALLOWED_EVENTS = {
-    "premium_feature_blocked" => %w[feature context_type context_id],
-    "premium_modal_shown" => %w[trigger context_type context_id]
+    "premium_feature_blocked" => %w[feature context_type context_slug],
+    "premium_modal_shown" => %w[trigger context_type context_slug]
+  }.freeze
+
+  CONTEXT_MODELS = {
+    "lesson" => Lesson,
+    "project" => Project
   }.freeze
 
   def create
@@ -10,13 +15,24 @@ class Internal::EventsController < Internal::BaseController
     Analytics::TrackEvent.defer(
       current_user,
       params[:event],
-      properties: permitted_properties
+      properties: enriched_properties
     )
 
     head :no_content
   end
 
   private
+  def enriched_properties
+    props = permitted_properties
+    type = props["context_type"]
+    slug = props["context_slug"]
+    return props unless type && slug
+
+    model = CONTEXT_MODELS[type]
+    entity = model&.find_by(slug:)
+    entity ? props.merge("context_id" => entity.id) : props
+  end
+
   def permitted_properties
     allowed = ALLOWED_EVENTS.fetch(params[:event])
     params.fetch(:properties, {}).permit(*allowed).to_h

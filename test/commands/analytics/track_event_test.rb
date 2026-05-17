@@ -4,6 +4,7 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
   test "captures event with default properties merged in" do
     user = create(:user, locale: "en")
 
+    PostHog.stubs(:initialized?).returns(true)
     PostHog.expects(:capture).with(
       distinct_id: user.id.to_s,
       event: "premium_modal_shown",
@@ -20,6 +21,7 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
   test "works with no properties" do
     user = create(:user)
 
+    PostHog.stubs(:initialized?).returns(true)
     PostHog.expects(:capture).with(
       distinct_id: user.id.to_s,
       event: "user_signed_up",
@@ -30,6 +32,13 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
     )
 
     Analytics::TrackEvent.(user, "user_signed_up")
+  end
+
+  test "no-ops when PostHog is not initialized" do
+    PostHog.stubs(:initialized?).returns(false)
+    PostHog.expects(:capture).never
+
+    Analytics::TrackEvent.(create(:user), "user_signed_up")
   end
 
   test "uses :analytics queue" do
