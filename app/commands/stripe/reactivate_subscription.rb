@@ -21,6 +21,8 @@ class Stripe::ReactivateSubscription
 
     Rails.logger.info("User #{user.id} reactivated subscription #{user.data.stripe_subscription_id}")
 
+    Analytics::TrackEvent.defer(user, "subscription_reactivated")
+
     {
       success: true,
       subscription_valid_until: user.data.subscription_valid_until

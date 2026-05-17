@@ -11,10 +11,15 @@ class User::DowngradeToStandard
     end
 
     send_downgrade_email!
+    track_event!
   end
 
   private
   def send_downgrade_email!
     PremiumMailer.subscription_ended(user).deliver_later
+  end
+
+  def track_event!
+    Analytics::TrackEvent.defer(user, "downgraded_to_standard")
   end
 end

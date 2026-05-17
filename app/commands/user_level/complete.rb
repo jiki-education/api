@@ -17,6 +17,8 @@ class UserLevel::Complete
 
       # Send completion email asynchronously after transaction completes
       send_completion_email!
+
+      track_event!
     end
   end
 
@@ -34,5 +36,17 @@ class UserLevel::Complete
     User::SendEmail.(user_level) do
       ProgressionMailer.level_completed(user_level).deliver_later
     end
+  end
+
+  def track_event!
+    Analytics::TrackEvent.defer(
+      user,
+      "level_completed",
+      properties: {
+        level_id: level.id,
+        level_slug: level.slug,
+        position: UserLevel.where(user:).where.not(completed_at: nil).count
+      }
+    )
   end
 end

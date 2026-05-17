@@ -117,4 +117,31 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "defers level_completed event on completion" do
+    user_lesson = create(:user_lesson, :completed)
+    user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
+
+    Analytics::TrackEvent.expects(:defer).with(
+      user_lesson.user,
+      "level_completed",
+      properties: {
+        level_id: user_lesson.lesson.level.id,
+        level_slug: user_lesson.lesson.level.slug,
+        position: 1
+      }
+    )
+
+    UserLevel::Complete.(user_level)
+  end
+
+  test "does not fire level_completed event on idempotent re-completion" do
+    user_lesson = create(:user_lesson, :completed)
+    user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
+    user_level.update!(completed_at: 1.day.ago)
+
+    Analytics::TrackEvent.expects(:defer).never
+
+    UserLevel::Complete.(user_level)
+  end
 end
