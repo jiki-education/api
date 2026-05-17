@@ -73,6 +73,10 @@ gem "stripe"
 gem "sentry-ruby"
 gem "sentry-rails"
 
+# Product analytics
+gem "posthog-ruby"
+gem "posthog-rails"
+
 # AWS SDK for S3 storage
 gem "aws-sdk-s3"
 

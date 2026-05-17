@@ -152,6 +152,9 @@ Rails.application.routes.draw do
 
     # Payment history
     resources :payments, only: [:index]
+
+    # Frontend-originated analytics events
+    resources :events, only: [:create]
   end
 
   # Admin routes
