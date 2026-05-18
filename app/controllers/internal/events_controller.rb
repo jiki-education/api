@@ -1,7 +1,7 @@
 class Internal::EventsController < Internal::BaseController
   ALLOWED_EVENTS = {
-    "premium_feature_blocked" => %w[feature context_type context_slug],
-    "premium_modal_shown" => %w[trigger context_type context_slug]
+    "premium_feature_blocked" => %w[feature context_type context_id context_slug context_uuid],
+    "premium_modal_shown" => %w[trigger context_type context_id context_slug context_uuid]
   }.freeze
 
   CONTEXT_MODELS = {

@@ -104,6 +104,25 @@ class Internal::EventsControllerTest < ApplicationControllerTest
     assert_response :no_content
   end
 
+  test "POST create passes through context_uuid without enrichment for episode" do
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "premium_modal_shown",
+      properties: {
+        "trigger" => "locked_episode",
+        "context_type" => "episode",
+        "context_uuid" => "abc-123-def"
+      }
+    )
+
+    post internal_events_path, params: {
+      event: "premium_modal_shown",
+      properties: { trigger: "locked_episode", context_type: "episode", context_uuid: "abc-123-def" }
+    }, as: :json
+
+    assert_response :no_content
+  end
+
   test "POST create strips unpermitted properties" do
     Analytics::TrackEvent.expects(:defer).with(
       @current_user,
@@ -113,7 +132,7 @@ class Internal::EventsControllerTest < ApplicationControllerTest
 
     post internal_events_path, params: {
       event: "premium_modal_shown",
-      properties: { trigger: "upgrade_cta_nav", email: "evil@example.com", context_id: 999 }
+      properties: { trigger: "upgrade_cta_nav", email: "evil@example.com", admin: true }
     }, as: :json
 
     assert_response :no_content
