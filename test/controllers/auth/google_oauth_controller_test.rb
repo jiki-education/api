@@ -11,6 +11,12 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
+    user_capture = nil
+    User::Bootstrap.expects(:call).with do |user|
+      user_capture = user
+      user.email == 'newuser@gmail.com'
+    end
+
     assert_difference 'User.count', 1 do
       post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
     end
@@ -20,6 +26,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     # Check user was created correctly
     user = User.find_by(email: 'newuser@gmail.com')
     refute_nil user
+    assert_equal user.id, user_capture&.id
     assert_equal 'google-user-id-123', user.google_id
     assert_equal 'google', user.provider
     assert user.confirmed?
@@ -48,6 +55,8 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
+    User::Bootstrap.expects(:call).never
+
     assert_no_difference 'User.count' do
       post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
     end
@@ -70,6 +79,8 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     }
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+
+    User::Bootstrap.expects(:call).never
 
     assert_no_difference 'User.count' do
       post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
@@ -132,6 +143,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     }
 
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+    User::Bootstrap.stubs(:call)
 
     post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
 
