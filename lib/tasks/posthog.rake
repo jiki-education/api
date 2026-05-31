@@ -3,7 +3,7 @@ require "csv"
 namespace :posthog do
   desc "Dump curriculum tables to CSV for upload to PostHog Data Warehouse"
   task dump_warehouse: :environment do
-    output_dir = Rails.root.join("tmp/posthog")
+    output_dir = Rails.root.join("tmp", "posthog")
     FileUtils.mkdir_p(output_dir)
 
     dump_to_csv(output_dir.join("lessons.csv"), Lesson.all, %i[id slug title type position level_id])
