@@ -70,10 +70,9 @@ if Rails.env.production?
     # For PostHog Cloud, use: https://us.i.posthog.com or https://eu.i.posthog.com
     config.host = Jiki.config.posthog_host
 
-    # Personal API key (optional, but required for local feature flag evaluation)
-    # Get this from: PostHog Settings > Personal API Keys
-    # https://app.posthog.com/settings/user-api-keys
-    config.personal_api_key = ENV.fetch('POSTHOG_PERSONAL_API_KEY', nil)
+    # Personal API key (optional, only needed for local feature flag evaluation
+    # or PostHog Insights API access). We use neither, so left disabled.
+    # config.personal_api_key = Jiki.config.posthog_personal_api_key
 
     # Maximum number of events to queue before dropping (default: 10000)
     config.max_queue_size = 10_000
