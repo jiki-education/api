@@ -15,12 +15,14 @@ namespace :posthog do
   end
 
   def dump_to_csv(path, scope, columns)
+    row_count = 0
     CSV.open(path, "w") do |csv|
       csv << columns
       scope.find_each do |record|
         csv << columns.map { |col| record.public_send(col) }
+        row_count += 1
       end
     end
-    puts "Wrote #{scope.count} rows to #{path}"
+    puts "Wrote #{row_count} rows to #{path}"
   end
 end
