@@ -3,10 +3,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def create
     super do |resource|
-      if resource.persisted?
-        User::Bootstrap.(resource)
-        User::TrackSignup.(resource, "email", attribution: signup_attribution_params)
-      end
+      User::Bootstrap.(resource, "email", attribution: signup_attribution_params) if resource.persisted?
     end
   end
 
