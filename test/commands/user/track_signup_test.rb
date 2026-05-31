@@ -4,6 +4,7 @@ class User::TrackSignupTest < ActiveSupport::TestCase
   test "defers user_signed_up event with provider" do
     user = create(:user)
 
+    User::Identify.expects(:defer).with(user)
     Analytics::TrackEvent.expects(:defer).with(
       user,
       "user_signed_up",
@@ -17,6 +18,7 @@ class User::TrackSignupTest < ActiveSupport::TestCase
     user = create(:user)
     attribution = { "utm_source" => "twitter", "referrer" => "https://t.co/foo" }
 
+    User::Identify.expects(:defer).with(user)
     Analytics::TrackEvent.expects(:defer).with(
       user,
       "user_signed_up",
@@ -31,6 +33,7 @@ class User::TrackSignupTest < ActiveSupport::TestCase
     attribution = { "utm_source" => "twitter" }
 
     Analytics::TrackEvent.stubs(:defer)
+    User::Identify.stubs(:defer)
 
     User::TrackSignup.(user, "email", attribution: attribution)
 
@@ -40,6 +43,7 @@ class User::TrackSignupTest < ActiveSupport::TestCase
   test "does not touch user.data when attribution is nil" do
     user = create(:user)
     Analytics::TrackEvent.stubs(:defer)
+    User::Identify.stubs(:defer)
 
     User::TrackSignup.(user, "email")
 
@@ -49,6 +53,7 @@ class User::TrackSignupTest < ActiveSupport::TestCase
   test "does not touch user.data when attribution is empty" do
     user = create(:user)
     Analytics::TrackEvent.stubs(:defer)
+    User::Identify.stubs(:defer)
 
     User::TrackSignup.(user, "email", attribution: {})
 

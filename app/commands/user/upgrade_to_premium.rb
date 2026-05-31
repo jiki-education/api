@@ -12,6 +12,7 @@ class User::UpgradeToPremium
 
     award_badge!
     send_welcome_email!
+    User::Identify.defer(user)
     track_event!
   end
 
@@ -25,13 +26,6 @@ class User::UpgradeToPremium
   end
 
   def track_event!
-    Analytics::TrackEvent.defer(
-      user,
-      "upgraded_to_premium",
-      properties: {
-        source: source,
-        days_since_signup: (Date.current - user.created_at.to_date).to_i
-      }
-    )
+    Analytics::TrackEvent.defer(user, "upgraded_to_premium", properties: { source: source })
   end
 end

@@ -184,7 +184,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     assert result.created_at <= time_after
   end
 
-  test "defers lesson_started event on user's first ever lesson" do
+  test "defers first_lesson_started event on user's first ever lesson" do
     user_level = create(:user_level)
     level = user_level.level
     level.update!(slug: "level-1")
@@ -192,7 +192,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
 
     Analytics::TrackEvent.expects(:defer).with(
       user_level.user,
-      "lesson_started",
+      "first_lesson_started",
       properties: {
         lesson_id: lesson.id,
         lesson_slug: "lesson-1",
@@ -204,7 +204,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     UserLesson::Start.(user_level.user, lesson)
   end
 
-  test "does not fire lesson_started on subsequent lessons" do
+  test "does not fire first_lesson_started on subsequent lessons" do
     user_level = create(:user_level)
     first_lesson = create(:lesson, :exercise, level: user_level.level, position: 1)
     second_lesson = create(:lesson, :exercise, level: user_level.level, position: 2)
@@ -215,7 +215,7 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     UserLesson::Start.(user_level.user, second_lesson)
   end
 
-  test "does not fire lesson_started on idempotent re-start" do
+  test "does not fire first_lesson_started on idempotent re-start" do
     user_level = create(:user_level)
     lesson = create(:lesson, :exercise, level: user_level.level)
     UserLesson::Start.(user_level.user, lesson)

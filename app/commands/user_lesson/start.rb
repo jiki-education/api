@@ -69,7 +69,7 @@ class UserLesson::Start
 
     Analytics::TrackEvent.defer(
       user,
-      "lesson_started",
+      "first_lesson_started",
       properties: {
         lesson_id: lesson.id,
         lesson_slug: lesson.slug,

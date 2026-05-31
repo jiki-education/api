@@ -65,12 +65,9 @@ class UserLesson::Complete
       lesson_slug: lesson.slug,
       level_id: level.id,
       level_slug: level.slug,
-      position: UserLesson.where(user:).where.not(completed_at: nil).count
+      position: UserLesson.where(user:).where.not(completed_at: nil).count,
+      seconds_since_lesson_started: (Time.current - (user_lesson.started_at || Time.current)).to_i
     }
-    # started_at is nullable on the schema; defensively skip the duration
-    # field rather than letting an arithmetic NoMethodError roll back the
-    # whole completion transaction.
-    properties[:seconds_since_lesson_started] = (Time.current - user_lesson.started_at).to_i if user_lesson.started_at
 
     Analytics::TrackEvent.defer(user, "lesson_completed", properties: properties)
   end

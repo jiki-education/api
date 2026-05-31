@@ -11,6 +11,7 @@ class User::DowngradeToStandard
     end
 
     send_downgrade_email!
+    User::Identify.defer(user)
     track_event!
   end
 

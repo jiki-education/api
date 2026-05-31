@@ -6,6 +6,8 @@ class User::TrackSignup
   def call
     user.data.update!(signup_attribution: attribution) if attribution.present?
 
+    User::Identify.defer(user)
+
     Analytics::TrackEvent.defer(
       user,
       "user_signed_up",

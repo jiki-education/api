@@ -34,6 +34,7 @@ class User::DowngradeToStandardTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(membership_type: "premium")
 
+    User::Identify.expects(:defer).with(user)
     Analytics::TrackEvent.expects(:defer).with(user, "downgraded_to_standard")
 
     User::DowngradeToStandard.(user)
@@ -42,6 +43,7 @@ class User::DowngradeToStandardTest < ActiveSupport::TestCase
   test "does not fire event when user already standard" do
     user = create(:user)
 
+    User::Identify.expects(:defer).never
     Analytics::TrackEvent.expects(:defer).never
 
     User::DowngradeToStandard.(user)
