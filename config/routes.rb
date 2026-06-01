@@ -162,7 +162,12 @@ Rails.application.routes.draw do
   namespace :admin do
     resources :concepts, only: %i[index show create update destroy]
     resources :projects, only: %i[index show create update destroy]
-    resources :users, only: %i[index show update destroy]
+    resources :users, only: %i[index show update destroy] do
+      member do
+        patch :reset_password
+        delete :reset_otp
+      end
+    end
     resources :levels, only: %i[index create update] do
       resources :lessons, only: %i[index create update], controller: "levels/lessons"
       scope module: :level do

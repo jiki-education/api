@@ -52,15 +52,22 @@ class User::UpdateTest < ActiveSupport::TestCase
     end
   end
 
-  test "ignores non-email fields in params" do
-    user = create(:user, name: "Original Name", email: "original@example.com", admin: false)
+  test "updates admin flag when provided" do
+    user = create(:user, admin: false)
+
+    User::Update.(user, { admin: true })
+
+    assert user.reload.admin
+  end
+
+  test "ignores non-permitted fields in params" do
+    user = create(:user, name: "Original Name", email: "original@example.com")
 
     User::Update.(
       user,
       {
         email: "new@example.com",
         name: "Hacker Name",
-        admin: true,
         locale: "fr"
       }
     )
@@ -68,7 +75,6 @@ class User::UpdateTest < ActiveSupport::TestCase
     user.reload
     assert_equal "new@example.com", user.email
     assert_equal "Original Name", user.name
-    refute user.admin
     refute_equal "fr", user.locale
   end
 

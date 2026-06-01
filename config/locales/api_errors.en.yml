@@ -50,6 +50,7 @@ en:
 
     # Settings errors
     invalid_password: "Current password is incorrect"
+    password_too_short: "Password must be at least 8 characters"
     locale_update_failed: "Locale update failed"
     name_update_failed: "Name update failed"
     email_update_failed: "Email update failed"

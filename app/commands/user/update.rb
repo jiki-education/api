@@ -12,6 +12,6 @@ class User::Update
 
   private
   def filtered_params
-    params.slice(:email)
+    params.slice(:email, :admin)
   end
 end
