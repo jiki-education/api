@@ -1,6 +1,7 @@
 {
   "levels": [
     {
+      "uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
       "slug": "using-functions",
       "title": "Using Functions",
       "description": "Learn how to use functions with and without inputs.",
@@ -10,70 +11,104 @@
       "milestone_email_content_markdown": "Great work on completing the first level of Jiki's Coding Fundamentals course.\n\nIt might not feel like you're doing much \"real\" coding yet, but you've just picked up one of the most important skills in programming. You'll be using functions hundreds of times a day from here on, so this really is the foundation for everything else.\n\nNext we'll look at using colours to draw, and then we'll start mixing some logic into the process. Have fun!",
       "lessons": [
         {
+          "uuid": "9bd095ef-7f00-4248-99fd-f07fbca487b2",
           "slug": "welcome-to-jiki",
           "title": "Welcome to Jiki",
           "description": "Meet Jiki and learn the basics of how coding works.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "f7feb12f-699a-4108-a1a1-556a29943b0c",
           "slug": "maze-solve-basic",
           "title": "Solve the Maze",
           "description": "Guide Jiki through a maze using simple instructions.",
           "type": "exercise",
-          "data": {"slug": "maze-solve-basic"}
+          "data": {
+            "slug": "maze-solve-basic"
+          }
         },
         {
+          "uuid": "869f4c96-99c2-485b-952f-e33c062f3b19",
           "slug": "using-functions",
           "title": "Using Functions",
           "description": "Learn about functions, the little machines that make things happen.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "e55e8246-f690-4614-bfe4-9bd0a6fe4bf2",
           "slug": "space-invaders-solve-basic",
           "title": "Space Invaders",
           "description": "Shoot down some aliens in your first taste of Space Invaders.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-solve-basic"}
+          "data": {
+            "slug": "space-invaders-solve-basic"
+          }
         },
         {
+          "uuid": "a193d658-7b51-42bc-b616-86e2cccbb2c8",
           "slug": "function-inputs",
           "title": "Functions Taking Inputs (Numbers)",
           "description": "Learn how to give extra information to functions.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "c366c250-c6db-4eb6-abe5-fb2ef117fc59",
           "slug": "maze-solve-walk",
           "title": "Take a Walk",
           "description": "Navigate the maze using a function that walks multiple steps.",
           "type": "exercise",
-          "data": {"slug": "maze-solve-walk"}
+          "data": {
+            "slug": "maze-solve-walk"
+          }
         },
         {
+          "uuid": "3f644750-eeba-457d-bebb-56f0340727d3",
           "slug": "fix-wall",
           "title": "Fix the Wall",
           "description": "Patch up the gaps in a broken wall with rectangles.",
           "type": "exercise",
-          "data": {"slug": "fix-wall"}
+          "data": {
+            "slug": "fix-wall"
+          }
         },
         {
+          "uuid": "c8e3c42b-00b7-4d10-8cb2-5557fc31203a",
           "slug": "snowman-basic",
           "title": "Snowman Basic",
           "description": "Build a snowman from three circles.",
           "type": "exercise",
-          "data": {"slug": "snowman-basic"}
+          "data": {
+            "slug": "snowman-basic"
+          }
         }
       ]
     },
     {
+      "uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
       "slug": "strings-and-colors",
       "title": "Strings and Colors",
       "description": "Learn how to use strings and colors to make your programs more colorful and expressive.",
@@ -83,45 +118,64 @@
       "milestone_email_content_markdown": "Great work on this level, and on your first proper bit of drawing.\n\nYou've now added strings and colours to your toolkit, which means your programs can start handling text and producing things that actually look good on screen.\n\nOver the next few lessons we'll start bringing in some logic, so you can move beyond linear instructions and add some variety and intelligence into your programs. Have fun!",
       "lessons": [
         {
+          "uuid": "c269563a-017b-4d13-8bac-89c30882da3d",
           "slug": "strings",
           "title": "Strings",
           "description": "Learn how to use text in your programs.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "eba24426-0de8-42d3-8d4b-701d971b24fd",
           "slug": "foxy-face",
           "title": "Foxy Face",
           "description": "Build a geometric fox face from colourful triangles.",
           "type": "exercise",
-          "data": {"slug": "foxy-face"}
+          "data": {
+            "slug": "foxy-face"
+          }
         },
         {
+          "uuid": "85927705-d7ff-4993-a8ae-f0102ccd36d9",
           "slug": "penguin",
           "title": "Penguin",
           "description": "Complete a symmetrical penguin drawing.",
           "type": "exercise",
-          "data": {"slug": "penguin"}
+          "data": {
+            "slug": "penguin"
+          }
         },
         {
+          "uuid": "f05507d1-5019-478d-b4f5-293c8f5af60c",
           "slug": "cloud-rain-sun",
           "title": "Cloud, Rain and Sun",
           "description": "Create a full weather scene with clouds, rain and sunshine.",
           "type": "exercise",
-          "data": {"slug": "cloud-rain-sun"}
+          "data": {
+            "slug": "cloud-rain-sun"
+          }
         },
         {
+          "uuid": "be810300-0411-4783-bec9-a0025e55ccfb",
           "slug": "jumbled-house",
           "title": "Jumbled House",
           "description": "Rearrange the pieces of a jumbled-up house.",
           "type": "exercise",
-          "data": {"slug": "jumbled-house"}
+          "data": {
+            "slug": "jumbled-house"
+          }
         }
       ]
     },
     {
+      "uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
       "slug": "repeat-loop",
       "title": "Repeat Loop",
       "description": "Learn how to repeat actions using loops to make your code more efficient.",
@@ -131,39 +185,60 @@
       "milestone_email_content_markdown": "Great work on this level. Loops are a fundamental building block of programming, and hopefully they're starting to feel pretty comfortable.\n\nThere are other types of loops we'll look at later in the course, but the repeat loop will be your companion for the next few lessons.\n\nNext up are variables, which is the idea of storing and retrieving values as your program runs. Have fun!",
       "lessons": [
         {
+          "uuid": "7b832c08-498a-49bd-93f4-4c089580e88e",
           "slug": "repeat-loop",
           "title": "Repeat Loop",
           "description": "Learn how to tell Jiki to do things multiple times.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "91e0b107-b97e-432a-b5f3-166fd455c3d8",
           "slug": "golf-rolling-ball-loop",
           "title": "Golf Rolling Ball Loop",
           "description": "Roll a golf ball into the hole using a loop.",
           "type": "exercise",
-          "data": {"slug": "golf-rolling-ball-loop"}
+          "data": {
+            "slug": "golf-rolling-ball-loop"
+          }
         },
         {
+          "uuid": "836bce90-74a5-47cb-94cd-8a773162a95f",
           "slug": "maze-solve-repeat",
           "title": "Maze Solve Repeat",
           "description": "Refactor a maze solution to use loops instead of repeated code.",
           "type": "exercise",
-          "data": {"slug": "maze-solve-repeat"},
-          "walkthrough_video_data": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+          "data": {
+            "slug": "maze-solve-repeat"
+          },
+          "walkthrough_video_data": [
+            {
+              "provider": "mux",
+              "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+            }
+          ]
         },
         {
+          "uuid": "057f7bf7-b033-4174-ab04-f8aa4a58e6b6",
           "slug": "space-invaders-repeat",
           "title": "Space Invaders Repeat",
           "description": "Use loops to efficiently destroy a wave of aliens.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-repeat"}
+          "data": {
+            "slug": "space-invaders-repeat"
+          }
         }
       ]
     },
     {
+      "uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
       "slug": "variables",
       "title": "Variables",
       "description": "Learn how to store and reuse values using variables.",
@@ -173,61 +248,89 @@
       "milestone_email_content_markdown": "Great work on getting variables under your belt.\n\nVariables are one of those ideas that's pretty simple on the surface, but they're going to underpin almost everything you write from now on. The ability to store a value, give it a name, and use it later is what turns code from a fixed list of instructions into something genuinely flexible.\n\nNext we'll look at how variables change over time, which is what programmers call \"state\". Have fun!",
       "lessons": [
         {
+          "uuid": "32795500-f103-4443-ad1b-467a825602e3",
           "slug": "creating-variables",
           "title": "Creating/Using Variables",
           "description": "Learn how to save and retrieve information in your programs.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "27a733aa-8324-429b-8afa-07a2dae56f49",
           "slug": "snowman",
           "title": "Snowman",
           "description": "Set the right variable values to build a snowman.",
           "type": "exercise",
-          "data": {"slug": "snowman"}
+          "data": {
+            "slug": "snowman"
+          }
         },
         {
+          "uuid": "3db959ac-3978-4276-ad90-56cc10ab36ec",
           "slug": "traffic-lights",
           "title": "Traffic Light",
           "description": "Draw a traffic light using variables for position and size.",
           "type": "exercise",
-          "data": {"slug": "traffic-lights"}
+          "data": {
+            "slug": "traffic-lights"
+          }
         },
         {
+          "uuid": "13486697-fe74-494d-91d7-b3970875d555",
           "slug": "variables-together",
           "title": "Arithmetic + Variables",
           "description": "Learn how to do maths with variables.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "bc80d682-287c-4321-ac1c-acadd95e5fa9",
           "slug": "relational-sun",
           "title": "Relational Sun",
           "description": "Position a sun where everything's calculated from variables.",
           "type": "exercise",
-          "data": {"slug": "relational-sun"}
+          "data": {
+            "slug": "relational-sun"
+          }
         },
         {
+          "uuid": "9c5d2dbe-eb0a-4c3a-8c76-319860738ebf",
           "slug": "relational-snowman",
           "title": "Relational Snowman",
           "description": "Rebuild your snowman so all sizes scale from one variable.",
           "type": "exercise",
-          "data": {"slug": "relational-snowman"}
+          "data": {
+            "slug": "relational-snowman"
+          }
         },
         {
+          "uuid": "65cc6f0b-d4a3-4af7-ac07-227b271265d8",
           "slug": "relational-traffic-lights",
           "title": "Relational Traffic Lights",
           "description": "Rebuild your traffic light so everything scales together.",
           "type": "exercise",
-          "data": {"slug": "relational-traffic-lights"}
+          "data": {
+            "slug": "relational-traffic-lights"
+          }
         }
       ]
     },
     {
+      "uuid": "f74c506c-144e-4287-83eb-356568ffc234",
       "slug": "basic-state",
       "title": "Basic State",
       "description": "Learn how to update variables and track changing values over time.",
@@ -237,38 +340,54 @@
       "milestone_email_content_markdown": "Great work on this one. You can now track values that change as your program runs, which is a real step up from where you were a couple of levels ago.\n\nThis idea of state is going to keep coming back throughout the course, and it gets more interesting every time we combine it with something new.\n\nNext is a meaty level. We'll look at functions that return values, and then explore colours, randomness, animation, scope, and nested loops along the way. Have fun!",
       "lessons": [
         {
+          "uuid": "015e9146-c167-433c-ae50-d09e157bfdc4",
           "slug": "updating-variables",
           "title": "Updating Variables",
           "description": "Learn how to change variable values as your code runs.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "884e4d8c-c280-45c3-9767-bb510542979e",
           "slug": "plant-the-flowers",
           "title": "Plant the Flowers",
           "description": "Plant a row of flowers across the garden, one by one.",
           "type": "exercise",
-          "data": {"slug": "plant-the-flowers"}
+          "data": {
+            "slug": "plant-the-flowers"
+          }
         },
         {
+          "uuid": "754677f0-92af-4160-a76f-2c644bb42161",
           "slug": "golf-rolling-ball-state",
           "title": "Rolling Ball",
           "description": "Roll a golf ball into the hole by tracking its position.",
           "type": "exercise",
-          "data": {"slug": "golf-rolling-ball-state"}
+          "data": {
+            "slug": "golf-rolling-ball-state"
+          }
         },
         {
+          "uuid": "ec7aede4-b9da-4b11-a3e7-cbb8b4492fdc",
           "slug": "finish-wall",
           "title": "Finish the Wall",
           "description": "Lay a row of bricks using a loop and a position variable.",
           "type": "exercise",
-          "data": {"slug": "finish-wall"}
+          "data": {
+            "slug": "finish-wall"
+          }
         }
       ]
     },
     {
+      "uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
       "slug": "functions-that-return-things",
       "title": "Functions That Return Things",
       "description": "Learn how functions can return values, and explore colors, animation, randomness, scope, scenarios, and nested loops.",
@@ -278,148 +397,224 @@
       "milestone_email_content_markdown": "Brilliant work on a packed level. Functions that return values, HSL and RGB colours, animation, random numbers, scope, scenarios, and loops within loops. That's a lot of new ideas to add to your toolkit in one go.\n\nDon't worry if some of them still feel a bit hazy. They'll all come back in different contexts later in the course, and each time they'll get more familiar.\n\nNext we'll start making decisions in code using if statements. This is where your programs really start to feel intelligent. Have fun!",
       "lessons": [
         {
+          "uuid": "5656d222-7dd5-4ec4-b2d8-5eb57ff22a6a",
           "slug": "functions-that-return-things",
           "title": "Functions That Return Things",
           "description": "Learn how functions can give information back to you.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "4413424e-985d-42db-b1bf-73f7dcb250be",
           "slug": "dnd-roll",
           "title": "DND Roll",
           "description": "Roll some dice and strike a goblin in a D&D adventure.",
           "type": "exercise",
-          "data": {"slug": "dnd-roll"}
+          "data": {
+            "slug": "dnd-roll"
+          }
         },
         {
+          "uuid": "824b6d58-4bcc-427d-9e03-a8a7099f1a83",
           "slug": "gold-panning",
           "title": "Gold Panning",
           "description": "Pan for gold nuggets in a river and sell what you find.",
           "type": "exercise",
-          "data": {"slug": "gold-panning"}
+          "data": {
+            "slug": "gold-panning"
+          }
         },
         {
+          "uuid": "04f3ebcb-9d8d-468a-90ca-9364b4350255",
           "slug": "colors",
           "title": "Colors (HSL and RGB)",
           "description": "Learn different ways to specify exact colours.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "1849abb2-616f-438d-991e-273a24519878",
           "slug": "rainbow",
           "title": "Rainbow",
           "description": "Paint a rainbow from 100 colourful vertical bars.",
           "type": "exercise",
-          "data": {"slug": "rainbow"}
+          "data": {
+            "slug": "rainbow"
+          }
         },
         {
+          "uuid": "550cc102-9217-4ce3-81ef-9ae8a87772a2",
           "slug": "animation",
           "title": "Animation",
           "description": "Learn how to make things move on screen.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "efbe9e25-05da-49f5-b78a-d9a7a4b3d30d",
           "slug": "sunset",
           "title": "Sunset",
           "description": "Animate a beautiful sunset scene.",
           "type": "exercise",
-          "data": {"slug": "sunset"}
+          "data": {
+            "slug": "sunset"
+          }
         },
         {
+          "uuid": "9d95c39a-b309-48a2-9f18-286512c9c427",
           "slug": "random-numbers",
           "title": "Random Numbers",
           "description": "Learn how to add randomness to your programs.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "16247358-3916-421e-96a1-5dcfb82765af",
           "slug": "random-salad",
           "title": "Random Salad",
           "description": "Toss together a random salad from different ingredients.",
           "type": "exercise",
-          "data": {"slug": "random-salad"}
+          "data": {
+            "slug": "random-salad"
+          }
         },
         {
+          "uuid": "de3ab48d-6d46-44c1-a87c-ce11c61faeee",
           "slug": "scope",
           "title": "Scope",
           "description": "Learn what happens to variables inside and outside of code blocks.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "bdcd16fd-9aa9-4185-9e28-c34e9310577e",
           "slug": "rainbow-splodges",
           "title": "Rainbow Splodges",
           "description": "Splatter hundreds of colourful splodges across the canvas.",
           "type": "exercise",
-          "data": {"slug": "rainbow-splodges"}
+          "data": {
+            "slug": "rainbow-splodges"
+          }
         },
         {
+          "uuid": "98fbd555-2cac-452b-93c0-45f321c8405c",
           "slug": "stock-market",
           "title": "Stock Market",
           "description": "Track your investment as the stock market randomly rises and falls.",
           "type": "exercise",
-          "data": {"slug": "stock-market"}
+          "data": {
+            "slug": "stock-market"
+          }
         },
         {
+          "uuid": "a08efd91-efd4-437c-a24a-316a3cc3f70d",
           "slug": "scenarios",
           "title": "Scenarios",
           "description": "Learn how to run your code with different starting conditions.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "3060c8ab-f96b-4893-90f4-64ee62959234",
           "slug": "golf-scenarios",
           "title": "Golf Shot Scenarios",
           "description": "Roll a ball to the correct spot.",
           "type": "exercise",
-          "data": {"slug": "golf-scenarios"}
+          "data": {
+            "slug": "golf-scenarios"
+          }
         },
         {
+          "uuid": "460d606d-153c-4ae1-9830-739f4570ff73",
           "slug": "owners-bouquets",
           "title": "Owner's Bouquets",
           "description": "Plant flowers in different garden layouts.",
           "type": "exercise",
-          "data": {"slug": "owners-bouquets"}
+          "data": {
+            "slug": "owners-bouquets"
+          }
         },
         {
+          "uuid": "2ef3c788-7975-403c-8cff-66352eab9d50",
           "slug": "cityscape-skyscraper",
           "title": "Skyscraper",
           "description": "Build a skyscraper on the city grid.",
           "type": "exercise",
-          "data": {"slug": "cityscape-skyscraper"}
+          "data": {
+            "slug": "cityscape-skyscraper"
+          }
         },
         {
+          "uuid": "5383eea7-1962-4112-9757-20b9e572cc4a",
           "slug": "nested-loops",
           "title": "Loops in Loops",
           "description": "Learn how to put loops inside other loops.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "3c5d1cdd-037e-43cb-8707-28fa9553bb52",
           "slug": "space-invaders-nested-repeat",
           "title": "Space Invaders Nested Repeat",
           "description": "Fill the screen with rows and columns of aliens, then destroy them all.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-nested-repeat"}
+          "data": {
+            "slug": "space-invaders-nested-repeat"
+          }
         }
       ]
     },
     {
+      "uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
       "slug": "conditionals",
       "title": "Conditionals",
       "description": "Learn how to make decisions in your code using if statements and else clauses.",
@@ -429,54 +624,79 @@
       "milestone_email_content_markdown": "Nice work on the conditionals level. Hopefully if and else are starting to feel pretty natural.\n\nConditionals are one of the most important ideas in programming. Almost every interesting program needs to make decisions based on what's true at the time, and you've now got the basic tools to do that.\n\nNext we'll look at more powerful ways of writing conditions, combining them together with and/or, plus a few related ideas like modulo. Have fun!",
       "lessons": [
         {
+          "uuid": "320db786-14a2-40ab-bd68-2561a7892933",
           "slug": "if-statements",
           "title": "If Statements",
           "description": "Learn how to make your code do different things in different situations.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "15b4a664-9c66-4722-bddd-41c1dc0e5cb2",
           "slug": "bouncer",
           "title": "Bouncer",
           "description": "Decide who's old enough to get into the club.",
           "type": "exercise",
-          "data": {"slug": "bouncer"}
+          "data": {
+            "slug": "bouncer"
+          }
         },
         {
+          "uuid": "7a297816-5864-4487-b8b2-e8558eb800eb",
           "slug": "space-invaders-conditional",
           "title": "Space Invaders Conditionals",
           "description": "Only shoot when there's an alien in your sights.",
           "type": "exercise",
-          "data": {"slug": "space-invaders-conditional"}
+          "data": {
+            "slug": "space-invaders-conditional"
+          }
         },
         {
+          "uuid": "fb71d076-3afc-43a1-b70a-f2570fd3acde",
           "slug": "else-statements",
           "title": "Else and Else If",
           "description": "Learn how to handle multiple different conditions.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "7125b4ad-713b-4b01-b31b-633689d5c268",
           "slug": "bouncer-wristbands",
           "title": "Bouncer Wristbands",
           "description": "Give clubbers the right coloured wristband based on their age.",
           "type": "exercise",
-          "data": {"slug": "bouncer-wristbands"}
+          "data": {
+            "slug": "bouncer-wristbands"
+          }
         },
         {
+          "uuid": "aac38f37-b4d6-47c6-916c-3fb41007c1c6",
           "slug": "digital-clock",
           "title": "Digital Clock",
           "description": "Display the correct time on a 12-hour digital clock.",
           "type": "exercise",
-          "data": {"slug": "digital-clock"}
+          "data": {
+            "slug": "digital-clock"
+          }
         }
       ]
     },
     {
+      "uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
       "slug": "complex-conditionals",
       "title": "Complex Conditionals",
       "description": "Learn about logical operators, modulo, and more advanced conditional patterns.",
@@ -486,63 +706,94 @@
       "milestone_email_content_markdown": "Great work on a tricky level. You've now got and/or, modulo, and looping without a count under your belt.\n\nThese are the kinds of tools that let you write conditions that actually match real-world logic, rather than having to break everything down into tiny separate checks.\n\nNext we'll combine conditionals with state, which is where your programs start being able to respond to what's happening as they run. Have fun!",
       "lessons": [
         {
+          "uuid": "4f2e8180-3de9-420b-8d93-4e5bb8c26c5c",
           "slug": "and-or",
           "title": "And / Or",
           "description": "Learn how to combine conditions together.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "9e5495b0-4d5b-472d-a75f-077cef677027",
           "slug": "bouncer-dress-code",
           "title": "Bouncer Dress Code",
           "description": "Check both age and outfit before letting people in.",
           "type": "exercise",
-          "data": {"slug": "bouncer-dress-code"}
+          "data": {
+            "slug": "bouncer-dress-code"
+          }
         },
         {
+          "uuid": "0a8cf084-466c-4783-ad11-d01a9d07bfc2",
           "slug": "golf-shot-checker",
           "title": "Shot Checker",
           "description": "Work out whether a golf shot landed close enough to sink.",
           "type": "exercise",
-          "data": {"slug": "golf-shot-checker"}
+          "data": {
+            "slug": "golf-shot-checker"
+          }
         },
         {
+          "uuid": "383e8c02-8482-4418-a495-d16504b9c881",
           "slug": "remainder",
           "title": "Modulo and Not",
           "description": "Learn about remainders and how to flip conditions.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "8bfec956-4c12-42b7-bd22-273edcb25256",
           "slug": "rock-paper-scissors-determine-winner",
           "title": "Rock Paper Scissors - Determine Winner",
           "description": "Determine the winner of a Rock Paper Scissors game.",
           "type": "exercise",
-          "data": {"slug": "rock-paper-scissors-determine-winner"}
+          "data": {
+            "slug": "rock-paper-scissors-determine-winner"
+          }
         },
         {
+          "uuid": "d06e45f8-d2a5-4590-85cf-36da4564b849",
           "slug": "repeat-without-count",
           "title": "Repeat Without an Input",
           "description": "Learn how to loop without knowing how many times upfront.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "a5f69847-dee4-47a5-b63e-a1c0f5ffdda1",
           "slug": "maze-automated-solve",
           "title": "Solve the Maze Programatically",
           "description": "Write code that navigates any maze by itself.",
           "type": "exercise",
-          "data": {"slug": "maze-automated-solve"}
+          "data": {
+            "slug": "maze-automated-solve"
+          }
         }
       ]
     },
     {
+      "uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
       "slug": "conditionals-and-state",
       "title": "Conditionals and State",
       "description": "Learn how to combine conditionals with state to create dynamic, responsive programs.",
@@ -552,31 +803,44 @@
       "milestone_email_content_markdown": "Great work. Combining conditionals with state is where your programs really start to feel alive, responding to what's happening rather than just following a fixed script.\n\nThis is roughly the level of complexity you'll be writing at for the rest of the course, so everything you've practised here will keep coming back.\n\nNext up is a big one: writing your own functions. Up until now you've been using functions someone else wrote. From here on, you'll be writing your own. Have fun!",
       "lessons": [
         {
+          "uuid": "07c3c7d3-6f2a-48bf-9d4b-350161944949",
           "slug": "using-if-and-state",
           "title": "Using If and State Together",
           "description": "Learn how to combine conditions with changing data.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "334d2ade-c9e4-4aeb-aa0f-1b4fd11cd2c5",
           "slug": "build-wall",
           "title": "Build the Wall",
           "description": "Build a wall from scratch, brick by brick, row by row.",
           "type": "exercise",
-          "data": {"slug": "build-wall"}
+          "data": {
+            "slug": "build-wall"
+          }
         },
         {
+          "uuid": "372cd20d-77a8-4c94-92cd-87887bf32ee7",
           "slug": "scroll-and-shoot",
           "title": "Scroll and Shoot",
           "description": "Scroll through Space Invaders and take out the aliens.",
           "type": "exercise",
-          "data": {"slug": "scroll-and-shoot"}
+          "data": {
+            "slug": "scroll-and-shoot"
+          }
         }
       ]
     },
     {
+      "uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
       "slug": "make-your-own-functions",
       "title": "Make Your Own Functions",
       "description": "Learn how to write your own functions with inputs and return values.",
@@ -586,91 +850,134 @@
       "milestone_email_content_markdown": "Brilliant work. Writing your own functions is a real shift. You're no longer just using the tools on the shelf, you're building new ones.\n\nThis is one of the most important skills in all of programming. Good code is mostly about breaking problems down into small, well-named functions, and you've now got everything you need to start doing that.\n\nNext we'll get back to strings and look at how to stick them together and slot values into them. Have fun!",
       "lessons": [
         {
+          "uuid": "2bfe49c9-71aa-4483-a826-63b489aebc3b",
           "slug": "making-functions",
           "title": "Writing Your Own Functions",
           "description": "Learn how to create your own reusable machines.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "84660c01-e512-4b04-9f7a-4d441088869d",
           "slug": "maze-turn-around",
           "title": "Turn Around",
           "description": "Create a turn-around function for the maze.",
           "type": "exercise",
-          "data": {"slug": "maze-turn-around"}
+          "data": {
+            "slug": "maze-turn-around"
+          }
         },
         {
+          "uuid": "00037b06-5356-4189-b6da-4740545f69e4",
           "slug": "battle-procedures",
           "title": "Battle Procedures",
           "description": "Extract your shooting logic into a reusable function.",
           "type": "exercise",
-          "data": {"slug": "battle-procedures"}
+          "data": {
+            "slug": "battle-procedures"
+          }
         },
         {
+          "uuid": "e0489efb-13ec-40cb-8116-ba16f4cee39b",
           "slug": "making-functions-with-inputs",
           "title": "Adding Inputs to Your Functions",
           "description": "Learn how to make your functions accept inputs.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "eb1ebe64-f32d-4246-b90b-84a635154b8b",
           "slug": "maze-walk",
           "title": "Learn to Walk",
           "description": "Create a walk function that moves multiple steps at once.",
           "type": "exercise",
-          "data": {"slug": "maze-walk"}
+          "data": {
+            "slug": "maze-walk"
+          }
         },
         {
+          "uuid": "32877d1a-c1e8-4655-a290-4ddac68f076b",
           "slug": "making-functions-with-return-values",
           "title": "Adding Returns to Your Functions",
           "description": "Learn how to make your functions give back results.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "0b91a41f-c69e-4e17-bcec-c89b288ff2c2",
           "slug": "even-or-odd",
           "title": "Even or Odd",
           "description": "Write a function that works out whether a number is even or odd.",
           "type": "exercise",
-          "data": {"slug": "even-or-odd"}
+          "data": {
+            "slug": "even-or-odd"
+          }
         },
         {
+          "uuid": "71e23897-6f87-48d3-9ea1-c00231d4b46b",
           "slug": "triangle",
           "title": "Triangle",
           "description": "Classify a triangle as equilateral, isosceles or scalene.",
           "type": "exercise",
-          "data": {"slug": "triangle"}
+          "data": {
+            "slug": "triangle"
+          }
         },
         {
+          "uuid": "742af9dc-1267-42ea-8226-70d992568de1",
           "slug": "leap",
           "title": "Leap Year",
           "description": "Work out whether a year is a leap year.",
           "type": "exercise",
-          "data": {"slug": "leap"}
+          "data": {
+            "slug": "leap"
+          }
         },
         {
+          "uuid": "dcd90682-3629-478b-a767-529819fbbe8c",
           "slug": "collatz-conjecture",
           "title": "Collatz Conjecture",
           "description": "Explore a famous maths puzzle with your own function.",
           "type": "exercise",
-          "data": {"slug": "collatz-conjecture"}
+          "data": {
+            "slug": "collatz-conjecture"
+          }
         },
         {
+          "uuid": "c9730eb8-1f37-4fa7-b4c6-b34460f3cdf6",
           "slug": "look-around",
           "title": "Look Around",
           "description": "Build the functions that check what's around you in the maze.",
           "type": "exercise",
-          "data": {"slug": "look-around"}
+          "data": {
+            "slug": "look-around"
+          }
         }
       ]
     },
     {
+      "uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
       "slug": "string-manipulation",
       "title": "String Manipulation",
       "description": "Learn how to concatenate strings and use template literals.",
@@ -680,38 +987,54 @@
       "milestone_email_content_markdown": "Nice work on this one. Concatenation and templates are pretty simple ideas, but they come up constantly, especially anywhere you're producing output for a person to read.\n\nYou'll be using these techniques in pretty much every program you write from here on.\n\nNext we'll look at how to dig into strings character by character, and how to loop through their contents. Have fun!",
       "lessons": [
         {
+          "uuid": "98f2fb73-72ea-4ddf-927b-4e6412ec3901",
           "slug": "string-concatenation",
           "title": "String Concatenation and Templates",
           "description": "Learn how to join bits of text together.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "d196eeff-dff4-486c-bd8d-54ab3176638e",
           "slug": "hello",
           "title": "Hello",
           "description": "Say hello to the world with your first string function.",
           "type": "exercise",
-          "data": {"slug": "hello"}
+          "data": {
+            "slug": "hello"
+          }
         },
         {
+          "uuid": "d74b54d7-b3ee-4bcd-a4e4-86799827da16",
           "slug": "two-fer",
           "title": "Two-Fer",
           "description": "Share some cake: \"One for you, one for me.\"",
           "type": "exercise",
-          "data": {"slug": "two-fer"}
+          "data": {
+            "slug": "two-fer"
+          }
         },
         {
+          "uuid": "ee404e63-a40b-42c9-bea0-b90aea33929e",
           "slug": "raindrops",
           "title": "Raindrop Sounds",
           "description": "Turn numbers into raindrop sounds: Pling, Plang and Plong.",
           "type": "exercise",
-          "data": {"slug": "raindrops"}
+          "data": {
+            "slug": "raindrops"
+          }
         }
       ]
     },
     {
+      "uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
       "slug": "string-iteration",
       "title": "String Iteration",
       "description": "Learn how to index into and iterate through strings.",
@@ -721,75 +1044,109 @@
       "milestone_email_content_markdown": "Great work. Hopefully indexing and looping through strings is starting to make sense.\n\nBeing able to look at individual characters and walk through text systematically opens up a huge range of problems you can now solve. A lot of real-world programming is about exactly this kind of work.\n\nNext we'll look at how to combine multiple functions together to tackle more complex tasks. Have fun!",
       "lessons": [
         {
+          "uuid": "d487355b-0f4f-4513-ad80-94460242f6d1",
           "slug": "string-indexing",
           "title": "String Indexing",
           "description": "Learn how to access individual characters in text.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "605adf09-2385-4b19-bb5e-0327def6f44d",
           "slug": "three-letter-acronym",
           "title": "Three Letter Acronym",
           "description": "Build an acronym from the first letter of three words.",
           "type": "exercise",
-          "data": {"slug": "three-letter-acronym"}
+          "data": {
+            "slug": "three-letter-acronym"
+          }
         },
         {
+          "uuid": "798e8d12-9455-4c0c-95c2-f1a6ebf2c19f",
           "slug": "string-iteration",
           "title": "Iterating Through Strings",
           "description": "Learn how to go through text one character at a time.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "ed02c9bb-e49b-4019-b98e-cea282e7b8fe",
           "slug": "tile-search",
           "title": "Contains",
           "description": "Search through a rack of tiles to find a specific letter.",
           "type": "exercise",
-          "data": {"slug": "tile-search"}
+          "data": {
+            "slug": "tile-search"
+          }
         },
         {
+          "uuid": "8c2b791f-217b-4986-8b08-e3bc0014bb9c",
           "slug": "tile-rack",
           "title": "Index Of",
           "description": "Find exactly where a letter sits on the tile rack.",
           "type": "exercise",
-          "data": {"slug": "tile-rack"}
+          "data": {
+            "slug": "tile-rack"
+          }
         },
         {
+          "uuid": "959d2fcf-9843-4dd4-bffa-0c52fd328f96",
           "slug": "sign-price",
           "title": "Sign Painter Price",
           "description": "Calculate the cost of painting a sign, letter by letter.",
           "type": "exercise",
-          "data": {"slug": "sign-price"}
+          "data": {
+            "slug": "sign-price"
+          }
         },
         {
+          "uuid": "4f81a184-3f5b-4412-afef-3a0bb0b249de",
           "slug": "reverse-string",
           "title": "Reverse String",
           "description": "Flip a piece of text backwards.",
           "type": "exercise",
-          "data": {"slug": "reverse-string"}
+          "data": {
+            "slug": "reverse-string"
+          }
         },
         {
+          "uuid": "d4918a64-ae24-494c-adc4-3e9b38104365",
           "slug": "driving-test",
           "title": "Driving Test",
           "description": "Mark a driving theory test and decide if they passed.",
           "type": "exercise",
-          "data": {"slug": "driving-test"}
+          "data": {
+            "slug": "driving-test"
+          }
         },
         {
+          "uuid": "265394bd-f182-4392-b528-52ca5c56af5d",
           "slug": "hamming",
           "title": "Hamming",
           "description": "Count the differences between two DNA strands.",
           "type": "exercise",
-          "data": {"slug": "hamming"}
+          "data": {
+            "slug": "hamming"
+          }
         }
       ]
     },
     {
+      "uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
       "slug": "multiple-functions",
       "title": "Using Multiple Functions Together",
       "description": "Learn how to combine multiple functions to solve complex problems.",
@@ -799,31 +1156,44 @@
       "milestone_email_content_markdown": "Great work on this level. Combining functions to solve bigger problems is what professional programming actually looks like day to day. You break a problem into pieces, write a small function for each piece, and then put them together.\n\nYou're now doing this for real.\n\nNext we'll look at methods and properties, which is a slightly different way of working with values. Have fun!",
       "lessons": [
         {
+          "uuid": "db8a18a6-d570-4bfc-bedd-6f900c122d5d",
           "slug": "using-multiple-functions-together",
           "title": "Using Multiple Functions Together",
           "description": "Learn how to combine functions to solve bigger problems.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "18772f89-01eb-4701-acc3-f397d86125b2",
           "slug": "niche-named-party",
           "title": "Niche Named Party",
           "description": "Work out who's allowed into a very exclusive party.",
           "type": "exercise",
-          "data": {"slug": "niche-named-party"}
+          "data": {
+            "slug": "niche-named-party"
+          }
         },
         {
+          "uuid": "64398359-f200-4e82-8666-6bbaef0c9696",
           "slug": "lower-pangram",
           "title": "Simple Pangram",
           "description": "Check if a sentence uses every letter of the alphabet.",
           "type": "exercise",
-          "data": {"slug": "lower-pangram"}
+          "data": {
+            "slug": "lower-pangram"
+          }
         }
       ]
     },
     {
+      "uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
       "slug": "methods-and-properties",
       "title": "Methods and Properties",
       "description": "Learn about methods and properties on objects.",
@@ -833,31 +1203,44 @@
       "milestone_email_content_markdown": "Nice work. Methods and properties are a slightly different style to what you've seen so far. Instead of passing a value into a function, you call a function on the value itself. The idea takes a little getting used to, but it's used everywhere, so it'll start feeling natural pretty quickly.\n\nNext we'll look at some more powerful kinds of loops: for loops, while loops, break, and continue. Have fun!",
       "lessons": [
         {
+          "uuid": "eb3d042f-5dcd-4352-bec3-c2310c486669",
           "slug": "methods-and-strings",
           "title": "Methods and Properties",
           "description": "Learn how to use built-in tools that come attached to data.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "df636b72-0ec1-4ab2-8906-62068b8cf540",
           "slug": "pangram",
           "title": "Pangram",
           "description": "Check if a sentence contains every letter of the alphabet, regardless of case.",
           "type": "exercise",
-          "data": {"slug": "pangram"}
+          "data": {
+            "slug": "pangram"
+          }
         },
         {
+          "uuid": "8c78036f-26bf-4036-8fca-abc0a6f4d2ce",
           "slug": "nucleotide",
           "title": "Nucleotide",
           "description": "Count how many times a specific nucleotide appears in a DNA strand.",
           "type": "exercise",
-          "data": {"slug": "nucleotide"}
+          "data": {
+            "slug": "nucleotide"
+          }
         }
       ]
     },
     {
+      "uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
       "slug": "advanced-loops",
       "title": "Advanced Loops",
       "description": "Learn about for loops, continue, break, and other advanced loop concepts.",
@@ -867,31 +1250,44 @@
       "milestone_email_content_markdown": "Great work. You've now got for loops, while loops, break, and continue under your belt. These are the loops you'll reach for most often outside of this course, so they're well worth the time you've put in.\n\nEach one has a slightly different job, and getting a feel for which to reach for will come with practice.\n\nNext we'll look at lists, which is how programs store and work with collections of things. Have fun!",
       "lessons": [
         {
+          "uuid": "d65be08e-af22-4f7c-aec6-a3b5a18d63c3",
           "slug": "for-while-loops",
           "title": "Advanced Loops",
           "description": "Learn proper JavaScript loops with more control and flexibility.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "5cd72026-3e59-4b2b-91a6-e58f674575ea",
           "slug": "isbn-verifier",
           "title": "ISBN Verifier",
           "description": "Check whether a book's ISBN number is valid.",
           "type": "exercise",
-          "data": {"slug": "isbn-verifier"}
+          "data": {
+            "slug": "isbn-verifier"
+          }
         },
         {
+          "uuid": "324331d7-ca3d-4eb8-a6a1-a7c31b1e557f",
           "slug": "alphanumeric",
           "title": "Alphanumeric",
           "description": "Build functions to classify text as letters, numbers or both.",
           "type": "exercise",
-          "data": {"slug": "alphanumeric"}
+          "data": {
+            "slug": "alphanumeric"
+          }
         }
       ]
     },
     {
+      "uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
       "slug": "lists",
       "title": "Lists",
       "description": "Learn how to work with arrays to store and manipulate collections of data.",
@@ -901,110 +1297,159 @@
       "milestone_email_content_markdown": "Brilliant work. Lists (or arrays, as a lot of programmers call them) are one of the most useful tools in any language. Pretty much any time you're dealing with more than one of something, you'll reach for a list.\n\nYou've now got a good grasp of how to read from them, build them up, and work through their contents.\n\nNext, and finally, we'll look at dictionaries. These let you store values against named keys rather than just positions. Have fun!",
       "lessons": [
         {
+          "uuid": "5777cce0-3792-41cc-90df-83bc94ef8c74",
           "slug": "arrays",
           "title": "Arrays",
           "description": "Learn how to store collections of things in lists.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "ada11808-214f-4526-a2d7-aa66a5f4af22",
           "slug": "weather-symbols-part-1",
           "title": "Symbols Part 1",
           "description": "Map weather descriptions to the right combination of symbols.",
           "type": "exercise",
-          "data": {"slug": "weather-symbols-part-1"}
+          "data": {
+            "slug": "weather-symbols-part-1"
+          }
         },
         {
+          "uuid": "7aa0cf6a-a70d-435c-900c-31a0c8556758",
           "slug": "weather-symbols-part-2",
           "title": "Symbols Part 2",
           "description": "Draw weather scenes from lists of elements.",
           "type": "exercise",
-          "data": {"slug": "weather-symbols-part-2"}
+          "data": {
+            "slug": "weather-symbols-part-2"
+          }
         },
         {
+          "uuid": "477c7d46-5c34-4924-aefd-50cd3658768b",
           "slug": "guest-list",
           "title": "Guest List",
           "description": "Check if someone's name is on the guest list.",
           "type": "exercise",
-          "data": {"slug": "guest-list"}
+          "data": {
+            "slug": "guest-list"
+          }
         },
         {
+          "uuid": "bdb8a33f-cf30-4d19-ba93-3afda35e66a6",
           "slug": "after-party",
           "title": "After Party",
           "description": "Check the VIP list when celebrities only give their first name.",
           "type": "exercise",
-          "data": {"slug": "after-party"}
+          "data": {
+            "slug": "after-party"
+          }
         },
         {
+          "uuid": "0b6564e5-593a-4cd6-8e8a-182350d0561f",
           "slug": "formal-dinner",
           "title": "Formal Dinner",
           "description": "Match guests to the dinner list using their honorific and surname.",
           "type": "exercise",
-          "data": {"slug": "formal-dinner"}
+          "data": {
+            "slug": "formal-dinner"
+          }
         },
         {
+          "uuid": "80abd705-95da-4a53-a371-c88edbe07317",
           "slug": "building-arrays",
           "title": "Building Arrays",
           "description": "Learn how to build up lists piece by piece.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "c5dad5d3-dc0d-4de9-89dd-fe1e6363c207",
           "slug": "lunchbox",
           "title": "Pack a Lunch",
           "description": "Fill a lunchbox with the right combination of items.",
           "type": "exercise",
-          "data": {"slug": "lunchbox"}
+          "data": {
+            "slug": "lunchbox"
+          }
         },
         {
+          "uuid": "2cc15089-0688-41bc-aeb4-4930464e17a5",
           "slug": "stars",
           "title": "Stars",
           "description": "Build a growing pattern of stars.",
           "type": "exercise",
-          "data": {"slug": "stars"}
+          "data": {
+            "slug": "stars"
+          }
         },
         {
+          "uuid": "b940269f-2ebb-41cd-b7fa-02ffede96e9a",
           "slug": "meal-prep",
           "title": "Meal Prep",
           "description": "Work out which ingredients you need to buy for your recipe.",
           "type": "exercise",
-          "data": {"slug": "meal-prep"}
+          "data": {
+            "slug": "meal-prep"
+          }
         },
         {
+          "uuid": "3d269adb-c4a4-4786-af09-99b3d56d1d86",
           "slug": "wordle-process-guess",
           "title": "Wordle: Process Guess",
           "description": "Check a Wordle guess and work out which letters are correct.",
           "type": "exercise",
-          "data": {"slug": "wordle-process-guess"}
+          "data": {
+            "slug": "wordle-process-guess"
+          }
         },
         {
+          "uuid": "97f4f083-fe33-4ef8-97ca-02b4dc0fc27e",
           "slug": "extract-words",
           "title": "Extract Words",
           "description": "Pull individual words out of a sentence.",
           "type": "exercise",
-          "data": {"slug": "extract-words"}
+          "data": {
+            "slug": "extract-words"
+          }
         },
         {
+          "uuid": "c7f70657-698d-4abc-85e9-26b9b5520ca7",
           "slug": "chop-shop",
           "title": "The Chop Shop",
           "description": "Work out if the barber has time for one more customer.",
           "type": "exercise",
-          "data": {"slug": "chop-shop"}
+          "data": {
+            "slug": "chop-shop"
+          }
         },
         {
+          "uuid": "ef39abdd-fbb8-4f33-a989-cc57a10628ab",
           "slug": "wordle-process-game",
           "title": "Wordle: Play a Game",
           "description": "Process a whole Wordle game, colouring each guess row by row.",
           "type": "exercise",
-          "data": {"slug": "wordle-process-game"}
+          "data": {
+            "slug": "wordle-process-game"
+          }
         }
       ]
     },
     {
+      "uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
       "slug": "dictionaries",
       "title": "Dictionaries",
       "description": "Learn how to use dictionaries to store key-value pairs.",
@@ -1014,78 +1459,114 @@
       "milestone_email_content_markdown": "And that's the last level of Coding Fundamentals. Hopefully dictionaries are feeling like a useful tool to add to the mix alongside lists.\n\nThis is a real achievement. You've now covered every core building block of programming: functions, variables, state, conditionals, loops, strings, lists, and dictionaries. Everything else from here is combinations and refinements of what you already know.\n\nWe're really proud of you for getting this far. Have fun!",
       "lessons": [
         {
+          "uuid": "59a739ce-4347-4f87-9e44-01e5cc9c9093",
           "slug": "dictionaries",
           "title": "Dictionaries",
           "description": "Learn how to store data with named labels.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "f73aab68-28ee-4f44-a2bc-4c36c2f87b53",
           "slug": "lookup-time",
           "title": "Lookup Time",
           "description": "Look up the current time for a city.",
           "type": "exercise",
-          "data": {"slug": "lookup-time"}
+          "data": {
+            "slug": "lookup-time"
+          }
         },
         {
+          "uuid": "22376195-3641-4c44-b064-2cb2afc071ca",
           "slug": "scrabble-score",
           "title": "Scrabble Score",
           "description": "Calculate the score for a Scrabble word.",
           "type": "exercise",
-          "data": {"slug": "scrabble-score"}
+          "data": {
+            "slug": "scrabble-score"
+          }
         },
         {
+          "uuid": "a56c131a-5182-4692-9f5b-3ab8afd3561f",
           "slug": "updating-dictionaries",
           "title": "Changing Dictionaries",
           "description": "Learn how to update and modify dictionaries.",
           "type": "video",
           "data": {
-            "sources": [{"provider": "mux", "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"}]
+            "sources": [
+              {
+                "provider": "mux",
+                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+              }
+            ]
           }
         },
         {
+          "uuid": "b85d3e99-994a-4193-904d-41a4959bb75a",
           "slug": "rna-transcription",
           "title": "RNA Transcription",
           "description": "Convert a DNA sequence into its RNA complement.",
           "type": "exercise",
-          "data": {"slug": "rna-transcription"}
+          "data": {
+            "slug": "rna-transcription"
+          }
         },
         {
+          "uuid": "852bf9c4-f891-4ab1-ab6e-e6c9d887ba9f",
           "slug": "protein-translation",
           "title": "Protein Translation",
           "description": "Translate RNA sequences into proteins.",
           "type": "exercise",
-          "data": {"slug": "protein-translation"}
+          "data": {
+            "slug": "protein-translation"
+          }
         },
         {
+          "uuid": "2daff9b4-62db-4ff7-9b69-07327e347709",
           "slug": "spotify",
           "title": "Spotify Data",
           "description": "Parse your listening data from Spotify.",
           "type": "exercise",
-          "data": {"slug": "spotify"}
+          "data": {
+            "slug": "spotify"
+          }
         },
         {
+          "uuid": "79b01c8a-7747-4f14-acb8-4f873d63ae78",
           "slug": "word-count",
           "title": "Word Count",
           "description": "Count how many times each word appears in a sentence.",
           "type": "exercise",
-          "data": {"slug": "word-count"}
+          "data": {
+            "slug": "word-count"
+          }
         },
         {
+          "uuid": "44d7eb9c-995f-4ceb-9d93-56d261ddf2a3",
           "slug": "llm-response",
           "title": "LLM Response",
           "description": "Parse and format the response from an AI chatbot.",
           "type": "exercise",
-          "data": {"slug": "llm-response"}
+          "data": {
+            "slug": "llm-response"
+          }
         },
         {
+          "uuid": "b73270dc-3450-4681-9223-1d667cc39d5a",
           "slug": "nucleotide-count",
           "title": "Nucleotide Count",
           "description": "Count all the different nucleotides in a DNA strand.",
           "type": "exercise",
-          "data": {"slug": "nucleotide-count"}
+          "data": {
+            "slug": "nucleotide-count"
+          }
         }
       ]
     }

@@ -7,7 +7,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
 
     result = Level::CreateAllFromJson.(course, file_path.to_s)
 
-    assert result
+    assert_empty result[:orphaned_levels]
+    assert_empty result[:orphaned_lessons]
 
     # Verify levels were created
     using_functions = Level.find_by(slug: "using-functions")
@@ -15,6 +16,7 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     assert_equal "Using Functions", using_functions.title
     assert_equal 1, using_functions.position
     assert_equal course, using_functions.course
+    assert using_functions.uuid.present?
 
     strings_and_colors = Level.find_by(slug: "strings-and-colors")
     assert strings_and_colors
@@ -29,21 +31,135 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     assert_equal "exercise", first_lesson.type
     assert_equal({ slug: "maze-solve-basic" }, first_lesson.data)
     assert_equal 2, first_lesson.position
+    assert first_lesson.uuid.present?
   end
 
-  test "is idempotent - running twice updates existing records" do
+  test "is idempotent - running twice keeps the same records" do
     course = create(:course)
-    file_path = Rails.root.join("db", "seeds", "curriculum.json")
+    file_path = Rails.root.join("db", "seeds", "curriculum.json").to_s
 
-    # First run
-    Level::CreateAllFromJson.(course, file_path.to_s)
+    Level::CreateAllFromJson.(course, file_path)
+    level_ids = Level.pluck(:id).sort
+    lesson_ids = Lesson.pluck(:id).sort
 
-    # Second run
-    Level::CreateAllFromJson.(course, file_path.to_s)
+    Level::CreateAllFromJson.(course, file_path)
 
     # Verify counts haven't changed (17 levels, 119 lessons total)
     assert_equal 17, Level.count
     assert_equal 119, Lesson.count
+
+    # Verify the same records were updated, not recreated
+    assert_equal level_ids, Level.pluck(:id).sort
+    assert_equal lesson_ids, Lesson.pluck(:id).sort
+  end
+
+  test "slug renames update the existing records (matched by uuid)" do
+    course = create(:course)
+
+    sync!(course, [
+            level_json(uuid: "level-uuid-1", slug: "old-level-slug", lessons: [
+                         lesson_json(uuid: "lesson-uuid-1", slug: "old-lesson-slug")
+                       ])
+          ])
+
+    level = Level.find_by!(slug: "old-level-slug")
+    lesson = Lesson.find_by!(slug: "old-lesson-slug")
+    user_lesson = create(:user_lesson, lesson:)
+
+    sync!(course, [
+            level_json(uuid: "level-uuid-1", slug: "new-level-slug", lessons: [
+                         lesson_json(uuid: "lesson-uuid-1", slug: "new-lesson-slug")
+                       ])
+          ])
+
+    # Same records renamed in place - no duplicates
+    assert_equal 1, Level.count
+    assert_equal 1, Lesson.count
+    assert_equal "new-level-slug", level.reload.slug
+    assert_equal "new-lesson-slug", lesson.reload.slug
+
+    # User progress untouched
+    assert UserLesson.exists?(user_lesson.id)
+    assert_equal lesson.id, user_lesson.reload.lesson_id
+  end
+
+  test "adopts pre-uuid records by slug and stamps their uuid" do
+    course = create(:course)
+    level = create(:level, course:, slug: "fundamentals")
+    lesson = create(:lesson, :exercise, level:, slug: "intro")
+
+    sync!(course, [
+            level_json(uuid: "canonical-level-uuid", slug: "fundamentals", lessons: [
+                         lesson_json(uuid: "canonical-lesson-uuid", slug: "intro")
+                       ])
+          ])
+
+    assert_equal 1, Level.count
+    assert_equal 1, Lesson.count
+    assert_equal "canonical-level-uuid", level.reload.uuid
+    assert_equal "canonical-lesson-uuid", lesson.reload.uuid
+  end
+
+  test "moves lessons between levels without losing progress" do
+    course = create(:course)
+    sync!(course, [
+            level_json(uuid: "level-1", slug: "level-one", lessons: [lesson_json(uuid: "lesson-1", slug: "movable")]),
+            level_json(uuid: "level-2", slug: "level-two")
+          ])
+
+    lesson = Lesson.find_by!(slug: "movable")
+    user_lesson = create(:user_lesson, lesson:)
+
+    sync!(course, [
+            level_json(uuid: "level-1", slug: "level-one"),
+            level_json(uuid: "level-2", slug: "level-two", lessons: [lesson_json(uuid: "lesson-1", slug: "movable")])
+          ])
+
+    assert_equal 1, Lesson.count
+    assert_equal "level-two", lesson.reload.level.slug
+    assert UserLesson.exists?(user_lesson.id)
+  end
+
+  test "reorders levels and lessons to match JSON order" do
+    course = create(:course)
+    sync!(course, [
+            level_json(uuid: "level-1", slug: "first", lessons: [
+                         lesson_json(uuid: "lesson-a", slug: "lesson-a"),
+                         lesson_json(uuid: "lesson-b", slug: "lesson-b")
+                       ]),
+            level_json(uuid: "level-2", slug: "second")
+          ])
+
+    # Swap level order and lesson order
+    sync!(course, [
+            level_json(uuid: "level-2", slug: "second"),
+            level_json(uuid: "level-1", slug: "first", lessons: [
+                         lesson_json(uuid: "lesson-b", slug: "lesson-b"),
+                         lesson_json(uuid: "lesson-a", slug: "lesson-a")
+                       ])
+          ])
+
+    assert_equal %w[second first], course.levels.reload.map(&:slug)
+    assert_equal %w[lesson-b lesson-a], Level.find_by!(slug: "first").lessons.map(&:slug)
+  end
+
+  test "returns orphaned records and does not delete them" do
+    course = create(:course)
+    sync!(course, [
+            level_json(uuid: "keep-level", slug: "keep-level", lessons: [lesson_json(uuid: "keep-lesson", slug: "keep-lesson")]),
+            level_json(uuid: "orphan-level", slug: "orphan-level", lessons: [lesson_json(uuid: "orphan-lesson", slug: "orphan-lesson")])
+          ])
+
+    result = sync!(course, [
+                     level_json(uuid: "keep-level", slug: "keep-level", lessons: [lesson_json(uuid: "keep-lesson", slug: "keep-lesson")])
+                   ])
+
+    assert_equal ["orphan-level"], result[:orphaned_levels]
+    assert_equal ["orphan-lesson"], result[:orphaned_lessons]
+
+    # Orphans are never deleted - they may have user progress attached
+    assert Level.exists?(slug: "orphan-level")
+    assert Lesson.exists?(slug: "orphan-lesson")
   end
 
   test "raises error for non-existent file" do
@@ -85,202 +201,115 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     file.unlink
   end
 
-  test "raises error for level missing required fields" do
+  test "raises error for level missing uuid" do
     course = create(:course)
-    file = Tempfile.new(['missing_fields', '.json'])
-    file.write('{ "levels": [{ "slug": "test" }] }')
-    file.close
 
     error = assert_raises InvalidJsonError do
-      Level::CreateAllFromJson.(course, file.path)
+      sync!(course, [level_json(uuid: "level-1", slug: "valid").merge("uuid" => nil)])
+    end
+
+    assert_match(/missing required 'uuid' field/, error.message)
+  end
+
+  test "raises error for level missing required fields" do
+    course = create(:course)
+
+    error = assert_raises InvalidJsonError do
+      sync!(course, [level_json(uuid: "level-1", slug: "valid").except("title")])
     end
 
     assert_match(/missing required 'title' field/, error.message)
-  ensure
-    file.unlink
+  end
+
+  test "raises error for lesson missing uuid" do
+    course = create(:course)
+
+    error = assert_raises InvalidJsonError do
+      sync!(course, [
+              level_json(uuid: "level-1", slug: "valid", lessons: [
+                           lesson_json(uuid: "lesson-1", slug: "valid-lesson").except("uuid")
+                         ])
+            ])
+    end
+
+    assert_match(/Lesson missing required 'uuid' field/, error.message)
   end
 
   test "wraps everything in transaction - rolls back on error" do
     course = create(:course)
-    file = Tempfile.new(['partial', '.json'])
-    file.write('{
-      "levels": [
-        {
-          "slug": "valid-level",
-          "title": "Valid Level",
-          "description": "This is valid",
-          "lessons": []
-        },
-        {
-          "slug": "invalid-level"
-        }
-      ]
-    }')
-    file.close
+    create(:level, course:, slug: "existing", title: "Existing")
 
     assert_raises InvalidJsonError do
-      Level::CreateAllFromJson.(course, file.path)
+      sync!(course, [
+              level_json(uuid: "level-1", slug: "valid-level"),
+              { "uuid" => "level-2", "slug" => "invalid-level" }
+            ])
     end
 
-    # Nothing should be created due to transaction rollback
+    # Nothing should be created or changed due to transaction rollback
     assert_equal 0, Level.where(slug: "valid-level").count
-  ensure
-    file.unlink
+    assert_equal 1, Level.count
+    assert Level.exists?(slug: "existing")
   end
 
   test "updates title and description on existing records" do
     course = create(:course)
-    # Create initial level
     level = create(:level, course:, slug: "fundamentals", title: "Old Title", description: "Old description")
 
-    file = Tempfile.new(['update', '.json'])
-    file.write('{
-      "levels": [{
-        "slug": "fundamentals",
-        "title": "New Title",
-        "description": "New description",
-        "milestone_summary": "Great job!",
-        "milestone_content": "# Congratulations!",
-        "lessons": []
-      }]
-    }')
-    file.close
-
-    Level::CreateAllFromJson.(course, file.path)
+    sync!(course, [
+            level_json(uuid: "level-1", slug: "fundamentals").merge("title" => "New Title", "description" => "New description")
+          ])
 
     level.reload
     assert_equal "New Title", level.title
     assert_equal "New description", level.description
-  ensure
-    file.unlink
   end
 
-  test "delete_existing: false (default) preserves existing records not in JSON" do
+  test "preserves existing records not in JSON" do
     course = create(:course)
-    # Create some existing levels
     existing_level1 = create(:level, course:, slug: "existing-1", title: "Existing 1")
     existing_level2 = create(:level, course:, slug: "existing-2", title: "Existing 2")
 
-    file = Tempfile.new(['new', '.json'])
-    file.write('{
-      "levels": [{
-        "slug": "new-level",
-        "title": "New Level",
-        "description": "This is a new level",
-        "milestone_summary": "Great job!",
-        "milestone_content": "# Congratulations!",
-        "lessons": []
-      }]
-    }')
-    file.close
-
-    Level::CreateAllFromJson.(course, file.path, delete_existing: false)
+    sync!(course, [level_json(uuid: "level-1", slug: "new-level")])
 
     # All three levels should exist
     assert_equal 3, Level.count
     assert Level.exists?(id: existing_level1.id)
     assert Level.exists?(id: existing_level2.id)
     assert Level.exists?(slug: "new-level")
+  end
+
+  private
+  def sync!(course, levels)
+    file = Tempfile.new(["curriculum", ".json"])
+    file.write(JSON.generate({ levels: }))
+    file.close
+
+    Level::CreateAllFromJson.(course, file.path)
   ensure
     file.unlink
   end
 
-  test "delete_existing: true removes all existing levels before import" do
-    course = create(:course)
-    # Create some existing levels with lessons
-    existing_level1 = create(:level, course:, slug: "existing-1", title: "Existing 1")
-    create(:lesson, :exercise, level: existing_level1, slug: "existing-lesson-1", title: "Existing Lesson 1")
-    create(:level, course:, slug: "existing-2", title: "Existing 2")
-
-    file = Tempfile.new(['clean', '.json'])
-    file.write('{
-      "levels": [{
-        "slug": "new-level",
-        "title": "New Level",
-        "description": "This is a new level",
-        "milestone_summary": "Great job!",
-        "milestone_content": "# Congratulations!",
-        "lessons": []
-      }]
-    }')
-    file.close
-
-    Level::CreateAllFromJson.(course, file.path, delete_existing: true)
-
-    # Only the new level should exist
-    assert_equal 1, Level.count
-    refute Level.exists?(slug: "existing-1")
-    refute Level.exists?(slug: "existing-2")
-    assert Level.exists?(slug: "new-level")
-
-    # Lessons should also be deleted (cascade)
-    assert_equal 0, Lesson.where(slug: "existing-lesson-1").count
-  ensure
-    file.unlink
+  def level_json(uuid:, slug:, lessons: [])
+    {
+      "uuid" => uuid,
+      "slug" => slug,
+      "title" => slug.titleize,
+      "description" => "Description for #{slug}",
+      "milestone_summary" => "Summary for #{slug}",
+      "milestone_content" => "# Content for #{slug}",
+      "lessons" => lessons
+    }
   end
 
-  test "delete_existing: true with idempotent behavior" do
-    course = create(:course)
-    file = Tempfile.new(['idempotent', '.json'])
-    file.write('{
-      "levels": [{
-        "slug": "level-1",
-        "title": "Level 1",
-        "description": "First level",
-        "milestone_summary": "Great job!",
-        "milestone_content": "# Congratulations!",
-        "lessons": []
-      }]
-    }')
-    file.close
-
-    # First import
-    Level::CreateAllFromJson.(course, file.path, delete_existing: true)
-    assert_equal 1, Level.count
-    first_level_id = Level.find_by(slug: "level-1").id
-
-    # Second import - should delete and recreate
-    Level::CreateAllFromJson.(course, file.path, delete_existing: true)
-    assert_equal 1, Level.count
-
-    # ID should be different because it was deleted and recreated
-    second_level_id = Level.find_by(slug: "level-1").id
-    refute_equal first_level_id, second_level_id
-  ensure
-    file.unlink
-  end
-
-  test "delete_existing: true handles transaction rollback correctly" do
-    course = create(:course)
-    # Create existing data
-    create(:level, course:, slug: "existing", title: "Existing")
-
-    file = Tempfile.new(['invalid_partial', '.json'])
-    file.write('{
-      "levels": [
-        {
-          "slug": "valid-level",
-          "title": "Valid Level",
-          "description": "This is valid",
-          "milestone_summary": "Great job!",
-          "milestone_content": "# Congratulations!",
-          "lessons": []
-        },
-        {
-          "slug": "invalid-level"
-        }
-      ]
-    }')
-    file.close
-
-    assert_raises InvalidJsonError do
-      Level::CreateAllFromJson.(course, file.path, delete_existing: true)
-    end
-
-    # Existing level should be preserved (deletion happens inside transaction)
-    assert_equal 1, Level.count
-    assert Level.exists?(slug: "existing")
-  ensure
-    file.unlink
+  def lesson_json(uuid:, slug:)
+    {
+      "uuid" => uuid,
+      "slug" => slug,
+      "title" => slug.titleize,
+      "description" => "Description for #{slug}",
+      "type" => "exercise",
+      "data" => { "slug" => slug }
+    }
   end
 end

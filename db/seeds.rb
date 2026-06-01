@@ -1,254 +1,127 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
+# This file ensures the existence of records required to run the application in every
+# environment (production, development, test). Everything in this file MUST be:
+#
+#   - Idempotent: running it repeatedly always produces the same result.
+#   - Non-destructive: records are only created or updated (matched by uuid, falling
+#     back to slug), never deleted or recreated. User data is always preserved.
+#   - Production-safe: no test users, sample progress or fake payments.
+#     Development-only sample data lives in db/seeds/development.rb.
+#
+# Run with: bin/rails db:seed
 
-# Create an admin user
-admin_user = User.find_or_create_by!(email: "ihid@jiki.io") do |u|
-  u.handle = "iHiD"
-  u.name = "Jeremy Walker"
-  u.password = "password"
-  u.password_confirmation = "password"
+# == Course ==
+course = Course.find_or_initialize_by(slug: "coding-fundamentals")
+course.update!(
+  title: "Coding Fundamentals",
+  description: "Learn the fundamentals of programming through interactive exercises and videos."
+)
+puts "✓ Course: #{course.title}"
+
+# == Levels and lessons ==
+# Synced from curriculum.json, matched by uuid so slug renames, moves between levels
+# and reordering all update existing records in place (preserving user progress).
+sync_result = Level::CreateAllFromJson.(course, Rails.root.join("db", "seeds", "curriculum.json").to_s)
+puts "✓ Levels: #{course.levels.count}, Lessons: #{Lesson.where(level: course.levels).count}"
+
+if sync_result[:orphaned_levels].any? || sync_result[:orphaned_lessons].any?
+  puts "⚠️  WARNING: The database contains levels/lessons that are not in curriculum.json."
+  puts "   They have NOT been deleted (they may have user progress) but are still visible to users:"
+  sync_result[:orphaned_levels].each { |slug| puts "   - level: #{slug}" }
+  sync_result[:orphaned_lessons].each { |slug| puts "   - lesson: #{slug}" }
 end
-admin_user.confirm
-puts "Created admin user: #{admin_user.email}"
 
-# Create a test user
-user = User.find_or_create_by!(email: "test@example.com") do |u|
-  u.handle = "testuser"
-  u.name = "Test User"
-  u.password = "password123"
-  u.password_confirmation = "password123"
-end
-puts "Created user: #{user.email}"
-
-# Create the Coding Fundamentals course
-course = Course.find_or_create_by!(slug: "coding-fundamentals") do |c|
-  c.title = "Coding Fundamentals"
-  c.description = "Learn the fundamentals of programming through interactive exercises and videos."
-end
-puts "Created course: #{course.title}"
-
-# Bootstrap levels from curriculum.json
-curriculum_file = File.join(Rails.root, "db", "seeds", "curriculum.json")
-puts "Loading levels from #{curriculum_file}..."
-
-Level::CreateAllFromJson.call(course, curriculum_file, delete_existing: true)
-
-puts "✓ Successfully loaded levels and lessons!"
-
-# Bootstrap users (enrolls them in coding-fundamentals and starts first level)
-puts "\nBootstrapping users..."
-User::Bootstrap.(admin_user)
-puts "  ✓ Bootstrapped admin user"
-User::Bootstrap.(user)
-puts "  ✓ Bootstrapped test user"
-
-# Load concepts
-puts "\nLoading concepts..."
-concepts_file = File.join(Rails.root, "db", "seeds", "concepts.json")
+# == Concepts ==
+concepts_file = Rails.root.join("db", "seeds", "concepts.json")
 raise "Missing concepts seed file at #{concepts_file}" unless File.exist?(concepts_file)
 
 concepts_data = JSON.parse(File.read(concepts_file), symbolize_names: true)
 
-# First pass: Create all concepts without parents
+# First pass: create or update all concepts (matched by uuid, falling back to slug)
 concepts_data.each do |concept_data|
-  concept = Concept.find_or_initialize_by(slug: concept_data[:slug])
-  concept.title = concept_data[:title]
-  concept.description = concept_data[:description]
-  concept.content_markdown = concept_data[:content_markdown]
-
-  # Link to lesson if specified
+  unlocking_lesson = nil
   if concept_data[:unlocked_by_lesson_slug]
-    lesson = Lesson.find_by(slug: concept_data[:unlocked_by_lesson_slug])
-    raise "Concept '#{concept_data[:slug]}' references missing lesson '#{concept_data[:unlocked_by_lesson_slug]}'" unless lesson
-
-    concept.unlocked_by_lesson = lesson
+    unlocking_lesson = Lesson.find_by(slug: concept_data[:unlocked_by_lesson_slug])
+    unless unlocking_lesson
+      raise "Concept '#{concept_data[:slug]}' references missing lesson '#{concept_data[:unlocked_by_lesson_slug]}'"
+    end
   end
 
-  concept.save!
-  puts "  ✓ Loaded concept: #{concept.title}"
+  concept = Concept.find_by(uuid: concept_data[:uuid]) ||
+            Concept.find_or_initialize_by(slug: concept_data[:slug])
+
+  concept.update!(
+    uuid: concept_data[:uuid],
+    slug: concept_data[:slug],
+    title: concept_data[:title],
+    description: concept_data[:description],
+    content_markdown: concept_data[:content_markdown],
+    unlocked_by_lesson: unlocking_lesson
+  )
 end
 
-# Second pass: Link parents (iterative until all resolved)
-unresolved = concepts_data.select { |c| c[:parent_slug].present? }
-while unresolved.any?
-  resolved_count = 0
-  unresolved.each do |concept_data|
+# Second pass: link parents (all concepts exist now, so a single pass resolves everything)
+concepts_data.each do |concept_data|
+  parent = nil
+  if concept_data[:parent_slug]
     parent = Concept.find_by(slug: concept_data[:parent_slug])
-    next unless parent
-
-    concept = Concept.find_by!(slug: concept_data[:slug])
-    next if concept.parent_concept_id.present?
-
-    concept.update!(parent: parent)
-    resolved_count += 1
-    puts "  ✓ Linked #{concept.title} → #{parent.title}"
+    raise "Concept '#{concept_data[:slug]}' references missing parent '#{concept_data[:parent_slug]}'" unless parent
   end
 
-  unresolved.reject! { |c| Concept.find_by(slug: c[:slug])&.parent_concept_id.present? }
-  break if resolved_count.zero? && unresolved.any?
+  Concept.find_by!(uuid: concept_data[:uuid]).update!(parent:)
 end
+puts "✓ Concepts: #{concepts_data.size}"
 
-raise "Could not resolve parents for concepts: #{unresolved.map { |c| "#{c[:slug]} → #{c[:parent_slug]}" }.join(', ')}" if unresolved.any?
-
-puts "✓ Successfully loaded #{concepts_data.size} concept(s)!"
-
-# Load projects
-puts "\nLoading projects..."
-projects_file = File.join(Rails.root, "db", "seeds", "projects.json")
+# == Projects ==
+projects_file = Rails.root.join("db", "seeds", "projects.json")
 raise "Missing projects seed file at #{projects_file}" unless File.exist?(projects_file)
 
 projects_data = JSON.parse(File.read(projects_file), symbolize_names: true)
 
 projects_data.each do |project_data|
-  project = Project.find_or_initialize_by(slug: project_data[:slug])
-  project.title = project_data[:title]
-  project.description = project_data[:description]
-  project.exercise_slug = project_data[:exercise_slug]
-
-  # Link to lesson if specified
+  unlocking_lesson = nil
   if project_data[:unlocked_by_lesson_slug]
-    lesson = Lesson.find_by(slug: project_data[:unlocked_by_lesson_slug])
-    raise "Project '#{project_data[:slug]}' references missing lesson '#{project_data[:unlocked_by_lesson_slug]}'" unless lesson
-
-    project.unlocked_by_lesson = lesson
+    unlocking_lesson = Lesson.find_by(slug: project_data[:unlocked_by_lesson_slug])
+    unless unlocking_lesson
+      raise "Project '#{project_data[:slug]}' references missing lesson '#{project_data[:unlocked_by_lesson_slug]}'"
+    end
   end
 
-  project.save!
-  puts "  ✓ Loaded project: #{project.title}"
+  project = Project.find_by(uuid: project_data[:uuid]) ||
+            Project.find_or_initialize_by(slug: project_data[:slug])
+
+  project.update!(
+    uuid: project_data[:uuid],
+    slug: project_data[:slug],
+    title: project_data[:title],
+    description: project_data[:description],
+    exercise_slug: project_data[:exercise_slug],
+    unlocked_by_lesson: unlocking_lesson
+  )
 end
+puts "✓ Projects: #{projects_data.size}"
 
-puts "✓ Successfully loaded #{projects_data.size} project(s)!"
-
-# Create some user progress data for testing
-puts "\nCreating sample user progress..."
-
-# Get first few levels and lessons
-first_level = course.levels.first
-second_level = course.levels.second
-raise "Cannot create sample progress: course has fewer than 2 levels" unless first_level && second_level
-
-# Create user_course enrollment
-user_course = UserCourse.find_or_create_by!(user: user, course: course)
-
-# Create user_level records
-user_level_1 = UserLevel.find_or_create_by!(user: user, level: first_level)
-user_level_2 = UserLevel.find_or_create_by!(user: user, level: second_level)
-
-# Update user_course to point to current level
-user_course.update!(current_user_level: user_level_2)
-
-# Create user_lesson records for first level (mix of completed and started)
-first_level.lessons.limit(3).each_with_index do |lesson, index|
-  UserLesson.find_or_create_by!(user: user, lesson: lesson) do |ul|
-    ul.completed_at = index < 2 ? Time.current : nil
-  end
+# == Badges ==
+# Each Badges::* class defines its copy via `seed`. Create any missing badges and
+# keep existing ones in sync with the class definitions.
+Rails.application.eager_load!
+Badge.subclasses.sort_by(&:name).each do |badge_class|
+  badge = badge_class.first_or_initialize
+  badge.update!(badge_class.seed_data) if badge_class.seed_data
 end
+puts "✓ Badges: #{Badge.subclasses.size}"
 
-# Create user_lesson records for second level (only started)
-second_level.lessons.limit(2).each do |lesson|
-  UserLesson.find_or_create_by!(user: user, lesson: lesson)
+# == Admin user ==
+# In production the password is random and unusable. To log in, set a real password
+# via the bastion console (user.update!(password: "...")) or the password reset flow.
+admin_user = User.find_or_create_by!(email: "ihid@jiki.io") do |u|
+  u.handle = "iHiD"
+  u.name = "Jeremy Walker"
+  u.password = Rails.env.production? ? SecureRandom.hex(32) : "password"
 end
+admin_user.update!(admin: true) if Rails.env.production?
+admin_user.confirm unless admin_user.confirmed?
+UserCourse::Enroll.(admin_user, course)
+puts "✓ Admin user: #{admin_user.email}"
 
-puts "✓ Created sample progress for user #{user.email}"
-puts "  - Enrolled in course: #{course.title}"
-puts "  - #{user.user_levels.count} user_levels"
-puts "  - #{user.user_lessons.count} user_lessons (#{user.user_lessons.where.not(completed_at: nil).count} completed)"
-
-# Create badges
-puts "\nCreating badges..."
-
-# Create all available badges using their STI classes
-badge_classes = [
-  Badges::MemberBadge,
-  Badges::MazeNavigatorBadge,
-  Badges::FirstLessonBadge,
-  Badges::EarlyBirdBadge,
-  Badges::ScenarioHandlerBadge,
-  Badges::NightOwlBadge
-]
-
-badge_classes.each do |badge_class|
-  badge = badge_class.find_or_create_by!(type: badge_class.name) do |b|
-    # Trigger before_create callback to set attributes from seed data
-  end
-  puts "  ✓ Created badge: #{badge.name} (#{badge.secret? ? 'secret' : 'public'})"
-end
-
-puts "✓ Successfully created #{badge_classes.count} badges!"
-
-# Create user badge acquisitions to demonstrate all possible states
-puts "\nCreating user badge acquisitions (all states)..."
-
-member_badge = Badges::MemberBadge.first
-maze_badge = Badges::MazeNavigatorBadge.first
-first_lesson_badge = Badges::FirstLessonBadge.first
-early_bird_badge = Badges::EarlyBirdBadge.first
-
-# State 1: LOCKED badges (no User::AcquiredBadge record exists)
-puts "  ✓ Maze Navigator badge: LOCKED (hasn't completed maze lesson)"
-
-# State 2: NEW/UNREVEALED badges (earned but not seen - revealed: false)
-User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: member_badge) do |ab|
-  ab.revealed = false
-  ab.created_at = 1.day.ago
-end
-puts "  ✓ Member badge: NEW/UNREVEALED (earned but not seen)"
-
-User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: first_lesson_badge) do |ab|
-  ab.revealed = false
-  ab.created_at = 1.hour.ago
-end
-puts "  ✓ First Steps badge: NEW/UNREVEALED (just earned)"
-
-# State 3: SEEN/REVEALED badges (earned and seen - revealed: true)
-User::AcquiredBadge.find_or_create_by!(user: admin_user, badge: early_bird_badge) do |ab|
-  ab.revealed = true
-  ab.created_at = 3.days.ago
-end
-puts "  ✓ Early Bird badge: SEEN/REVEALED (secret early access badge)"
-
-puts "✓ Successfully created badge acquisitions demonstrating all states!"
-puts "\n  Badge States Summary for user #{admin_user.email}:"
-puts "    LOCKED (not earned):"
-puts "       - Maze Navigator (needs to complete maze lesson)"
-puts "    NEW/UNREVEALED (earned, not seen):"
-puts "       - Member (just joined)"
-puts "       - First Steps (just completed first lesson)"
-puts "    SEEN/REVEALED (earned and seen):"
-puts "       - Early Bird (secret early access badge, revealed)"
-
-# Create sample payments for admin user
-puts "\nCreating sample payments..."
-
-# Create 4 payments for admin user spanning several months
-[
-  { months_ago: 4, product: "premium", amount: 1999 },
-  { months_ago: 3, product: "premium", amount: 1999 },
-  { months_ago: 2, product: "premium", amount: 1999 },
-  { months_ago: 1, product: "premium", amount: 1999 }
-].each_with_index do |payment_data, index|
-  payment_date = payment_data[:months_ago].months.ago
-  Payment.find_or_create_by!(payment_processor_id: "in_seed_#{index + 1}") do |p|
-    p.user = admin_user
-    p.amount_in_cents = payment_data[:amount]
-    p.currency = "usd"
-    p.product = payment_data[:product]
-    p.external_receipt_url = "https://invoice.stripe.com/i/seed_receipt_#{index + 1}"
-    p.data = {
-      stripe_invoice_id: "in_seed_#{index + 1}",
-      stripe_charge_id: "ch_seed_#{index + 1}",
-      stripe_subscription_id: "sub_seed_admin",
-      stripe_customer_id: "cus_seed_admin",
-      billing_reason: index.zero? ? "subscription_create" : "subscription_cycle",
-      period_start: payment_date.iso8601,
-      period_end: (payment_date + 1.month).iso8601
-    }
-    p.created_at = payment_date
-  end
-end
-
-puts "  ✓ Created 4 payments for admin user (#{admin_user.email})"
-puts "    - 4 premium payments ($19.99 each)"
-
-# Note: test user has no payments (deliberately left without payments for testing)
+# == Development sample data ==
+load Rails.root.join("db", "seeds", "development.rb") if Rails.env.development?

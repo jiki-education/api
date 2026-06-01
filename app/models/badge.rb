@@ -18,6 +18,12 @@ class Badge < ApplicationRecord
     }
   end
 
+  # Badge attributes defined by the subclass's `seed` call.
+  # Used by before_create and by db/seeds.rb to keep records in sync.
+  class << self
+    attr_reader :seed_data
+  end
+
   # Find badge by slug and create on-demand
   def self.find_by_slug!(slug)
     # Validate slug format (only lowercase letters and underscores)

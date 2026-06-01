@@ -1,5 +1,6 @@
 [
   {
+    "uuid": "286966e0-9312-4ad1-99da-3ec5bde77290",
     "slug": "using-functions",
     "title": "Using Functions",
     "description": "Use built-in functions to make things happen.",
@@ -8,6 +9,7 @@
     "unlocked_by_lesson_slug": "using-functions"
   },
   {
+    "uuid": "86742bc7-fc01-430b-a6c1-7701c7a7c2c9",
     "slug": "using-functions-with-inputs",
     "title": "Using Functions With Inputs",
     "description": "Pass inputs (arguments) to functions to control their behaviour.",
@@ -16,6 +18,7 @@
     "unlocked_by_lesson_slug": "function-inputs"
   },
   {
+    "uuid": "112a17ef-ff6e-4ddf-8862-81757018e383",
     "slug": "using-functions-with-return-values",
     "title": "Using Functions With Return Values",
     "description": "Use the values that functions give back to you.",
@@ -24,6 +27,7 @@
     "unlocked_by_lesson_slug": "functions-that-return-things"
   },
   {
+    "uuid": "cc7b80e5-a90c-4b36-8fed-40a6a1275a16",
     "slug": "creating-functions",
     "title": "Creating Functions",
     "description": "Write your own reusable functions.",
@@ -32,6 +36,7 @@
     "unlocked_by_lesson_slug": "making-functions"
   },
   {
+    "uuid": "567d04fb-bbbc-4af5-baeb-c881275a8713",
     "slug": "creating-functions-with-inputs",
     "title": "Creating Functions With Inputs",
     "description": "Define functions that accept inputs (parameters).",
@@ -40,6 +45,7 @@
     "unlocked_by_lesson_slug": "making-functions-with-inputs"
   },
   {
+    "uuid": "bb6ba4e4-76f4-4d43-98d7-a3c575908ce4",
     "slug": "creating-functions-with-return-values",
     "title": "Creating Functions With Return Values",
     "description": "Make your own functions hand a value back to the caller.",
@@ -48,6 +54,7 @@
     "unlocked_by_lesson_slug": "making-functions-with-return-values"
   },
   {
+    "uuid": "e9807b41-d6ce-4d1f-96bf-21bc1910d81b",
     "slug": "function-composition",
     "title": "Function Composition",
     "description": "Combine multiple functions together to solve bigger problems.",
@@ -56,6 +63,7 @@
     "unlocked_by_lesson_slug": "using-multiple-functions-together"
   },
   {
+    "uuid": "413ac4e4-3d8d-4bc3-a73c-4efaa71abf3a",
     "slug": "variables",
     "title": "Variables",
     "description": "Store and reuse values by giving them names.",
@@ -64,6 +72,7 @@
     "unlocked_by_lesson_slug": "creating-variables"
   },
   {
+    "uuid": "17510316-2efc-48a7-adc9-84d1022e543b",
     "slug": "arithmetic",
     "title": "Arithmetic",
     "description": "Do maths with numbers and variables.",
@@ -72,6 +81,7 @@
     "unlocked_by_lesson_slug": "variables-together"
   },
   {
+    "uuid": "b83c6002-c3e2-4c72-ba93-4b7a6662dd6c",
     "slug": "state",
     "title": "State",
     "description": "Update variables to track changing values over time.",
@@ -80,6 +90,7 @@
     "unlocked_by_lesson_slug": "updating-variables"
   },
   {
+    "uuid": "d33d79ab-461a-40c2-984a-fce75bf049ee",
     "slug": "strings",
     "title": "Strings",
     "description": "Work with text in your programs.",
@@ -88,6 +99,7 @@
     "unlocked_by_lesson_slug": "strings"
   },
   {
+    "uuid": "df7d0821-005b-4531-add0-b56b8f694894",
     "slug": "string-concatenation",
     "title": "String Concatenation",
     "description": "Join strings together with `+`.",
@@ -96,6 +108,7 @@
     "unlocked_by_lesson_slug": "string-concatenation"
   },
   {
+    "uuid": "23634b7c-6cfc-4f29-8aa0-cab0967132c1",
     "slug": "string-templates",
     "title": "String Templates",
     "description": "Build strings by interpolating values into a template.",
@@ -104,6 +117,7 @@
     "unlocked_by_lesson_slug": "string-concatenation"
   },
   {
+    "uuid": "7efc3cf9-af9b-4352-adaa-ac45ee91d424",
     "slug": "string-indexing",
     "title": "String Indexing",
     "description": "Access individual characters by position.",
@@ -112,6 +126,7 @@
     "unlocked_by_lesson_slug": "string-indexing"
   },
   {
+    "uuid": "4c4fdbf5-0ba5-4b19-97c1-b219fe27370e",
     "slug": "string-iteration",
     "title": "String Iteration",
     "description": "Loop through a string one character at a time.",
@@ -120,6 +135,7 @@
     "unlocked_by_lesson_slug": "string-iteration"
   },
   {
+    "uuid": "4300b985-dd38-4cf8-b8a7-da088a75bf79",
     "slug": "colors",
     "title": "Colors",
     "description": "Specify and use colours in your drawings.",
@@ -128,6 +144,7 @@
     "unlocked_by_lesson_slug": "colors"
   },
   {
+    "uuid": "5bca8b7d-1c17-4744-8fd6-4534ab25447c",
     "slug": "hsl",
     "title": "HSL Colors",
     "description": "Describe colours by hue, saturation and lightness.",
@@ -136,6 +153,7 @@
     "unlocked_by_lesson_slug": "colors"
   },
   {
+    "uuid": "82596fb3-9fca-4ea9-9e78-3286fada4880",
     "slug": "rgb",
     "title": "RGB Colors",
     "description": "Describe colours by mixing red, green and blue.",
@@ -144,6 +162,7 @@
     "unlocked_by_lesson_slug": "colors"
   },
   {
+    "uuid": "8c5a209c-d4d1-4ec1-b060-3e1fee05359e",
     "slug": "loops",
     "title": "Loops",
     "description": "Repeat actions in your code without rewriting them.",
@@ -152,6 +171,7 @@
     "unlocked_by_lesson_slug": "repeat-loop"
   },
   {
+    "uuid": "688567f0-bdce-4059-8fb6-7b9f92b2a418",
     "slug": "repeat",
     "title": "Repeat Loop",
     "description": "Repeat a block of code a fixed number of times.",
@@ -160,6 +180,7 @@
     "unlocked_by_lesson_slug": "repeat-loop"
   },
   {
+    "uuid": "cd5ac17e-c2d4-4000-9838-5d174fdc7f2a",
     "slug": "nested-loops",
     "title": "Nested Loops",
     "description": "Put loops inside other loops.",
@@ -168,6 +189,7 @@
     "unlocked_by_lesson_slug": "nested-loops"
   },
   {
+    "uuid": "ac6ef8a3-e4e6-4cdb-ac8b-57a86e0adae1",
     "slug": "repeat-while",
     "title": "Repeat While",
     "description": "Repeat code until a condition stops being true.",
@@ -176,6 +198,7 @@
     "unlocked_by_lesson_slug": "repeat-without-count"
   },
   {
+    "uuid": "5762d4a2-8085-498e-aceb-80e358ce737c",
     "slug": "for-loops",
     "title": "For Loops",
     "description": "Loop with a counter, with full control over start, stop and step.",
@@ -184,6 +207,7 @@
     "unlocked_by_lesson_slug": "for-while-loops"
   },
   {
+    "uuid": "c4231c24-8819-450a-975d-4a83945b2a12",
     "slug": "break",
     "title": "Break",
     "description": "Exit a loop early.",
@@ -192,6 +216,7 @@
     "unlocked_by_lesson_slug": "for-while-loops"
   },
   {
+    "uuid": "cd6ad719-645e-4245-a051-a9fb198e0bf8",
     "slug": "continue",
     "title": "Continue",
     "description": "Skip the rest of the current loop iteration and move to the next.",
@@ -200,6 +225,7 @@
     "unlocked_by_lesson_slug": "for-while-loops"
   },
   {
+    "uuid": "55171d51-6995-4f7f-8789-9cf1ac295ae1",
     "slug": "conditionals",
     "title": "Conditionals",
     "description": "Make decisions in code based on whether something is true.",
@@ -208,6 +234,7 @@
     "unlocked_by_lesson_slug": "if-statements"
   },
   {
+    "uuid": "d30e6157-538c-49e0-b0d9-866831d37079",
     "slug": "if",
     "title": "If Statements",
     "description": "Run code only when a condition is true.",
@@ -216,6 +243,7 @@
     "unlocked_by_lesson_slug": "if-statements"
   },
   {
+    "uuid": "10c680f0-bed5-49cb-8a8e-4bffd5d81e53",
     "slug": "else",
     "title": "Else",
     "description": "Run alternative code when an `if` condition is false.",
@@ -224,6 +252,7 @@
     "unlocked_by_lesson_slug": "else-statements"
   },
   {
+    "uuid": "8c500cfc-6fab-4ff3-82fd-841c76057f8c",
     "slug": "else-if",
     "title": "Else If",
     "description": "Chain multiple conditions in order.",
@@ -232,6 +261,7 @@
     "unlocked_by_lesson_slug": "else-statements"
   },
   {
+    "uuid": "fdea086a-6c97-4a9f-99b5-84a245890351",
     "slug": "logical-and",
     "title": "Logical And",
     "description": "Combine conditions that must all be true.",
@@ -240,6 +270,7 @@
     "unlocked_by_lesson_slug": "and-or"
   },
   {
+    "uuid": "65386b70-945f-42a2-9250-72f8390b5bdb",
     "slug": "logical-or",
     "title": "Logical Or",
     "description": "Combine conditions where at least one must be true.",
@@ -248,6 +279,7 @@
     "unlocked_by_lesson_slug": "and-or"
   },
   {
+    "uuid": "e3f673d6-7588-4022-96c9-cee018d26ae9",
     "slug": "logical-not",
     "title": "Logical Not",
     "description": "Flip a condition's truth value.",
@@ -256,6 +288,7 @@
     "unlocked_by_lesson_slug": "remainder"
   },
   {
+    "uuid": "86d3c9cf-1fc1-4e95-adb1-f8150f7aa1b7",
     "slug": "modulo",
     "title": "Modulo",
     "description": "Get the remainder of a division.",
@@ -264,6 +297,7 @@
     "unlocked_by_lesson_slug": "remainder"
   },
   {
+    "uuid": "95acb8f2-920a-4efa-88fb-a1f6250c1b18",
     "slug": "conditionals-and-state",
     "title": "Using If and State",
     "description": "Combining if statements with variables that change over time so your program reacts and behaves differently as it runs.",
@@ -272,6 +306,7 @@
     "unlocked_by_lesson_slug": "using-if-and-state"
   },
   {
+    "uuid": "c160feb8-2999-40b5-8e38-8671c0fa1cdb",
     "slug": "scope",
     "title": "Scope",
     "description": "Understand where variables exist and where they don't.",
@@ -280,6 +315,7 @@
     "unlocked_by_lesson_slug": "scope"
   },
   {
+    "uuid": "4563d155-cf58-4f25-9ab4-9cd2e393cdee",
     "slug": "random",
     "title": "Random",
     "description": "Add randomness to your programs.",
@@ -288,6 +324,7 @@
     "unlocked_by_lesson_slug": "random-numbers"
   },
   {
+    "uuid": "47652e33-70df-4365-8390-1797422486e8",
     "slug": "animation",
     "title": "Animation",
     "description": "Make things move on screen.",
@@ -296,6 +333,7 @@
     "unlocked_by_lesson_slug": "animation"
   },
   {
+    "uuid": "40621ebe-cdf6-4933-9c57-982a6a77dd6f",
     "slug": "scenarios",
     "title": "Scenarios",
     "description": "Run your code against different starting conditions.",
@@ -304,6 +342,7 @@
     "unlocked_by_lesson_slug": "scenarios"
   },
   {
+    "uuid": "0ed19451-0590-4358-ab40-a46c8846ef34",
     "slug": "methods",
     "title": "Methods",
     "description": "Use functions that come attached to a value.",
@@ -312,6 +351,7 @@
     "unlocked_by_lesson_slug": "methods-and-strings"
   },
   {
+    "uuid": "ea56e9f2-8c45-4b67-be50-31f9a2dc5449",
     "slug": "properties",
     "title": "Properties",
     "description": "Access named values attached to a thing.",
@@ -320,6 +360,7 @@
     "unlocked_by_lesson_slug": "methods-and-strings"
   },
   {
+    "uuid": "ecd72caa-14ea-4921-8d51-d834bd24fce3",
     "slug": "arrays",
     "title": "Arrays",
     "description": "Store an ordered collection of values.",
@@ -328,6 +369,7 @@
     "unlocked_by_lesson_slug": "arrays"
   },
   {
+    "uuid": "a82209e3-f58f-4199-8ca4-04619c612fa2",
     "slug": "building-arrays",
     "title": "Building Arrays",
     "description": "Build up an array piece by piece, often by appending in a loop.",
@@ -336,6 +378,7 @@
     "unlocked_by_lesson_slug": "building-arrays"
   },
   {
+    "uuid": "0ffa624c-a410-4223-b958-819454b2ecdf",
     "slug": "dictionaries",
     "title": "Dictionaries",
     "description": "Store values under named keys.",
@@ -344,6 +387,7 @@
     "unlocked_by_lesson_slug": "dictionaries"
   },
   {
+    "uuid": "2c101feb-26ae-42c4-a3c7-a4e05536b30b",
     "slug": "updating-dictionaries",
     "title": "Updating Dictionaries",
     "description": "Add, change and remove keys in a dictionary.",
