@@ -2,8 +2,9 @@ require "test_helper"
 
 class Level::SearchTest < ActiveSupport::TestCase
   test "no options returns all levels paginated" do
-    level_1 = create :level
-    level_2 = create :level, slug: "level-2"
+    course = create(:course)
+    level_1 = create(:level, course:)
+    level_2 = create(:level, course:, slug: "level-2")
 
     result = Level::Search.()
 
@@ -33,8 +34,9 @@ class Level::SearchTest < ActiveSupport::TestCase
   end
 
   test "pagination" do
-    level_1 = create :level
-    level_2 = create :level, slug: "level-2"
+    course = create(:course)
+    level_1 = create(:level, course:)
+    level_2 = create(:level, course:, slug: "level-2")
 
     assert_equal [level_1], Level::Search.(page: 1, per: 1).to_a
     assert_equal [level_2], Level::Search.(page: 2, per: 1).to_a
