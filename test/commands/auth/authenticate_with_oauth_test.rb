@@ -17,12 +17,12 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
     assert_equal 'google-123', user.google_id
   end
 
-  test "verifies Exercism tokens with the Exercism command, passing all token args" do
+  test "verifies Exercism tokens with the Exercism command, passing the PKCE verifier" do
     payload = { 'id' => '1530', 'email' => 'ihid@exercism.org', 'name' => 'Jeremy Walker' }
 
     Auth::VerifyExercismToken.expects(:call).with('exercism-code', 'code-verifier').returns(payload)
 
-    Auth::AuthenticateWithOauth.(:exercism, 'exercism-code', 'code-verifier')
+    Auth::AuthenticateWithOauth.(:exercism, 'exercism-code', code_verifier: 'code-verifier')
 
     assert User.exists?(exercism_id: '1530')
   end
@@ -218,7 +218,7 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   end
 
   def authenticate_with_exercism!
-    Auth::AuthenticateWithOauth.(:exercism, 'exercism-code', 'code-verifier')
+    Auth::AuthenticateWithOauth.(:exercism, 'exercism-code', code_verifier: 'code-verifier')
   end
 
   def authenticate_with_google!

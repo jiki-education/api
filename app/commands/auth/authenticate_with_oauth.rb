@@ -4,13 +4,9 @@ module Auth
 
     PROVIDERS = %i[google exercism].freeze
 
-    # token_args are passed straight through to the provider's Verify*Token
-    # command, so each provider can require whatever its flow needs
-    # (e.g. Google takes a code; Exercism takes a code + PKCE verifier).
-    def initialize(provider, *token_args)
-      @provider = provider
-      @token_args = token_args
-    end
+    # code_verifier is only used by providers whose flow requires PKCE
+    # (Exercism does, Google doesn't).
+    initialize_with :provider, :code, code_verifier: nil
 
     def call
       validate_provider!
@@ -20,8 +16,6 @@ module Auth
     end
 
     private
-    attr_reader :provider, :token_args
-
     def validate_provider!
       raise ArgumentError, "Unknown OAuth provider: #{provider}" unless PROVIDERS.include?(provider)
     end
@@ -81,7 +75,7 @@ module Auth
     end
 
     memoize
-    def payload = verify_command.(*token_args)
+    def payload = verify_command.(*[code, code_verifier].compact)
 
     def verify_command = "Auth::Verify#{provider.to_s.camelize}Token".constantize
 
