@@ -34,7 +34,9 @@ class User < ApplicationRecord
   validates :handle, presence: true, uniqueness: true
 
   # OAuth users have random passwords, so skip password validation for them
-  validates :password, presence: true, if: -> { new_record? && provider.nil? && encrypted_password.blank? }
+  validates :password, presence: true, if: -> { new_record? && encrypted_password.blank? && !uses_oauth? }
+
+  def uses_oauth? = exercism_id.present? || google_id.present?
 
   # Placeholder for communication preferences - will be implemented later
   def communication_preferences

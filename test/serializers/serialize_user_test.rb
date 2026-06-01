@@ -129,6 +129,30 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "IN", result[:premium_prices][:country_code]
   end
 
+  test "serializes uses_oauth: false for password-only user" do
+    user = create(:user)
+
+    result = SerializeUser.(user)
+
+    refute result[:uses_oauth]
+  end
+
+  test "serializes uses_oauth: true for user linked to Google" do
+    user = create(:user, google_id: "google-abc")
+
+    result = SerializeUser.(user)
+
+    assert result[:uses_oauth]
+  end
+
+  test "serializes uses_oauth: true for user linked to Exercism" do
+    user = create(:user, exercism_id: "1530")
+
+    result = SerializeUser.(user)
+
+    assert result[:uses_oauth]
+  end
+
   test "serializes pricing with USD for user without country" do
     user = create(:user)
 
