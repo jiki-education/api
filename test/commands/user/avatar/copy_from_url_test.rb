@@ -50,6 +50,22 @@ class User::Avatar::CopyFromUrlTest < ActiveSupport::TestCase
     User::Avatar::CopyFromUrl.(user, url)
   end
 
+  test "no-ops when upload rejects the file" do
+    user = create(:user)
+    url = "https://exercism.org/avatars/1530/0"
+
+    stub_request(:get, url).to_return(
+      status: 200,
+      body: "<svg></svg>",
+      headers: { 'Content-Type' => 'image/svg+xml' }
+    )
+
+    User::Avatar::Upload.expects(:call).raises(InvalidAvatarError.new("Invalid file type"))
+
+    # Should not raise - avatars are best-effort
+    User::Avatar::CopyFromUrl.(user, url)
+  end
+
   test "handles content type with charset suffix" do
     user = create(:user)
     url = "https://exercism.org/avatars/1530/0"

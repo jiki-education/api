@@ -11,6 +11,9 @@ class User::Avatar::CopyFromUrl
 
     begin
       User::Avatar::Upload.(user, uploaded_file)
+    rescue InvalidAvatarError, AvatarTooLargeError
+      # Best-effort: skip avatars the upload command rejects
+      # (unsupported content type, too large)
     ensure
       tempfile.close!
     end
@@ -47,5 +50,5 @@ class User::Avatar::CopyFromUrl
   def extension = CONTENT_TYPE_EXTENSIONS[content_type]
 
   memoize
-  def response = HTTParty.get(url)
+  def response = HTTParty.get(url, timeout: 10)
 end
