@@ -1,13 +1,12 @@
 class LLM::Exec
   include Mandate
-  include HTTParty
 
   initialize_with :service, :model, :prompt, :spi_endpoint, additional_params: {}, stream_channel: nil
 
   def call
     validate!
 
-    response = self.class.post(
+    response = HTTParty.post(
       llm_proxy_url,
       body: payload.to_json,
       headers: { 'Content-Type' => 'application/json' },

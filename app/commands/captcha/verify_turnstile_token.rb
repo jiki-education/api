@@ -1,7 +1,6 @@
 module Captcha
   class VerifyTurnstileToken
     include Mandate
-    include HTTParty
 
     SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify".freeze
 
@@ -10,7 +9,7 @@ module Captcha
     def call
       return false if token.blank?
 
-      response = self.class.post(
+      response = HTTParty.post(
         SITEVERIFY_URL,
         body: payload.to_json,
         headers: { "Content-Type" => "application/json" },
