@@ -726,10 +726,11 @@ Ruby 3.4.4
    bin/rails db:setup
    ```
 
-4. **Reset curriculum data (optional):**
+4. **Re-sync curriculum data (optional):**
    ```bash
-   # Delete and reload all levels and lessons from curriculum.json
-   ruby scripts/bootstrap_levels.rb --delete-existing
+   # Create/update levels, lessons, concepts, projects and badges from db/seeds/*.json.
+   # Idempotent and non-destructive - safe to run in any environment, including production.
+   bin/rails db:seed
    ```
 
 ## Development

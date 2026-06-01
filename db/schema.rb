@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_17_084654) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_01_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -95,9 +95,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_084654) do
     t.string "title", null: false
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
+    t.string "uuid", null: false
     t.index ["parent_concept_id"], name: "index_concepts_on_parent_concept_id"
     t.index ["slug"], name: "index_concepts_on_slug", unique: true
     t.index ["unlocked_by_lesson_id"], name: "index_concepts_on_unlocked_by_lesson_id"
+    t.index ["uuid"], name: "index_concepts_on_uuid", unique: true
   end
 
   create_table "courses", force: :cascade do |t|
@@ -172,11 +174,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_084654) do
     t.string "title", null: false
     t.string "type", null: false
     t.datetime "updated_at", null: false
+    t.string "uuid", null: false
     t.json "walkthrough_video_data"
     t.index ["level_id", "position"], name: "index_lessons_on_level_id_and_position", unique: true
     t.index ["level_id"], name: "index_lessons_on_level_id"
     t.index ["slug"], name: "index_lessons_on_slug", unique: true
     t.index ["type"], name: "index_lessons_on_type"
+    t.index ["uuid"], name: "index_lessons_on_uuid", unique: true
   end
 
   create_table "level_translations", force: :cascade do |t|
@@ -207,9 +211,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_084654) do
     t.string "slug", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.string "uuid", null: false
     t.index ["course_id", "position"], name: "index_levels_on_course_id_and_position", unique: true
     t.index ["course_id"], name: "index_levels_on_course_id"
     t.index ["slug"], name: "index_levels_on_slug", unique: true
+    t.index ["uuid"], name: "index_levels_on_uuid", unique: true
   end
 
   create_table "payments", force: :cascade do |t|
@@ -236,8 +242,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_17_084654) do
     t.string "title", null: false
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
+    t.string "uuid", null: false
     t.index ["slug"], name: "index_projects_on_slug", unique: true
     t.index ["unlocked_by_lesson_id"], name: "index_projects_on_unlocked_by_lesson_id"
+    t.index ["uuid"], name: "index_projects_on_uuid", unique: true
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|

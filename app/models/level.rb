@@ -12,6 +12,7 @@ class Level < ApplicationRecord
   self.translatable_fields = %i[title description milestone_summary milestone_content milestone_email_subject
                                 milestone_email_content_markdown]
 
+  validates :uuid, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
   validates :title, presence: true
   validates :description, presence: true
@@ -19,11 +20,16 @@ class Level < ApplicationRecord
   validates :milestone_content, presence: true
   validates :position, presence: true, uniqueness: { scope: :course_id }
 
+  before_validation :generate_uuid, on: :create
   before_validation :set_position, on: :create
 
   default_scope { order(:position) }
 
   private
+  def generate_uuid
+    self.uuid ||= SecureRandom.uuid
+  end
+
   def set_position
     return if position.present?
     return unless course

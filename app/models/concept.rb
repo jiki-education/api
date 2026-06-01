@@ -15,6 +15,7 @@ class Concept < ApplicationRecord
     inverse_of: :children
   has_many :children, class_name: 'Concept', foreign_key: :parent_concept_id, dependent: :nullify, inverse_of: :parent
 
+  validates :uuid, presence: true, uniqueness: true
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :description, presence: true
@@ -22,6 +23,7 @@ class Concept < ApplicationRecord
   validate :validate_no_circular_reference!, on: :update, if: :parent_concept_id_changed?
   validate :validate_depth_within_limit!, if: :parent_concept_id_changed?
 
+  before_validation :generate_uuid, on: :create
   before_validation :generate_slug, on: :create
   before_save :parse_markdown, if: :content_markdown_changed?
 
@@ -61,6 +63,10 @@ class Concept < ApplicationRecord
   end
 
   private
+  def generate_uuid
+    self.uuid ||= SecureRandom.uuid
+  end
+
   def generate_slug
     return if slug.present?
     return if title.blank?

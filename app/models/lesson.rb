@@ -19,6 +19,7 @@ class Lesson < ApplicationRecord
 
   def data = super || {}
 
+  validates :uuid, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
   validates :title, presence: true
   validates :description, presence: true
@@ -27,6 +28,7 @@ class Lesson < ApplicationRecord
   validates :position, presence: true, uniqueness: { scope: :level_id }
   validate :validate_data!
 
+  before_validation :generate_uuid, on: :create
   before_validation :set_position, on: :create
 
   default_scope { order(:position) }
@@ -34,6 +36,10 @@ class Lesson < ApplicationRecord
   def to_param = slug
 
   private
+  def generate_uuid
+    self.uuid ||= SecureRandom.uuid
+  end
+
   def set_position
     return if position.present?
 

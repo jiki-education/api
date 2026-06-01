@@ -1,5 +1,6 @@
 [
   {
+    "uuid": "08ce79bb-5382-4073-9323-860b185ce5ab",
     "slug": "structured-house",
     "title": "Structured House",
     "description": "Build a house where every piece is positioned with variables.",
@@ -7,6 +8,7 @@
     "unlocked_by_lesson_slug": "relational-traffic-lights"
   },
   {
+    "uuid": "3f30558a-910e-4ee0-b082-53b74b1a1383",
     "slug": "sprouting-flower",
     "title": "Sprouting Flower",
     "description": "Animate a flower growing from the ground.",
@@ -14,6 +16,7 @@
     "unlocked_by_lesson_slug": "sunset"
   },
   {
+    "uuid": "b8f18853-f6e3-467e-8bbe-23b87e4d6248",
     "slug": "rainbow-ball",
     "title": "Rainbow Ball",
     "description": "Animate a bouncing ball that leaves a colourful rainbow trail.",
@@ -21,6 +24,7 @@
     "unlocked_by_lesson_slug": "scroll-and-shoot"
   },
   {
+    "uuid": "9ac002cb-2df6-4366-91e5-b07eb0ba75b4",
     "slug": "caesar-cipher",
     "title": "Caesar Cipher",
     "description": "Encrypt a secret message using an ancient Roman cipher.",
@@ -28,6 +32,7 @@
     "unlocked_by_lesson_slug": "alphanumeric"
   },
   {
+    "uuid": "0265ba73-f152-4769-bfb4-1ab513fece97",
     "slug": "acronym",
     "title": "Acronym",
     "description": "Build acronyms from phrases and titles.",
@@ -35,6 +40,7 @@
     "unlocked_by_lesson_slug": "isbn-verifier"
   },
   {
+    "uuid": "6c959b93-4c3b-4db9-bc7e-3669ddf8c52d",
     "slug": "alien-detector",
     "title": "Alien Detector",
     "description": "Track and destroy every last alien in Space Invaders.",
@@ -42,6 +48,7 @@
     "unlocked_by_lesson_slug": "formal-dinner"
   },
   {
+    "uuid": "3f6e48c4-a057-46b1-a275-a60379a59e78",
     "slug": "matching-socks",
     "title": "Matching Socks",
     "description": "Find matching pairs of socks across two laundry baskets.",
@@ -49,6 +56,7 @@
     "unlocked_by_lesson_slug": "wordle-process-game"
   },
   {
+    "uuid": "a111a1b8-db46-4a6f-8a65-8afd3ef09bc9",
     "slug": "tic-tac-toe",
     "title": "Tic Tac Toe",
     "description": "Build the full game logic for Tic Tac Toe.",
@@ -56,6 +64,7 @@
     "unlocked_by_lesson_slug": "word-count"
   },
   {
+    "uuid": "68e6cb87-b334-453c-8b9f-22569c6a3d34",
     "slug": "sieve",
     "title": "Sieve of Eratosthenes",
     "description": "Find all the prime numbers using an ancient algorithm.",
@@ -63,6 +72,7 @@
     "unlocked_by_lesson_slug": "llm-response"
   },
   {
+    "uuid": "476187b1-82b0-4946-a6bf-8af0fcd9a38f",
     "slug": "emoji-collector",
     "title": "Emoji Collector",
     "description": "Navigate mazes collecting emojis and tallying up your haul.",
@@ -70,6 +80,7 @@
     "unlocked_by_lesson_slug": "nucleotide-count"
   },
   {
+    "uuid": "bceba34b-8cb6-4b47-b690-c7618106ebe0",
     "slug": "cityscape-skyline",
     "title": "Cityscape Skyline",
     "description": "Build a city skyline with rows of skyscrapers.",
