@@ -18,6 +18,7 @@ class UserLesson::Start
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
           user_course.update!(current_user_level: user_level)
+          track_first_ever_lesson_started!
         end
       end
     end
@@ -61,5 +62,20 @@ class UserLesson::Start
       where.not(completed_at: nil).
       count
     completed_count == level.lessons.count
+  end
+
+  def track_first_ever_lesson_started!
+    return unless UserLesson.where(user:).count == 1
+
+    Analytics::TrackEvent.defer(
+      user,
+      "first_lesson_started",
+      properties: {
+        lesson_id: lesson.id,
+        lesson_slug: lesson.slug,
+        level_id: lesson.level_id,
+        level_slug: lesson.level.slug
+      }
+    )
   end
 end

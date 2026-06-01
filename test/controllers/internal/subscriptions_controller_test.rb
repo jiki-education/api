@@ -33,6 +33,53 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "cs_secret_123", json["client_secret"]
   end
 
+  test "POST checkout_session defers checkout_started event with trigger from FE" do
+    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
+    session = mock
+    session.stubs(:client_secret).returns("cs_secret_x")
+    Stripe::CreateCheckoutSession.stubs(:call).returns(session)
+
+    Analytics::TrackEvent.expects(:defer).with(
+      @user,
+      "checkout_started",
+      properties: {
+        plan: "premium",
+        interval: "monthly",
+        currency: :usd,
+        trigger: "upgrade_cta_nav"
+      }
+    )
+
+    post internal_subscriptions_checkout_session_path,
+      params: { interval: "monthly", return_url: return_url, trigger: "upgrade_cta_nav" },
+      as: :json
+
+    assert_response :success
+  end
+
+  test "POST checkout_session omits trigger when not provided" do
+    return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
+    session = mock
+    session.stubs(:client_secret).returns("cs_secret_x")
+    Stripe::CreateCheckoutSession.stubs(:call).returns(session)
+
+    Analytics::TrackEvent.expects(:defer).with(
+      @user,
+      "checkout_started",
+      properties: {
+        plan: "premium",
+        interval: "annual",
+        currency: :usd
+      }
+    )
+
+    post internal_subscriptions_checkout_session_path,
+      params: { interval: "annual", return_url: return_url },
+      as: :json
+
+    assert_response :success
+  end
+
   test "POST checkout_session creates session for annual interval" do
     price_id = Jiki.config.stripe_premium_annual_price_id
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"

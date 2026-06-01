@@ -3,7 +3,7 @@ module Auth
     def create
       user = Auth::AuthenticateWithGoogle.(params[:code])
 
-      User::Bootstrap.(user) if user.previously_new_record?
+      User::Bootstrap.(user, "google", attribution: signup_attribution_params) if user.previously_new_record?
 
       sign_in_with_2fa_guard!(user)
     rescue InvalidGoogleTokenError => e

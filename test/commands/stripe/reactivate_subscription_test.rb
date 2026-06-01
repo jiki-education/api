@@ -50,4 +50,18 @@ class Stripe::ReactivateSubscriptionTest < ActiveSupport::TestCase
 
     assert_equal "Subscription is not scheduled for cancellation", error.message
   end
+
+  test "defers subscription_reactivated event on successful reactivation" do
+    user = create(:user)
+    user.data.update!(
+      stripe_subscription_id: "sub_123",
+      subscription_status: "cancelling",
+      subscription_valid_until: 1.month.from_now
+    )
+    ::Stripe::Subscription.stubs(:update).returns(mock)
+
+    Analytics::TrackEvent.expects(:defer).with(user, "subscription_reactivated")
+
+    Stripe::ReactivateSubscription.(user)
+  end
 end

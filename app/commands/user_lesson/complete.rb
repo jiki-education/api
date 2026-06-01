@@ -16,6 +16,7 @@ class UserLesson::Complete
 
       unlock_next_thing!
       handle_side_effects!
+      track_event!
     end
   end
 
@@ -56,6 +57,19 @@ class UserLesson::Complete
 
   def emit_project_unlocked_event!
     Current.add_event(:project_unlocked, { project: SerializeProject.(lesson.unlocked_project) })
+  end
+
+  def track_event!
+    properties = {
+      lesson_id: lesson.id,
+      lesson_slug: lesson.slug,
+      level_id: level.id,
+      level_slug: level.slug,
+      position: UserLesson.where(user:).where.not(completed_at: nil).count,
+      seconds_since_lesson_started: (Time.current - (user_lesson.started_at || Time.current)).to_i
+    }
+
+    Analytics::TrackEvent.defer(user, "lesson_completed", properties: properties)
   end
 
   memoize

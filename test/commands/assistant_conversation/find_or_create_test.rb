@@ -41,4 +41,31 @@ class AssistantConversation::FindOrCreateTest < ActiveSupport::TestCase
       AssistantConversation::FindOrCreate.(user, lesson)
     end
   end
+
+  test "defers assistant_conversation_started event on new conversation" do
+    user = create(:user)
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
+
+    Analytics::TrackEvent.expects(:defer).with(
+      user,
+      "assistant_conversation_started",
+      properties: {
+        context_type: "lesson",
+        context_id: lesson.id,
+        context_slug: "basic-movement"
+      }
+    )
+
+    AssistantConversation::FindOrCreate.(user, lesson)
+  end
+
+  test "does not fire event when finding existing conversation" do
+    user = create(:user)
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
+    create(:assistant_conversation, user:, context: lesson)
+
+    Analytics::TrackEvent.expects(:defer).never
+
+    AssistantConversation::FindOrCreate.(user, lesson)
+  end
 end

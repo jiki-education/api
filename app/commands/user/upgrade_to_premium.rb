@@ -1,7 +1,7 @@
 class User::UpgradeToPremium
   include Mandate
 
-  initialize_with :user
+  initialize_with :user, source: "stripe_checkout"
 
   def call
     user.with_lock do
@@ -12,6 +12,8 @@ class User::UpgradeToPremium
 
     award_badge!
     send_welcome_email!
+    User::Identify.defer(user)
+    track_event!
   end
 
   private
@@ -21,5 +23,9 @@ class User::UpgradeToPremium
 
   def send_welcome_email!
     PremiumMailer.welcome_to_premium(user).deliver_later
+  end
+
+  def track_event!
+    Analytics::TrackEvent.defer(user, "upgraded_to_premium", properties: { source: source })
   end
 end

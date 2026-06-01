@@ -41,6 +41,17 @@ class Internal::SubscriptionsController < Internal::BaseController
     # Create checkout session
     session = Stripe::CreateCheckoutSession.(current_user, price_id, return_url, currency)
 
+    Analytics::TrackEvent.defer(
+      current_user,
+      "checkout_started",
+      properties: {
+        plan: "premium",
+        interval: interval,
+        currency: currency,
+        trigger: params[:trigger]
+      }.compact
+    )
+
     # Stripe Ruby gem bug: client_secret is URL-encoded in the response
     # We need to decode it before sending to the frontend
     # See: https://github.com/stripe/stripe-ruby/issues (URL encoding bug)

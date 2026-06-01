@@ -416,4 +416,41 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
     assert_equal old_completed_at.to_i, user_level.reload.completed_at.to_i
   end
+
+  test "defers lesson_completed event on first completion" do
+    user = create(:user)
+    level = create(:level, slug: "level-1")
+    lesson = create(:lesson, :exercise, level:, slug: "lesson-1", position: 1)
+    # Second lesson prevents the level from auto-completing
+    create(:lesson, :exercise, level:, position: 2)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, started_at: 60.seconds.ago)
+
+    Analytics::TrackEvent.expects(:defer).with(
+      user,
+      "lesson_completed",
+      properties: {
+        lesson_id: lesson.id,
+        lesson_slug: "lesson-1",
+        level_id: level.id,
+        level_slug: "level-1",
+        position: 1,
+        seconds_since_lesson_started: 60
+      }
+    )
+
+    UserLesson::Complete.(user, lesson)
+  end
+
+  test "does not fire lesson_completed event on replay" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: 1.day.ago)
+
+    Analytics::TrackEvent.expects(:defer).never
+
+    UserLesson::Complete.(user, lesson)
+  end
 end

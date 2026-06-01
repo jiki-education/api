@@ -12,9 +12,9 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
 
     user_capture = nil
-    User::Bootstrap.expects(:call).with do |user|
+    User::Bootstrap.expects(:call).with do |user, provider, **|
       user_capture = user
-      user.email == 'newuser@gmail.com'
+      user.email == 'newuser@gmail.com' && provider == "google"
     end
 
     assert_difference 'User.count', 1 do

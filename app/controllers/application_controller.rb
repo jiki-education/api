@@ -122,6 +122,15 @@ class ApplicationController < ActionController::API
     render json: { message: I18n.t("api_messages.#{message_type}", **interpolations) }, status: status
   end
 
+  def signup_attribution_params
+    return nil unless params[:attribution].respond_to?(:permit)
+
+    params.require(:attribution).
+      permit(:referrer, :landing_path, :utm_source, :utm_medium, :utm_campaign, :captured_at).
+      to_h.
+      compact
+  end
+
   # Signs in the user, checking for 2FA requirement first.
   # For admin users, stores OTP session and renders 2FA response instead of signing in.
   # For non-admin users, signs in immediately and renders success response.
