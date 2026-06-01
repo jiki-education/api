@@ -1,12 +1,12 @@
 module Auth
-  class GoogleOauthController < ApplicationController
+  class ExercismOauthController < ApplicationController
     def create
-      user = Auth::AuthenticateWithOauth.(:google, params[:code])
+      user = Auth::AuthenticateWithOauth.(:exercism, params[:code], code_verifier: params[:code_verifier])
 
-      User::Bootstrap.(user, "google", attribution: signup_attribution_params) if user.previously_new_record?
+      User::Bootstrap.(user, "exercism", attribution: signup_attribution_params) if user.previously_new_record?
 
       sign_in_with_2fa_guard!(user)
-    rescue InvalidGoogleTokenError, InvalidOauthPayloadError => e
+    rescue InvalidExercismTokenError, InvalidOauthPayloadError => e
       render json: {
         error: {
           type: :invalid_token,

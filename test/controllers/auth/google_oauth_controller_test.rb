@@ -3,7 +3,7 @@ require "test_helper"
 class Auth::GoogleOauthControllerTest < ApplicationControllerTest
   test "POST google with valid code creates new user and signs them in" do
     google_payload = {
-      'sub' => 'google-user-id-123',
+      'id' => 'google-user-id-123',
       'email' => 'newuser@gmail.com',
       'name' => 'New User',
       'exp' => 1.hour.from_now.to_i
@@ -28,7 +28,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     refute_nil user
     assert_equal user.id, user_capture&.id
     assert_equal 'google-user-id-123', user.google_id
-    assert_equal 'google', user.provider
+    assert user.uses_oauth?
     assert user.confirmed?
     assert_equal 'newuser', user.handle
 
@@ -43,11 +43,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     existing_user = create(:user,
       email: 'existing@gmail.com',
       google_id: 'google-user-id-456',
-      provider: 'google',
       confirmed_at: Time.current)
 
     google_payload = {
-      'sub' => 'google-user-id-456',
+      'id' => 'google-user-id-456',
       'email' => 'existing@gmail.com',
       'name' => 'Existing User',
       'exp' => 1.hour.from_now.to_i
@@ -69,10 +68,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
   end
 
   test "POST google links existing email user to Google account" do
-    existing_user = create(:user, email: 'existing@gmail.com', provider: nil, google_id: nil)
+    existing_user = create(:user, email: 'existing@gmail.com', google_id: nil)
 
     google_payload = {
-      'sub' => 'google-user-id-789',
+      'id' => 'google-user-id-789',
       'email' => 'existing@gmail.com',
       'name' => 'Existing User',
       'exp' => 1.hour.from_now.to_i
@@ -91,13 +90,31 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     # Check user was linked to Google
     existing_user.reload
     assert_equal 'google-user-id-789', existing_user.google_id
-    assert_equal 'google', existing_user.provider
+    assert existing_user.uses_oauth?
     assert existing_user.confirmed?
 
     assert_json_response({
       status: "success",
       user: SerializeUser.(existing_user)
     })
+  end
+
+  test "POST google with malformed payload returns unauthorized" do
+    # Payload missing the id - guarded by AuthenticateWithOauth
+    Auth::VerifyGoogleToken.stubs(:call).returns({
+      'id' => nil,
+      'email' => 'someone@gmail.com',
+      'name' => 'Someone'
+    })
+
+    assert_no_difference 'User.count' do
+      post auth_google_path, params: { code: 'valid-code' }, as: :json
+    end
+
+    assert_response :unauthorized
+
+    json = response.parsed_body
+    assert_equal 'invalid_token', json['error']['type']
   end
 
   test "POST google with invalid code returns unauthorized" do
@@ -136,7 +153,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     create(:user, handle: 'testuser')
 
     google_payload = {
-      'sub' => 'google-user-id-collision',
+      'id' => 'google-user-id-collision',
       'email' => 'testuser@gmail.com',
       'name' => 'Test User',
       'exp' => 1.hour.from_now.to_i
@@ -174,13 +191,12 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     admin = create(:user, :admin,
       email: 'admin@gmail.com',
       google_id: 'google-admin-id',
-      provider: 'google',
       confirmed_at: Time.current)
     User::GenerateOtpSecret.(admin)
     User::EnableOtp.(admin)
 
     google_payload = {
-      'sub' => 'google-admin-id',
+      'id' => 'google-admin-id',
       'email' => 'admin@gmail.com',
       'name' => 'Admin User',
       'exp' => 1.hour.from_now.to_i
@@ -202,11 +218,10 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     create(:user, :admin,
       email: 'newadmin@gmail.com',
       google_id: 'google-newadmin-id',
-      provider: 'google',
       confirmed_at: Time.current)
 
     google_payload = {
-      'sub' => 'google-newadmin-id',
+      'id' => 'google-newadmin-id',
       'email' => 'newadmin@gmail.com',
       'name' => 'New Admin',
       'exp' => 1.hour.from_now.to_i

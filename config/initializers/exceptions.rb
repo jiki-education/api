@@ -27,6 +27,12 @@ end
 # Google OAuth errors
 class InvalidGoogleTokenError < RuntimeError; end
 
+# Exercism OAuth errors
+class InvalidExercismTokenError < RuntimeError; end
+
+# Shared OAuth errors
+class InvalidOauthPayloadError < RuntimeError; end
+
 # User progression errors
 class UserCourseNotFoundError < RuntimeError; end
 class LanguageAlreadyChosenError < RuntimeError; end

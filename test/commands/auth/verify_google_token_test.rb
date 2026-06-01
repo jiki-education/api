@@ -8,7 +8,8 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
       'id' => 'google-user-123',
       'email' => 'user@gmail.com',
       'name' => 'Test User',
-      'verified_email' => true
+      'verified_email' => true,
+      'picture' => 'https://lh3.googleusercontent.com/photo.jpg'
     }
 
     stub_token_exchange_success(code, access_token)
@@ -16,10 +17,11 @@ class Auth::VerifyGoogleTokenTest < ActiveSupport::TestCase
 
     result = Auth::VerifyGoogleToken.(code)
 
-    assert_equal 'google-user-123', result['sub']
+    assert_equal 'google-user-123', result['id']
     assert_equal 'user@gmail.com', result['email']
     assert_equal 'Test User', result['name']
     assert result['email_verified']
+    assert_equal 'https://lh3.googleusercontent.com/photo.jpg', result['avatar_url']
   end
 
   test "raises InvalidGoogleTokenError for invalid authorization code" do
