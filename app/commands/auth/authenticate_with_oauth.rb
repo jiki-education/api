@@ -2,16 +2,36 @@ module Auth
   class AuthenticateWithOauth
     include Mandate
 
-    # The payload is a normalized identity hash produced by the provider's
-    # Verify*Token command: id, email, name, handle (optional),
-    # avatar_url (optional).
-    initialize_with :provider, :payload
+    PROVIDERS = %i[google exercism].freeze
+
+    # token_args are passed straight through to the provider's Verify*Token
+    # command, so each provider can require whatever its flow needs
+    # (e.g. Google takes a code; Exercism takes a code + PKCE verifier).
+    def initialize(provider, *token_args)
+      @provider = provider
+      @token_args = token_args
+    end
 
     def call
+      validate_provider!
+      validate_payload!
+
       find_by_provider_id! || find_by_email! || create_user!
     end
 
     private
+    attr_reader :provider, :token_args
+
+    def validate_provider!
+      raise ArgumentError, "Unknown OAuth provider: #{provider}" unless PROVIDERS.include?(provider)
+    end
+
+    # Guard against malformed provider payloads. Without this, a nil id
+    # would make find_by_provider_id! match an arbitrary non-OAuth user.
+    def validate_payload!
+      raise InvalidOauthPayloadError if id.blank? || email.blank?
+    end
+
     def find_by_provider_id!
       User.find_by(id_column => id)
     end
@@ -59,6 +79,11 @@ module Auth
     def initial_handle
       preferred_handle.to_s.parameterize.presence || User::GenerateHandle.(email)
     end
+
+    memoize
+    def payload = verify_command.(*token_args)
+
+    def verify_command = "Auth::Verify#{provider.to_s.camelize}Token".constantize
 
     def id_column = :"#{provider}_id"
 

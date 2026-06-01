@@ -1,16 +1,58 @@
 require "test_helper"
 
 class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
+  test "raises ArgumentError for unknown provider" do
+    assert_raises(ArgumentError) do
+      Auth::AuthenticateWithOauth.(:facebook, 'some-code')
+    end
+  end
+
+  test "verifies Google tokens with the Google command" do
+    payload = { 'id' => 'google-123', 'email' => 'user@gmail.com', 'name' => 'Test User' }
+
+    Auth::VerifyGoogleToken.expects(:call).with('google-token').returns(payload)
+
+    user = Auth::AuthenticateWithOauth.(:google, 'google-token')
+
+    assert_equal 'google-123', user.google_id
+  end
+
+  test "verifies Exercism tokens with the Exercism command, passing all token args" do
+    payload = { 'id' => '1530', 'email' => 'ihid@exercism.org', 'name' => 'Jeremy Walker' }
+
+    Auth::VerifyExercismToken.expects(:call).with('exercism-code', 'code-verifier').returns(payload)
+
+    Auth::AuthenticateWithOauth.(:exercism, 'exercism-code', 'code-verifier')
+
+    assert User.exists?(exercism_id: '1530')
+  end
+
+  test "raises InvalidOauthPayloadError when id is blank" do
+    stub_exercism_payload({ 'id' => nil, 'email' => 'someone@exercism.org', 'name' => 'Someone' })
+
+    assert_raises(InvalidOauthPayloadError) do
+      authenticate_with_exercism!
+    end
+  end
+
+  test "raises InvalidOauthPayloadError when email is blank" do
+    stub_exercism_payload({ 'id' => '1530', 'email' => '', 'name' => 'Someone' })
+
+    assert_raises(InvalidOauthPayloadError) do
+      authenticate_with_exercism!
+    end
+  end
+
   test "creates new user" do
-    payload = {
+    stub_exercism_payload({
       'id' => '1530',
       'email' => 'newuser@exercism.org',
       'name' => 'New User',
       'handle' => 'iHiD'
-    }
+    })
 
     assert_difference 'User.count', 1 do
-      user = Auth::AuthenticateWithOauth.(:exercism, payload)
+      user = authenticate_with_exercism!
 
       assert_equal 'newuser@exercism.org', user.email
       assert_equal 'New User', user.name
@@ -22,18 +64,18 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   end
 
   test "stores the id against the column for the given provider" do
-    payload = { 'id' => 'google-123', 'email' => 'user@gmail.com', 'name' => 'Google User' }
+    stub_google_payload({ 'id' => 'google-123', 'email' => 'user@gmail.com', 'name' => 'Google User' })
 
-    user = Auth::AuthenticateWithOauth.(:google, payload)
+    user = authenticate_with_google!
 
     assert_equal 'google-123', user.google_id
     assert_nil user.exercism_id
   end
 
   test "generates handle from email when no handle in payload" do
-    payload = { 'id' => 'google-123', 'email' => 'someone@gmail.com', 'name' => 'Someone' }
+    stub_google_payload({ 'id' => 'google-123', 'email' => 'someone@gmail.com', 'name' => 'Someone' })
 
-    user = Auth::AuthenticateWithOauth.(:google, payload)
+    user = authenticate_with_google!
 
     assert_equal 'someone', user.handle
   end
@@ -41,23 +83,23 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   test "falls back to generated handle when payload handle is taken" do
     create(:user, handle: 'ihid')
 
-    payload = {
+    stub_exercism_payload({
       'id' => '1530',
       'email' => 'jeremy@exercism.org',
       'name' => 'Jeremy Walker',
       'handle' => 'iHiD'
-    }
+    })
 
-    user = Auth::AuthenticateWithOauth.(:exercism, payload)
+    user = authenticate_with_exercism!
 
     # Falls back to generating a handle from the email
     assert_equal 'jeremy', user.handle
   end
 
   test "handles email with special characters in handle generation" do
-    payload = { 'id' => 'google-123', 'email' => 'test.user+tag@gmail.com', 'name' => 'Test User' }
+    stub_google_payload({ 'id' => 'google-123', 'email' => 'test.user+tag@gmail.com', 'name' => 'Test User' })
 
-    user = Auth::AuthenticateWithOauth.(:google, payload)
+    user = authenticate_with_google!
 
     # parameterize should convert special chars
     assert_equal 'test-user-tag', user.handle
@@ -66,9 +108,9 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   test "appends suffix when generated handle is also taken" do
     create(:user, handle: 'testuser')
 
-    payload = { 'id' => 'google-123', 'email' => 'testuser@gmail.com', 'name' => 'Test User' }
+    stub_google_payload({ 'id' => 'google-123', 'email' => 'testuser@gmail.com', 'name' => 'Test User' })
 
-    user = Auth::AuthenticateWithOauth.(:google, payload)
+    user = authenticate_with_google!
 
     assert user.handle.start_with?('testuser')
     refute_equal 'testuser', user.handle
@@ -78,10 +120,10 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   test "finds existing user by provider id" do
     existing_user = create(:user, email: 'existing@exercism.org', exercism_id: '456')
 
-    payload = { 'id' => '456', 'email' => 'existing@exercism.org', 'name' => 'Existing User' }
+    stub_exercism_payload({ 'id' => '456', 'email' => 'existing@exercism.org', 'name' => 'Existing User' })
 
     assert_no_difference 'User.count' do
-      user = Auth::AuthenticateWithOauth.(:exercism, payload)
+      user = authenticate_with_exercism!
 
       assert_equal existing_user.id, user.id
     end
@@ -93,10 +135,10 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
       exercism_id: nil,
       confirmed_at: nil)
 
-    payload = { 'id' => '789', 'email' => 'existing@exercism.org', 'name' => 'Existing User' }
+    stub_exercism_payload({ 'id' => '789', 'email' => 'existing@exercism.org', 'name' => 'Existing User' })
 
     assert_no_difference 'User.count' do
-      user = Auth::AuthenticateWithOauth.(:exercism, payload)
+      user = authenticate_with_exercism!
 
       assert_equal existing_user.id, user.id
       assert_equal '789', user.exercism_id
@@ -108,9 +150,9 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   test "linking by email is additive across providers" do
     existing_user = create(:user, email: 'both@example.com', google_id: 'google-123')
 
-    payload = { 'id' => '1530', 'email' => 'both@example.com', 'name' => 'Both User' }
+    stub_exercism_payload({ 'id' => '1530', 'email' => 'both@example.com', 'name' => 'Both User' })
 
-    user = Auth::AuthenticateWithOauth.(:exercism, payload)
+    user = authenticate_with_exercism!
 
     assert_equal existing_user.id, user.id
     assert_equal 'google-123', user.google_id
@@ -118,51 +160,68 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
   end
 
   test "defers avatar copy for new user with avatar_url" do
-    payload = {
+    stub_exercism_payload({
       'id' => '1530',
       'email' => 'avatar@exercism.org',
       'name' => 'Avatar User',
       'avatar_url' => 'https://exercism.org/avatars/1530/0'
-    }
+    })
 
     User::Avatar::CopyFromUrl.expects(:defer).with do |user, url|
       user.email == 'avatar@exercism.org' && url == 'https://exercism.org/avatars/1530/0'
     end
 
-    Auth::AuthenticateWithOauth.(:exercism, payload)
+    authenticate_with_exercism!
   end
 
   test "does not defer avatar copy when avatar_url is blank" do
-    payload = { 'id' => '1530', 'email' => 'noavatar@exercism.org', 'name' => 'No Avatar' }
+    stub_exercism_payload({ 'id' => '1530', 'email' => 'noavatar@exercism.org', 'name' => 'No Avatar' })
 
     User::Avatar::CopyFromUrl.expects(:defer).never
 
-    Auth::AuthenticateWithOauth.(:exercism, payload)
+    authenticate_with_exercism!
   end
 
   test "does not defer avatar copy when linking existing user by email" do
     create(:user, email: 'existing@exercism.org', exercism_id: nil)
 
-    payload = {
+    stub_exercism_payload({
       'id' => '789',
       'email' => 'existing@exercism.org',
       'name' => 'Existing User',
       'avatar_url' => 'https://exercism.org/avatars/789/0'
-    }
+    })
 
     User::Avatar::CopyFromUrl.expects(:defer).never
 
-    Auth::AuthenticateWithOauth.(:exercism, payload)
+    authenticate_with_exercism!
   end
 
   test "generates random password for new users" do
-    payload = { 'id' => '1530', 'email' => 'password@exercism.org', 'name' => 'Password Test' }
+    stub_exercism_payload({ 'id' => '1530', 'email' => 'password@exercism.org', 'name' => 'Password Test' })
 
-    user = Auth::AuthenticateWithOauth.(:exercism, payload)
+    user = authenticate_with_exercism!
 
     # User should have an encrypted password (random generated)
     assert user.encrypted_password.present?
     # Should not be able to login with empty password
     refute user.valid_password?("")
+  end
+
+  private
+  def stub_exercism_payload(payload)
+    Auth::VerifyExercismToken.stubs(:call).returns(payload)
+  end
+
+  def stub_google_payload(payload)
+    Auth::VerifyGoogleToken.stubs(:call).returns(payload)
+  end
+
+  def authenticate_with_exercism!
+    Auth::AuthenticateWithOauth.(:exercism, 'exercism-code', 'code-verifier')
+  end
+
+  def authenticate_with_google!
+    Auth::AuthenticateWithOauth.(:google, 'google-token')
   end
 end

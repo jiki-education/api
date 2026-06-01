@@ -1,12 +1,12 @@
 module Auth
   class ExercismOauthController < ApplicationController
     def create
-      user = Auth::AuthenticateWithExercism.(params[:code], params[:code_verifier])
+      user = Auth::AuthenticateWithOauth.(:exercism, params[:code], params[:code_verifier])
 
       User::Bootstrap.(user, "exercism", attribution: signup_attribution_params) if user.previously_new_record?
 
       sign_in_with_2fa_guard!(user)
-    rescue InvalidExercismTokenError => e
+    rescue InvalidExercismTokenError, InvalidOauthPayloadError => e
       render json: {
         error: {
           type: :invalid_token,

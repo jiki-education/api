@@ -99,6 +99,24 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     })
   end
 
+  test "POST google with malformed payload returns unauthorized" do
+    # Payload missing the id - guarded by AuthenticateWithOauth
+    Auth::VerifyGoogleToken.stubs(:call).returns({
+      'id' => nil,
+      'email' => 'someone@gmail.com',
+      'name' => 'Someone'
+    })
+
+    assert_no_difference 'User.count' do
+      post auth_google_path, params: { code: 'valid-code' }, as: :json
+    end
+
+    assert_response :unauthorized
+
+    json = response.parsed_body
+    assert_equal 'invalid_token', json['error']['type']
+  end
+
   test "POST google with invalid code returns unauthorized" do
     Auth::VerifyGoogleToken.stubs(:call).raises(
       InvalidGoogleTokenError.new("Invalid Google token")

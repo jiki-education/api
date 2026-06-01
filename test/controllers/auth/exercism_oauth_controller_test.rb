@@ -102,6 +102,24 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     })
   end
 
+  test "POST exercism with malformed payload returns unauthorized" do
+    # Payload missing the id - guarded by AuthenticateWithOauth
+    Auth::VerifyExercismToken.stubs(:call).returns({
+      'id' => nil,
+      'email' => 'someone@exercism.org',
+      'name' => 'Someone'
+    })
+
+    assert_no_difference 'User.count' do
+      post auth_exercism_path, params: { code: 'valid-code', code_verifier: 'code-verifier' }, as: :json
+    end
+
+    assert_response :unauthorized
+
+    json = response.parsed_body
+    assert_equal 'invalid_token', json['error']['type']
+  end
+
   test "POST exercism with invalid code returns unauthorized" do
     Auth::VerifyExercismToken.stubs(:call).raises(
       InvalidExercismTokenError.new("Invalid Exercism token")
