@@ -1,7 +1,11 @@
 class Auth::SessionsController < Devise::SessionsController
+  include TurnstileVerifiable
+
   respond_to :json
 
   OTP_SESSION_TIMEOUT = 5.minutes
+
+  before_action :verify_turnstile!, only: :create
 
   # Override create to intercept admin logins for 2FA
   def create

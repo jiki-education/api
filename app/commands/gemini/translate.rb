@@ -1,15 +1,14 @@
 class Gemini::Translate
   include Mandate
-  include HTTParty
 
-  base_uri 'https://generativelanguage.googleapis.com'
+  API_BASE_URL = 'https://generativelanguage.googleapis.com'.freeze
 
   initialize_with :prompt, :schema, model: :flash
 
   def call
     validate!
 
-    response = self.class.post(
+    response = HTTParty.post(
       api_endpoint,
       body: request_payload.to_json,
       headers: {
@@ -42,7 +41,7 @@ class Gemini::Translate
   end
 
   memoize
-  def api_endpoint = "/v1beta/models/#{model_name}:generateContent"
+  def api_endpoint = "#{API_BASE_URL}/v1beta/models/#{model_name}:generateContent"
 
   memoize
   def request_payload

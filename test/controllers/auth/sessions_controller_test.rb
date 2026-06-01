@@ -6,12 +6,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
   end
 
   test "POST login returns user data with valid credentials" do
-    post user_session_path, params: {
-      user: {
-        email: "test@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :ok
 
@@ -23,23 +20,17 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
   end
 
   test "POST login returns error with invalid password" do
-    post user_session_path, params: {
-      user: {
-        email: "test@example.com",
-        password: "wrongpassword"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "wrongpassword" }
+    ), as: :json
 
     assert_json_error(:unauthorized, error_type: :invalid_credentials)
   end
 
   test "POST login returns error with non-existent email" do
-    post user_session_path, params: {
-      user: {
-        email: "nonexistent@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "nonexistent@example.com", password: "password123" }
+    ), as: :json
 
     assert_json_error(:unauthorized, error_type: :invalid_credentials)
   end
@@ -47,12 +38,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
   test "POST login returns unconfirmed error for unconfirmed user" do
     create(:user, :unconfirmed, email: "unconfirmed@example.com", password: "password123")
 
-    post user_session_path, params: {
-      user: {
-        email: "unconfirmed@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "unconfirmed@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :unauthorized
 
@@ -64,12 +52,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
   test "POST login does not create session for unconfirmed user" do
     create(:user, :unconfirmed, email: "unconfirmed@example.com", password: "password123")
 
-    post user_session_path, params: {
-      user: {
-        email: "unconfirmed@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "unconfirmed@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :unauthorized
 
@@ -80,12 +65,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
 
   test "DELETE logout clears session" do
     # Login first
-    post user_session_path, params: {
-      user: {
-        email: "test@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :ok
 
@@ -106,16 +88,33 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_response :unauthorized
   end
 
+  # Turnstile tests
+  test "POST login returns 403 invalid_captcha when token missing" do
+    post user_session_path, params: {
+      user: { email: "test@example.com", password: "password123" }
+    }, as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
+  test "POST login returns 403 invalid_captcha when siteverify rejects token" do
+    WebMock.stub_request(:post, Captcha::VerifyTurnstileToken::SITEVERIFY_URL).
+      to_return(status: 200, body: { success: false }.to_json)
+
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "password123" }
+    ), as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
   # 2FA Tests
   test "POST login for admin without 2FA setup returns 2fa_setup_required" do
     admin = create(:user, :admin, email: "admin@example.com", password: "password123")
 
-    post user_session_path, params: {
-      user: {
-        email: "admin@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "admin@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :ok
 
@@ -138,12 +137,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     User::GenerateOtpSecret.(admin)
     User::EnableOtp.(admin)
 
-    post user_session_path, params: {
-      user: {
-        email: "admin@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "admin@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :ok
 
@@ -162,12 +158,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     User::EnableOtp.(admin)
 
     # Login - should return 2fa_required
-    post user_session_path, params: {
-      user: {
-        email: "admin@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "admin@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :ok
     assert_equal "2fa_required", response.parsed_body["status"]
@@ -178,12 +171,9 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
   end
 
   test "POST login for non-admin signs in normally" do
-    post user_session_path, params: {
-      user: {
-        email: "test@example.com",
-        password: "password123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "password123" }
+    ), as: :json
 
     assert_response :ok
     assert_json_response({

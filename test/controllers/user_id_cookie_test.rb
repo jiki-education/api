@@ -6,9 +6,9 @@ class UserIdCookieTest < ApplicationControllerTest
   end
 
   test "cookie is set when user logs in" do
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
 
     assert_response :ok
     assert_cookie_set
@@ -16,9 +16,9 @@ class UserIdCookieTest < ApplicationControllerTest
 
   test "cookie is cleared when user logs out" do
     # Login first
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
     assert_response :ok
     assert_cookie_set
 
@@ -52,9 +52,9 @@ class UserIdCookieTest < ApplicationControllerTest
     # hitting logout must still send a deletion cookie so the client clears it.
     # Get a real signed cookie with the right domain by logging in, then
     # discard the session so we're in the "stale cookie, no session" state.
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
     assert_response :ok
     set_cookie = jiki_user_id_cookie
     set_domain = set_cookie[/domain=([^;]+)/, 1]
@@ -77,9 +77,9 @@ class UserIdCookieTest < ApplicationControllerTest
 
   test "cookie is cleared on 401 from authenticated endpoint" do
     # First, log in to get a real signed cookie with the right domain set.
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
     assert_response :ok
     set_cookie = jiki_user_id_cookie
     set_domain = set_cookie[/domain=([^;]+)/, 1]
@@ -114,18 +114,18 @@ class UserIdCookieTest < ApplicationControllerTest
   end
 
   test "cookie is not set when login fails with wrong password" do
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "wrongpassword" }
-    }, as: :json
+    ), as: :json
 
     assert_response :unauthorized
     assert_cookie_cleared
   end
 
   test "cookie is not set when login fails with non-existent email" do
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "nonexistent@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
 
     assert_response :unauthorized
     assert_cookie_cleared
@@ -134,9 +134,9 @@ class UserIdCookieTest < ApplicationControllerTest
   test "cookie is not set for unconfirmed user login attempt" do
     create(:user, :unconfirmed, email: "unconfirmed@example.com", password: "password123")
 
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "unconfirmed@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
 
     assert_response :unauthorized
     assert_cookie_cleared
@@ -150,9 +150,9 @@ class UserIdCookieTest < ApplicationControllerTest
   end
 
   test "cookie has httponly attribute" do
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
 
     assert_response :ok
     cookie = jiki_user_id_cookie
@@ -161,9 +161,9 @@ class UserIdCookieTest < ApplicationControllerTest
 
   test "cookie persists across authenticated requests" do
     # Login
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }
-    }, as: :json
+    ), as: :json
     assert_response :ok
     assert_cookie_set
 
