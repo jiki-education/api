@@ -3,7 +3,7 @@ require "test_helper"
 class Auth::GoogleOauthControllerTest < ApplicationControllerTest
   test "POST google with valid code creates new user and signs them in" do
     google_payload = {
-      'sub' => 'google-user-id-123',
+      'id' => 'google-user-id-123',
       'email' => 'newuser@gmail.com',
       'name' => 'New User',
       'exp' => 1.hour.from_now.to_i
@@ -46,7 +46,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
       confirmed_at: Time.current)
 
     google_payload = {
-      'sub' => 'google-user-id-456',
+      'id' => 'google-user-id-456',
       'email' => 'existing@gmail.com',
       'name' => 'Existing User',
       'exp' => 1.hour.from_now.to_i
@@ -71,7 +71,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     existing_user = create(:user, email: 'existing@gmail.com', google_id: nil)
 
     google_payload = {
-      'sub' => 'google-user-id-789',
+      'id' => 'google-user-id-789',
       'email' => 'existing@gmail.com',
       'name' => 'Existing User',
       'exp' => 1.hour.from_now.to_i
@@ -135,7 +135,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     create(:user, handle: 'testuser')
 
     google_payload = {
-      'sub' => 'google-user-id-collision',
+      'id' => 'google-user-id-collision',
       'email' => 'testuser@gmail.com',
       'name' => 'Test User',
       'exp' => 1.hour.from_now.to_i
@@ -178,7 +178,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     User::EnableOtp.(admin)
 
     google_payload = {
-      'sub' => 'google-admin-id',
+      'id' => 'google-admin-id',
       'email' => 'admin@gmail.com',
       'name' => 'Admin User',
       'exp' => 1.hour.from_now.to_i
@@ -203,7 +203,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
       confirmed_at: Time.current)
 
     google_payload = {
-      'sub' => 'google-newadmin-id',
+      'id' => 'google-newadmin-id',
       'email' => 'newadmin@gmail.com',
       'name' => 'New Admin',
       'exp' => 1.hour.from_now.to_i

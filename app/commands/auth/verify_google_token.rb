@@ -6,10 +6,11 @@ module Auth
 
     def call
       {
-        'sub' => user_info['id'],
+        'id' => user_info['id'],
         'email' => user_info['email'],
         'name' => user_info['name'],
-        'email_verified' => user_info['verified_email']
+        'email_verified' => user_info['verified_email'],
+        'avatar_url' => user_info['picture']
       }
     rescue StandardError => e
       raise InvalidGoogleTokenError, "Google token validation failed: #{e.message}"
