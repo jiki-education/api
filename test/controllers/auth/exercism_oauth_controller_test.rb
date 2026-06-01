@@ -29,7 +29,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     refute_nil user
     assert_equal user.id, user_capture&.id
     assert_equal '1530', user.exercism_id
-    assert_equal 'exercism', user.provider
+    assert user.uses_oauth?
     assert user.confirmed?
     assert_equal 'newuser', user.handle
 
@@ -44,7 +44,6 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     existing_user = create(:user,
       email: 'existing@exercism.org',
       exercism_id: '456',
-      provider: 'exercism',
       confirmed_at: Time.current)
 
     exercism_payload = {
@@ -71,7 +70,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
   end
 
   test "POST exercism links existing email user to Exercism account" do
-    existing_user = create(:user, email: 'existing@exercism.org', provider: nil, exercism_id: nil)
+    existing_user = create(:user, email: 'existing@exercism.org', exercism_id: nil)
 
     exercism_payload = {
       'id' => '789',
@@ -94,7 +93,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     # Check user was linked to Exercism
     existing_user.reload
     assert_equal '789', existing_user.exercism_id
-    assert_equal 'exercism', existing_user.provider
+    assert existing_user.uses_oauth?
     assert existing_user.confirmed?
 
     assert_json_response({
@@ -176,7 +175,6 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     admin = create(:user, :admin,
       email: 'admin@exercism.org',
       exercism_id: 'admin-id',
-      provider: 'exercism',
       confirmed_at: Time.current)
     User::GenerateOtpSecret.(admin)
     User::EnableOtp.(admin)
@@ -205,7 +203,6 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     create(:user, :admin,
       email: 'newadmin@exercism.org',
       exercism_id: 'newadmin-id',
-      provider: 'exercism',
       confirmed_at: Time.current)
 
     exercism_payload = {

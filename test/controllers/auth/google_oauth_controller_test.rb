@@ -28,7 +28,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     refute_nil user
     assert_equal user.id, user_capture&.id
     assert_equal 'google-user-id-123', user.google_id
-    assert_equal 'google', user.provider
+    assert user.uses_oauth?
     assert user.confirmed?
     assert_equal 'newuser', user.handle
 
@@ -43,7 +43,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     existing_user = create(:user,
       email: 'existing@gmail.com',
       google_id: 'google-user-id-456',
-      provider: 'google',
       confirmed_at: Time.current)
 
     google_payload = {
@@ -69,7 +68,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
   end
 
   test "POST google links existing email user to Google account" do
-    existing_user = create(:user, email: 'existing@gmail.com', provider: nil, google_id: nil)
+    existing_user = create(:user, email: 'existing@gmail.com', google_id: nil)
 
     google_payload = {
       'sub' => 'google-user-id-789',
@@ -91,7 +90,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     # Check user was linked to Google
     existing_user.reload
     assert_equal 'google-user-id-789', existing_user.google_id
-    assert_equal 'google', existing_user.provider
+    assert existing_user.uses_oauth?
     assert existing_user.confirmed?
 
     assert_json_response({
@@ -174,7 +173,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     admin = create(:user, :admin,
       email: 'admin@gmail.com',
       google_id: 'google-admin-id',
-      provider: 'google',
       confirmed_at: Time.current)
     User::GenerateOtpSecret.(admin)
     User::EnableOtp.(admin)
@@ -202,7 +200,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     create(:user, :admin,
       email: 'newadmin@gmail.com',
       google_id: 'google-newadmin-id',
-      provider: 'google',
       confirmed_at: Time.current)
 
     google_payload = {

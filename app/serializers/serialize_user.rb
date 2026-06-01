@@ -10,7 +10,7 @@ class SerializeUser
       email: user.email,
       name: user.name,
       avatar_url: user.avatar_url,
-      provider: user.provider,
+      uses_oauth: user.uses_oauth?,
       email_confirmed: user.confirmed?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data,

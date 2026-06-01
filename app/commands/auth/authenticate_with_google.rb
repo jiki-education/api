@@ -18,7 +18,6 @@ module Auth
         # Link existing account to Google and confirm email (Google verified it)
         user.update!(
           google_id:,
-          provider: 'google',
           confirmed_at: Time.current
         )
       end
@@ -34,7 +33,6 @@ module Auth
           email:,
           name:,
           google_id:,
-          provider: 'google',
           confirmed_at: Time.current, # Google verified the email
           password: SecureRandom.hex(32), # Random password (won't be used)
           handle: User::GenerateHandle.(email)

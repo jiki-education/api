@@ -18,7 +18,6 @@ module Auth
         # Link existing account to Exercism and confirm email (Exercism verified it)
         user.update!(
           exercism_id:,
-          provider: 'exercism',
           confirmed_at: Time.current
         )
       end
@@ -37,7 +36,6 @@ module Auth
           email:,
           name:,
           exercism_id:,
-          provider: 'exercism',
           confirmed_at: Time.current, # Exercism verified the email
           password: SecureRandom.hex(32), # Random password (won't be used)
           handle:

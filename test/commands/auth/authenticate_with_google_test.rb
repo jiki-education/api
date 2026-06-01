@@ -15,7 +15,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
       assert_equal 'newuser@gmail.com', user.email
       assert_equal 'New User', user.name
       assert_equal 'google-123', user.google_id
-      assert_equal 'google', user.provider
+      assert user.uses_oauth?
       assert user.confirmed?
       assert_equal 'newuser', user.handle
     end
@@ -24,8 +24,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
   test "finds existing user by google_id" do
     existing_user = create(:user,
       email: 'existing@gmail.com',
-      google_id: 'google-456',
-      provider: 'google')
+      google_id: 'google-456')
 
     google_payload = {
       'sub' => 'google-456',
@@ -46,7 +45,6 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
     existing_user = create(:user,
       email: 'existing@gmail.com',
       google_id: nil,
-      provider: nil,
       confirmed_at: nil)
 
     google_payload = {
@@ -61,7 +59,7 @@ class Auth::AuthenticateWithGoogleTest < ActiveSupport::TestCase
       user = Auth::AuthenticateWithGoogle.('google-token')
       assert_equal existing_user.id, user.id
       assert_equal 'google-789', user.google_id
-      assert_equal 'google', user.provider
+      assert user.uses_oauth?
       assert user.confirmed?
     end
   end

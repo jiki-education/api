@@ -17,7 +17,7 @@ class Auth::AuthenticateWithExercismTest < ActiveSupport::TestCase
       assert_equal 'newuser@exercism.org', user.email
       assert_equal 'New User', user.name
       assert_equal '1530', user.exercism_id
-      assert_equal 'exercism', user.provider
+      assert user.uses_oauth?
       assert user.confirmed?
       assert_equal 'ihid', user.handle
     end
@@ -61,8 +61,7 @@ class Auth::AuthenticateWithExercismTest < ActiveSupport::TestCase
   test "finds existing user by exercism_id" do
     existing_user = create(:user,
       email: 'existing@exercism.org',
-      exercism_id: '456',
-      provider: 'exercism')
+      exercism_id: '456')
 
     exercism_payload = {
       'id' => '456',
@@ -85,7 +84,6 @@ class Auth::AuthenticateWithExercismTest < ActiveSupport::TestCase
     existing_user = create(:user,
       email: 'existing@exercism.org',
       exercism_id: nil,
-      provider: nil,
       confirmed_at: nil)
 
     exercism_payload = {
@@ -102,7 +100,7 @@ class Auth::AuthenticateWithExercismTest < ActiveSupport::TestCase
       user = Auth::AuthenticateWithExercism.('exercism-code', 'code-verifier')
       assert_equal existing_user.id, user.id
       assert_equal '789', user.exercism_id
-      assert_equal 'exercism', user.provider
+      assert user.uses_oauth?
       assert user.confirmed?
     end
   end
