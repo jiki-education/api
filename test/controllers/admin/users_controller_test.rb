@@ -301,6 +301,17 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
   # PASSWORD RESET tests
 
+  test "PATCH reset_password calls User::UpdatePassword command with correct params" do
+    user = create(:user)
+    User::UpdatePassword.expects(:call).with(user, "newpassword123")
+
+    patch reset_password_admin_user_path(user),
+      params: { password: "newpassword123" },
+      as: :json
+
+    assert_response :no_content
+  end
+
   test "PATCH reset_password updates the user's password" do
     user = create(:user, password: "oldpassword")
 
@@ -340,6 +351,15 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   end
 
   # OTP RESET tests
+
+  test "DELETE reset_otp calls User::DisableOtp command" do
+    user = create(:user)
+    User::DisableOtp.expects(:call).with(user)
+
+    delete reset_otp_admin_user_path(user), as: :json
+
+    assert_response :success
+  end
 
   test "DELETE reset_otp disables OTP for the user" do
     user = create(:user)
