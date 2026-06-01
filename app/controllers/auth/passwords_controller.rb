@@ -1,5 +1,9 @@
 class Auth::PasswordsController < Devise::PasswordsController
+  include TurnstileVerifiable
+
   respond_to :json
+
+  before_action :verify_turnstile!, only: :create
 
   def create
     self.resource = resource_class.send_reset_password_instructions(resource_params)

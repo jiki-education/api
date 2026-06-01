@@ -7,7 +7,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup creates a new user with valid params" do
     assert_difference("User.count", 1) do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "newuser@example.com",
           password: "password123",
@@ -15,7 +15,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "New User",
           handle: "newuser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :created
@@ -29,13 +29,13 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
   end
 
   test "POST signup does not create a session for unconfirmed user" do
-    post user_registration_path, params: {
+    post user_registration_path, params: with_turnstile(
       user: {
         email: "newuser@example.com",
         password: "password123",
         password_confirmation: "password123"
       }
-    }, as: :json
+    ), as: :json
 
     assert_response :created
 
@@ -46,13 +46,13 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup sends confirmation email" do
     assert_difference "ActionMailer::Base.deliveries.size", 1 do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "newuser@example.com",
           password: "password123",
           password_confirmation: "password123"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :created
@@ -67,7 +67,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
       job: ActionMailer::MailDeliveryJob,
       args: ->(args) { args[0] == "AccountMailer" && args[1] == "welcome" }
     ) do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "bootstrap@example.com",
           password: "password123",
@@ -75,7 +75,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "Bootstrap User",
           handle: "bootstrapuser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :created
@@ -83,7 +83,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup does not call User::Bootstrap on failed registration" do
     assert_no_enqueued_jobs do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "invalid-email",
           password: "password123",
@@ -91,7 +91,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "Invalid User",
           handle: "invaliduser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :unprocessable_entity
@@ -99,7 +99,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup returns error with invalid email" do
     assert_no_difference("User.count") do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "invalid-email",
           password: "password123",
@@ -107,7 +107,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "New User",
           handle: "newuser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :unprocessable_entity
@@ -120,7 +120,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup returns error with password mismatch" do
     assert_no_difference("User.count") do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "newuser@example.com",
           password: "password123",
@@ -128,7 +128,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "New User",
           handle: "newuser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :unprocessable_entity
@@ -142,7 +142,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     create(:user, email: "existing@example.com")
 
     assert_no_difference("User.count") do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "existing@example.com",
           password: "password123",
@@ -150,7 +150,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "New User",
           handle: "newuser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :unprocessable_entity
@@ -162,7 +162,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup returns error with short password" do
     assert_no_difference("User.count") do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "newuser@example.com",
           password: "short",
@@ -170,7 +170,7 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
           name: "New User",
           handle: "newuser"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :unprocessable_entity
@@ -182,12 +182,12 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
   test "POST signup auto-generates handle from email when not provided" do
     assert_difference("User.count", 1) do
-      post user_registration_path, params: {
+      post user_registration_path, params: with_turnstile(
         user: {
           email: "john.doe@example.com",
           password: "password123"
         }
-      }, as: :json
+      ), as: :json
     end
 
     assert_response :created
@@ -203,13 +203,13 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
   end
 
   test "POST signup accepts user-provided handle when provided" do
-    post user_registration_path, params: {
+    post user_registration_path, params: with_turnstile(
       user: {
         email: "john.doe@example.com",
         password: "password123",
         handle: "custom-handle"
       }
-    }, as: :json
+    ), as: :json
 
     assert_response :created
 
@@ -224,16 +224,45 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
   test "POST signup handles collision by appending random hex suffix" do
     create(:user, email: "john@other.com", handle: "john-doe")
 
-    post user_registration_path, params: {
+    post user_registration_path, params: with_turnstile(
       user: {
         email: "john.doe@example.com",
         password: "password123"
       }
-    }, as: :json
+    ), as: :json
 
     assert_response :created
 
     user = User.last
     assert_match(/\Ajohn-doe-[a-f0-9]{6}\z/, user.handle)
+  end
+
+  test "POST signup returns 403 invalid_captcha when Turnstile token missing" do
+    assert_no_difference("User.count") do
+      post user_registration_path, params: {
+        user: {
+          email: "newuser@example.com",
+          password: "password123"
+        }
+      }, as: :json
+    end
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
+  test "POST signup returns 403 invalid_captcha when Turnstile siteverify rejects token" do
+    WebMock.stub_request(:post, Captcha::VerifyTurnstileToken::SITEVERIFY_URL).
+      to_return(status: 200, body: { success: false, "error-codes" => ["invalid-input-response"] }.to_json)
+
+    assert_no_difference("User.count") do
+      post user_registration_path, params: with_turnstile(
+        user: {
+          email: "newuser@example.com",
+          password: "password123"
+        }
+      ), as: :json
+    end
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
   end
 end

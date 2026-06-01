@@ -1,4 +1,8 @@
 class Internal::AssistantConversationsController < Internal::BaseController
+  include TurnstileVerifiable
+
+  before_action :verify_turnstile!, only: %i[create create_user_message]
+
   def create
     context = find_context
     return render_404(context_not_found_key) unless context

@@ -101,13 +101,22 @@ module AuthenticationHelper
     sign_in_user(@current_user)
   end
 
+  # Merge a fake Turnstile token into a params hash. Use in tests that POST to
+  # endpoints protected by TurnstileVerifiable (signup, login, password reset,
+  # assistant_conversations create/create_user_message).
+  #
+  #   post user_session_path, params: with_turnstile(user: { ... }), as: :json
+  def with_turnstile(params = {})
+    params.merge(cf_turnstile_response: "test-turnstile-token")
+  end
+
   # Sign in a user by posting to the session endpoint
   # This sets up the session cookie for subsequent requests
   # For admin users, completes the 2FA flow automatically
   def sign_in_user(user)
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: { email: user.email, password: "password123" }
-    }, as: :json
+    ), as: :json
 
     if user.admin?
       # Admin users require 2FA - complete the flow
@@ -208,6 +217,20 @@ module JsonAssertions
           "Expected '#{key}' to be #{expected_type}, got #{data[key.to_s].class}"
       end
     end
+  end
+end
+
+# Default Turnstile siteverify to success for every integration test that hits
+# a protected endpoint with a token. Tests that want to exercise the failure
+# path can re-stub this URL with success: false.
+class ActionDispatch::IntegrationTest
+  setup do
+    WebMock.stub_request(:post, Captcha::VerifyTurnstileToken::SITEVERIFY_URL).
+      to_return(
+        status: 200,
+        body: { success: true }.to_json,
+        headers: { "Content-Type" => "application/json" }
+      )
   end
 end
 

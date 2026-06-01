@@ -1,5 +1,9 @@
 class Auth::RegistrationsController < Devise::RegistrationsController
+  include TurnstileVerifiable
+
   respond_to :json
+
+  before_action :verify_turnstile!, only: :create
 
   def create
     super do |resource|

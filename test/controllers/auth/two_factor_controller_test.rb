@@ -135,12 +135,12 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
   def setup_otp_session(user, timestamp: Time.current)
     # Simulate the session state that would be set by the login controller
     # In integration tests, we need to set this via a login request
-    post user_session_path, params: {
+    post user_session_path, params: with_turnstile(
       user: {
         email: user.email,
         password: "password123"
       }
-    }, as: :json
+    ), as: :json
 
     # If we need to test expired sessions, we manipulate the session directly
     return unless timestamp != Time.current
@@ -149,12 +149,12 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     # since we can't easily manipulate sessions in controller tests
     # Instead, we'll travel in time
     travel_to(timestamp) do
-      post user_session_path, params: {
+      post user_session_path, params: with_turnstile(
         user: {
           email: user.email,
           password: "password123"
         }
-      }, as: :json
+      ), as: :json
     end
   end
 

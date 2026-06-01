@@ -6,11 +6,9 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
   end
 
   test "POST password reset sends reset instructions" do
-    post user_password_path, params: {
-      user: {
-        email: "test@example.com"
-      }
-    }, as: :json
+    post user_password_path, params: with_turnstile(
+      user: { email: "test@example.com" }
+    ), as: :json
 
     assert_response :ok
 
@@ -23,11 +21,9 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
     Jiki.config.stubs(:frontend_base_url).returns("http://test.frontend.com")
 
     assert_emails 1 do
-      post user_password_path, params: {
-        user: {
-          email: "test@example.com"
-        }
-      }, as: :json
+      post user_password_path, params: with_turnstile(
+        user: { email: "test@example.com" }
+      ), as: :json
     end
 
     mail = ActionMailer::Base.deliveries.last
@@ -43,11 +39,9 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
   test "POST password reset email respects user locale" do
     create(:user, :hungarian, email: "magyar@example.com", name: "József")
 
-    post user_password_path, params: {
-      user: {
-        email: "magyar@example.com"
-      }
-    }, as: :json
+    post user_password_path, params: with_turnstile(
+      user: { email: "magyar@example.com" }
+    ), as: :json
 
     mail = ActionMailer::Base.deliveries.last
     assert_equal "Jelszó visszaállítása", mail.subject
@@ -55,16 +49,33 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
   end
 
   test "POST password reset with non-existent email still returns success (security)" do
-    post user_password_path, params: {
-      user: {
-        email: "nonexistent@example.com"
-      }
-    }, as: :json
+    post user_password_path, params: with_turnstile(
+      user: { email: "nonexistent@example.com" }
+    ), as: :json
 
     assert_response :ok
 
     json = response.parsed_body
     assert_equal "Reset instructions sent to nonexistent@example.com", json["message"]
+  end
+
+  test "POST password reset returns 403 invalid_captcha when Turnstile token missing" do
+    post user_password_path, params: {
+      user: { email: "test@example.com" }
+    }, as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
+  test "POST password reset returns 403 invalid_captcha when siteverify rejects token" do
+    WebMock.stub_request(:post, Captcha::VerifyTurnstileToken::SITEVERIFY_URL).
+      to_return(status: 200, body: { success: false }.to_json)
+
+    post user_password_path, params: with_turnstile(
+      user: { email: "test@example.com" }
+    ), as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
   end
 
   test "PATCH password reset updates password with valid token" do
@@ -85,12 +96,9 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
     assert_equal "Password has been reset successfully", json["message"]
 
     # Verify the user can login with new password
-    post user_session_path, params: {
-      user: {
-        email: "test@example.com",
-        password: "newpassword123"
-      }
-    }, as: :json
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "newpassword123" }
+    ), as: :json
 
     assert_response :ok
   end

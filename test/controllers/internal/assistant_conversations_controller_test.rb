@@ -16,7 +16,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     @current_user.data.update!(membership_type: "premium")
 
     post internal_assistant_conversations_path,
-      params: { lesson_slug: "basic-movement" },
+      params: with_turnstile(lesson_slug: "basic-movement"),
       as: :json
 
     assert_response :success
@@ -37,7 +37,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     @current_user.data.update!(membership_type: "standard")
 
     post internal_assistant_conversations_path,
-      params: { lesson_slug: "basic-movement" },
+      params: with_turnstile(lesson_slug: "basic-movement"),
       as: :json
 
     assert_response :success
@@ -50,7 +50,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     create(:assistant_conversation, user: @current_user, context: other_lesson)
 
     post internal_assistant_conversations_path,
-      params: { lesson_slug: "basic-movement" },
+      params: with_turnstile(lesson_slug: "basic-movement"),
       as: :json
 
     assert_json_error(:forbidden, error_type: :access_denied)
@@ -58,7 +58,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
   test "POST create returns 404 for non-existent lesson" do
     post internal_assistant_conversations_path,
-      params: { lesson_slug: "non-existent" },
+      params: with_turnstile(lesson_slug: "non-existent"),
       as: :json
 
     assert_json_error(:not_found, error_type: :lesson_not_found)
@@ -69,7 +69,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     project = create(:project, slug: "calculator", exercise_slug: "jiki/calculator")
 
     post internal_assistant_conversations_path,
-      params: { project_slug: "calculator" },
+      params: with_turnstile(project_slug: "calculator"),
       as: :json
 
     assert_response :success
@@ -88,7 +88,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
   test "POST create returns 404 for non-existent project" do
     post internal_assistant_conversations_path,
-      params: { project_slug: "non-existent" },
+      params: with_turnstile(project_slug: "non-existent"),
       as: :json
 
     assert_json_error(:not_found, error_type: :project_not_found)
@@ -99,7 +99,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
     assert_difference 'AssistantConversation.count', 1 do
       post internal_assistant_conversations_path,
-        params: { lesson_slug: "basic-movement" },
+        params: with_turnstile(lesson_slug: "basic-movement"),
         as: :json
     end
 
@@ -108,15 +108,51 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     assert_equal @lesson, conversation.context
   end
 
+  # Turnstile coverage for POST create
+  test "POST create returns 403 invalid_captcha when token missing" do
+    post internal_assistant_conversations_path,
+      params: { lesson_slug: "basic-movement" },
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
+  test "POST create returns 403 invalid_captcha when siteverify rejects token" do
+    WebMock.stub_request(:post, Captcha::VerifyTurnstileToken::SITEVERIFY_URL).
+      to_return(status: 200, body: { success: false }.to_json)
+
+    post internal_assistant_conversations_path,
+      params: with_turnstile(lesson_slug: "basic-movement"),
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
+  # Turnstile runs BEFORE the access-denied check. Without this ordering, a
+  # bot-blocked free user past their fair-use cap would surface as
+  # access_denied (which the FE uses to open the premium-upgrade modal and
+  # fire an analytics event) instead of invalid_captcha.
+  test "POST create returns invalid_captcha, not access_denied, when both would apply" do
+    @current_user.data.update!(membership_type: "standard")
+    other_lesson = create(:lesson, :exercise, slug: "other-lesson")
+    create(:assistant_conversation, user: @current_user, context: other_lesson)
+
+    post internal_assistant_conversations_path,
+      params: { lesson_slug: "basic-movement" },
+      as: :json
+
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
+  end
+
   # POST user_messages
   test "POST user_messages successfully adds user message" do
     post user_messages_internal_assistant_conversations_path,
-      params: {
+      params: with_turnstile(
         context_type: "lesson",
         context_identifier: "basic-movement",
         content: "How do I solve this?",
         timestamp: "2025-10-31T08:15:30.000Z"
-      },
+      ),
       as: :json
 
     assert_response :success
@@ -132,6 +168,19 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     ).returns(build_stubbed(:assistant_conversation))
 
     post user_messages_internal_assistant_conversations_path,
+      params: with_turnstile(
+        context_type: "lesson",
+        context_identifier: "basic-movement",
+        content: "How do I solve this?",
+        timestamp: "2025-10-31T08:15:30.000Z"
+      ),
+      as: :json
+
+    assert_response :success
+  end
+
+  test "POST user_messages returns 403 invalid_captcha when token missing" do
+    post user_messages_internal_assistant_conversations_path,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
@@ -140,7 +189,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
       },
       as: :json
 
-    assert_response :success
+    assert_json_error(:forbidden, error_type: :invalid_captcha)
   end
 
   # POST assistant_messages

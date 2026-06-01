@@ -8,6 +8,7 @@ en:
     access_denied: "Access denied"
     premium_required: "This feature is only available to premium members"
     invalid_signature: "Invalid signature"
+    invalid_captcha: "Captcha verification failed"
 
     # Token errors
     invalid_token: "Token is invalid or has expired"
