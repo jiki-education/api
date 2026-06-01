@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   # Additional auth endpoints (outside devise scope)
   namespace :auth do
     post "google", to: "google_oauth#create"
+    post "exercism", to: "exercism_oauth#create"
     post "unsubscribe/:token", to: "unsubscribe#create", as: :unsubscribe
     get "discourse/sso", to: "discourse#sso"
     post "account_deletion/request", to: "account_deletions#request_deletion"
