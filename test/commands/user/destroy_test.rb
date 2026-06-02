@@ -12,6 +12,16 @@ class User::DestroyTest < ActiveSupport::TestCase
     assert_nil User.find_by(id: user_id)
   end
 
+  test "raises RootAdminProtectedError when destroying user 1" do
+    user = create(:user, :admin, id: 1)
+
+    assert_no_difference -> { User.count } do
+      assert_raises RootAdminProtectedError do
+        User::Destroy.(user)
+      end
+    end
+  end
+
   test "destroys associated records due to dependent: :destroy" do
     user_lesson = create(:user_lesson)
     user = user_lesson.user

@@ -43,6 +43,9 @@ class LessonInProgressError < RuntimeError; end
 class LevelNotCompletedError < RuntimeError; end
 class ProjectLockedError < RuntimeError; end
 
+# Admin user management errors
+class RootAdminProtectedError < RuntimeError; end
+
 # Badge errors
 class BadgeCriteriaNotFulfilledError < RuntimeError; end
 

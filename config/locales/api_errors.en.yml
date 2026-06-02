@@ -30,6 +30,7 @@ en:
     user_project_not_found: "User project not found"
     user_video_not_found: "User video not found"
     validation_error: "Validation failed"
+    cannot_delete_root_admin: "The root admin user cannot be deleted"
     invalid_event: "Unknown analytics event"
 
     # File submission errors

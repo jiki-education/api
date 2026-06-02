@@ -278,6 +278,22 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     refute user.reload.admin
   end
 
+  test "PATCH update returns 422 when demoting user 1" do
+    # User 1 may already exist (e.g. the signed-in admin on a fresh database)
+    user = User.find_by(id: 1) || create(:user, :admin, id: 1)
+    user.update!(admin: true)
+
+    patch admin_user_path(user),
+      params: { user: { admin: false } },
+      as: :json
+
+    assert_response :unprocessable_entity
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert json["error"]["errors"]["admin"].present?
+    assert user.reload.admin
+  end
+
   test "PATCH update ignores non-permitted fields" do
     user = create(:user, name: "Original Name", email: "original@example.com")
 
@@ -408,6 +424,17 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
     assert_response :no_content
     assert_nil User.find_by(id: user_id)
+  end
+
+  test "DELETE destroy returns 422 when deleting user 1" do
+    # User 1 may already exist (e.g. the signed-in admin on a fresh database)
+    user = User.find_by(id: 1) || create(:user, :admin, id: 1)
+
+    assert_no_difference -> { User.count } do
+      delete admin_user_path(user), as: :json
+    end
+
+    assert_json_error(:unprocessable_entity, error_type: :cannot_delete_root_admin)
   end
 
   test "DELETE destroy returns 404 for non-existent user" do

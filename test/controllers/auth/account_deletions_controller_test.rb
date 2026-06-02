@@ -86,6 +86,19 @@ class Auth::AccountDeletionsControllerTest < ApplicationControllerTest
     assert_equal "invalid_token", response.parsed_body["error"]["type"]
   end
 
+  test "POST confirm returns 422 when deleting user 1" do
+    # User 1 may already exist on a fresh database
+    user = User.find_by(id: 1) || create(:user, :admin, id: 1)
+    token = AccountDeletion::CreateDeletionToken.(user)
+
+    assert_no_difference 'User.count' do
+      post auth_account_deletion_confirm_path, params: { token: token }, as: :json
+    end
+
+    assert_response :unprocessable_entity
+    assert_equal "root_admin_protected", response.parsed_body["error"]["type"]
+  end
+
   test "POST confirm returns 503 when stripe cancellation fails" do
     user = create(:user)
     user.data.update!(stripe_subscription_id: "sub_123", subscription_status: "active")

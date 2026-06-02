@@ -60,6 +60,52 @@ class User::UpdateByAdminTest < ActiveSupport::TestCase
     assert user.reload.admin
   end
 
+  test "raises validation error when demoting user 1" do
+    user = create(:user, :admin, id: 1)
+
+    error = assert_raises ActiveRecord::RecordInvalid do
+      User::UpdateByAdmin.(user, { admin: false })
+    end
+
+    assert_match(/Admin/, error.message)
+    assert user.reload.admin
+  end
+
+  test "raises validation error when demoting user 1 with a string param" do
+    user = create(:user, :admin, id: 1)
+
+    assert_raises ActiveRecord::RecordInvalid do
+      User::UpdateByAdmin.(user, { admin: "false" })
+    end
+
+    assert user.reload.admin
+  end
+
+  test "allows updating user 1's email" do
+    user = create(:user, :admin, id: 1, email: "old@example.com")
+
+    User::UpdateByAdmin.(user, { email: "new@example.com" })
+
+    assert_equal "new@example.com", user.reload.email
+    assert user.admin
+  end
+
+  test "allows setting admin to true on user 1" do
+    user = create(:user, :admin, id: 1)
+
+    User::UpdateByAdmin.(user, { admin: true })
+
+    assert user.reload.admin
+  end
+
+  test "allows demoting admins other than user 1" do
+    user = create(:user, :admin)
+
+    User::UpdateByAdmin.(user, { admin: false })
+
+    refute user.reload.admin
+  end
+
   test "ignores non-permitted fields in params" do
     user = create(:user, name: "Original Name", email: "original@example.com")
 

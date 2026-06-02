@@ -33,6 +33,8 @@ class Admin::UsersController < Admin::BaseController
   def destroy
     User::Destroy.(@user)
     head :no_content
+  rescue RootAdminProtectedError
+    render_422(:cannot_delete_root_admin)
   end
 
   def reset_password
