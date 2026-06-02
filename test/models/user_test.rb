@@ -199,4 +199,20 @@ class UserTest < ActiveSupport::TestCase
 
     assert_equal :usd, user.currency
   end
+
+  test "otp_provisioning_uri returns nil without otp_secret" do
+    user = create(:user)
+
+    assert_nil user.otp_provisioning_uri
+  end
+
+  test "otp_provisioning_uri includes issuer, email and image" do
+    user = create(:user, :with_2fa)
+
+    uri = user.otp_provisioning_uri
+    assert uri.start_with?("otpauth://totp/Jiki:")
+    assert_includes uri, CGI.escape(user.email)
+    assert_includes uri, "issuer=Jiki"
+    assert uri.end_with?("&image=#{CGI.escape(User::OTP_PROVISIONING_IMAGE_URL)}")
+  end
 end

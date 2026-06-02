@@ -48,9 +48,17 @@ class User < ApplicationRecord
   def total_active_days = aggregate_activity_data[:total_active_days]
 
   # Two-Factor Authentication
+  OTP_PROVISIONING_IMAGE_URL = "https://jiki.io/static/images/logo.png".freeze
+
   def otp_enabled? = otp_secret.present? && otp_enabled_at.present?
   def requires_otp? = admin?
-  def otp_provisioning_uri = otp_secret ? ROTP::TOTP.new(otp_secret, issuer: "Jiki").provisioning_uri(email) : nil
+
+  def otp_provisioning_uri
+    return nil unless otp_secret
+
+    uri = ROTP::TOTP.new(otp_secret, issuer: "Jiki").provisioning_uri(email)
+    "#{uri}&image=#{CGI.escape(OTP_PROVISIONING_IMAGE_URL)}"
+  end
 
   memoize
   def aggregate_activity_data = User::ActivityLog::SyncAndRetrieveAggregates.(self)
