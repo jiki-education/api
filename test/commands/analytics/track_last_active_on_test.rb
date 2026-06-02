@@ -8,23 +8,38 @@ class Analytics::TrackLastActiveOnTest < ActiveSupport::TestCase
 
     Analytics::TrackLastActiveOn.(user)
 
-    assert_equal Date.current, user.data.reload.last_active_on
+    assert_equal Time.current.utc.to_date, user.data.reload.last_active_on
   end
 
   test "records today and defers site_visited event when last active before today" do
     user = create(:user)
-    user.data.update!(last_active_on: Date.current - 1.day)
+    user.data.update!(last_active_on: Time.current.utc.to_date - 1.day)
 
     Analytics::TrackEvent.expects(:defer).with(user, "site_visited")
 
     Analytics::TrackLastActiveOn.(user)
 
-    assert_equal Date.current, user.data.reload.last_active_on
+    assert_equal Time.current.utc.to_date, user.data.reload.last_active_on
+  end
+
+  test "uses the UTC date even when the app timezone is not UTC" do
+    user = create(:user)
+
+    Analytics::TrackEvent.expects(:defer).with(user, "site_visited")
+
+    # 11pm UTC on June 2nd is already June 3rd in Auckland
+    travel_to Time.utc(2026, 6, 2, 23, 0) do
+      Time.use_zone("Auckland") do
+        Analytics::TrackLastActiveOn.(user)
+      end
+    end
+
+    assert_equal Date.new(2026, 6, 2), user.data.reload.last_active_on
   end
 
   test "no-ops when already active today" do
     user = create(:user)
-    user.data.update!(last_active_on: Date.current)
+    user.data.update!(last_active_on: Time.current.utc.to_date)
 
     Analytics::TrackEvent.expects(:defer).never
 
@@ -38,7 +53,7 @@ class Analytics::TrackLastActiveOnTest < ActiveSupport::TestCase
     # today behind this command's back (so the in-memory check passes but
     # the atomic SQL claim does not).
     user.data
-    User::Data.where(user_id: user.id).update_all(last_active_on: Date.current)
+    User::Data.where(user_id: user.id).update_all(last_active_on: Time.current.utc.to_date)
 
     Analytics::TrackEvent.expects(:defer).never
 

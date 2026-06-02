@@ -10,7 +10,7 @@ class TrackLastActiveOnTest < ApplicationControllerTest
     # Signing in is itself an authenticated request, so it claims today.
     setup_user(user)
 
-    assert_equal Date.current, user.data.reload.last_active_on
+    assert_equal Time.current.utc.to_date, user.data.reload.last_active_on
   end
 
   test "calls Analytics::TrackLastActiveOn on authenticated requests" do
