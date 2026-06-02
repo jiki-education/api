@@ -5,6 +5,7 @@ class ApplicationController < ActionController::API
   USER_ID_COOKIE_NAME = :"jiki_user_id_#{Rails.env}"
 
   before_action :set_current_user_agent
+  before_action :set_current_user_ip
   before_action :set_locale
   before_action :set_country_code
   before_action :extend_session_cookie!
@@ -32,6 +33,12 @@ class ApplicationController < ActionController::API
 
   def set_current_user_agent
     Current.user_agent = request.headers["User-Agent"]
+  end
+
+  # Behind Cloudflare, request.remote_ip is Cloudflare's edge IP
+  # (CF isn't in trusted_proxies), so prefer the CF-Connecting-IP header.
+  def set_current_user_ip
+    Current.user_ip = request.headers["CF-Connecting-IP"].presence || request.remote_ip
   end
 
   def set_sentry_user
