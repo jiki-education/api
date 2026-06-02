@@ -35,8 +35,53 @@ class User::Bootstrap
     Analytics::TrackEvent.defer(
       user,
       "user_signed_up",
-      properties: { provider: }.merge(attribution || {})
+      properties: { provider: }.merge(attribution || {}).merge(attribution_properties)
     )
+  end
+
+  # Map our signup attribution onto PostHog's reserved property names so its
+  # built-in attribution features work: $referrer/$referring_domain/$current_url
+  # drive Channel Type classification on the event, and $set_once writes the
+  # $initial_* person properties used for first-touch attribution breakdowns.
+  memoize
+  def attribution_properties
+    return {} if attribution.blank?
+
+    {
+      "$referrer": referrer,
+      "$referring_domain": referring_domain,
+      "$current_url": landing_url,
+      "$set_once": {
+        "$initial_referrer": referrer,
+        "$initial_referring_domain": referring_domain,
+        "$initial_current_url": landing_url,
+        "$initial_utm_source": attribution["utm_source"],
+        "$initial_utm_medium": attribution["utm_medium"],
+        "$initial_utm_campaign": attribution["utm_campaign"]
+      }.compact
+    }.compact
+  end
+
+  # PostHog uses the literal value "$direct" to mean "no referrer".
+  memoize
+  def referrer = attribution["referrer"].presence || "$direct"
+
+  memoize
+  def referring_domain
+    return "$direct" if attribution["referrer"].blank?
+
+    URI.parse(attribution["referrer"]).host || "$direct"
+  rescue URI::InvalidURIError
+    "$direct"
+  end
+
+  memoize
+  def landing_url
+    return nil if attribution["landing_path"].blank?
+
+    URI.join(Jiki.config.frontend_base_url, attribution["landing_path"]).to_s
+  rescue URI::InvalidURIError
+    nil
   end
 
   memoize

@@ -120,6 +120,83 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
     end
   end
 
+  test "includes $useragent when user_agent is present" do
+    user = create(:user, locale: "en")
+
+    PostHog.stubs(:initialized?).returns(true)
+    PostHog.expects(:capture).with(
+      distinct_id: user.id.to_s,
+      event: "user_signed_up",
+      properties: {
+        membership_type: "standard",
+        locale: "en",
+        "$geoip_disable": true,
+        "$useragent": "Mozilla/5.0 (Macintosh)"
+      }
+    )
+
+    Analytics::TrackEvent.(user, "user_signed_up", user_agent: "Mozilla/5.0 (Macintosh)")
+  end
+
+  test "defer materialises Current.user_agent into the job" do
+    user = create(:user, locale: "en")
+    Current.user_agent = "Mozilla/5.0 (Macintosh)"
+
+    PostHog.stubs(:initialized?).returns(true)
+    PostHog.expects(:capture).with(
+      distinct_id: user.id.to_s,
+      event: "user_signed_up",
+      properties: {
+        membership_type: "standard",
+        locale: "en",
+        "$geoip_disable": true,
+        "$useragent": "Mozilla/5.0 (Macintosh)"
+      }
+    )
+
+    perform_enqueued_jobs do
+      Analytics::TrackEvent.defer(user, "user_signed_up")
+    end
+  end
+
+  test "defer does not override an explicitly passed user_agent" do
+    user = create(:user, locale: "en")
+    Current.user_agent = "Mozilla/5.0 (Other)"
+
+    PostHog.stubs(:initialized?).returns(true)
+    PostHog.expects(:capture).with(
+      distinct_id: user.id.to_s,
+      event: "user_signed_up",
+      properties: {
+        membership_type: "standard",
+        locale: "en",
+        "$geoip_disable": true,
+        "$useragent": "Mozilla/5.0 (Macintosh)"
+      }
+    )
+
+    perform_enqueued_jobs do
+      Analytics::TrackEvent.defer(user, "user_signed_up", user_agent: "Mozilla/5.0 (Macintosh)")
+    end
+  end
+
+  test "omits $useragent when user_agent is blank" do
+    user = create(:user, locale: "en")
+
+    PostHog.stubs(:initialized?).returns(true)
+    PostHog.expects(:capture).with(
+      distinct_id: user.id.to_s,
+      event: "user_signed_up",
+      properties: {
+        membership_type: "standard",
+        locale: "en",
+        "$geoip_disable": true
+      }
+    )
+
+    Analytics::TrackEvent.(user, "user_signed_up", user_agent: "")
+  end
+
   test "no-ops when PostHog is not initialized" do
     PostHog.stubs(:initialized?).returns(false)
     PostHog.expects(:capture).never
