@@ -1,4 +1,4 @@
-class User::Update
+class User::UpdateByAdmin
   include Mandate
 
   initialize_with :user, :params

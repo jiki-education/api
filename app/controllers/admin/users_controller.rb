@@ -22,7 +22,7 @@ class Admin::UsersController < Admin::BaseController
   end
 
   def update
-    user = User::Update.(@user, user_params)
+    user = User::UpdateByAdmin.(@user, user_params)
     render json: {
       user: SerializeAdminUser.(user)
     }

@@ -142,9 +142,9 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
   # UPDATE tests
 
-  test "PATCH update calls User::Update command with correct params" do
+  test "PATCH update calls User::UpdateByAdmin command with correct params" do
     user = create(:user)
-    User::Update.expects(:call).with(
+    User::UpdateByAdmin.expects(:call).with(
       user,
       { "email" => "newemail@example.com" }
     ).returns(user)

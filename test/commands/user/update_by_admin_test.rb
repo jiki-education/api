@@ -1,10 +1,10 @@
 require "test_helper"
 
-class User::UpdateTest < ActiveSupport::TestCase
+class User::UpdateByAdminTest < ActiveSupport::TestCase
   test "updates email with valid params" do
     user = create(:user, email: "old@example.com")
 
-    result = User::Update.(
+    result = User::UpdateByAdmin.(
       user,
       {
         email: "new@example.com"
@@ -17,7 +17,7 @@ class User::UpdateTest < ActiveSupport::TestCase
 
   test "returns updated user" do
     user = create(:user)
-    result = User::Update.(user, { email: "updated@example.com" })
+    result = User::UpdateByAdmin.(user, { email: "updated@example.com" })
 
     assert_equal user, result
     assert_equal "updated@example.com", result.email
@@ -27,7 +27,7 @@ class User::UpdateTest < ActiveSupport::TestCase
     user = create(:user)
 
     error = assert_raises ActiveRecord::RecordInvalid do
-      User::Update.(user, { email: "" })
+      User::UpdateByAdmin.(user, { email: "" })
     end
 
     assert_match(/Email/, error.message)
@@ -37,7 +37,7 @@ class User::UpdateTest < ActiveSupport::TestCase
     user = create(:user)
 
     error = assert_raises ActiveRecord::RecordInvalid do
-      User::Update.(user, { email: "not-an-email" })
+      User::UpdateByAdmin.(user, { email: "not-an-email" })
     end
 
     assert_match(/Email/, error.message)
@@ -48,14 +48,14 @@ class User::UpdateTest < ActiveSupport::TestCase
     user = create(:user, email: "unique@example.com")
 
     assert_raises ActiveRecord::RecordInvalid do
-      User::Update.(user, { email: "existing@example.com" })
+      User::UpdateByAdmin.(user, { email: "existing@example.com" })
     end
   end
 
   test "updates admin flag when provided" do
     user = create(:user, admin: false)
 
-    User::Update.(user, { admin: true })
+    User::UpdateByAdmin.(user, { admin: true })
 
     assert user.reload.admin
   end
@@ -63,7 +63,7 @@ class User::UpdateTest < ActiveSupport::TestCase
   test "ignores non-permitted fields in params" do
     user = create(:user, name: "Original Name", email: "original@example.com")
 
-    User::Update.(
+    User::UpdateByAdmin.(
       user,
       {
         email: "new@example.com",
@@ -81,7 +81,7 @@ class User::UpdateTest < ActiveSupport::TestCase
   test "allows updating to same email (no-op)" do
     user = create(:user, email: "same@example.com")
 
-    User::Update.(user, { email: "same@example.com" })
+    User::UpdateByAdmin.(user, { email: "same@example.com" })
 
     assert_equal "same@example.com", user.reload.email
   end
