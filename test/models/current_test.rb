@@ -64,6 +64,24 @@ class CurrentTest < ActiveSupport::TestCase
     assert_equal "value", stored_data[:metadata][:nested][:deep]
   end
 
+  test "user_ip defaults to nil" do
+    assert_nil Current.user_ip
+  end
+
+  test "user_ip can be set and read" do
+    Current.user_ip = "86.41.10.20"
+
+    assert_equal "86.41.10.20", Current.user_ip
+  end
+
+  test "reset clears user_ip" do
+    Current.user_ip = "86.41.10.20"
+
+    Current.reset
+
+    assert_nil Current.user_ip
+  end
+
   test "reset clears events" do
     Current.add_event(:test_event, {})
     assert_equal 1, Current.events.size
