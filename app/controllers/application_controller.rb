@@ -11,6 +11,7 @@ class ApplicationController < ActionController::API
   before_action :extend_session_cookie!
   before_action :set_sentry_user
   after_action :set_user_id_cookie
+  after_action :track_last_active_on
 
   private
   # Sets a signed cookie to indicate the user is authenticated.
@@ -45,6 +46,14 @@ class ApplicationController < ActionController::API
     return unless Rails.env.production? && user_signed_in?
 
     Sentry.set_user(id: current_user.id)
+  end
+
+  # Records that the user visited the site today and sends a once-per-day
+  # "site_visited" analytics event (used for DAU tracking in PostHog).
+  def track_last_active_on
+    return unless user_signed_in?
+
+    Analytics::TrackLastActiveOn.(current_user)
   end
 
   # Implement sliding session expiration by touching the session periodically.
