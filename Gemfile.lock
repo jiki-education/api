@@ -248,7 +248,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
-    json (2.19.7)
+    json (2.19.8)
     jwt (3.2.0)
       base64
     kaminari (1.2.2)
@@ -350,17 +350,17 @@ GEM
     pg (1.6.3-x86_64-linux-musl)
     pg_query (6.2.2)
       google-protobuf (>= 3.25.3)
-    posthog-rails (3.9.3)
-      posthog-ruby (~> 3.9)
+    posthog-rails (3.10.0)
+      posthog-ruby (~> 3.10)
       railties (>= 5.2.0)
-    posthog-ruby (3.9.3)
+    posthog-ruby (3.10.0)
       concurrent-ruby (~> 1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
     prism (1.9.0)
     prosopite (2.2.0)
-    psych (5.3.1)
+    psych (5.4.0)
       date
       stringio
     public_suffix (7.0.5)
