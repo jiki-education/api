@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_02_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -488,6 +488,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_100000) do
     t.index ["user_id", "project_id"], name: "index_user_projects_on_user_id_and_project_id", unique: true
   end
 
+  create_table "user_seen_flags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "key"], name: "index_user_seen_flags_on_user_id_and_key", unique: true
+    t.index ["user_id"], name: "index_user_seen_flags_on_user_id"
+  end
+
   create_table "user_videos", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -560,5 +569,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_100000) do
   add_foreign_key "user_levels", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
+  add_foreign_key "user_seen_flags", "users"
   add_foreign_key "user_videos", "users"
 end

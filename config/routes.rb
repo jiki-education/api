@@ -74,6 +74,9 @@ Rails.application.routes.draw do
       patch 'notifications/:slug', action: :notification, as: :notification
     end
 
+    get 'settings/seen_flags/:key', to: 'seen_flags#show', as: :seen_flag
+    post 'settings/seen_flags/:key', to: 'seen_flags#create'
+
     resources :courses, only: %i[index show]
 
     resources :user_courses, only: %i[index show] do
