@@ -20,6 +20,8 @@ Mjml.setup do |config|
   config.beautify = !Rails.env.production?
   config.minify = Rails.env.production?
 
-  # Cache compiled templates in production for performance
-  config.cache_mjml = Rails.env.production?
+  # mjml-rails 5.0.0's disk cache keys on the layout file's SHA only, so every
+  # email using layouts/mailer.mjml shares one cache entry — the first render
+  # poisons subsequent ones. Disable until the upstream cache is fixed.
+  config.cache_mjml = false
 end
