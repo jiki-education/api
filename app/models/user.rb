@@ -39,7 +39,7 @@ class User < ApplicationRecord
 
   def uses_oauth? = exercism_id.present? || google_id.present?
 
-  def seen?(key) = seen_flags.exists?(key: key.to_s)
+  def seen?(key) = key.present? && seen_flags.exists?(key:)
 
   # Placeholder for communication preferences - will be implemented later
   def communication_preferences

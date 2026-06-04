@@ -4,6 +4,8 @@ class User::SeenFlag::MarkSeen
   initialize_with :user, :key
 
   def call
-    User::SeenFlag.create_or_find_by!(user:, key: key.to_s)
+    User::SeenFlag.find_or_create_by!(user:, key:)
+  rescue ActiveRecord::RecordNotUnique
+    nil
   end
 end
