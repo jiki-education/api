@@ -22,6 +22,7 @@ class User < ApplicationRecord
   has_many :user_videos, dependent: :destroy
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
   has_many :badges, through: :acquired_badges
+  has_many :seen_flags, class_name: "User::SeenFlag", dependent: :destroy
   has_many :assistant_conversations, dependent: :destroy
   has_many :payments, dependent: :destroy
 
@@ -37,6 +38,8 @@ class User < ApplicationRecord
   validates :password, presence: true, if: -> { new_record? && encrypted_password.blank? && !uses_oauth? }
 
   def uses_oauth? = exercism_id.present? || google_id.present?
+
+  def seen?(key) = key.present? && seen_flags.exists?(key:)
 
   # Placeholder for communication preferences - will be implemented later
   def communication_preferences
