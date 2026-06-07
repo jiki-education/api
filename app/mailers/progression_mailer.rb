@@ -19,7 +19,7 @@ class ProgressionMailer < ApplicationMailer
     @subject = content[:milestone_email_subject]
     @content_markdown = content[:milestone_email_content_markdown]
     @image_url = @level.milestone_email_image_url
-    @header_image = "milestone-#{(@level.id % 3) + 1}.jpg"
+    @header_image = "milestone-#{(@level.position % 3) + 1}.jpg"
 
     return unless @subject.present? && @content_markdown.present?
 

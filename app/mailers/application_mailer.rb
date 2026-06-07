@@ -1,10 +1,10 @@
 # Header images live in R2 at assets/static/emails/ (CDN: assets_cdn_url).
-# Mailers select one by setting @header_image; layouts/mailer.mjml falls back to jiki-header.jpg.
+# Mailers select one by setting @header_image; layouts/mailer.mjml falls back to default.jpg.
 # Available images:
 #   - default.jpg         — layout fallback when @header_image is unset
-#   - milestone-1.jpg     — ProgressionMailer#level_completed (level.id % 3 == 0)
-#   - milestone-2.jpg     — ProgressionMailer#level_completed (level.id % 3 == 1)
-#   - milestone-3.jpg     — ProgressionMailer#level_completed (level.id % 3 == 2)
+#   - milestone-1.jpg     — ProgressionMailer#level_completed (level.position % 3 == 0)
+#   - milestone-2.jpg     — ProgressionMailer#level_completed (level.position % 3 == 1)
+#   - milestone-3.jpg     — ProgressionMailer#level_completed (level.position % 3 == 2)
 #   - badge-earned.jpg    — NotificationsMailer#badge_earned
 #   - premium-welcome.jpg — PremiumMailer#welcome_to_premium
 #   - newsletter.jpg      — MarketingMailer newsletters
