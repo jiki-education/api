@@ -12,6 +12,7 @@ class AccountMailer < ApplicationMailer
   # @param user [User] The user to send the welcome email to
   def welcome(user)
     @login_url = "#{Jiki.config.frontend_base_url}/login"
+    @header_image = "welcome.jpg"
     mail_to_user(user)
   end
 

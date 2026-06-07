@@ -21,6 +21,7 @@ class NotificationsMailer < ApplicationMailer
     @subject = content[:email_subject]
     @content_markdown = content[:email_content_markdown]
     @image_url = badge.email_image_url
+    @header_image = "badge-earned.jpg"
 
     return unless @subject.present? && @content_markdown.present?
 

@@ -10,6 +10,7 @@ class PremiumMailer < ApplicationMailer
 
   # Sends welcome email when user upgrades to Premium
   def welcome_to_premium(user)
+    @header_image = "premium-welcome.jpg"
     mail_to_user(user)
   end
 

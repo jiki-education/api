@@ -13,6 +13,6 @@
         a { font-weight: 500; }
 
   %mj-body{ "background-color": "#ffffff" }
-    = render 'mailers/shared/header', header_image: @header_image.presence || "jiki-header.jpg"
+    = render 'mailers/shared/header', header_image: @header_image.presence || "default.jpg"
     = yield
     = render 'mailers/shared/footer', user: @user, unsubscribe_key: @unsubscribe_key
