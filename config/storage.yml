@@ -25,6 +25,12 @@ r2:
   bucket: <%= Jiki.config.r2_bucket_uploads %>
   public: true
   force_path_style: true
+  # R2 rejects the AWS SDK's default CRC32 request checksum with
+  # "You can only specify one non-default checksum at a time", so only
+  # send/validate checksums when strictly required. Mirrors the patch
+  # applied to Jiki.r2_client in the jiki-config gem.
+  request_checksum_calculation: when_required
+  response_checksum_validation: when_required
 
 # Remember not to checkin your GCS keyfile to a repository
 # google:
