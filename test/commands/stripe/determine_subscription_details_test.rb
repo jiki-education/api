@@ -7,7 +7,6 @@ class Stripe::DetermineSubscriptionDetailsTest < ActiveSupport::TestCase
   end
 
   test "price_id_for returns annual price ID" do
-    skip "annual checkout disabled until FE wires it up"
     assert_equal Jiki.config.stripe_premium_annual_price_id,
       Stripe::DetermineSubscriptionDetails.price_id_for('annual')
   end
@@ -25,7 +24,6 @@ class Stripe::DetermineSubscriptionDetailsTest < ActiveSupport::TestCase
   end
 
   test "interval_for_price_id returns annual for annual price ID" do
-    skip "annual checkout disabled until FE wires it up"
     assert_equal 'annual',
       Stripe::DetermineSubscriptionDetails.interval_for_price_id(Jiki.config.stripe_premium_annual_price_id)
   end
