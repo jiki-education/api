@@ -167,4 +167,49 @@ class User::BootstrapTest < ActiveSupport::TestCase
 
     assert_nil user.data.reload.signup_attribution
   end
+
+  test "sets country_code on user.data" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email", country_code: "JP")
+
+    assert_equal "JP", user.data.reload.country_code
+  end
+
+  test "upcases and truncates country_code to two characters" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email", country_code: "jpn")
+
+    assert_equal "JP", user.data.reload.country_code
+  end
+
+  test "does not set country_code when blank" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email", country_code: "")
+
+    assert_nil user.data.reload.country_code
+  end
+
+  test "does not set country_code when nil" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email")
+
+    assert_nil user.data.reload.country_code
+  end
+
+  test "does not set country_code when XX" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email", country_code: "XX")
+
+    assert_nil user.data.reload.country_code
+  end
 end

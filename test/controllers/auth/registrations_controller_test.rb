@@ -81,6 +81,47 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert_response :created
   end
 
+  test "POST signup forwards CF-IPCountry header to User::Bootstrap" do
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "email",
+      has_entries(country_code: "JP")
+    )
+
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "jp@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "JP User",
+          handle: "jpuser"
+        }
+      ),
+      headers: { "CF-IPCountry" => "JP" },
+      as: :json
+
+    assert_response :created
+  end
+
+  test "POST signup persists country_code from CF-IPCountry header" do
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "jp2@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "JP User",
+          handle: "jpuser2"
+        }
+      ),
+      headers: { "CF-IPCountry" => "JP" },
+      as: :json
+
+    assert_response :created
+    assert_equal "JP", User.find_by(email: "jp2@example.com").data.country_code
+  end
+
   test "POST signup does not call User::Bootstrap on failed registration" do
     assert_no_enqueued_jobs do
       post user_registration_path, params: with_turnstile(

@@ -39,6 +39,30 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     })
   end
 
+  test "POST google forwards CF-IPCountry header to User::Bootstrap" do
+    google_payload = {
+      'id' => 'google-country-id',
+      'email' => 'country@gmail.com',
+      'name' => 'Country User',
+      'exp' => 1.hour.from_now.to_i
+    }
+
+    Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "google",
+      has_entries(country_code: "JP")
+    )
+
+    post auth_google_path,
+      params: { code: 'valid-google-auth-code' },
+      headers: { "CF-IPCountry" => "JP" },
+      as: :json
+
+    assert_response :ok
+  end
+
   test "POST google with valid code for existing google user signs them in" do
     existing_user = create(:user,
       email: 'existing@gmail.com',

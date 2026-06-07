@@ -1,9 +1,10 @@
 class User::Bootstrap
   include Mandate
 
-  initialize_with :user, :provider, attribution: nil
+  initialize_with :user, :provider, attribution: nil, country_code: nil
 
   def call
+    set_country_code!
     send_welcome_email!
     enroll_in_course!
     award_member_badge!
@@ -12,6 +13,13 @@ class User::Bootstrap
   end
 
   private
+  def set_country_code!
+    code = country_code.to_s.upcase[0, 2]
+    return if code.blank? || code == "XX"
+
+    user.data.update_column(:country_code, code)
+  end
+
   def send_welcome_email!
     AccountMailer.welcome(user).deliver_later
   end

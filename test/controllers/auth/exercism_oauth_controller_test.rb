@@ -40,6 +40,31 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     })
   end
 
+  test "POST exercism forwards CF-IPCountry header to User::Bootstrap" do
+    exercism_payload = {
+      'id' => '9999',
+      'email' => 'country@exercism.org',
+      'name' => 'Country User',
+      'handle' => 'countryuser',
+      'avatar_url' => nil
+    }
+
+    Auth::VerifyExercismToken.stubs(:call).returns(exercism_payload)
+
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "exercism",
+      has_entries(country_code: "JP")
+    )
+
+    post auth_exercism_path,
+      params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier' },
+      headers: { "CF-IPCountry" => "JP" },
+      as: :json
+
+    assert_response :ok
+  end
+
   test "POST exercism with valid code for existing exercism user signs them in" do
     existing_user = create(:user,
       email: 'existing@exercism.org',
