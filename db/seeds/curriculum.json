@@ -6,21 +6,21 @@
       "title": "Using Functions",
       "description": "Learn how to use functions with and without inputs.",
       "milestone_summary": "Congratulations! You've completed your first level and learned how to use functions with and without inputs.",
-      "milestone_content": "# You Did It! 🎉\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to use functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
+      "milestone_content": "# You Did It! \ud83c\udf89\n\nYou've completed your first level and taken your first steps into the world of programming!\n\n## What you've learned:\n- How to use functions to make things happen\n- How to use functions without inputs\n- How to use functions with inputs to control their behavior\n- How to solve problems by breaking them down into steps\n\n## Next steps:\n- Continue to the next level to build on these skills\n- Practice what you've learned\n- Keep experimenting and having fun!\n\nYou're on your way to becoming a great programmer. Keep going!",
       "milestone_email_subject": "Congratulations on hitting the first Milestone",
       "milestone_email_content_markdown": "Great work on completing the first level of Jiki's Coding Fundamentals course.\n\nIt might not feel like you're doing much \"real\" coding yet, but you've just picked up one of the most important skills in programming. You'll be using functions hundreds of times a day from here on, so this really is the foundation for everything else.\n\nNext we'll look at using colours to draw, and then we'll start mixing some logic into the process. Have fun!",
       "lessons": [
         {
           "uuid": "9bd095ef-7f00-4248-99fd-f07fbca487b2",
-          "slug": "welcome-to-jiki",
-          "title": "Welcome to Jiki",
+          "slug": "welcome-to-coding-fundamentals",
+          "title": "Welcome to Coding Fundamentals",
           "description": "Meet Jiki and learn the basics of how coding works.",
           "type": "video",
           "data": {
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "ew3om5OGiN1X1JymVX6KLV22i0001VzqDmslVQolLSis8"
               }
             ]
           }
@@ -45,7 +45,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "3XqycOyM01D3z2Mas1hQ6M9LGb5fKUDH74j8PU00wFPQc"
+                "id": "Aj2H7Gvydv121v8WATwx6WFLQdUCBbQhJxqyjrWOJAo"
               }
             ]
           }
@@ -70,7 +70,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "VHesSvtbQuD2Lo9T2gRvC6KaiYMlcBUgU5JzKuZOUrw"
+                "id": "mTtX4TVfc02LKMkiLhzeGXVOHVoi18ihvUSzPfTE01IgU"
               }
             ]
           }
@@ -113,7 +113,7 @@
       "title": "Strings and Colors",
       "description": "Learn how to use strings and colors to make your programs more colorful and expressive.",
       "milestone_summary": "Excellent work! You've learned how to use strings and colors to create colorful drawings.",
-      "milestone_content": "# Great Progress! 🎨\n\nYou've mastered using strings and colors in your programs!\n\n## What you've learned:\n- How to use strings to work with text and names\n- How to use colors to make your drawings more vibrant\n- How to combine shapes and colors to create complex images\n\n## Next steps:\n- Continue building on these skills\n- Create even more complex and colorful programs\n- Keep experimenting with different combinations!\n\nYou're becoming a skilled programmer. Keep it up!",
+      "milestone_content": "# Great Progress! \ud83c\udfa8\n\nYou've mastered using strings and colors in your programs!\n\n## What you've learned:\n- How to use strings to work with text and names\n- How to use colors to make your drawings more vibrant\n- How to combine shapes and colors to create complex images\n\n## Next steps:\n- Continue building on these skills\n- Create even more complex and colorful programs\n- Keep experimenting with different combinations!\n\nYou're becoming a skilled programmer. Keep it up!",
       "milestone_email_subject": "Enjoyed Drawing?",
       "milestone_email_content_markdown": "Great work on this level, and on your first proper bit of drawing.\n\nYou've now added strings and colours to your toolkit, which means your programs can start handling text and producing things that actually look good on screen.\n\nOver the next few lessons we'll start bringing in some logic, so you can move beyond linear instructions and add some variety and intelligence into your programs. Have fun!",
       "lessons": [
@@ -127,7 +127,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "OAsNkHy501HtqWBqlr4p3FIWOZ00I57RyRKQsQN1M5q2Q"
+                "id": "952KIt7rNskdLTOPmcrg5ix73m4ccRMbV00JTGSJDAxg"
               }
             ]
           }
@@ -180,7 +180,7 @@
       "title": "Repeat Loop",
       "description": "Learn how to repeat actions using loops to make your code more efficient.",
       "milestone_summary": "Great job! You've learned how to use repeat loops to make your programs more powerful and efficient.",
-      "milestone_content": "# Fantastic Work! 🔁\n\nYou've mastered the repeat loop - one of the most powerful tools in programming!\n\n## What you've learned:\n- How to use loops to repeat actions\n- How to write more efficient code with less repetition\n- How to solve problems that require doing the same thing multiple times\n\n## Next steps:\n- Apply loops to more complex challenges\n- Combine loops with everything else you've learned\n- Keep building your programming skills!\n\nYou're making excellent progress. Keep going!",
+      "milestone_content": "# Fantastic Work! \ud83d\udd01\n\nYou've mastered the repeat loop - one of the most powerful tools in programming!\n\n## What you've learned:\n- How to use loops to repeat actions\n- How to write more efficient code with less repetition\n- How to solve problems that require doing the same thing multiple times\n\n## Next steps:\n- Apply loops to more complex challenges\n- Combine loops with everything else you've learned\n- Keep building your programming skills!\n\nYou're making excellent progress. Keep going!",
       "milestone_email_subject": "Feeling Loopy after all that Looping?",
       "milestone_email_content_markdown": "Great work on this level. Loops are a fundamental building block of programming, and hopefully they're starting to feel pretty comfortable.\n\nThere are other types of loops we'll look at later in the course, but the repeat loop will be your companion for the next few lessons.\n\nNext up are variables, which is the idea of storing and retrieving values as your program runs. Have fun!",
       "lessons": [
@@ -194,7 +194,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "5Jx026YLoLNlu018jQE5sjYT6D5Rju0200NLbLcWXdtV8tw"
+                "id": "vA7c2WjshU7Hmd4rT200ric7DPRCXqqL3CRoML6MvgWk"
               }
             ]
           }
@@ -243,7 +243,7 @@
       "title": "Variables",
       "description": "Learn how to store and reuse values using variables.",
       "milestone_summary": "Excellent! You've learned how to use variables to store and reuse values in your programs.",
-      "milestone_content": "# Outstanding Work! 📦\n\nYou've mastered variables - a fundamental building block of programming!\n\n## What you've learned:\n- How to create and use variables to store values\n- How to make your code more flexible and reusable\n- How to change values in one place and see results everywhere\n- How variables make complex programs easier to manage\n\n## Next steps:\n- Use variables in more complex programs\n- Combine variables with loops and functions\n- Keep building your programming toolkit!\n\nYou're becoming a real programmer now. Keep going!",
+      "milestone_content": "# Outstanding Work! \ud83d\udce6\n\nYou've mastered variables - a fundamental building block of programming!\n\n## What you've learned:\n- How to create and use variables to store values\n- How to make your code more flexible and reusable\n- How to change values in one place and see results everywhere\n- How variables make complex programs easier to manage\n\n## Next steps:\n- Use variables in more complex programs\n- Combine variables with loops and functions\n- Keep building your programming toolkit!\n\nYou're becoming a real programmer now. Keep going!",
       "milestone_email_subject": "Variables in the bag",
       "milestone_email_content_markdown": "Great work on getting variables under your belt.\n\nVariables are one of those ideas that's pretty simple on the surface, but they're going to underpin almost everything you write from now on. The ability to store a value, give it a name, and use it later is what turns code from a fixed list of instructions into something genuinely flexible.\n\nNext we'll look at how variables change over time, which is what programmers call \"state\". Have fun!",
       "lessons": [
@@ -257,7 +257,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "0001L4Ro2pAVzAXcuIolR2eUoSECCyDP01rnyo5FD4AmYw"
+                "id": "01Ukdtv001tam83v4Bhhn1Z4mCgeadxB01sqLvE1vMiq00E"
               }
             ]
           }
@@ -292,7 +292,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "vybEjgw2drpw125WcDKyZ200HCCuvWALhJXwKt60002qSw"
+                "id": "x01ttw78cvyX005yob02zuyUCQDTF86gXYjWi6Tz8GVcEk"
               }
             ]
           }
@@ -335,7 +335,7 @@
       "title": "Basic State",
       "description": "Learn how to update variables and track changing values over time.",
       "milestone_summary": "Amazing! You've learned how to use variables to track state and create dynamic programs.",
-      "milestone_content": "# Incredible Progress! 📈\n\nYou've mastered using variables to track state - a crucial programming skill!\n\n## What you've learned:\n- How to update variables to track changing values\n- How to use state to make your programs dynamic\n- How to combine all your skills to create complex programs\n\n## Next steps:\n- Apply state management to more complex challenges\n- Keep experimenting and having fun!\n\nYou're well on your way to mastering programming. Keep it up!",
+      "milestone_content": "# Incredible Progress! \ud83d\udcc8\n\nYou've mastered using variables to track state - a crucial programming skill!\n\n## What you've learned:\n- How to update variables to track changing values\n- How to use state to make your programs dynamic\n- How to combine all your skills to create complex programs\n\n## Next steps:\n- Apply state management to more complex challenges\n- Keep experimenting and having fun!\n\nYou're well on your way to mastering programming. Keep it up!",
       "milestone_email_subject": "State of play",
       "milestone_email_content_markdown": "Great work on this one. You can now track values that change as your program runs, which is a real step up from where you were a couple of levels ago.\n\nThis idea of state is going to keep coming back throughout the course, and it gets more interesting every time we combine it with something new.\n\nNext is a meaty level. We'll look at functions that return values, and then explore colours, randomness, animation, scope, and nested loops along the way. Have fun!",
       "lessons": [
@@ -349,7 +349,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "S9qV9S9z901zIECFLbmsifMEKQ5Nmhx1sp3lmnJ02WaPo"
+                "id": "TaqaLJ47CTFy500IS02SqcL800vnNim7c3Vgx6zHfsWcjE"
               }
             ]
           }
@@ -406,7 +406,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "8MleD1U7m8oFqo8jkk02VCoHFCLIFJ01GvOIsySbmZgdk"
+                "id": "02axK002T1P01nW7YyPcyOp4mRC7lhUgUeMqfA7qK4m88U"
               }
             ]
           }
@@ -441,7 +441,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "EW00Ustg6JDhm9suSRo501NULR59hWB01UwL6CIPhykEOQ"
+                "id": "XSoA6Lb02XNr9hJ2xQsWBTLAyXXQ1TmdGOtxc302fbQqs"
               }
             ]
           }
@@ -466,7 +466,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "pDlPT7FtXLMGLPXogNJBhLFtUkbeVSPDGPQ59G4QD34"
+                "id": "tcoV01wK2deg62nyK64WIGJsgnBJZwKtiu87hXI0265W4"
               }
             ]
           }
@@ -491,7 +491,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "rGxEbglppfIGH019dr48rlMsq01rY2CYqS9XFdmzwchJo"
+                "id": "kA5kVvGJkRLGc5mkcI1i02KVlNCufT47PZx6TQwOl1Io"
               }
             ]
           }
@@ -516,7 +516,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "zpvx7GvvT00ZkkhzYV5DYK6YjN0101Hcj13thgiyCEpfbk"
+                "id": "biVLZc7O7DVYcod4xjsd8kJAeYB02suU8hMp1iNyuux00"
               }
             ]
           }
@@ -551,7 +551,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "mUd1W5b9FBCVwXX9LwIssF02EwoLopcayjVpVSVE3e01Q"
+                "id": "PIWHqBHCQylbkLy23zZ8MVfq1BwCv3X5NT00BEa01zW6Y"
               }
             ]
           }
@@ -596,7 +596,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "MhKrKN77Xy5EKc8JXGP9D4ILJvywXOyUyJGSzsFQIso"
+                "id": "kuYkAzUmu8UbseF7bU202JyjqNcbeCFbA19lWtemH00tU"
               }
             ]
           }
@@ -633,7 +633,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "z4VQileMR7Ek7Z1bIHF9t8016g6al01MEUR6N8afaVMeI"
+                "id": "nVEc02UokZ01cwOJvS1901Jozzo3kzPEHiu015jrIEjWIqg"
               }
             ]
           }
@@ -668,7 +668,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "Q6ADXchTPG01XGnOlQjEV8BMlSnYWEwuquc5011WHz5rQ"
+                "id": "qlyNFVNYQQ8SyTL02sLyVuqKIMwwRZ43t01h915WQvY2Q"
               }
             ]
           }
@@ -715,7 +715,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "nSgPUuFSgnTrdBu7A7jdT02gpKyIPRAH7ZbdGMYNQiU00"
+                "id": "XEM00Fa7RBSn1UKwbAOZ02pxWYCYegRDbQlPS4NTUI02pk"
               }
             ]
           }
@@ -750,7 +750,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "01GVnztB00jGG023Cjd8Pz01DmYZTYi7YVB01027LlB00YSdD00"
+                "id": "pGZ4tLQH3qgTaol9G6OqMg9ISt7EM7NeT6geaXfygd00"
               }
             ]
           }
@@ -775,7 +775,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "Ma01HKosMo3d8hzVOmoNH9WTgVIafnZlDcG4xpee7lvs"
+                "id": "rbqnTxrutpnjPRS01xoUHseDsLtDR5nVxWqymnn2ZgGA"
               }
             ]
           }
@@ -804,15 +804,15 @@
       "lessons": [
         {
           "uuid": "07c3c7d3-6f2a-48bf-9d4b-350161944949",
-          "slug": "using-if-and-state",
-          "title": "Using If and State Together",
+          "slug": "state",
+          "title": "State",
           "description": "Learn how to combine conditions with changing data.",
           "type": "video",
           "data": {
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "Mdck7002ZWlfGWP9Xe7iqyK74yskV2DWxgNjgxTd02iQ8"
               }
             ]
           }
@@ -859,7 +859,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "uW9V6LY5psyVYRw42VPdEi67xZoqW0217BfV82iP3dUY"
               }
             ]
           }
@@ -894,7 +894,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "3VGPtfBA26Up0100OsJJL2cKvjuK5vHO02TdtmXSOGfdlA"
               }
             ]
           }
@@ -919,7 +919,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "VJxOiELDWwRUEOJoYk7CF1xJRwjIGxGC00TXRgByQp54"
               }
             ]
           }
@@ -996,7 +996,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "3puwCN4uthpO01yoVbNat8WkNMKO7SjnjZOs16FbpRHY"
               }
             ]
           }
@@ -1053,7 +1053,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "jB900UcxqbBsli0078h8mUVpQBFFsP69BQ01JvXLw02c7RY"
               }
             ]
           }
@@ -1078,7 +1078,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "tBeeDJqJRDgdxw2LgmWVQxaqrtzTQ88mLV7qEAQ7PzY"
               }
             ]
           }
@@ -1165,7 +1165,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "K8jSaoHfjICqKj02RsmL00pyr8wlm1wF8b8rBP15Gh85E"
               }
             ]
           }
@@ -1212,7 +1212,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "FE01RPXelsb00GBJI75IYkf8W7QGOIUM1BAHWRELAjWzk"
               }
             ]
           }
@@ -1259,7 +1259,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "gjHWRI02ITj2B3YbTmSDGeqVrLLLIwtSVjvqHGS97CP8"
               }
             ]
           }
@@ -1306,7 +1306,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "00Fj17zLhrErt9st2rP52nn8L7n4lh93ItrQaJ02EYQO4"
               }
             ]
           }
@@ -1371,7 +1371,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "B7kisBeI2abPcdXs7DOghy3RZLxpDiAiNqqnUkIW2aM"
               }
             ]
           }
@@ -1468,7 +1468,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "zMLm4cwlLFcTWW6lXoKp8w0046ng01oQxst01tdTvBecnk"
               }
             ]
           }
@@ -1503,7 +1503,7 @@
             "sources": [
               {
                 "provider": "mux",
-                "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
+                "id": "pGvxokynFybaWS8802EC9DanC2W901VO2AmStMpF8uQVA"
               }
             ]
           }

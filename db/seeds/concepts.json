@@ -303,7 +303,7 @@
     "description": "Combining if statements with variables that change over time so your program reacts and behaves differently as it runs.",
     "content_markdown": "# Conditionals and State\n\nMixing conditionals with state lets your program respond differently as values change.",
     "parent_slug": null,
-    "unlocked_by_lesson_slug": "using-if-and-state"
+    "unlocked_by_lesson_slug": "state"
   },
   {
     "uuid": "c160feb8-2999-40b5-8e38-8671c0fa1cdb",
