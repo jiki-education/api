@@ -1,11 +1,19 @@
-# This file ensures the existence of records required to run the application in every
-# environment (production, development, test). Everything in this file MUST be:
+# ⚠️  AGENTS / REVIEWERS: READ THIS BEFORE TOUCHING THIS FILE ⚠️
 #
-#   - Idempotent: running it repeatedly always produces the same result.
+# Seeds run repeatedly in production via the admin reseed endpoint, not just once
+# at install. Everything in this file MUST be:
+#
+#   - Idempotent: running it repeatedly always produces the same result. No
+#     duplicate records, no monotonically-growing counters, no "create" without
+#     a matching "find_or_initialize_by" / uuid lookup.
 #   - Non-destructive: records are only created or updated (matched by uuid, falling
 #     back to slug), never deleted or recreated. User data is always preserved.
 #   - Production-safe: no test users, sample progress or fake payments.
 #     Development-only sample data lives in db/seeds/development.rb.
+#
+# EVERY PR THAT TOUCHES THIS FILE (or anything it loads) MUST explicitly verify
+# idempotency: running `bin/rails db:seed` twice in a row must produce identical
+# database state the second time. Call this out in the PR description.
 #
 # Run with: bin/rails db:seed
 
