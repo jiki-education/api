@@ -7,6 +7,11 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     # Validate interval
     unless %w[monthly annual].include?(interval)
+      Sentry.capture_message(
+        "Checkout session rejected: invalid interval",
+        level: :error,
+        extra: { user_id: current_user.id, interval: interval }
+      )
       return render json: {
         error: {
           type: "invalid_interval",
@@ -17,6 +22,14 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     # Block if user already has subscription
     unless current_user.data.can_checkout?
+      Sentry.capture_message(
+        "Checkout session rejected: existing subscription",
+        level: :error,
+        extra: {
+          user_id: current_user.id,
+          subscription_status: current_user.data.subscription_status
+        }
+      )
       return render json: {
         error: {
           type: "existing_subscription",
@@ -27,6 +40,11 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     # Validate return_url is from frontend
     unless Utils::VerifyFrontendUrl.(return_url)
+      Sentry.capture_message(
+        "Checkout session rejected: invalid return_url",
+        level: :error,
+        extra: { user_id: current_user.id, return_url: return_url }
+      )
       return render json: {
         error: {
           type: "invalid_return_url",
@@ -62,6 +80,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }
   rescue StandardError => e
     Rails.logger.error("Failed to create checkout session: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "checkout_failed",
