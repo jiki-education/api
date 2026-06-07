@@ -186,6 +186,7 @@ Rails.application.routes.draw do
       end
     end
     resources :images, only: [:create]
+    resource :seeds, only: [:create]
   end
 
   # Webhooks endpoints
