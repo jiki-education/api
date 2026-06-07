@@ -1,11 +1,11 @@
 class User::SendEmail
   include Mandate
 
-  initialize_with :emailable
+  initialize_with :emailable, kind: nil
 
   # TODO: Move this into mandate!
-  def self.call(*args, &block)
-    new(*args).(&block)
+  def self.call(*args, **kwargs, &block)
+    new(*args, **kwargs).(&block)
   end
 
   # This returns a boolean based on whether it succeeds or not
@@ -15,7 +15,7 @@ class User::SendEmail
     # We start by doing checks to see if we should send based
     # on the state of the emailable. We hope to catch things
     # here to avoid locking
-    return false unless emailable.email_pending?
+    return false unless pending?
     return false unless guard_needs_sending!
 
     # Do this first, so we can do it outside of the lock
@@ -26,24 +26,27 @@ class User::SendEmail
     # We now lock and recheck things. We do the rechecking in the locked
     # record to avoid race conditions.
     emailable.with_lock do
-      return false unless emailable.email_pending?
+      return false unless pending?
       return false unless guard_needs_sending!
 
       yield
 
-      emailable.email_sent!
+      mark_sent!
 
       true
     end
   end
 
   private
-  attr_reader :emailable
+  def pending? = emailable.public_send(:"#{status_prefix}_pending?")
+  def mark_sent! = emailable.public_send(:"#{status_prefix}_sent!")
+  def mark_skipped! = emailable.public_send(:"#{status_prefix}_skipped!")
+  def status_prefix = kind ? :"#{kind}_email" : :email
 
   def guard_needs_sending!
-    return true if emailable.email_should_send?
+    return true if emailable.email_should_send?(kind)
 
-    emailable.email_skipped!
+    mark_skipped!
     false
   end
 
@@ -55,14 +58,15 @@ class User::SendEmail
 
     return true if conditions.all?
 
-    emailable.email_skipped!
+    mark_skipped!
     false
   end
 
   def has_affirmative_communication_preference?
-    return true unless emailable.email_communication_preferences_key
+    pref_key = emailable.email_communication_preferences_key(kind)
+    return true unless pref_key
 
-    user.communication_preferences&.send(emailable.email_communication_preferences_key)
+    user.communication_preferences&.send(pref_key)
   end
 
   memoize

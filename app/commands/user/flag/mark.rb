@@ -1,10 +1,10 @@
-class User::SeenFlag::MarkSeen
+class User::Flag::Mark
   include Mandate
 
   initialize_with :user, :key
 
   def call
-    User::SeenFlag.find_or_create_by!(user:, key:)
+    User::Flag.find_or_create_by!(user:, key:)
   rescue ActiveRecord::RecordNotUnique
     nil
   end

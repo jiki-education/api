@@ -22,7 +22,7 @@ class User < ApplicationRecord
   has_many :user_videos, dependent: :destroy
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
   has_many :badges, through: :acquired_badges
-  has_many :seen_flags, class_name: "User::SeenFlag", dependent: :destroy
+  has_many :flags, class_name: "User::Flag", dependent: :destroy
   has_many :assistant_conversations, dependent: :destroy
   has_many :payments, dependent: :destroy
 
@@ -39,7 +39,14 @@ class User < ApplicationRecord
 
   def uses_oauth? = exercism_id.present? || google_id.present?
 
-  def seen?(key) = key.present? && seen_flags.exists?(key:)
+  def flagged?(key) = key.present? && flags.exists?(key:)
+
+  # Devise calls this after a user confirms their email address (both initial
+  # signup confirmation and after re-confirming a changed email). The send
+  # command is idempotent via welcome_email_status, so re-confirmation is a no-op.
+  def after_confirmation
+    User::SendWelcomeEmail.(self)
+  end
 
   # Placeholder for communication preferences - will be implemented later
   def communication_preferences

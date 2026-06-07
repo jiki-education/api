@@ -20,6 +20,17 @@ class Auth::ConfirmationsControllerTest < ApplicationControllerTest
     assert_response :ok
   end
 
+  test "GET confirmation triggers welcome email via after_confirmation" do
+    user = create(:user, :unconfirmed)
+    token = user.confirmation_token
+
+    User::SendWelcomeEmail.expects(:call).with { |arg| arg.id == user.id }
+
+    get user_confirmation_path(confirmation_token: token), as: :json
+
+    assert_response :ok
+  end
+
   test "GET confirmation with invalid token returns error" do
     get user_confirmation_path(confirmation_token: "invalid-token"), as: :json
 

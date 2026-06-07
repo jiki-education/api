@@ -63,20 +63,19 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
   end
 
   test "POST signup calls User::Bootstrap on successful registration" do
-    assert_enqueued_with(
-      job: ActionMailer::MailDeliveryJob,
-      args: ->(args) { args[0] == "AccountMailer" && args[1] == "welcome" }
-    ) do
-      post user_registration_path, params: with_turnstile(
-        user: {
-          email: "bootstrap@example.com",
-          password: "password123",
-          password_confirmation: "password123",
-          name: "Bootstrap User",
-          handle: "bootstrapuser"
-        }
-      ), as: :json
+    User::Bootstrap.expects(:call).with do |user, provider, **|
+      user.email == "bootstrap@example.com" && provider == "email"
     end
+
+    post user_registration_path, params: with_turnstile(
+      user: {
+        email: "bootstrap@example.com",
+        password: "password123",
+        password_confirmation: "password123",
+        name: "Bootstrap User",
+        handle: "bootstrapuser"
+      }
+    ), as: :json
 
     assert_response :created
   end

@@ -1,4 +1,4 @@
-class User::SeenFlag < ApplicationRecord
+class User::Flag < ApplicationRecord
   belongs_to :user
 
   validates :key, presence: true, length: { maximum: 100 }
