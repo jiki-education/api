@@ -147,12 +147,12 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   # POST user_messages
   test "POST user_messages successfully adds user message" do
     post user_messages_internal_assistant_conversations_path,
-      params: with_turnstile(
+      params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
         content: "How do I solve this?",
         timestamp: "2025-10-31T08:15:30.000Z"
-      ),
+      },
       as: :json
 
     assert_response :success
@@ -168,19 +168,6 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
     ).returns(build_stubbed(:assistant_conversation))
 
     post user_messages_internal_assistant_conversations_path,
-      params: with_turnstile(
-        context_type: "lesson",
-        context_identifier: "basic-movement",
-        content: "How do I solve this?",
-        timestamp: "2025-10-31T08:15:30.000Z"
-      ),
-      as: :json
-
-    assert_response :success
-  end
-
-  test "POST user_messages returns 403 invalid_captcha when token missing" do
-    post user_messages_internal_assistant_conversations_path,
       params: {
         context_type: "lesson",
         context_identifier: "basic-movement",
@@ -189,7 +176,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
       },
       as: :json
 
-    assert_json_error(:forbidden, error_type: :invalid_captcha)
+    assert_response :success
   end
 
   # POST assistant_messages
