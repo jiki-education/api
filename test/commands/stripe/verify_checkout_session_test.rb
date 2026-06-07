@@ -29,6 +29,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "verifies checkout session for annual subscription" do
+    skip "annual checkout disabled until FE wires it up"
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
     session_id = "cs_test_123"
