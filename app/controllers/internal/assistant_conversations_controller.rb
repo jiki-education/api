@@ -1,7 +1,7 @@
 class Internal::AssistantConversationsController < Internal::BaseController
   include TurnstileVerifiable
 
-  before_action :verify_turnstile!, only: %i[create create_user_message]
+  before_action :verify_turnstile!, only: %i[create]
 
   def create
     context = find_context
