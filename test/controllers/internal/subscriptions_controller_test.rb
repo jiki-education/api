@@ -58,7 +58,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   end
 
   test "POST checkout_session omits trigger when not provided" do
-    skip "annual checkout disabled until FE wires it up"
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
     session = mock
     session.stubs(:client_secret).returns("cs_secret_x")
@@ -69,13 +68,13 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       "checkout_started",
       properties: {
         plan: "premium",
-        interval: "annual",
+        interval: "monthly",
         currency: :usd
       }
     )
 
     post internal_subscriptions_checkout_session_path,
-      params: { interval: "annual", return_url: return_url },
+      params: { interval: "monthly", return_url: return_url },
       as: :json
 
     assert_response :success
