@@ -187,6 +187,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
   end
 
   test "handles interval change from monthly to annual" do
+    skip "annual checkout disabled until FE wires it up"
     @user.data.update!(subscription_interval: "monthly")
 
     subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
@@ -325,6 +326,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
   end
 
   test "is idempotent - does not duplicate entry on retry" do
+    skip "annual checkout disabled until FE wires it up"
     @user.data.update!(
       subscription_interval: "annual",
       subscriptions: [

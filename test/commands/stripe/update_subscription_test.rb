@@ -2,6 +2,7 @@ require "test_helper"
 
 class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
   test "switches from monthly to annual with immediate proration" do
+    skip "annual checkout disabled until FE wires it up"
     user = create(:user)
     period_end = 1.year.from_now
     user.data.update!(

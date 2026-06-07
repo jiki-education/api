@@ -27,6 +27,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
   end
 
   test "creates annual subscription for user" do
+    skip "annual checkout disabled until FE wires it up"
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 

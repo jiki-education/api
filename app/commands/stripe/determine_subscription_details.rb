@@ -12,8 +12,8 @@ class Stripe::DetermineSubscriptionDetails
 
   def self.price_map
     {
-      'monthly' => Jiki.config.stripe_premium_monthly_price_id,
-      'annual' => Jiki.config.stripe_premium_annual_price_id
+      'monthly' => Jiki.config.stripe_premium_monthly_price_id
+      # 'annual' => Jiki.config.stripe_premium_annual_price_id
     }
   end
 end
