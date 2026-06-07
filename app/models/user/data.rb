@@ -1,9 +1,16 @@
 class User::Data < ApplicationRecord
+  include Emailable
+  has_email_status :welcome
+  has_email_status :welcome_to_premium
+
   belongs_to :user
 
   # Generate unsubscribe token for new records
   before_create :generate_unsubscribe_token!
   before_create :set_default_timezone!
+
+  # Welcome emails are transactional — no preference check.
+  def email_communication_preferences_key(_kind = nil) = nil
 
   # Notification preference slugs mapped to column names
   NOTIFICATION_SLUGS = {

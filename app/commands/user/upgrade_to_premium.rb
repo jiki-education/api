@@ -11,7 +11,7 @@ class User::UpgradeToPremium
     end
 
     award_badge!
-    send_welcome_email!
+    User::SendWelcomeToPremiumEmail.(user)
     User::Identify.defer(user)
     track_event!
   end
@@ -19,10 +19,6 @@ class User::UpgradeToPremium
   private
   def award_badge!
     AwardBadgeJob.perform_later(user, 'premium')
-  end
-
-  def send_welcome_email!
-    PremiumMailer.welcome_to_premium(user).deliver_later
   end
 
   def track_event!

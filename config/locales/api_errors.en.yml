@@ -57,7 +57,7 @@ en:
     handle_update_failed: "Handle update failed"
     notification_update_failed: "Notification update failed"
     streaks_update_failed: "Streaks update failed"
-    seen_flag_invalid: "Seen flag is invalid"
+    flag_invalid: "Flag is invalid"
 
     # Image/Avatar errors
     no_image_provided: "No image file provided"

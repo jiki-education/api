@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -438,6 +438,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
     t.string "unsubscribe_token", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.integer "welcome_email_status", default: 0, null: false
+    t.integer "welcome_to_premium_email_status", default: 0, null: false
     t.index ["membership_type"], name: "index_user_data_on_membership_type"
     t.index ["stripe_customer_id"], name: "index_user_data_on_stripe_customer_id", unique: true
     t.index ["stripe_subscription_id"], name: "index_user_data_on_stripe_subscription_id"
@@ -446,6 +448,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
     t.index ["unlocked_concept_ids"], name: "index_user_data_on_unlocked_concept_ids", using: :gin
     t.index ["unsubscribe_token"], name: "index_user_data_on_unsubscribe_token", unique: true
     t.index ["user_id"], name: "index_user_data_on_user_id", unique: true
+  end
+
+  create_table "user_flags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "key"], name: "index_user_flags_on_user_id_and_key", unique: true
+    t.index ["user_id"], name: "index_user_flags_on_user_id"
   end
 
   create_table "user_lessons", force: :cascade do |t|
@@ -486,15 +497,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
     t.bigint "user_id", null: false
     t.index ["project_id"], name: "index_user_projects_on_project_id"
     t.index ["user_id", "project_id"], name: "index_user_projects_on_user_id_and_project_id", unique: true
-  end
-
-  create_table "user_seen_flags", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "key", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id", "key"], name: "index_user_seen_flags_on_user_id_and_key", unique: true
-    t.index ["user_id"], name: "index_user_seen_flags_on_user_id"
   end
 
   create_table "user_videos", force: :cascade do |t|
@@ -562,6 +564,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
   add_foreign_key "user_courses", "user_levels", column: "current_user_level_id"
   add_foreign_key "user_courses", "users"
   add_foreign_key "user_data", "users"
+  add_foreign_key "user_flags", "users"
   add_foreign_key "user_lessons", "lessons"
   add_foreign_key "user_lessons", "users"
   add_foreign_key "user_levels", "levels"
@@ -569,6 +572,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_04_120000) do
   add_foreign_key "user_levels", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
-  add_foreign_key "user_seen_flags", "users"
   add_foreign_key "user_videos", "users"
 end

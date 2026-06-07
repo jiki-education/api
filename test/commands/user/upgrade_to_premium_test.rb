@@ -10,12 +10,12 @@ class User::UpgradeToPremiumTest < ActiveSupport::TestCase
     assert user.data.reload.premium?
   end
 
-  test "sends welcome email when upgrading from standard" do
+  test "sends welcome-to-premium email when upgrading from standard" do
     user = create(:user)
 
-    assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
-      User::UpgradeToPremium.(user)
-    end
+    User::SendWelcomeToPremiumEmail.expects(:call).with(user)
+
+    User::UpgradeToPremium.(user)
   end
 
   test "returns early if user is already premium" do

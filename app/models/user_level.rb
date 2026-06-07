@@ -1,5 +1,6 @@
 class UserLevel < ApplicationRecord
   include Emailable
+  has_email_status
 
   belongs_to :user
   belongs_to :level
@@ -15,7 +16,7 @@ class UserLevel < ApplicationRecord
   validates :user_id, uniqueness: { scope: :level_id }
 
   # Always send emails for level completion (no specific preference key)
-  def email_communication_preferences_key
+  def email_communication_preferences_key(_kind = nil)
     nil
   end
 end

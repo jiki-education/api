@@ -1,16 +1,22 @@
 require "test_helper"
 
 class User::BootstrapTest < ActiveSupport::TestCase
-  test "enqueues welcome email" do
+  test "sends welcome email when user is confirmed" do
     create(:course, slug: "coding-fundamentals")
     user = create(:user)
 
-    assert_enqueued_with(
-      job: ActionMailer::MailDeliveryJob,
-      args: ["AccountMailer", "welcome", "deliver_now", { args: [user] }]
-    ) do
-      User::Bootstrap.(user, "email")
-    end
+    User::SendWelcomeEmail.expects(:call).with(user)
+
+    User::Bootstrap.(user, "google")
+  end
+
+  test "does not send welcome email when user is unconfirmed" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user, :unconfirmed)
+
+    User::SendWelcomeEmail.expects(:call).never
+
+    User::Bootstrap.(user, "email")
   end
 
   test "enrolls user in coding-fundamentals course" do

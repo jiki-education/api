@@ -20,8 +20,13 @@ class User::Bootstrap
     user.data.update_column(:country_code, code)
   end
 
+  # Email-signup users are unconfirmed at this point — they'll get the welcome
+  # email via User#after_confirmation. OAuth users are pre-confirmed so we send
+  # it here. The command is idempotent, so this is safe either way.
   def send_welcome_email!
-    AccountMailer.welcome(user).deliver_later
+    return unless user.confirmed?
+
+    User::SendWelcomeEmail.(user)
   end
 
   def enroll_in_course!
