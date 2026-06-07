@@ -7,7 +7,11 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   def create
     super do |resource|
-      User::Bootstrap.(resource, "email", attribution: signup_attribution_params) if resource.persisted?
+      if resource.persisted?
+        User::Bootstrap.(resource, "email",
+          attribution: signup_attribution_params,
+          country_code: request.headers["CF-IPCountry"])
+      end
     end
   end
 

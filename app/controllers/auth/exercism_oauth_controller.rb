@@ -3,7 +3,11 @@ module Auth
     def create
       user = Auth::AuthenticateWithOauth.(:exercism, params[:code], code_verifier: params[:code_verifier])
 
-      User::Bootstrap.(user, "exercism", attribution: signup_attribution_params) if user.previously_new_record?
+      if user.previously_new_record?
+        User::Bootstrap.(user, "exercism",
+          attribution: signup_attribution_params,
+          country_code: request.headers["CF-IPCountry"])
+      end
 
       sign_in_with_2fa_guard!(user)
     rescue InvalidExercismTokenError, InvalidOauthPayloadError => e
