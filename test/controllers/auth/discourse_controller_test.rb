@@ -28,6 +28,25 @@ class Auth::DiscourseControllerTest < ApplicationControllerTest
     assert_includes return_to, "sig="
   end
 
+  test "GET sso enqueues townsfolk badge for authenticated user" do
+    Jiki.secrets.stubs(:discourse_sso_secret).returns(@secret)
+    sign_in_user(@user)
+    sso_payload = build_sso_payload(nonce: "badge_nonce")
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [@user, 'townsfolk']) do
+      get auth_discourse_sso_path, params: { sso: sso_payload[:sso], sig: sso_payload[:sig] }
+    end
+  end
+
+  test "GET sso does not enqueue townsfolk badge for unauthenticated user" do
+    Jiki.config.stubs(:frontend_base_url).returns("https://app.jiki.io")
+    sso_payload = build_sso_payload(nonce: "unauth_nonce")
+
+    assert_no_enqueued_jobs(only: AwardBadgeJob) do
+      get auth_discourse_sso_path, params: { sso: sso_payload[:sso], sig: sso_payload[:sig] }
+    end
+  end
+
   test "GET sso redirects authenticated user to Discourse with signed payload" do
     Jiki.secrets.stubs(:discourse_sso_secret).returns(@secret)
 
