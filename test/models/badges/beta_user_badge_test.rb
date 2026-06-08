@@ -6,7 +6,7 @@ class Badges::BetaUserBadgeTest < ActiveSupport::TestCase
 
     assert_equal 'Beta User', badge.name
     assert_equal 'Joined Jiki during the beta', badge.description
-    refute badge.secret
+    assert badge.secret
   end
 
   test "award_to? returns true when user was created before July 1st 2026" do
