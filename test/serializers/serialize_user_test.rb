@@ -5,19 +5,27 @@ class SerializeUserTest < ActiveSupport::TestCase
     user = create(:user, handle: "test_user", email: "test@example.com", name: "Test User",
       avatar_url: "https://example.com/avatar.png")
 
-    result = SerializeUser.(user)
-
-    assert_equal "test_user", result[:handle]
-    assert_equal "standard", result[:membership_type]
-    assert_equal "test@example.com", result[:email]
-    assert_equal "Test User", result[:name]
-    assert_equal "https://example.com/avatar.png", result[:avatar_url]
-    assert_equal "never_subscribed", result[:subscription_status]
-    assert_nil result[:subscription]
-    assert_equal :usd, result[:premium_prices][:currency]
-    assert_equal 999, result[:premium_prices][:monthly]
-    assert_equal 9900, result[:premium_prices][:annual]
-    assert_nil result[:premium_prices][:country_code]
+    assert_equal(
+      {
+        handle: "test_user",
+        membership_type: "standard",
+        email: "test@example.com",
+        name: "Test User",
+        avatar_url: "https://example.com/avatar.png",
+        uses_oauth: false,
+        email_confirmed: user.confirmed?,
+        admin: false,
+        subscription_status: "never_subscribed",
+        subscription: nil,
+        premium_prices: {
+          currency: :usd,
+          monthly: 999,
+          annual: 9900,
+          country_code: nil
+        }
+      },
+      SerializeUser.(user)
+    )
   end
 
   test "serializes user with canceled status returns nil subscription" do
