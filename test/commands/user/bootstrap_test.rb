@@ -37,6 +37,15 @@ class User::BootstrapTest < ActiveSupport::TestCase
     end
   end
 
+  test "enqueues beta user badge award job" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'beta_user']) do
+      User::Bootstrap.(user, "email")
+    end
+  end
+
   test "awards member badge to new user" do
     create(:course, slug: "coding-fundamentals")
     user = create(:user)

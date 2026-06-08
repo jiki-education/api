@@ -18,6 +18,8 @@ class Auth::DiscourseController < ApplicationController
     sso.external_id = current_user.id
     sso.sso_secret = secret
 
+    AwardBadgeJob.perform_later(current_user, 'townsfolk')
+
     redirect_to sso.to_url("#{FORUM_URL}/session/sso_login"), allow_other_host: true
   end
 end

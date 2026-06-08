@@ -1,11 +1,19 @@
 module Badges
   class EarlyBirdBadge < Badge
-    seed "Early Bird", "Joined during early access",
-      fun_fact: "Early adopters help shape the future of products. Thank you for believing in us!",
+    seed "Early Bird", "Completed a lesson in the early-morning hours",
+      fun_fact: "The early bird catches the worm. Coding before the world wakes up is a superpower!",
       secret: true
 
     def award_to?(user)
-      user.created_at < 1.month.ago
+      user.user_lessons.completed.pluck(:completed_at).any? do |completed_at|
+        early_bird_time?(completed_at, user.timezone)
+      end
+    end
+
+    private
+    def early_bird_time?(time, timezone)
+      hour = time.in_time_zone(timezone).hour
+      hour >= 4 && hour < 9
     end
   end
 end

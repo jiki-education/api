@@ -8,6 +8,7 @@ class User::Bootstrap
     send_welcome_email!
     enroll_in_course!
     award_member_badge!
+    award_beta_user_badge!
     attribute!
     track!
   end
@@ -35,6 +36,10 @@ class User::Bootstrap
 
   def award_member_badge!
     AwardBadgeJob.perform_later(user, 'member')
+  end
+
+  def award_beta_user_badge!
+    AwardBadgeJob.perform_later(user, 'beta_user')
   end
 
   def attribute!

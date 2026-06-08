@@ -41,9 +41,11 @@ class UserLesson::Complete
     emit_project_unlocked_event! if lesson.unlocked_project
 
     # Check for badges that might be awarded (badge's award_to? determines eligibility)
+    AwardBadgeJob.perform_later(user, 'first_lesson')
     AwardBadgeJob.perform_later(user, 'maze_navigator')
     AwardBadgeJob.perform_later(user, 'scenario_handler')
     AwardBadgeJob.perform_later(user, 'night_owl')
+    AwardBadgeJob.perform_later(user, 'early_bird')
 
     # Log activity for streak tracking
     User::ActivityLog::LogActivity.(user, Date.current)
