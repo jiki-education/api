@@ -48,7 +48,7 @@ class ApplicationMailer < ActionMailer::Base
     end
 
     # Set from address, SES configuration set, and reply-to
-    args[:from] ||= config[:from_email]
+    args[:from] ||= "Jiki <#{config[:from_email]}>"
     args[:reply_to] ||= Jiki.config.support_email
     headers['X-SES-CONFIGURATION-SET'] = config[:configuration_set]
 
