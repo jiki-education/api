@@ -12,6 +12,7 @@ class SerializeUser
       avatar_url: user.avatar_url,
       uses_oauth: user.uses_oauth?,
       email_confirmed: user.confirmed?,
+      admin: user.admin?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data,
       premium_prices: premium_prices_data

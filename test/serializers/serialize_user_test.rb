@@ -137,6 +137,22 @@ class SerializeUserTest < ActiveSupport::TestCase
     refute result[:uses_oauth]
   end
 
+  test "serializes admin: false for regular user" do
+    user = create(:user)
+
+    result = SerializeUser.(user)
+
+    refute result[:admin]
+  end
+
+  test "serializes admin: true for admin user" do
+    user = create(:user, admin: true)
+
+    result = SerializeUser.(user)
+
+    assert result[:admin]
+  end
+
   test "serializes uses_oauth: true for user linked to Google" do
     user = create(:user, google_id: "google-abc")
 
