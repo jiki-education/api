@@ -224,6 +224,30 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   end
 
   # Badge tests
+  test "enqueues first lesson badge job on lesson completion" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'first_lesson']) do
+      UserLesson::Complete.(user, lesson)
+    end
+  end
+
+  test "enqueues early bird badge job on lesson completion" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    assert_enqueued_with(job: AwardBadgeJob, args: [user, 'early_bird']) do
+      UserLesson::Complete.(user, lesson)
+    end
+  end
+
   test "enqueues maze navigator badge job on lesson completion" do
     user = create(:user)
     level = create(:level)
