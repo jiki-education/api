@@ -353,7 +353,7 @@ GEM
     posthog-rails (3.10.0)
       posthog-ruby (~> 3.10)
       railties (>= 5.2.0)
-    posthog-ruby (3.10.0)
+    posthog-ruby (3.11.0)
       concurrent-ruby (~> 1)
     pp (0.6.3)
       prettyprint
