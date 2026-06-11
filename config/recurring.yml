@@ -15,5 +15,5 @@ production:
     schedule: every hour at minute 12
 
   sync_exercism_entitlements:
-    class: User::Exercism::SyncEntitlementsJob
+    command: "User::Exercism::SyncEntitlements.defer"
     schedule: at 3am every day

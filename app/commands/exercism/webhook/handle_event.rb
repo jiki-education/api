@@ -15,7 +15,7 @@ class Exercism::Webhook::HandleEvent
     # Re-fetch state from Exercism rather than trusting the event type — the
     # event is just a "something changed" hint. This makes us robust to
     # out-of-order delivery and stale events.
-    User::Exercism::ResyncUserJob.perform_later(user)
+    User::Exercism::ResyncUser.defer(user)
   end
 
   private

@@ -7,10 +7,10 @@ class Internal::Exercism::ResyncControllerTest < ApplicationControllerTest
 
   guard_incorrect_token! :internal_exercism_resync_path, method: :post
 
-  test "POST resync enqueues a per-user resync job" do
-    assert_enqueued_with(job: User::Exercism::ResyncUserJob, args: [@current_user]) do
-      post internal_exercism_resync_path, as: :json
-    end
+  test "POST resync defers a per-user resync" do
+    User::Exercism::ResyncUser.expects(:defer).with(@current_user)
+
+    post internal_exercism_resync_path, as: :json
 
     assert_response :success
     assert_json_response({ user: SerializeUser.(@current_user) })
@@ -18,10 +18,9 @@ class Internal::Exercism::ResyncControllerTest < ApplicationControllerTest
 
   test "POST resync returns 422 when user has no exercism_id" do
     @current_user.update!(exercism_id: nil)
+    User::Exercism::ResyncUser.expects(:defer).never
 
-    assert_no_enqueued_jobs only: User::Exercism::ResyncUserJob do
-      post internal_exercism_resync_path, as: :json
-    end
+    post internal_exercism_resync_path, as: :json
 
     assert_response :unprocessable_entity
   end

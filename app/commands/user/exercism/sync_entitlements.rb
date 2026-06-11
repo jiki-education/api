@@ -1,17 +1,19 @@
-class User::Exercism::SyncEntitlementsJob < ApplicationJob
+class User::Exercism::SyncEntitlements
+  include Mandate
+
   queue_as :default
 
   # Pulls Exercism's current entitled-user rosters and queues a per-user
   # resync for every user whose local state disagrees with the roster.
-  # The per-user job re-fetches that user's status as the source of truth,
+  # The per-user resync re-fetches that user's status as the source of truth,
   # which naturally resolves any race between roster-fetch and reconcile.
-  def perform
+  def call
     rosters = Exercism::FetchEntitledUsers.()
     insider_ids = rosters['insider_ids']
     bootcamp_ids = rosters['bootcamp_member_ids']
 
     User.where(id: delta_user_ids(insider_ids, bootcamp_ids)).find_each do |user|
-      User::Exercism::ResyncUserJob.perform_later(user)
+      User::Exercism::ResyncUser.defer(user)
     end
   end
 

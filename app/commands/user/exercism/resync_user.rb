@@ -1,8 +1,12 @@
-class User::Exercism::ResyncUserJob < ApplicationJob
+class User::Exercism::ResyncUser
+  include Mandate
+
   queue_as :default
 
-  def perform(user)
-    return unless user.exercism_id.present?
+  initialize_with :user
+
+  def call
+    return if user.exercism_id.blank?
 
     status = Exercism::FetchUserStatus.(user.exercism_id)
 

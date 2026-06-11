@@ -26,8 +26,10 @@ class Stripe::SyncSubscriptionToUser
       subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
     )
 
-    # Fire premium-onboarding side effects only on a real 0→1 transition.
-    User::UpgradeToPremium.(user) if !was_premium && user.reload.premium?
+    # Fire premium-onboarding side effects only when this Stripe sync is
+    # what's making the user premium (not e.g. a coincident entitlement grant,
+    # which fires its own transition).
+    User::UpgradeToPremium.(user) if !was_premium && status == "active"
   end
 
   def update_subscriptions_array!

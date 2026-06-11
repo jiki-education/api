@@ -1,6 +1,6 @@
 require "test_helper"
 
-class User::Exercism::ResyncUserJobTest < ActiveJob::TestCase
+class User::Exercism::ResyncUserTest < ActiveSupport::TestCase
   test "fetches status and reconciles" do
     user = create(:user, exercism_id: "1530")
 
@@ -11,7 +11,7 @@ class User::Exercism::ResyncUserJobTest < ActiveJob::TestCase
       user, is_insider: true, is_bootcamp_member: false
     )
 
-    User::Exercism::ResyncUserJob.perform_now(user)
+    User::Exercism::ResyncUser.(user)
   end
 
   test "no-ops for users without exercism_id" do
@@ -20,6 +20,10 @@ class User::Exercism::ResyncUserJobTest < ActiveJob::TestCase
     Exercism::FetchUserStatus.expects(:call).never
     User::Exercism::ReconcileEntitlements.expects(:call).never
 
-    User::Exercism::ResyncUserJob.perform_now(user)
+    User::Exercism::ResyncUser.(user)
+  end
+
+  test "uses the default queue" do
+    assert_equal :default, User::Exercism::ResyncUser.active_job_queue
   end
 end

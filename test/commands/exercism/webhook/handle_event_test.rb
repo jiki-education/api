@@ -4,38 +4,38 @@ class Exercism::Webhook::HandleEventTest < ActiveSupport::TestCase
   setup { stub_exercism_secrets! }
   teardown { unstub_exercism_secrets! }
 
-  test "defers a ResyncUserJob for the user identified by exercism_id" do
+  test "defers a ResyncUser for the user identified by exercism_id" do
     user = create(:user, exercism_id: "1530")
     payload = { event: "insider.activated", exercism_id: 1530 }.to_json
 
-    assert_enqueued_with(job: User::Exercism::ResyncUserJob, args: [user]) do
-      Exercism::Webhook::HandleEvent.(payload, sign(payload))
-    end
+    User::Exercism::ResyncUser.expects(:defer).with(user)
+
+    Exercism::Webhook::HandleEvent.(payload, sign(payload))
   end
 
   test "ignores event type — any verified payload triggers a resync" do
     user = create(:user, exercism_id: "1530")
     payload = { event: "literally.anything", exercism_id: 1530 }.to_json
 
-    assert_enqueued_with(job: User::Exercism::ResyncUserJob, args: [user]) do
-      Exercism::Webhook::HandleEvent.(payload, sign(payload))
-    end
+    User::Exercism::ResyncUser.expects(:defer).with(user)
+
+    Exercism::Webhook::HandleEvent.(payload, sign(payload))
   end
 
   test "no-ops for unknown exercism_id" do
     payload = { event: "insider.activated", exercism_id: 9999 }.to_json
 
-    assert_no_enqueued_jobs only: User::Exercism::ResyncUserJob do
-      Exercism::Webhook::HandleEvent.(payload, sign(payload))
-    end
+    User::Exercism::ResyncUser.expects(:defer).never
+
+    Exercism::Webhook::HandleEvent.(payload, sign(payload))
   end
 
   test "no-ops when exercism_id is missing" do
     payload = { event: "insider.activated" }.to_json
 
-    assert_no_enqueued_jobs only: User::Exercism::ResyncUserJob do
-      Exercism::Webhook::HandleEvent.(payload, sign(payload))
-    end
+    User::Exercism::ResyncUser.expects(:defer).never
+
+    Exercism::Webhook::HandleEvent.(payload, sign(payload))
   end
 
   test "raises on invalid signature" do
