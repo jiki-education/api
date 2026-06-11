@@ -10,7 +10,7 @@ class Webhooks::ExercismController < Webhooks::BaseController
     rescue InvalidExercismWebhookSignatureError => e
       Rails.logger.error("Exercism webhook signature verification failed: #{e.message}")
       head :unauthorized
-    rescue InvalidExercismWebhookEventError, JSON::ParserError => e
+    rescue JSON::ParserError => e
       Rails.logger.error("Exercism webhook malformed payload: #{e.message}")
       head :unprocessable_entity
     rescue ActiveRecord::ConnectionNotEstablished, ActiveRecord::LockWaitTimeout => e

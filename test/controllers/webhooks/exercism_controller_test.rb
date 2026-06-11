@@ -29,14 +29,11 @@ class Webhooks::ExercismControllerTest < ApplicationControllerTest
     assert_response :unauthorized
   end
 
-  test "POST returns 422 on malformed event" do
-    payload = '{"event":"unknown"}'
-
-    Exercism::Webhook::HandleEvent.expects(:call).
-      raises(InvalidExercismWebhookEventError, "unknown event")
+  test "POST returns 422 on malformed JSON payload" do
+    Exercism::Webhook::HandleEvent.expects(:call).raises(JSON::ParserError, "bad json")
 
     post webhooks_exercism_path,
-      params: payload,
+      params: "not-json",
       headers: { "X-Exercism-Signature" => "sha256=anything" }
 
     assert_response :unprocessable_entity

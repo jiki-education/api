@@ -4,22 +4,38 @@ class Exercism::Webhook::HandleEventTest < ActiveSupport::TestCase
   setup { stub_exercism_secrets! }
   teardown { unstub_exercism_secrets! }
 
-  test "valid signature + activated dispatches to InsiderActivated" do
+  test "defers a ResyncUserJob for the user identified by exercism_id" do
+    user = create(:user, exercism_id: "1530")
     payload = { event: "insider.activated", exercism_id: 1530 }.to_json
-    signature = sign(payload)
 
-    Exercism::Webhook::InsiderActivated.expects(:call).with(JSON.parse(payload))
-
-    Exercism::Webhook::HandleEvent.(payload, signature)
+    assert_enqueued_with(job: User::Exercism::ResyncUserJob, args: [user]) do
+      Exercism::Webhook::HandleEvent.(payload, sign(payload))
+    end
   end
 
-  test "valid signature + deactivated dispatches to InsiderDeactivated" do
-    payload = { event: "insider.deactivated", exercism_id: 1530 }.to_json
-    signature = sign(payload)
+  test "ignores event type — any verified payload triggers a resync" do
+    user = create(:user, exercism_id: "1530")
+    payload = { event: "literally.anything", exercism_id: 1530 }.to_json
 
-    Exercism::Webhook::InsiderDeactivated.expects(:call).with(JSON.parse(payload))
+    assert_enqueued_with(job: User::Exercism::ResyncUserJob, args: [user]) do
+      Exercism::Webhook::HandleEvent.(payload, sign(payload))
+    end
+  end
 
-    Exercism::Webhook::HandleEvent.(payload, signature)
+  test "no-ops for unknown exercism_id" do
+    payload = { event: "insider.activated", exercism_id: 9999 }.to_json
+
+    assert_no_enqueued_jobs only: User::Exercism::ResyncUserJob do
+      Exercism::Webhook::HandleEvent.(payload, sign(payload))
+    end
+  end
+
+  test "no-ops when exercism_id is missing" do
+    payload = { event: "insider.activated" }.to_json
+
+    assert_no_enqueued_jobs only: User::Exercism::ResyncUserJob do
+      Exercism::Webhook::HandleEvent.(payload, sign(payload))
+    end
   end
 
   test "raises on invalid signature" do
@@ -35,15 +51,6 @@ class Exercism::Webhook::HandleEventTest < ActiveSupport::TestCase
 
     assert_raises(InvalidExercismWebhookSignatureError) do
       Exercism::Webhook::HandleEvent.(payload, nil)
-    end
-  end
-
-  test "raises on unknown event type" do
-    payload = { event: "something.else", exercism_id: 1530 }.to_json
-    signature = sign(payload)
-
-    assert_raises(InvalidExercismWebhookEventError) do
-      Exercism::Webhook::HandleEvent.(payload, signature)
     end
   end
 

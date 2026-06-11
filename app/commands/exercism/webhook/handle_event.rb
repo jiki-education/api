@@ -1,16 +1,21 @@
 class Exercism::Webhook::HandleEvent
   include Mandate
 
-  HANDLERS = {
-    "insider.activated" => "Exercism::Webhook::InsiderActivated",
-    "insider.deactivated" => "Exercism::Webhook::InsiderDeactivated"
-  }.freeze
-
   initialize_with :payload, :signature_header
 
   def call
     verify_signature!
-    handler.constantize.(parsed)
+
+    exercism_id = parsed["exercism_id"]
+    return if exercism_id.blank?
+
+    user = User.find_by(exercism_id: exercism_id.to_s)
+    return unless user
+
+    # Re-fetch state from Exercism rather than trusting the event type — the
+    # event is just a "something changed" hint. This makes us robust to
+    # out-of-order delivery and stale events.
+    User::Exercism::ResyncUserJob.perform_later(user)
   end
 
   private
@@ -25,11 +30,6 @@ class Exercism::Webhook::HandleEvent
 
   memoize
   def parsed = JSON.parse(payload)
-
-  def handler
-    HANDLERS[parsed["event"]] or
-      raise InvalidExercismWebhookEventError, "Unknown event: #{parsed['event']}"
-  end
 
   def signing_secret = Jiki.secrets.exercism_webhook_signing_secret
 end
