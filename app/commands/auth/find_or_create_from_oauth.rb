@@ -1,12 +1,10 @@
 module Auth
-  class AuthenticateWithOauth
+  class FindOrCreateFromOauth
     include Mandate
 
     PROVIDERS = %i[google exercism].freeze
 
-    # code_verifier is only used by providers whose flow requires PKCE
-    # (Exercism does, Google doesn't).
-    initialize_with :provider, :code, code_verifier: nil
+    initialize_with :provider, :payload
 
     def call
       validate_provider!
@@ -14,15 +12,6 @@ module Auth
 
       find_by_provider_id! || find_by_email! || create_user!
     end
-
-    # Exposed so controllers can use provider-specific extras (e.g. Exercism's
-    # insider/bootcamp flags) AFTER bootstrap has run. Reconciling inside
-    # `call` would reload the user and clear `previously_new_record?`,
-    # breaking the controller's bootstrap branching. Instantiate the command
-    # directly to access this: `cmd = Auth::AuthenticateWithOauth.new(...);
-    # user = cmd.call; cmd.payload`.
-    memoize
-    def payload = verify_command.(*[code, code_verifier].compact)
 
     private
     def validate_provider!
@@ -82,8 +71,6 @@ module Auth
     def initial_handle
       preferred_handle.to_s.parameterize.presence || User::GenerateHandle.(email)
     end
-
-    def verify_command = "Auth::Verify#{provider.to_s.camelize}Token".constantize
 
     def id_column = :"#{provider}_id"
 

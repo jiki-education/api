@@ -128,7 +128,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
   end
 
   test "POST exercism with malformed payload returns unauthorized" do
-    # Payload missing the id - guarded by AuthenticateWithOauth
+    # Payload missing the id - guarded by FindOrCreateFromOauth
     Auth::VerifyExercismToken.stubs(:call).returns({
       'id' => nil,
       'email' => 'someone@exercism.org',
