@@ -9,10 +9,18 @@ class Badges::PremiumBadgeTest < ActiveSupport::TestCase
     refute badge.secret
   end
 
-  test "award_to? returns true for premium users" do
+  test "award_to? returns true for premium users via Stripe" do
     badge = Badge.find_by_slug!('premium') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
-    user.data.update!(membership_type: 'premium')
+    user.data.update!(subscription_status: "active")
+
+    assert badge.award_to?(user)
+  end
+
+  test "award_to? returns true for premium users via an entitlement" do
+    badge = Badge.find_by_slug!('premium') # rubocop:disable Rails/DynamicFindBy
+    user = create(:user)
+    create(:premium_entitlement, :insider, user:)
 
     assert badge.award_to?(user)
   end

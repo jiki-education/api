@@ -21,7 +21,8 @@ class User::Identify
       distinct_id: user.id.to_s,
       properties: {
         username: user.handle,
-        membership_type: user.membership_type,
+        premium: user.premium?,
+        premium_sources: User::PremiumSources.(user),
         locale: user.locale,
         signup_date: user.created_at.to_date.iso8601
       }.merge(geoip_properties)

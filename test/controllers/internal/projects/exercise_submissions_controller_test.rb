@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @current_user.data.update!(membership_type: "premium")
+    make_premium(@current_user)
     @project = create(:project)
     # Pre-create UserProject so it doesn't emit events during tests
     create(:user_project, user: @current_user, project: @project)
@@ -154,7 +154,7 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
   end
 
   test "POST create returns 403 for non-premium user" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
     files = [{ filename: "main.rb", code: "puts 'hello'" }]
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),

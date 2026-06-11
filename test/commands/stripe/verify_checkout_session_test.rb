@@ -20,7 +20,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "active", result[:subscription_status]
 
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    assert user.premium?
     assert_equal "monthly", user.data.subscription_interval
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "active", user.data.subscription_status
@@ -45,7 +45,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "annual", result[:interval]
 
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    assert user.premium?
     assert_equal "annual", user.data.subscription_interval
   end
 
@@ -162,7 +162,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
 
   test "handles incomplete subscription for async payments" do
     user = create(:user)
-    user.data.update!(stripe_customer_id: "cus_123", membership_type: "standard")
+    user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock_stripe_session(payment_status: "unpaid")
     stripe_subscription = mock_stripe_subscription(
@@ -181,7 +181,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "incomplete", result[:subscription_status]
 
     user.data.reload
-    assert_equal "standard", user.data.membership_type
+    refute user.premium?
     assert_equal "incomplete", user.data.subscription_status
   end
 

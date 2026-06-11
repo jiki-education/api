@@ -15,6 +15,15 @@ module Auth
       find_by_provider_id! || find_by_email! || create_user!
     end
 
+    # Exposed so controllers can use provider-specific extras (e.g. Exercism's
+    # insider/bootcamp flags) AFTER bootstrap has run. Reconciling inside
+    # `call` would reload the user and clear `previously_new_record?`,
+    # breaking the controller's bootstrap branching. Instantiate the command
+    # directly to access this: `cmd = Auth::AuthenticateWithOauth.new(...);
+    # user = cmd.call; cmd.payload`.
+    memoize
+    def payload = verify_command.(*[code, code_verifier].compact)
+
     private
     def validate_provider!
       raise ArgumentError, "Unknown OAuth provider: #{provider}" unless PROVIDERS.include?(provider)
@@ -73,9 +82,6 @@ module Auth
     def initial_handle
       preferred_handle.to_s.parameterize.presence || User::GenerateHandle.(email)
     end
-
-    memoize
-    def payload = verify_command.(*[code, code_verifier].compact)
 
     def verify_command = "Auth::Verify#{provider.to_s.camelize}Token".constantize
 

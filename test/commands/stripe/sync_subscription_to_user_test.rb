@@ -1,17 +1,18 @@
 require "test_helper"
 
 class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
-  test "sets active status and upgrades to premium for active subscription" do
+  test "sets active status and fires UpgradeToPremium for active subscription" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
 
     subscription = mock_subscription(status: "active")
+
+    User::UpgradeToPremium.expects(:call).with(user)
 
     status = Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
 
     assert_equal "active", status
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    assert user.premium?
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "active", user.data.stripe_subscription_status
     assert_equal "active", user.data.subscription_status
@@ -28,7 +29,7 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
 
     assert_equal "active", status
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    assert user.premium?
     assert_equal "active", user.data.subscription_status
   end
 
@@ -54,34 +55,34 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
     assert_equal "monthly", user.data.subscription_interval
   end
 
-  test "sets incomplete status and preserves membership_type for incomplete subscription" do
+  test "sets incomplete status without firing UpgradeToPremium" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
 
     subscription = mock_subscription(status: "incomplete")
+
+    User::UpgradeToPremium.expects(:call).never
 
     status = Stripe::SyncSubscriptionToUser.(user, subscription, "annual")
 
     assert_equal "incomplete", status
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    refute user.premium?
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "incomplete", user.data.stripe_subscription_status
     assert_equal "incomplete", user.data.subscription_status
   end
 
-  test "preserves standard membership_type for incomplete subscription when user has no prior subscription" do
+  test "does NOT fire UpgradeToPremium when user is already premium via an entitlement" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    create(:premium_entitlement, :insider, user:)
 
-    subscription = mock_subscription(status: "incomplete")
+    subscription = mock_subscription(status: "active")
 
-    status = Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
+    User::UpgradeToPremium.expects(:call).never
 
-    assert_equal "incomplete", status
-    user.data.reload
-    assert_equal "standard", user.data.membership_type
-    assert_equal "incomplete", user.data.subscription_status
+    Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
+
+    assert user.reload.premium?
   end
 
   test "adds subscription to subscriptions array with interval" do

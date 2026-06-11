@@ -1,20 +1,6 @@
 require "test_helper"
 
 class User::DataTest < ActiveSupport::TestCase
-  test "standard? returns true for standard membership" do
-    user = create(:user)
-    user.data.update!(membership_type: "standard")
-    assert user.data.standard?
-    refute user.data.premium?
-  end
-
-  test "premium? returns true for premium membership" do
-    user = create(:user)
-    user.data.update!(membership_type: "premium")
-    refute user.data.standard?
-    assert user.data.premium?
-  end
-
   test "monthly? returns true for monthly interval" do
     user = create(:user)
     user.data.update!(subscription_interval: "monthly")
@@ -29,34 +15,32 @@ class User::DataTest < ActiveSupport::TestCase
     assert user.data.annual?
   end
 
-  test "subscription_paid? returns true for standard tier" do
+  test "subscription_paid? returns true when user is never_subscribed" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
     assert user.data.subscription_paid?
   end
 
   test "subscription_paid? returns true for active subscription with future subscription_valid_until" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       subscription_valid_until: 1.month.from_now
     )
     assert user.data.subscription_paid?
   end
 
-  test "subscription_paid? returns false for past subscription_valid_until" do
+  test "subscription_paid? returns false for past subscription_valid_until on a real subscription" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
+      subscription_status: "payment_failed",
       subscription_valid_until: 1.day.ago
     )
     refute user.data.subscription_paid?
   end
 
-  test "subscription_paid? returns false when no subscription_valid_until" do
+  test "subscription_paid? returns false when no subscription_valid_until on a real subscription" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
+      subscription_status: "payment_failed",
       subscription_valid_until: nil
     )
     refute user.data.subscription_paid?
@@ -65,7 +49,6 @@ class User::DataTest < ActiveSupport::TestCase
   test "in_grace_period? returns false when subscription is active" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "active",
       subscription_valid_until: 1.month.from_now
     )
@@ -75,7 +58,6 @@ class User::DataTest < ActiveSupport::TestCase
   test "in_grace_period? returns false when payment_failed but subscription_valid_until is nil" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "payment_failed",
       subscription_valid_until: nil
     )
@@ -86,7 +68,6 @@ class User::DataTest < ActiveSupport::TestCase
     user = create(:user)
     period_end = 3.days.ago # Expired 3 days ago
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "payment_failed",
       subscription_valid_until: period_end
     )
@@ -98,7 +79,6 @@ class User::DataTest < ActiveSupport::TestCase
     user = create(:user)
     period_end = 8.days.ago # Expired 8 days ago
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "payment_failed",
       subscription_valid_until: period_end
     )
@@ -109,7 +89,6 @@ class User::DataTest < ActiveSupport::TestCase
   test "grace_period_ends_at returns nil when subscription_valid_until is nil" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       subscription_valid_until: nil
     )
     assert_nil user.data.grace_period_ends_at
@@ -119,7 +98,6 @@ class User::DataTest < ActiveSupport::TestCase
     period_end = 3.days.ago
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "payment_failed",
       subscription_valid_until: period_end
     )
@@ -182,5 +160,53 @@ class User::DataTest < ActiveSupport::TestCase
     user.save!
 
     assert_equal "America/New_York", user.data.timezone
+  end
+
+  test "stripe_active? true for active subscription" do
+    user = create(:user)
+    user.data.update!(subscription_status: "active")
+    assert user.data.stripe_active?
+  end
+
+  test "stripe_active? true for cancelling subscription" do
+    user = create(:user)
+    user.data.update!(subscription_status: "cancelling")
+    assert user.data.stripe_active?
+  end
+
+  test "stripe_active? true for payment_failed while still in past_due (grace)" do
+    user = create(:user)
+    user.data.update!(
+      subscription_status: "payment_failed",
+      stripe_subscription_status: "past_due"
+    )
+    assert user.data.stripe_active?
+  end
+
+  test "stripe_active? false for payment_failed after Stripe sent unpaid" do
+    user = create(:user)
+    user.data.update!(
+      subscription_status: "payment_failed",
+      stripe_subscription_status: "unpaid"
+    )
+    refute user.data.stripe_active?
+  end
+
+  test "stripe_active? false for never_subscribed" do
+    user = create(:user)
+    user.data.update!(subscription_status: "never_subscribed")
+    refute user.data.stripe_active?
+  end
+
+  test "stripe_active? false for incomplete" do
+    user = create(:user)
+    user.data.update!(subscription_status: "incomplete")
+    refute user.data.stripe_active?
+  end
+
+  test "stripe_active? false for canceled" do
+    user = create(:user)
+    user.data.update!(subscription_status: "canceled")
+    refute user.data.stripe_active?
   end
 end

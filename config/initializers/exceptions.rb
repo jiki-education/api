@@ -30,6 +30,11 @@ class InvalidGoogleTokenError < RuntimeError; end
 # Exercism OAuth errors
 class InvalidExercismTokenError < RuntimeError; end
 
+# Exercism server-to-server / webhook errors
+class FetchExercismUserStatusesError < RuntimeError; end
+class InvalidExercismWebhookSignatureError < RuntimeError; end
+class InvalidExercismWebhookEventError < RuntimeError; end
+
 # Shared OAuth errors
 class InvalidOauthPayloadError < RuntimeError; end
 

@@ -13,7 +13,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
   # POST create
   test "POST create returns conversation token for premium user" do
-    @current_user.data.update!(membership_type: "premium")
+    make_premium(@current_user)
 
     post internal_assistant_conversations_path,
       params: with_turnstile(lesson_slug: "basic-movement"),
@@ -34,7 +34,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns conversation token for standard user first lesson" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
 
     post internal_assistant_conversations_path,
       params: with_turnstile(lesson_slug: "basic-movement"),
@@ -45,7 +45,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns 403 for standard user on different lesson" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
     other_lesson = create(:lesson, :exercise, slug: "other-lesson")
     create(:assistant_conversation, user: @current_user, context: other_lesson)
 
@@ -65,7 +65,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   end
 
   test "POST create returns conversation token for project" do
-    @current_user.data.update!(membership_type: "premium")
+    make_premium(@current_user)
     project = create(:project, slug: "calculator", exercise_slug: "jiki/calculator")
 
     post internal_assistant_conversations_path,
@@ -95,7 +95,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   end
 
   test "POST create creates assistant conversation record" do
-    @current_user.data.update!(membership_type: "premium")
+    make_premium(@current_user)
 
     assert_difference 'AssistantConversation.count', 1 do
       post internal_assistant_conversations_path,
@@ -133,7 +133,7 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
   # access_denied (which the FE uses to open the premium-upgrade modal and
   # fire an analytics event) instead of invalid_captcha.
   test "POST create returns invalid_captcha, not access_denied, when both would apply" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
     other_lesson = create(:lesson, :exercise, slug: "other-lesson")
     create(:assistant_conversation, user: @current_user, context: other_lesson)
 

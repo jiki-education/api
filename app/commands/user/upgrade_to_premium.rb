@@ -3,25 +3,13 @@ class User::UpgradeToPremium
 
   initialize_with :user, source: "stripe_checkout"
 
+  # Fires the consequences of a user becoming premium. The caller is
+  # responsible for detecting the 0→1 transition (e.g. via was_premium /
+  # user.reload.premium?) — this command always runs its side effects.
   def call
-    user.with_lock do
-      return if user.data.premium?
-
-      user.data.update!(membership_type: 'premium')
-    end
-
-    award_badge!
+    AwardBadgeJob.perform_later(user, "premium")
     User::SendWelcomeToPremiumEmail.(user)
     User::Identify.defer(user)
-    track_event!
-  end
-
-  private
-  def award_badge!
-    AwardBadgeJob.perform_later(user, 'premium')
-  end
-
-  def track_event!
     Analytics::TrackEvent.defer(user, "upgraded_to_premium", properties: { source: source })
   end
 end

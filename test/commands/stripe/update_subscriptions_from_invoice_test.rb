@@ -29,7 +29,6 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(
       stripe_customer_id: "cus_123",
-      membership_type: "premium",
       subscription_interval: "annual",
       subscriptions: []
     )

@@ -14,8 +14,8 @@ class Internal::MeControllerTest < ApplicationControllerTest
     assert_json_response({ user: SerializeUser.(@current_user) })
   end
 
-  test "GET show returns correct membership_type for premium user" do
-    @current_user.data.update!(membership_type: "premium")
+  test "GET show returns premium=true for a premium user" do
+    make_premium(@current_user)
 
     get internal_me_path, as: :json
 

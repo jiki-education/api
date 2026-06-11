@@ -16,7 +16,8 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_equal @user.handle, json["user"]["handle"]
     assert_equal "test@example.com", json["user"]["email"]
     assert_equal @user.name, json["user"]["name"]
-    assert_equal "standard", json["user"]["membership_type"]
+    refute json["user"]["premium"]
+    assert_equal [], json["user"]["premium_sources"]
   end
 
   test "POST login returns error with invalid password" do

@@ -197,6 +197,19 @@ class Auth::AuthenticateWithOauthTest < ActiveSupport::TestCase
     authenticate_with_exercism!
   end
 
+  test "exposes payload after call so callers can read provider-specific extras" do
+    stub_exercism_payload({
+      'id' => '1530', 'email' => 'p@exercism.org', 'name' => 'P',
+      'is_insider' => true, 'is_bootcamp_member' => false
+    })
+
+    cmd = Auth::AuthenticateWithOauth.new(:exercism, 'code', code_verifier: 'verifier')
+    cmd.()
+
+    assert cmd.payload['is_insider']
+    refute cmd.payload['is_bootcamp_member']
+  end
+
   test "generates random password for new users" do
     stub_exercism_payload({ 'id' => '1530', 'email' => 'password@exercism.org', 'name' => 'Password Test' })
 

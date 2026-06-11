@@ -159,6 +159,11 @@ Rails.application.routes.draw do
 
     # Frontend-originated analytics events
     resources :events, only: [:create]
+
+    # Resync the current user's Exercism entitlements (settings "Resync" button)
+    namespace :exercism do
+      post :resync, to: "resync#create"
+    end
   end
 
   # Admin routes
@@ -194,6 +199,7 @@ Rails.application.routes.draw do
   namespace :webhooks do
     post 'stripe', to: 'stripe#create'
     post 'ses', to: 'ses#create'
+    post 'exercism', to: 'exercism#create'
   end
 
   # Dev endpoints

@@ -18,7 +18,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       event: "premium_modal_shown",
       properties: {
         trigger: "upgrade_cta_nav",
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$geoip_disable": true
       }
@@ -35,7 +36,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: user.membership_type,
+        premium: false,
+        premium_sources: [],
         locale: user.locale,
         "$geoip_disable": true
       }
@@ -52,7 +54,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$ip": "86.41.10.20"
       }
@@ -70,7 +73,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$ip": "86.41.10.20"
       }
@@ -89,7 +93,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$geoip_disable": true
       }
@@ -109,7 +114,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$ip": "86.41.10.20"
       }
@@ -128,7 +134,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$geoip_disable": true,
         "$useragent": "Mozilla/5.0 (Macintosh)"
@@ -147,7 +154,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$geoip_disable": true,
         "$useragent": "Mozilla/5.0 (Macintosh)"
@@ -168,7 +176,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$geoip_disable": true,
         "$useragent": "Mozilla/5.0 (Macintosh)"
@@ -188,7 +197,8 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         "$geoip_disable": true
       }

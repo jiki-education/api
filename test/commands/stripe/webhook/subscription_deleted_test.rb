@@ -4,7 +4,6 @@ class Stripe::Webhook::SubscriptionDeletedTest < ActiveSupport::TestCase
   test "downgrades user to standard when subscription deleted normally" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       stripe_subscription_status: "active",
       subscription_status: "active",
@@ -28,7 +27,7 @@ class Stripe::Webhook::SubscriptionDeletedTest < ActiveSupport::TestCase
     Stripe::Webhook::SubscriptionDeleted.(event)
 
     user.data.reload
-    assert_equal "standard", user.data.membership_type
+    refute user.premium?
     assert_equal "canceled", user.data.stripe_subscription_status
     assert_equal "canceled", user.data.subscription_status
     assert_nil user.data.stripe_subscription_id
@@ -43,7 +42,6 @@ class Stripe::Webhook::SubscriptionDeletedTest < ActiveSupport::TestCase
   test "records payment_failed end_reason when subscription deleted due to payment failure" do
     user = create(:user)
     user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       stripe_subscription_status: "past_due",
       subscription_status: "payment_failed",
@@ -74,7 +72,6 @@ class Stripe::Webhook::SubscriptionDeletedTest < ActiveSupport::TestCase
   test "records payment_failed end_reason when subscription deleted in unpaid state" do
     user = create(:user)
     user.data.update!(
-      membership_type: "standard",
       stripe_subscription_id: "sub_123",
       stripe_subscription_status: "unpaid",
       subscription_status: "payment_failed",

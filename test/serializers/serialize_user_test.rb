@@ -1,14 +1,15 @@
 require "test_helper"
 
 class SerializeUserTest < ActiveSupport::TestCase
-  test "serializes user with standard membership and never_subscribed status" do
+  test "serializes user with no Stripe state and no entitlements" do
     user = create(:user, handle: "test_user", email: "test@example.com", name: "Test User",
       avatar_url: "https://example.com/avatar.png")
 
     assert_equal(
       {
         handle: "test_user",
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         email: "test@example.com",
         name: "Test User",
         avatar_url: "https://example.com/avatar.png",
@@ -30,14 +31,12 @@ class SerializeUserTest < ActiveSupport::TestCase
 
   test "serializes user with canceled status returns nil subscription" do
     user = create(:user)
-    user.data.update!(
-      membership_type: "standard",
-      subscription_status: "canceled"
-    )
+    user.data.update!(subscription_status: "canceled")
 
     result = SerializeUser.(user)
 
-    assert_equal "standard", result[:membership_type]
+    refute result[:premium]
+    assert_equal [], result[:premium_sources]
     assert_equal "canceled", result[:subscription_status]
     assert_nil result[:subscription]
   end
@@ -46,7 +45,6 @@ class SerializeUserTest < ActiveSupport::TestCase
     user = create(:user)
     valid_until = 1.month.from_now
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "active",
       subscription_interval: "monthly",
       subscription_valid_until: valid_until
@@ -54,34 +52,34 @@ class SerializeUserTest < ActiveSupport::TestCase
 
     result = SerializeUser.(user)
 
-    assert_equal "premium", result[:membership_type]
+    assert result[:premium]
+    assert_equal [PremiumEntitlement::STRIPE], result[:premium_sources]
     assert_equal "active", result[:subscription_status]
     refute_nil result[:subscription]
     assert_equal "monthly", result[:subscription][:interval]
     assert_equal valid_until.iso8601(3), result[:subscription][:subscription_valid_until].iso8601(3)
     refute result[:subscription][:in_grace_period]
-    # grace_period_ends_at is present whenever subscription_valid_until is present
     expected_grace_end = valid_until + 7.days
     assert_equal expected_grace_end.iso8601(3), result[:subscription][:grace_period_ends_at].iso8601(3)
   end
 
   test "serializes user in grace period with correct flags" do
     user = create(:user)
-    period_end = 3.days.ago # Expired but within 7-day grace period
+    period_end = 3.days.ago
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "payment_failed",
+      stripe_subscription_status: "past_due",
       subscription_valid_until: period_end
     )
 
     result = SerializeUser.(user)
 
-    assert_equal "premium", result[:membership_type]
+    assert result[:premium]
+    assert_equal [PremiumEntitlement::STRIPE], result[:premium_sources]
     assert_equal "payment_failed", result[:subscription_status]
     refute_nil result[:subscription]
     assert result[:subscription][:in_grace_period]
     refute_nil result[:subscription][:grace_period_ends_at]
-    # Grace period should be 7 days after subscription_valid_until
     expected_grace_end = period_end + 7.days
     assert_equal expected_grace_end.iso8601(3), result[:subscription][:grace_period_ends_at].iso8601(3)
   end
@@ -89,14 +87,14 @@ class SerializeUserTest < ActiveSupport::TestCase
   test "serializes user with incomplete subscription returns subscription object" do
     user = create(:user)
     user.data.update!(
-      membership_type: "standard",
       subscription_status: "incomplete",
       subscription_valid_until: nil
     )
 
     result = SerializeUser.(user)
 
-    assert_equal "standard", result[:membership_type]
+    refute result[:premium]
+    assert_equal [], result[:premium_sources]
     assert_equal "incomplete", result[:subscription_status]
     refute_nil result[:subscription]
     assert_nil result[:subscription][:subscription_valid_until]
@@ -108,21 +106,41 @@ class SerializeUserTest < ActiveSupport::TestCase
     user = create(:user)
     valid_until = 2.weeks.from_now
     user.data.update!(
-      membership_type: "premium",
       subscription_status: "cancelling",
       subscription_valid_until: valid_until
     )
 
     result = SerializeUser.(user)
 
-    assert_equal "premium", result[:membership_type]
+    assert result[:premium]
+    assert_equal [PremiumEntitlement::STRIPE], result[:premium_sources]
     assert_equal "cancelling", result[:subscription_status]
     refute_nil result[:subscription]
     assert_equal valid_until.iso8601(3), result[:subscription][:subscription_valid_until].iso8601(3)
     refute result[:subscription][:in_grace_period]
-    # grace_period_ends_at is present whenever subscription_valid_until is present
     expected_grace_end = valid_until + 7.days
     assert_equal expected_grace_end.iso8601(3), result[:subscription][:grace_period_ends_at].iso8601(3)
+  end
+
+  test "serializes premium_sources for a user with an Exercism Insider entitlement" do
+    user = create(:user)
+    create(:premium_entitlement, :insider, user:)
+
+    result = SerializeUser.(user)
+
+    assert result[:premium]
+    assert_equal [PremiumEntitlement::EXERCISM_INSIDER], result[:premium_sources]
+  end
+
+  test "serializes premium_sources combining Stripe and an entitlement" do
+    user = create(:user)
+    user.data.update!(subscription_status: "active")
+    create(:premium_entitlement, :insider, user:)
+
+    result = SerializeUser.(user)
+
+    assert result[:premium]
+    assert_equal [PremiumEntitlement::STRIPE, PremiumEntitlement::EXERCISM_INSIDER], result[:premium_sources]
   end
 
   test "serializes pricing with local currency for Indian user" do

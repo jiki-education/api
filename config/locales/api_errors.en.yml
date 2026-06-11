@@ -90,3 +90,7 @@ en:
 
     # External service errors
     stripe_error: "Payment processing error"
+    exercism_unavailable: "Couldn't reach Exercism. Try again shortly."
+
+    # Exercism integration
+    no_exercism_link: "This account isn't linked to Exercism"

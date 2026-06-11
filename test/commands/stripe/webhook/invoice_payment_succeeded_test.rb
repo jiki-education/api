@@ -4,7 +4,7 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
   test "calls UpdateSubscriptionsFromInvoice with correct args" do
     user = create(:user)
     period_end = 1.month.from_now
-    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
+    user.data.update!(stripe_customer_id: "cus_123")
 
     invoice = mock_invoice
     subscription = mock_subscription(period_end:)
@@ -20,7 +20,7 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
   test "calls CreatePaymentFromInvoice with correct args" do
     user = create(:user)
     period_end = 1.month.from_now
-    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
+    user.data.update!(stripe_customer_id: "cus_123")
 
     invoice = mock_invoice
     subscription = mock_subscription(period_end:)
@@ -40,8 +40,7 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
       stripe_customer_id: "cus_123",
       stripe_subscription_status: "past_due",
       subscription_status: "payment_failed",
-      subscription_valid_until: 1.week.ago,
-      membership_type: "premium"
+      subscription_valid_until: 1.week.ago
     )
 
     invoice = mock_invoice
@@ -104,7 +103,7 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
   test "wraps operations in transaction" do
     user = create(:user)
     period_end = 1.month.from_now
-    user.data.update!(stripe_customer_id: "cus_123", membership_type: "premium")
+    user.data.update!(stripe_customer_id: "cus_123")
 
     invoice = mock_invoice
     subscription = mock_subscription(period_end:)

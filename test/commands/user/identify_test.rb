@@ -17,7 +17,8 @@ class User::IdentifyTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       properties: {
         username: user.handle,
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         signup_date: "2026-01-15",
         "$geoip_disable": true
@@ -35,7 +36,8 @@ class User::IdentifyTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       properties: {
         username: user.handle,
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         signup_date: "2026-01-15",
         "$ip": "86.41.10.20"
@@ -54,7 +56,8 @@ class User::IdentifyTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       properties: {
         username: user.handle,
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         signup_date: "2026-01-15",
         "$ip": "86.41.10.20"
@@ -74,7 +77,8 @@ class User::IdentifyTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       properties: {
         username: user.handle,
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         signup_date: "2026-01-15",
         "$geoip_disable": true
@@ -95,7 +99,8 @@ class User::IdentifyTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       properties: {
         username: user.handle,
-        membership_type: "standard",
+        premium: false,
+        premium_sources: [],
         locale: "en",
         signup_date: "2026-01-15",
         "$ip": "86.41.10.20"
