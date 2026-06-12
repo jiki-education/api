@@ -3,8 +3,6 @@ class CreatePremiumEntitlements < ActiveRecord::Migration[8.1]
     create_table :premium_entitlements do |t|
       t.references :user, null: false, foreign_key: true
       t.string :source, null: false
-      t.string :external_ref
-      t.datetime :starts_at, null: false
       t.datetime :expires_at
       t.datetime :revoked_at
       t.timestamps

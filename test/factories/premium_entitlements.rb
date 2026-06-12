@@ -2,7 +2,6 @@ FactoryBot.define do
   factory :premium_entitlement do
     association :user
     source { PremiumEntitlement::EXERCISM_INSIDER }
-    starts_at { Time.current }
 
     trait :insider do
       source { PremiumEntitlement::EXERCISM_INSIDER }

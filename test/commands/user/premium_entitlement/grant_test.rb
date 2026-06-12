@@ -55,15 +55,6 @@ class User::PremiumEntitlement::GrantTest < ActiveSupport::TestCase
     assert_in_delta new_expiry.to_i, entitlement.reload.expires_at.to_i, 1
   end
 
-  test "stores external_ref" do
-    user = create(:user)
-
-    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::EXERCISM_INSIDER, external_ref: "membership-42")
-
-    entitlement = user.premium_entitlements.active.find_by(source: PremiumEntitlement::EXERCISM_INSIDER)
-    assert_equal "membership-42", entitlement.external_ref
-  end
-
   test "creates a fresh entitlement after a prior one was revoked" do
     user = create(:user)
     create(:premium_entitlement, :insider, :revoked, user:)

@@ -237,10 +237,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120100) do
   create_table "premium_entitlements", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "expires_at"
-    t.string "external_ref"
     t.datetime "revoked_at"
     t.string "source", null: false
-    t.datetime "starts_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["expires_at"], name: "index_premium_entitlements_on_expires_at"

@@ -32,13 +32,6 @@ class PremiumEntitlementTest < ActiveSupport::TestCase
     refute create(:premium_entitlement, :expired).active?
   end
 
-  test "starts_at defaults to now on create" do
-    freeze_time do
-      entitlement = create(:premium_entitlement, starts_at: nil)
-      assert_equal Time.current, entitlement.starts_at
-    end
-  end
-
   test "unique index allows one active entitlement per user+source" do
     user = create(:user)
     create(:premium_entitlement, user:, source: PremiumEntitlement::EXERCISM_INSIDER)
