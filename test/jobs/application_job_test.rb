@@ -41,6 +41,50 @@ class ApplicationJobTest < ActiveJob::TestCase
     assert_respond_to ApplicationJob, :retry_on
   end
 
+  class FlakyJob < ApplicationJob
+    cattr_accessor :calls, default: 0
+
+    def perform
+      self.class.calls += 1
+      raise "flaky" if self.class.calls < 3
+    end
+  end
+
+  test "retries any unhandled StandardError" do
+    FlakyJob.calls = 0
+
+    perform_enqueued_jobs do
+      FlakyJob.perform_later
+    end
+
+    assert_equal 3, FlakyJob.calls
+  end
+
+  class AlwaysFailingJob < ApplicationJob
+    cattr_accessor :calls, default: 0
+
+    def perform
+      self.class.calls += 1
+      raise "always fails"
+    end
+  end
+
+  test "gives up after 10 attempts on a persistently-failing job" do
+    AlwaysFailingJob.calls = 0
+
+    # The 10th attempt re-raises after retries are exhausted; that's the
+    # signal Solid Queue uses to move the job to failed_executions.
+    begin
+      perform_enqueued_jobs do
+        AlwaysFailingJob.perform_later
+      end
+    rescue Exception # rubocop:disable Lint/RescueException
+      # expected — the final retry re-raises
+    end
+
+    assert_equal 10, AlwaysFailingJob.calls
+  end
+
   test "guard_against_deserialization_errors? defaults to true" do
     job = TestJobWithGuard.new
     assert job.guard_against_deserialization_errors?

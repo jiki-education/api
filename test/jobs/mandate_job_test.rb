@@ -180,12 +180,20 @@ class MandateJobTest < ActiveJob::TestCase
     assert job.guard_against_deserialization_errors?
   end
 
-  test "job fails when Mandate command raises unhandled exception" do
-    error = assert_raises StandardError do
-      MandateJob.perform_now("MandateJobTest::TestErrorCommand")
+  test "job re-raises after retries when Mandate command raises unhandled exception" do
+    # ApplicationJob has a blanket retry_on StandardError; the first attempt
+    # schedules a retry rather than propagating. After retries are exhausted
+    # the underlying exception is re-raised.
+    error = nil
+    begin
+      perform_enqueued_jobs do
+        MandateJob.perform_later("MandateJobTest::TestErrorCommand")
+      end
+    rescue Exception => e # rubocop:disable Lint/RescueException
+      error = e
     end
 
-    assert_equal "Test error", error.message
+    assert_includes error&.message.to_s, "Test error"
   end
 
   test "requeue preserves all arguments" do
