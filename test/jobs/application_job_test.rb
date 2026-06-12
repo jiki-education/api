@@ -72,16 +72,21 @@ class ApplicationJobTest < ActiveJob::TestCase
   test "gives up after 10 attempts on a persistently-failing job" do
     AlwaysFailingJob.calls = 0
 
-    # The 10th attempt re-raises after retries are exhausted; that's the
-    # signal Solid Queue uses to move the job to failed_executions.
+    # Minitest wraps unexpected exceptions in Minitest::UnexpectedError to
+    # distinguish them from assertion failures, which bypasses our StandardError
+    # rescue. Catch the wrapper and assert on the underlying exception.
+    captured = nil
     begin
       perform_enqueued_jobs do
         AlwaysFailingJob.perform_later
       end
-    rescue Exception # rubocop:disable Lint/RescueException
-      # expected — the final retry re-raises
+    rescue Minitest::UnexpectedError => e
+      captured = e.error
     end
 
+    refute_nil captured, "expected the final retry to re-raise"
+    assert_instance_of RuntimeError, captured
+    assert_equal "always fails", captured.message
     assert_equal 10, AlwaysFailingJob.calls
   end
 

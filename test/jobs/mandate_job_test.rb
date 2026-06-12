@@ -183,17 +183,19 @@ class MandateJobTest < ActiveJob::TestCase
   test "job re-raises after retries when Mandate command raises unhandled exception" do
     # ApplicationJob has a blanket retry_on StandardError; the first attempt
     # schedules a retry rather than propagating. After retries are exhausted
-    # the underlying exception is re-raised.
+    # the underlying exception is re-raised — but Minitest wraps it in
+    # Minitest::UnexpectedError, so we catch and unwrap.
     error = nil
     begin
       perform_enqueued_jobs do
         MandateJob.perform_later("MandateJobTest::TestErrorCommand")
       end
-    rescue Exception => e # rubocop:disable Lint/RescueException
-      error = e
+    rescue Minitest::UnexpectedError => e
+      error = e.error
     end
 
-    assert_includes error&.message.to_s, "Test error"
+    refute_nil error, "expected the final retry to re-raise"
+    assert_equal "Test error", error.message
   end
 
   test "requeue preserves all arguments" do
