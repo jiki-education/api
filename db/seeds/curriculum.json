@@ -217,13 +217,7 @@
           "type": "exercise",
           "data": {
             "slug": "maze-solve-repeat"
-          },
-          "walkthrough_video_data": [
-            {
-              "provider": "mux",
-              "id": "PNbgUkVhy38y7OELdYseo1GAD01XG8FGLJ1nj9BvuKCU"
-            }
-          ]
+          }
         },
         {
           "uuid": "057f7bf7-b033-4174-ab04-f8aa4a58e6b6",
