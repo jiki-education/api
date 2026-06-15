@@ -6,6 +6,7 @@ class User::DowngradeToStandard
   def call
     user.with_lock do
       return if user.data.standard?
+      return if user.premium_entitlements.active.exists?
 
       user.data.update!(membership_type: 'standard')
     end

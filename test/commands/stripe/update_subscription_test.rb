@@ -5,7 +5,6 @@ class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
     user = create(:user)
     period_end = 1.year.from_now
     user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "monthly",
@@ -45,7 +44,6 @@ class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
     user = create(:user)
     period_end = 1.month.from_now
     user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "annual",

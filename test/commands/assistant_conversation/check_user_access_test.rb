@@ -3,7 +3,7 @@ require "test_helper"
 class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
   test "premium user is always allowed" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     lesson = create(:lesson, :exercise)
 
     assert AssistantConversation::CheckUserAccess.(user, lesson)
@@ -11,7 +11,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user with no previous conversation is allowed" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson = create(:lesson, :exercise)
 
     assert AssistantConversation::CheckUserAccess.(user, lesson)
@@ -19,7 +19,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user accessing same lesson as most recent is allowed" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson = create(:lesson, :exercise)
     create(:assistant_conversation, user:, context: lesson)
 
@@ -28,7 +28,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user accessing different lesson than most recent is denied" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson1 = create(:lesson, :exercise)
     lesson2 = create(:lesson, :exercise)
     create(:assistant_conversation, user:, context: lesson1)
@@ -38,7 +38,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user can switch to most recently updated lesson" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson1 = create(:lesson, :exercise)
     lesson2 = create(:lesson, :exercise)
 
@@ -59,7 +59,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "premium user is always allowed for project context" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     project = create(:project)
 
     assert AssistantConversation::CheckUserAccess.(user, project)
@@ -67,7 +67,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user with no previous conversation is allowed for project context" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     project = create(:project)
 
     assert AssistantConversation::CheckUserAccess.(user, project)
@@ -75,7 +75,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user with existing lesson conversation is denied for project context" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson = create(:lesson, :exercise)
     project = create(:project)
     create(:assistant_conversation, user:, context: lesson)
@@ -85,7 +85,7 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
 
   test "standard user's project conversations do not consume the free lesson allowance" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     project = create(:project)
     lesson = create(:lesson, :exercise)
     create(:assistant_conversation, user:, context: project)

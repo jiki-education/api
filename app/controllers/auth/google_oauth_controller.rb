@@ -1,7 +1,8 @@
 module Auth
   class GoogleOauthController < ApplicationController
     def create
-      user = Auth::AuthenticateWithOauth.(:google, params[:code])
+      payload = Auth::VerifyGoogleToken.(params[:code])
+      user    = Auth::FindOrCreateFromOauth.(:google, payload)
 
       if user.previously_new_record?
         User::Bootstrap.(user, "google",

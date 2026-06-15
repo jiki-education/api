@@ -22,8 +22,7 @@ class Dev::UsersControllerTest < ApplicationControllerTest
           ended_at: nil,
           end_reason: nil,
           payment_failed_at: nil
-        }],
-        membership_type: "premium"
+        }]
       )
 
       delete clear_stripe_history_dev_user_path(user.handle), as: :json
@@ -36,7 +35,7 @@ class Dev::UsersControllerTest < ApplicationControllerTest
         user: {
           id: user.id,
           handle: user.handle,
-          membership_type: "standard",
+          premium: false,
           subscription_status: "never_subscribed"
         }
       })
@@ -49,7 +48,7 @@ class Dev::UsersControllerTest < ApplicationControllerTest
       assert_nil user.data.subscription_valid_until
       assert_empty user.data.subscriptions
       assert_equal "never_subscribed", user.data.subscription_status
-      assert_equal "standard", user.data.membership_type
+      refute user.premium?
     ensure
       Rails.env.unstub(:development?)
     end
@@ -69,7 +68,7 @@ class Dev::UsersControllerTest < ApplicationControllerTest
         user: {
           id: user.id,
           handle: user.handle,
-          membership_type: "standard",
+          premium: false,
           subscription_status: "never_subscribed"
         }
       })

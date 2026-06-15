@@ -11,7 +11,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     Stripe::Webhook::SubscriptionCreated.(event)
 
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    assert user.premium?
     assert_equal "monthly", user.data.subscription_interval
     assert_equal "sub_123", user.data.stripe_subscription_id
     assert_equal "active", user.data.stripe_subscription_status
@@ -35,7 +35,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     Stripe::Webhook::SubscriptionCreated.(event)
 
     user.data.reload
-    assert_equal "premium", user.data.membership_type
+    assert user.premium?
     assert_equal "annual", user.data.subscription_interval
     assert_equal "active", user.data.subscription_status
   end
@@ -52,7 +52,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     Stripe::Webhook::SubscriptionCreated.(event)
 
     user.data.reload
-    assert_equal "standard", user.data.membership_type
+    refute user.premium?
     assert_equal "incomplete", user.data.subscription_status
     assert_equal "sub_123", user.data.stripe_subscription_id
 
@@ -100,7 +100,7 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     Stripe::Webhook::SubscriptionCreated.(event)
 
     user.data.reload
-    assert_equal "standard", user.data.membership_type
+    refute user.premium?
     assert_equal "never_subscribed", user.data.subscription_status
   end
 

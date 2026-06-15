@@ -1,13 +1,20 @@
 module Auth
   class ExercismOauthController < ApplicationController
     def create
-      user = Auth::AuthenticateWithOauth.(:exercism, params[:code], code_verifier: params[:code_verifier])
+      payload = Auth::VerifyExercismToken.(params[:code], params[:code_verifier])
+      user    = Auth::FindOrCreateFromOauth.(:exercism, payload)
 
       if user.previously_new_record?
         User::Bootstrap.(user, "exercism",
           attribution: signup_attribution_params,
           country_code: request.headers["CF-IPCountry"])
       end
+
+      User::Exercism::ReconcileEntitlements.(
+        user,
+        is_insider: payload['is_insider'] == true,
+        is_bootcamp_member: payload['is_bootcamp_member'] == true
+      )
 
       sign_in_with_2fa_guard!(user)
     rescue InvalidExercismTokenError, InvalidOauthPayloadError => e

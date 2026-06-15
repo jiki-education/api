@@ -1,12 +1,10 @@
 module Auth
-  class AuthenticateWithOauth
+  class FindOrCreateFromOauth
     include Mandate
 
     PROVIDERS = %i[google exercism].freeze
 
-    # code_verifier is only used by providers whose flow requires PKCE
-    # (Exercism does, Google doesn't).
-    initialize_with :provider, :code, code_verifier: nil
+    initialize_with :provider, :payload
 
     def call
       validate_provider!
@@ -73,11 +71,6 @@ module Auth
     def initial_handle
       preferred_handle.to_s.parameterize.presence || User::GenerateHandle.(email)
     end
-
-    memoize
-    def payload = verify_command.(*[code, code_verifier].compact)
-
-    def verify_command = "Auth::Verify#{provider.to_s.camelize}Token".constantize
 
     def id_column = :"#{provider}_id"
 

@@ -124,7 +124,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
   end
 
   test "POST google with malformed payload returns unauthorized" do
-    # Payload missing the id - guarded by AuthenticateWithOauth
+    # Payload missing the id - guarded by FindOrCreateFromOauth
     Auth::VerifyGoogleToken.stubs(:call).returns({
       'id' => nil,
       'email' => 'someone@gmail.com',

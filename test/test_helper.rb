@@ -22,10 +22,46 @@ Mocha.configure do |c|
   c.stubbing_non_public_method = :prevent
 end
 
+# Add Exercism-integration secrets to the test secrets OpenStruct around a
+# test. They will be added to the config gem in a sibling PR; until then,
+# tests that need them inject them manually.
+module ExercismSecretsHelper
+  EXERCISM_TEST_SECRETS = {
+    exercism_api_key: "test-exercism-api-key",
+    exercism_webhook_signing_secret: "test-exercism-webhook-secret"
+  }.freeze
+
+  def stub_exercism_secrets!
+    EXERCISM_TEST_SECRETS.each do |k, v|
+      Jiki.secrets.public_send("#{k}=", v)
+    end
+  end
+
+  def unstub_exercism_secrets!
+    EXERCISM_TEST_SECRETS.each_key do |k|
+      Jiki.secrets.delete_field(k) if Jiki.secrets.respond_to?(k)
+    end
+  end
+end
+
+module PremiumTestHelpers
+  def make_premium(user)
+    user.data.update!(membership_type: "premium")
+    user
+  end
+
+  def make_non_premium(user)
+    user.data.update!(membership_type: "standard")
+    user
+  end
+end
+
 module ActiveSupport
   class TestCase
     include FactoryBot::Syntax::Methods
     include ActiveJob::TestHelper
+    include PremiumTestHelpers
+    include ExercismSecretsHelper
 
     # Run tests in parallel with specified workers
     parallelize(workers: :number_of_processors)

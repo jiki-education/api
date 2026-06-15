@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_08_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -232,6 +232,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_120000) do
     t.index ["payment_processor_id"], name: "index_payments_on_payment_processor_id", unique: true
     t.index ["user_id", "created_at"], name: "index_payments_on_user_id_and_created_at"
     t.index ["user_id"], name: "index_payments_on_user_id"
+  end
+
+  create_table "premium_entitlements", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "revoked_at"
+    t.string "source", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["expires_at"], name: "index_premium_entitlements_on_expires_at"
+    t.index ["user_id", "source"], name: "index_premium_entitlements_on_user_and_source_active", unique: true, where: "(revoked_at IS NULL)"
+    t.index ["user_id"], name: "index_premium_entitlements_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -550,6 +562,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_08_120000) do
   add_foreign_key "level_translations", "levels"
   add_foreign_key "levels", "courses"
   add_foreign_key "payments", "users"
+  add_foreign_key "premium_entitlements", "users"
   add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

@@ -8,8 +8,7 @@ class Dev::UsersController < Dev::BaseController
       stripe_subscription_status: nil,
       subscription_status: 'never_subscribed',
       subscription_valid_until: nil,
-      subscriptions: [],
-      membership_type: "standard"
+      subscriptions: []
     )
 
     render json: {
@@ -17,7 +16,7 @@ class Dev::UsersController < Dev::BaseController
       user: {
         id: user.id,
         handle: user.handle,
-        membership_type: user.data.membership_type,
+        premium: user.premium?,
         subscription_status: user.data.subscription_status
       }
     }, status: :ok

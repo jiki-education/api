@@ -3,7 +3,7 @@ require "test_helper"
 class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCase
   test "creates conversation token for premium user" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     lesson = create(:lesson, :exercise, slug: "test-lesson", data: { slug: 'jiki/intro/test' })
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
@@ -21,7 +21,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
 
   test "creates conversation token for standard user first lesson" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson = create(:lesson, :exercise)
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
@@ -31,7 +31,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
 
   test "raises error for standard user on different lesson" do
     user = create(:user)
-    user.data.update!(membership_type: "standard")
+    make_non_premium(user)
     lesson1 = create(:lesson, :exercise)
     lesson2 = create(:lesson, :exercise)
     create(:assistant_conversation, user:, context: lesson1)
@@ -43,7 +43,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
 
   test "creates or finds existing conversation" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     lesson = create(:lesson, :exercise)
 
     assert_difference 'AssistantConversation.count', 1 do
@@ -57,7 +57,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
 
   test "token expires in 1 hour" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     lesson = create(:lesson, :exercise)
 
     freeze_time do
@@ -72,7 +72,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
 
   test "uses slug from lesson data for exercise_slug" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     lesson = create(:lesson, :exercise, data: { slug: "my-exercise-slug" })
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
@@ -83,7 +83,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
 
   test "creates conversation token for project context" do
     user = create(:user)
-    user.data.update!(membership_type: "premium")
+    make_premium(user)
     project = create(:project, slug: "calculator", exercise_slug: "jiki/calculator")
 
     token = AssistantConversation::CreateConversationToken.(user, project)

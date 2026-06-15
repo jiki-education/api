@@ -10,7 +10,9 @@ module Auth
         'email' => user_info['email'],
         'name' => user_info['name'],
         'handle' => user_info['handle'],
-        'avatar_url' => user_info['avatar_url']
+        'avatar_url' => user_info['avatar_url'],
+        'is_insider' => user_info['is_insider'] == true,
+        'is_bootcamp_member' => user_info['is_bootcamp_member'] == true
       }
     rescue StandardError => e
       raise InvalidExercismTokenError, "Exercism token validation failed: #{e.message}"

@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::UserProjectsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @current_user.data.update!(membership_type: "premium")
+    make_premium(@current_user)
     @project = create(:project)
   end
 
@@ -41,7 +41,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 403 for non-premium user" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
 
     get internal_user_project_path(project_slug: @project.slug),
       as: :json
@@ -93,7 +93,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
   end
 
   test "POST start returns 403 for non-premium user" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
 
     post start_internal_user_project_path(project_slug: @project.slug),
       as: :json
@@ -148,7 +148,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH complete returns 403 for non-premium user" do
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
 
     patch complete_internal_user_project_path(project_slug: @project.slug),
       as: :json

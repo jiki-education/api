@@ -395,7 +395,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update switches from monthly to annual" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "monthly"
@@ -424,7 +423,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update switches from annual to monthly" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "annual"
@@ -447,7 +445,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update allows interval change for payment_failed status" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "payment_failed",
       subscription_interval: "monthly"
@@ -464,7 +461,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update allows interval change for cancelling status" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "cancelling",
       subscription_interval: "monthly"
@@ -481,7 +477,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update rejects invalid interval" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active"
     )
@@ -498,7 +493,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update rejects same interval" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "monthly"
@@ -516,7 +510,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update rejects when user cannot change plan" do
     @user.data.update!(
-      membership_type: "standard",
       subscription_status: "never_subscribed"
     )
 
@@ -531,7 +524,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update rejects when user is canceled" do
     @user.data.update!(
-      membership_type: "standard",
       subscription_status: "canceled"
     )
 
@@ -546,7 +538,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update handles Stripe errors gracefully" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "monthly"
@@ -565,7 +556,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST update handles ArgumentError gracefully" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active",
       subscription_interval: "monthly"
@@ -586,7 +576,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "DELETE cancel cancels active subscription" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active"
     )
@@ -610,7 +599,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "DELETE cancel works for payment_failed subscription" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "payment_failed"
     )
@@ -625,7 +613,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "DELETE cancel works for incomplete subscription" do
     @user.data.update!(
-      membership_type: "standard",
       stripe_subscription_id: "sub_123",
       subscription_status: "incomplete"
     )
@@ -640,7 +627,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "DELETE cancel rejects when no subscription" do
     @user.data.update!(
-      membership_type: "standard",
       stripe_subscription_id: nil,
       subscription_status: "never_subscribed"
     )
@@ -656,7 +642,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "DELETE cancel rejects when subscription already canceled" do
     @user.data.update!(
-      membership_type: "standard",
       stripe_subscription_id: nil,
       subscription_status: "canceled"
     )
@@ -671,7 +656,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "DELETE cancel handles Stripe errors gracefully" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active"
     )
@@ -691,7 +675,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST reactivate reactivates canceled subscription" do
     period_end = 1.month.from_now
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "cancelling",
       subscription_valid_until: period_end
@@ -715,7 +698,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST reactivate rejects when no subscription" do
     @user.data.update!(
-      membership_type: "standard",
       stripe_subscription_id: nil,
       subscription_status: "never_subscribed"
     )
@@ -731,7 +713,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST reactivate rejects when subscription is not cancelling" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "active"
     )
@@ -747,7 +728,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST reactivate handles command ArgumentError" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "cancelling"
     )
@@ -765,7 +745,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
 
   test "POST reactivate handles Stripe errors gracefully" do
     @user.data.update!(
-      membership_type: "premium",
       stripe_subscription_id: "sub_123",
       subscription_status: "cancelling"
     )

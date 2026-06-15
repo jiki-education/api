@@ -3,7 +3,7 @@ require "test_helper"
 class Internal::ProjectsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @current_user.data.update!(membership_type: "premium")
+    make_premium(@current_user)
   end
 
   # Authentication guards
@@ -177,7 +177,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index is accessible to non-premium users" do
     Prosopite.finish
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
     project = create(:project, title: "Calculator")
 
     get internal_projects_path, as: :json
@@ -217,7 +217,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET show returns 403 for non-premium user" do
     Prosopite.finish
-    @current_user.data.update!(membership_type: "standard")
+    make_non_premium(@current_user)
     project = create(:project, slug: "calculator")
 
     get internal_project_path(project_slug: project.slug), as: :json
