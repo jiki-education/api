@@ -17,3 +17,7 @@ production:
   sync_exercism_entitlements:
     command: "User::Exercism::SyncEntitlements.defer"
     schedule: at 3am every day
+
+  create_onboarding_notifications:
+    command: "User::Onboarding::CreateDueNotifications.defer"
+    schedule: every 30 minutes

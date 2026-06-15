@@ -17,7 +17,8 @@ class User::Data < ApplicationRecord
     "newsletters" => :receive_newsletters,
     "event_emails" => :receive_event_emails,
     "milestone_emails" => :receive_milestone_emails,
-    "activity_emails" => :receive_activity_emails
+    "activity_emails" => :receive_activity_emails,
+    "onboarding_emails" => :receive_onboarding_emails
   }.freeze
 
   def self.valid_notification_slug?(slug)
