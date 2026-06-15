@@ -6,8 +6,7 @@ class SerializeUser
   def call
     {
       handle: user.handle,
-      premium: user.premium?,
-      premium_sources: User::PremiumSources.(user),
+      membership_type: user.membership_type,
       email: user.email,
       name: user.name,
       avatar_url: user.avatar_url,
