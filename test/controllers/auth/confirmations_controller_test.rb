@@ -36,7 +36,7 @@ class Auth::ConfirmationsControllerTest < ApplicationControllerTest
     token = user.confirmation_token
 
     Analytics::TrackEvent.stubs(:defer)
-    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in", anything).never
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in").never
 
     get user_confirmation_path(confirmation_token: token), as: :json
 

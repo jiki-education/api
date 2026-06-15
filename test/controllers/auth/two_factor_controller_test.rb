@@ -34,11 +34,7 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     otp_code = generate_valid_otp(@admin)
 
     Analytics::TrackLastActiveOn.stubs(:call)
-    Analytics::TrackEvent.expects(:defer).with(
-      @admin,
-      "user_logged_in",
-      properties: { login_method: "password" }
-    )
+    Analytics::TrackEvent.expects(:defer).with(@admin, "user_logged_in")
 
     post auth_verify_2fa_path, params: { otp_code: otp_code }, as: :json
 
@@ -52,11 +48,7 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     otp_code = generate_valid_otp(@admin)
 
     Analytics::TrackLastActiveOn.stubs(:call)
-    Analytics::TrackEvent.expects(:defer).with(
-      @admin,
-      "user_logged_in",
-      properties: { login_method: "password" }
-    )
+    Analytics::TrackEvent.expects(:defer).with(@admin, "user_logged_in")
 
     post auth_setup_2fa_path, params: { otp_code: otp_code }, as: :json
 

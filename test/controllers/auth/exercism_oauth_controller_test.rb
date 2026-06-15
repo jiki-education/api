@@ -287,11 +287,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     })
 
     Analytics::TrackEvent.stubs(:defer)
-    Analytics::TrackEvent.expects(:defer).with(
-      existing_user,
-      "user_logged_in",
-      properties: { login_method: "exercism" }
-    )
+    Analytics::TrackEvent.expects(:defer).with(existing_user, "user_logged_in")
 
     post auth_exercism_path,
       params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier' },
@@ -312,7 +308,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     User::Exercism::ReconcileEntitlements.stubs(:call)
 
     Analytics::TrackEvent.stubs(:defer)
-    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in", anything).never
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in").never
 
     post auth_exercism_path,
       params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier' },

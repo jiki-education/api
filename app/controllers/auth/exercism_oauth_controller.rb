@@ -16,7 +16,7 @@ module Auth
         is_bootcamp_member: payload['is_bootcamp_member'] == true
       )
 
-      sign_in_with_2fa_guard!(user, login_method: user.previously_new_record? ? nil : "exercism")
+      sign_in_with_2fa_guard!(user, sign_in_type: user.previously_new_record? ? :signup : :login)
     rescue InvalidExercismTokenError, InvalidOauthPayloadError => e
       render json: {
         error: {

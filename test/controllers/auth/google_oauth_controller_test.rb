@@ -225,11 +225,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     })
 
     Analytics::TrackEvent.stubs(:defer)
-    Analytics::TrackEvent.expects(:defer).with(
-      existing_user,
-      "user_logged_in",
-      properties: { login_method: "google" }
-    )
+    Analytics::TrackEvent.expects(:defer).with(existing_user, "user_logged_in")
 
     post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
 
@@ -246,7 +242,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     User::Bootstrap.stubs(:call)
 
     Analytics::TrackEvent.stubs(:defer)
-    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in", anything).never
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in").never
 
     post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
 
