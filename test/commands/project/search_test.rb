@@ -109,6 +109,19 @@ class Project::SearchTest < ActiveSupport::TestCase
     assert_equal [project_calc2, project_calc3, project_calc1], result
   end
 
+  test "user: returns projects even when other users have user_projects for them" do
+    project = create :project, title: "Shared Project"
+    user = create :user
+    other_user = create :user
+
+    # Another user has started this project, but our user has not
+    create :user_project, user: other_user, project: project
+
+    result = Project::Search.(user:).to_a
+
+    assert_equal [project], result
+  end
+
   test "user: pagination works correctly with user filtering" do
     project_1 = create :project, title: "Apple"
     project_2 = create :project, title: "Banana"
