@@ -7,6 +7,7 @@ class Auth::ConfirmationsController < Devise::ConfirmationsController
     self.resource = resource_class.confirm_by_token(params[:confirmation_token])
 
     if resource.errors.empty?
+      # No login_method: this sign-in is part of sign-up (email confirmation), not a login.
       sign_in_with_2fa_guard!(resource)
     else
       render_422(:invalid_token)

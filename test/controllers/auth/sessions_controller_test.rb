@@ -170,6 +170,36 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     assert_json_error(:unauthorized, error_type: :unauthenticated)
   end
 
+  test "POST login fires user_logged_in PostHog event for non-admin" do
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(
+      @user,
+      "user_logged_in",
+      properties: { login_method: "password", via_2fa: false }
+    )
+
+    post user_session_path, params: with_turnstile(
+      user: { email: "test@example.com", password: "password123" }
+    ), as: :json
+
+    assert_response :ok
+  end
+
+  test "POST login does not fire user_logged_in event when 2FA is required" do
+    admin = create(:user, :admin, email: "admin@example.com", password: "password123")
+    User::GenerateOtpSecret.(admin)
+    User::EnableOtp.(admin)
+
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in", anything).never
+
+    post user_session_path, params: with_turnstile(
+      user: { email: "admin@example.com", password: "password123" }
+    ), as: :json
+
+    assert_response :ok
+  end
+
   test "POST login for non-admin signs in normally" do
     post user_session_path, params: with_turnstile(
       user: { email: "test@example.com", password: "password123" }

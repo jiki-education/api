@@ -10,7 +10,7 @@ module Auth
           country_code: request.headers["CF-IPCountry"])
       end
 
-      sign_in_with_2fa_guard!(user)
+      sign_in_with_2fa_guard!(user, login_method: user.previously_new_record? ? nil : "google")
     rescue InvalidGoogleTokenError, InvalidOauthPayloadError => e
       render json: {
         error: {

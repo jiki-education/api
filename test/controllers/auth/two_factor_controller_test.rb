@@ -26,6 +26,43 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     assert_response :ok
   end
 
+  test "POST verify-2fa fires user_logged_in event with via_2fa: true" do
+    User::GenerateOtpSecret.(@admin)
+    User::EnableOtp.(@admin)
+    setup_otp_session(@admin)
+
+    otp_code = generate_valid_otp(@admin)
+
+    Analytics::TrackLastActiveOn.stubs(:call)
+    Analytics::TrackEvent.expects(:defer).with(
+      @admin,
+      "user_logged_in",
+      properties: { login_method: "password", via_2fa: true }
+    )
+
+    post auth_verify_2fa_path, params: { otp_code: otp_code }, as: :json
+
+    assert_response :ok
+  end
+
+  test "POST setup-2fa fires user_logged_in event with via_2fa: true" do
+    setup_otp_session(@admin)
+    @admin.reload
+
+    otp_code = generate_valid_otp(@admin)
+
+    Analytics::TrackLastActiveOn.stubs(:call)
+    Analytics::TrackEvent.expects(:defer).with(
+      @admin,
+      "user_logged_in",
+      properties: { login_method: "password", via_2fa: true }
+    )
+
+    post auth_setup_2fa_path, params: { otp_code: otp_code }, as: :json
+
+    assert_response :ok
+  end
+
   test "POST verify-2fa with invalid OTP returns error" do
     User::GenerateOtpSecret.(@admin)
     User::EnableOtp.(@admin)

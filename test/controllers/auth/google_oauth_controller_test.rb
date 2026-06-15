@@ -211,6 +211,48 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     assert_response :unauthorized
   end
 
+  test "POST google fires user_logged_in for returning user" do
+    existing_user = create(:user,
+      email: 'existing@gmail.com',
+      google_id: 'google-returning-id',
+      confirmed_at: Time.current)
+
+    Auth::VerifyGoogleToken.stubs(:call).returns({
+      'id' => 'google-returning-id',
+      'email' => 'existing@gmail.com',
+      'name' => 'Existing User',
+      'exp' => 1.hour.from_now.to_i
+    })
+
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(
+      existing_user,
+      "user_logged_in",
+      properties: { login_method: "google", via_2fa: false }
+    )
+
+    post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
+
+    assert_response :ok
+  end
+
+  test "POST google does not fire user_logged_in for newly created user" do
+    Auth::VerifyGoogleToken.stubs(:call).returns({
+      'id' => 'google-new-id',
+      'email' => 'brandnew@gmail.com',
+      'name' => 'Brand New',
+      'exp' => 1.hour.from_now.to_i
+    })
+    User::Bootstrap.stubs(:call)
+
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in", anything).never
+
+    post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json
+
+    assert_response :ok
+  end
+
   test "POST google for admin with 2FA enabled returns 2fa_required" do
     admin = create(:user, :admin,
       email: 'admin@gmail.com',

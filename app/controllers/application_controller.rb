@@ -150,7 +150,10 @@ class ApplicationController < ActionController::API
   # Signs in the user, checking for 2FA requirement first.
   # For admin users, stores OTP session and renders 2FA response instead of signing in.
   # For non-admin users, signs in immediately and renders success response.
-  def sign_in_with_2fa_guard!(user)
+  # login_method is the auth source ("password", "google", "exercism") and drives the
+  # user_logged_in PostHog event. Pass nil when the sign-in is part of sign-up
+  # (e.g. email confirmation, or first-time OAuth creation) so we don't double-count.
+  def sign_in_with_2fa_guard!(user, login_method: nil)
     if user.requires_otp?
       # Clear any existing session before setting up 2FA.
       # This is needed for Devise sessions where warden.authenticate persists the user.
@@ -158,6 +161,7 @@ class ApplicationController < ActionController::API
 
       session[:otp_user_id] = user.id
       session[:otp_timestamp] = Time.current.to_i
+      session[:otp_login_method] = login_method
 
       if user.otp_enabled?
         render json: { status: "2fa_required" }, status: :ok
@@ -172,6 +176,10 @@ class ApplicationController < ActionController::API
     end
 
     sign_in(user)
+    if login_method
+      Analytics::TrackEvent.defer(user, "user_logged_in",
+        properties: { login_method: login_method, via_2fa: false })
+    end
     render json: { status: "success", user: SerializeUser.(user) }, status: :ok
   end
 end

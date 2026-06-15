@@ -31,6 +31,18 @@ class Auth::ConfirmationsControllerTest < ApplicationControllerTest
     assert_response :ok
   end
 
+  test "GET confirmation does not fire user_logged_in event (signup, not login)" do
+    user = create(:user, :unconfirmed)
+    token = user.confirmation_token
+
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in", anything).never
+
+    get user_confirmation_path(confirmation_token: token), as: :json
+
+    assert_response :ok
+  end
+
   test "GET confirmation with invalid token returns error" do
     get user_confirmation_path(confirmation_token: "invalid-token"), as: :json
 

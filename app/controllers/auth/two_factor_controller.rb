@@ -42,14 +42,20 @@ class Auth::TwoFactorController < ApplicationController
   end
 
   def complete_sign_in
+    login_method = session[:otp_login_method]
     clear_otp_session
     sign_in(:user, @user)
+    if login_method
+      Analytics::TrackEvent.defer(@user, "user_logged_in",
+        properties: { login_method: login_method, via_2fa: true })
+    end
     render json: { status: "success", user: SerializeUser.(@user) }, status: :ok
   end
 
   def clear_otp_session
     session.delete(:otp_user_id)
     session.delete(:otp_timestamp)
+    session.delete(:otp_login_method)
   end
 
   def render_session_expired
