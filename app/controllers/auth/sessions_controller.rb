@@ -22,7 +22,7 @@ class Auth::SessionsController < Devise::SessionsController
       }, status: :unauthorized
     end
 
-    sign_in_with_2fa_guard!(resource)
+    sign_in_with_2fa_guard!(resource, sign_in_type: :login)
   end
 
   private
