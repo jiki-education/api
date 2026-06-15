@@ -35,18 +35,18 @@ class Project::Search
   end
 
   def apply_ordering!
-    if user
-      # Scope the join to the current user so other users' user_projects don't filter projects out.
-      @projects = @projects.
-        joins(sanitize_sql_array([
-                                   "LEFT JOIN user_projects ON user_projects.project_id = projects.id AND user_projects.user_id = ?",
-                                   user.id
-                                 ])).
-        select("projects.*, CASE WHEN user_projects.user_id IS NOT NULL THEN 0 ELSE 1 END as lock_order").
-        order("lock_order ASC, projects.title ASC")
-    else
-      @projects = @projects.order(:title)
-    end
+    return @projects = @projects.order(:title) unless user
+
+    # Scope the join to the current user so other users' user_projects don't filter projects out.
+    @projects = @projects.
+      joins(sanitize_sql_array(
+        [
+          "LEFT JOIN user_projects ON user_projects.project_id = projects.id AND user_projects.user_id = ?",
+          user.id
+        ]
+      )).
+      select("projects.*, CASE WHEN user_projects.user_id IS NOT NULL THEN 0 ELSE 1 END as lock_order").
+      order("lock_order ASC, projects.title ASC")
   end
 
   def sanitize_sql_array(array)
