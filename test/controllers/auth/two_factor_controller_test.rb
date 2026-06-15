@@ -26,7 +26,7 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     assert_response :ok
   end
 
-  test "POST verify-2fa fires user_logged_in event with via_2fa: true" do
+  test "POST verify-2fa fires user_logged_in event" do
     User::GenerateOtpSecret.(@admin)
     User::EnableOtp.(@admin)
     setup_otp_session(@admin)
@@ -37,7 +37,7 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     Analytics::TrackEvent.expects(:defer).with(
       @admin,
       "user_logged_in",
-      properties: { login_method: "password", via_2fa: true }
+      properties: { login_method: "password" }
     )
 
     post auth_verify_2fa_path, params: { otp_code: otp_code }, as: :json
@@ -45,7 +45,7 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     assert_response :ok
   end
 
-  test "POST setup-2fa fires user_logged_in event with via_2fa: true" do
+  test "POST setup-2fa fires user_logged_in event" do
     setup_otp_session(@admin)
     @admin.reload
 
@@ -55,7 +55,7 @@ class Auth::TwoFactorControllerTest < ApplicationControllerTest
     Analytics::TrackEvent.expects(:defer).with(
       @admin,
       "user_logged_in",
-      properties: { login_method: "password", via_2fa: true }
+      properties: { login_method: "password" }
     )
 
     post auth_setup_2fa_path, params: { otp_code: otp_code }, as: :json

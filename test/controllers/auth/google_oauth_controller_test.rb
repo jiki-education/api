@@ -228,7 +228,7 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     Analytics::TrackEvent.expects(:defer).with(
       existing_user,
       "user_logged_in",
-      properties: { login_method: "google", via_2fa: false }
+      properties: { login_method: "google" }
     )
 
     post auth_google_path, params: { code: 'valid-google-auth-code' }, as: :json

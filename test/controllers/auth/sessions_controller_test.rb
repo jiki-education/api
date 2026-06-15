@@ -175,7 +175,7 @@ class Auth::SessionsControllerTest < ApplicationControllerTest
     Analytics::TrackEvent.expects(:defer).with(
       @user,
       "user_logged_in",
-      properties: { login_method: "password", via_2fa: false }
+      properties: { login_method: "password" }
     )
 
     post user_session_path, params: with_turnstile(

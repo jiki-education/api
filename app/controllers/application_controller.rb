@@ -176,10 +176,7 @@ class ApplicationController < ActionController::API
     end
 
     sign_in(user)
-    if login_method
-      Analytics::TrackEvent.defer(user, "user_logged_in",
-        properties: { login_method: login_method, via_2fa: false })
-    end
+    Analytics::TrackEvent.defer(user, "user_logged_in", properties: { login_method: login_method }) if login_method
     render json: { status: "success", user: SerializeUser.(user) }, status: :ok
   end
 end

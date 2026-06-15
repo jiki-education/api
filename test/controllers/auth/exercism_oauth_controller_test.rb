@@ -290,7 +290,7 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     Analytics::TrackEvent.expects(:defer).with(
       existing_user,
       "user_logged_in",
-      properties: { login_method: "exercism", via_2fa: false }
+      properties: { login_method: "exercism" }
     )
 
     post auth_exercism_path,
