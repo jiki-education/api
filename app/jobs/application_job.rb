@@ -1,4 +1,13 @@
 class ApplicationJob < ActiveJob::Base
+  # Blanket retry for any unhandled error — Solid Queue has no built-in
+  # auto-retry, so without this, a single transient failure (network blip,
+  # third-party API hiccup, brief DB unavailability) leaves the job in
+  # `solid_queue_failed_executions` permanently. Declared first so it acts
+  # as the fallback; later `retry_on` / `discard_on` declarations on this
+  # class or subclasses take precedence (ActiveJob walks declarations in
+  # reverse order).
+  retry_on StandardError, wait: :polynomially_longer, attempts: 10
+
   # Automatically retry jobs that encountered a deadlock
   retry_on ActiveRecord::Deadlocked
 

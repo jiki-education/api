@@ -180,11 +180,21 @@ class MandateJobTest < ActiveJob::TestCase
     assert job.guard_against_deserialization_errors?
   end
 
-  test "job fails when Mandate command raises unhandled exception" do
-    error = assert_raises StandardError do
-      MandateJob.perform_now("MandateJobTest::TestErrorCommand")
+  test "job re-raises after retries when Mandate command raises unhandled exception" do
+    # ApplicationJob has a blanket retry_on StandardError; the first attempt
+    # schedules a retry rather than propagating. After retries are exhausted
+    # the underlying exception is re-raised — but Minitest wraps it in
+    # Minitest::UnexpectedError, so we catch and unwrap.
+    error = nil
+    begin
+      perform_enqueued_jobs do
+        MandateJob.perform_later("MandateJobTest::TestErrorCommand")
+      end
+    rescue Minitest::UnexpectedError => e
+      error = e.error
     end
 
+    refute_nil error, "expected the final retry to re-raise"
     assert_equal "Test error", error.message
   end
 
