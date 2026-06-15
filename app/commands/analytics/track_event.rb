@@ -28,8 +28,7 @@ class Analytics::TrackEvent
   private
   def default_properties
     {
-      premium: user.premium?,
-      premium_sources: User::PremiumSources.(user),
+      membership_type: user.membership_type,
       locale: user.locale
     }
   end
