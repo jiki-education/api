@@ -6,7 +6,7 @@ class SerializeUser
   def call
     {
       handle: user.handle,
-      membership_type: user.membership_type,
+      membership_type: user.data.membership_type,
       email: user.email,
       name: user.name,
       avatar_url: user.avatar_url,

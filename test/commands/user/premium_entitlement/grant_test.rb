@@ -10,37 +10,10 @@ class User::PremiumEntitlement::GrantTest < ActiveSupport::TestCase
     assert entitlement
   end
 
-  test "fires UpgradeToPremium on 0->1 transition" do
+  test "calls UpgradeToPremium with the entitlement source" do
     user = create(:user)
 
     User::UpgradeToPremium.expects(:call).with(user, source: PremiumEntitlement::EXERCISM_INSIDER)
-
-    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::EXERCISM_INSIDER)
-  end
-
-  test "does not fire UpgradeToPremium when user already premium via Stripe" do
-    user = create(:user)
-    user.data.update!(subscription_status: "active")
-
-    User::UpgradeToPremium.expects(:call).never
-
-    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::EXERCISM_INSIDER)
-  end
-
-  test "does not fire UpgradeToPremium when user already has an entitlement of same source" do
-    user = create(:user)
-    create(:premium_entitlement, :insider, user:)
-
-    User::UpgradeToPremium.expects(:call).never
-
-    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::EXERCISM_INSIDER)
-  end
-
-  test "does not fire UpgradeToPremium when user already has an entitlement of different source" do
-    user = create(:user)
-    create(:premium_entitlement, :bootcamp, user:)
-
-    User::UpgradeToPremium.expects(:call).never
 
     User::PremiumEntitlement::Grant.(user, PremiumEntitlement::EXERCISM_INSIDER)
   end

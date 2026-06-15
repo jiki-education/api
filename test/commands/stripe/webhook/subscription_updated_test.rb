@@ -17,6 +17,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     @period_end = 1.month.from_now
     @user.data.update!(
       stripe_subscription_id: "sub_123",
+      membership_type: "premium",
       subscription_status: "active",
       subscription_interval: "monthly",
       subscription_valid_until: @period_end,
@@ -145,7 +146,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     Stripe::Webhook::SubscriptionUpdated.(event)
 
     @user.data.reload
-    refute @user.premium?
+    assert_equal "standard", @user.data.membership_type
     assert_equal "unpaid", @user.data.stripe_subscription_status
     assert_equal "payment_failed", @user.data.subscription_status
   end
@@ -197,7 +198,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
 
     @user.data.reload
     assert_equal "annual", @user.data.subscription_interval
-    assert @user.premium?
+    assert_equal "premium", @user.data.membership_type
 
     assert_equal 2, @user.data.subscriptions.length
     old_sub = @user.data.subscriptions.first

@@ -9,12 +9,16 @@ class Stripe::Webhook::SubscriptionDeleted
       return
     end
 
-    was_premium = user.premium?
+    old_tier = user.data.membership_type
 
     # Update subscriptions array
     update_subscriptions_array!
 
-    # Update subscription state
+    # Downgrade to standard tier via dedicated command (sends email).
+    # Skip if a non-Stripe entitlement (e.g. Exercism Insider) still covers them.
+    User::DowngradeToStandard.(user) unless user.premium_entitlements.active.exists?
+
+    # Update remaining subscription fields
     user.data.update!(
       stripe_subscription_status: 'canceled',
       subscription_status: 'canceled',
@@ -22,11 +26,7 @@ class Stripe::Webhook::SubscriptionDeleted
       subscription_valid_until: nil
     )
 
-    # Fire premium-loss side effects only on a real 1→0 transition (a user
-    # with a still-active entitlement keeps premium and skips these).
-    User::DowngradeToStandard.(user) if was_premium && !user.reload.premium?
-
-    Rails.logger.info("Subscription deleted for user #{user.id}")
+    Rails.logger.info("Subscription deleted for user #{user.id}, downgraded from #{old_tier} to standard")
   end
 
   private

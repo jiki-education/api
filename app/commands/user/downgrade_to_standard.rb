@@ -3,10 +3,13 @@ class User::DowngradeToStandard
 
   initialize_with :user
 
-  # Fires the consequences of a user losing premium. The caller is
-  # responsible for detecting the 1→0 transition (e.g. via was_premium /
-  # !user.reload.premium?) — this command always runs its side effects.
   def call
+    user.with_lock do
+      return if user.data.standard?
+
+      user.data.update!(membership_type: 'standard')
+    end
+
     PremiumMailer.subscription_ended(user).deliver_later
     User::Identify.defer(user)
     Analytics::TrackEvent.defer(user, "downgraded_to_standard")

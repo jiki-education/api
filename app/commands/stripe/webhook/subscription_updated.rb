@@ -100,15 +100,14 @@ class Stripe::Webhook::SubscriptionUpdated
         subscriptions: user_subscriptions
       )
     when 'unpaid'
-      # Grace period expired, mark as unpaid.
-      was_premium = user.premium?
+      # Grace period expired, downgrade to standard unless a non-Stripe
+      # entitlement (e.g. Exercism Insider) still covers them.
+      User::DowngradeToStandard.(user) unless user.premium_entitlements.active.exists?
       user.data.update!(
         stripe_subscription_status: 'unpaid',
         subscription_status: 'payment_failed'
       )
-      # Fire premium-loss side effects only on a real 1→0 transition.
-      User::DowngradeToStandard.(user) if was_premium && !user.reload.premium?
-      Rails.logger.info("User #{user.id} unpaid subscription processed")
+      Rails.logger.info("User #{user.id} downgraded to standard due to unpaid subscription")
     when 'canceled'
       user.data.update!(stripe_subscription_status: 'canceled')
     else

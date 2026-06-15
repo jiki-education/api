@@ -215,44 +215,4 @@ class UserTest < ActiveSupport::TestCase
     assert_includes uri, "issuer=Jiki"
     assert uri.end_with?("&image=#{CGI.escape(User::OTP_PROVISIONING_IMAGE_URL)}")
   end
-
-  test "premium? false when no Stripe subscription and no entitlements" do
-    user = create(:user)
-    refute user.premium?
-  end
-
-  test "premium? true when Stripe active" do
-    user = create(:user)
-    user.data.update!(subscription_status: "active")
-    assert user.premium?
-  end
-
-  test "premium? true when holding an active entitlement (no Stripe)" do
-    user = create(:user)
-    create(:premium_entitlement, :insider, user:)
-
-    assert user.premium?
-  end
-
-  test "premium? false when only entitlement is revoked" do
-    user = create(:user)
-    create(:premium_entitlement, :insider, :revoked, user:)
-
-    refute user.premium?
-  end
-
-  test "premium? false when only entitlement is expired" do
-    user = create(:user)
-    create(:premium_entitlement, :insider, :expired, user:)
-
-    refute user.premium?
-  end
-
-  test "premium? true when Stripe active AND entitlement present" do
-    user = create(:user)
-    user.data.update!(subscription_status: "active")
-    create(:premium_entitlement, :insider, user:)
-
-    assert user.premium?
-  end
 end

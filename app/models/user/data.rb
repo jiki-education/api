@@ -38,25 +38,17 @@ class User::Data < ApplicationRecord
     canceled: 5
   }, prefix: true
 
-  # Derives "Stripe currently entitles the user to premium" from the
-  # subscription columns.
-  def stripe_active?
-    return true if subscription_status_active?
-    return true if subscription_status_cancelling?
-    return true if subscription_status_payment_failed? && stripe_subscription_status != "unpaid"
-
-    false
-  end
+  # Membership tier checks
+  def standard? = membership_type == "standard"
+  def premium? = membership_type == "premium"
 
   # Billing interval checks
   def monthly? = subscription_interval == "monthly"
   def annual? = subscription_interval == "annual"
 
-  # Payment status - whether subscription payments are current. Users
-  # without any Stripe subscription state ("never subscribed") are trivially
-  # "paid" — they have nothing to pay.
+  # Payment status - whether subscription payments are current
   def subscription_paid?
-    return true if subscription_status_never_subscribed?
+    return true if standard? # Free tier is always "paid"
 
     subscription_valid_until.present? && subscription_valid_until > Time.current
   end

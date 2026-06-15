@@ -45,22 +45,13 @@ module ExercismSecretsHelper
 end
 
 module PremiumTestHelpers
-  # Make a user genuinely premium for tests that previously took the shortcut
-  # `user.data.update!(membership_type: "premium")`. Uses an Exercism Insider
-  # entitlement because it's the most explicit "premium via X" path and avoids
-  # accidentally interacting with Stripe state assertions in tests.
   def make_premium(user)
-    create(:premium_entitlement, :insider, user:)
-    user.data.reload
+    user.data.update!(membership_type: "premium")
     user
   end
 
-  # Undo `make_premium`: revoke any active premium entitlements and clear
-  # Stripe state. Used by tests that want to flip a previously-premium user
-  # back to non-premium mid-test.
   def make_non_premium(user)
-    user.premium_entitlements.active.update_all(revoked_at: Time.current)
-    user.data.update!(subscription_status: "never_subscribed", stripe_subscription_status: nil)
+    user.data.update!(membership_type: "standard")
     user
   end
 end

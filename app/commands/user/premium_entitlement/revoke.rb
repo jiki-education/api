@@ -4,19 +4,23 @@ class User::PremiumEntitlement::Revoke
   initialize_with :user, :source
 
   def call
-    lost_premium = false
+    entitlement = user.premium_entitlements.active.find_by(source: source)
+    return unless entitlement
 
-    user.with_lock do
-      was_premium = user.premium?
+    entitlement.update!(revoked_at: Time.current)
 
-      entitlement = user.premium_entitlements.active.find_by(source: source)
-      return unless entitlement
+    return if user.premium_entitlements.active.exists?
+    return if stripe_providing_premium?
 
-      entitlement.update!(revoked_at: Time.current)
+    User::DowngradeToStandard.(user)
+  end
 
-      lost_premium = was_premium && !user.reload.premium?
-    end
-
-    User::DowngradeToStandard.(user) if lost_premium
+  private
+  # True when Stripe is currently entitling the user to premium, so revoking
+  # this entitlement shouldn't flip them back to standard.
+  def stripe_providing_premium?
+    user.data.subscription_status_active? ||
+      user.data.subscription_status_payment_failed? ||
+      user.data.subscription_status_cancelling?
   end
 end

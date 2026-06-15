@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -428,6 +428,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120100) do
     t.string "email_verification_token"
     t.date "last_active_on"
     t.datetime "last_email_opened_at"
+    t.string "membership_type", default: "standard", null: false
     t.boolean "notifications_enabled", default: true, null: false
     t.datetime "otp_enabled_at"
     t.string "otp_secret"
@@ -451,6 +452,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120100) do
     t.bigint "user_id", null: false
     t.integer "welcome_email_status", default: 0, null: false
     t.integer "welcome_to_premium_email_status", default: 0, null: false
+    t.index ["membership_type"], name: "index_user_data_on_membership_type"
     t.index ["stripe_customer_id"], name: "index_user_data_on_stripe_customer_id", unique: true
     t.index ["stripe_subscription_id"], name: "index_user_data_on_stripe_subscription_id"
     t.index ["subscription_status"], name: "index_user_data_on_subscription_status"

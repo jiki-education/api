@@ -16,7 +16,7 @@ class Stripe::SyncSubscriptionToUser
   def status = subscription.status == 'incomplete' ? 'incomplete' : 'active'
 
   def update_user_data!
-    was_premium = user.premium?
+    User::UpgradeToPremium.(user) if status == 'active'
 
     user.data.update!(
       stripe_subscription_id: subscription.id,
@@ -25,11 +25,6 @@ class Stripe::SyncSubscriptionToUser
       subscription_interval: interval,
       subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
     )
-
-    # Fire premium-onboarding side effects only when this Stripe sync is
-    # what's making the user premium (not e.g. a coincident entitlement grant,
-    # which fires its own transition).
-    User::UpgradeToPremium.(user) if !was_premium && status == "active"
   end
 
   def update_subscriptions_array!

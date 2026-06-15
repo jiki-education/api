@@ -35,7 +35,7 @@ class Analytics::TrackEventTest < ActiveSupport::TestCase
       distinct_id: user.id.to_s,
       event: "user_signed_up",
       properties: {
-        membership_type: "standard",
+        membership_type: user.membership_type,
         locale: user.locale,
         "$geoip_disable": true
       }

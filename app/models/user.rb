@@ -40,12 +40,6 @@ class User < ApplicationRecord
 
   def uses_oauth? = exercism_id.present? || google_id.present?
 
-  # Premium is true when EITHER Stripe currently entitles the user OR
-  # they hold an active non-Stripe entitlement (e.g. Exercism Insider).
-  # Defined here (not delegated to data) so it can read entitlements.
-  def premium? = data.stripe_active? || premium_entitlements.active.exists?
-  def membership_type = premium? ? "premium" : "standard"
-
   def flagged?(key) = key.present? && flags.exists?(key:)
 
   # Devise calls this after a user confirms their email address (both initial
