@@ -271,4 +271,49 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     get internal_me_path, as: :json
     assert_response :unauthorized
   end
+
+  test "POST exercism fires user_logged_in for returning user" do
+    existing_user = create(:user,
+      email: 'existing@exercism.org',
+      exercism_id: '789',
+      confirmed_at: Time.current)
+
+    Auth::VerifyExercismToken.stubs(:call).returns({
+      'id' => '789',
+      'email' => 'existing@exercism.org',
+      'name' => 'Existing User',
+      'handle' => 'existing',
+      'avatar_url' => nil
+    })
+
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(existing_user, "user_logged_in")
+
+    post auth_exercism_path,
+      params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier' },
+      as: :json
+
+    assert_response :ok
+  end
+
+  test "POST exercism does not fire user_logged_in for newly created user" do
+    Auth::VerifyExercismToken.stubs(:call).returns({
+      'id' => 'brand-new-id',
+      'email' => 'brandnew@exercism.org',
+      'name' => 'Brand New',
+      'handle' => 'brandnew',
+      'avatar_url' => nil
+    })
+    User::Bootstrap.stubs(:call)
+    User::Exercism::ReconcileEntitlements.stubs(:call)
+
+    Analytics::TrackEvent.stubs(:defer)
+    Analytics::TrackEvent.expects(:defer).with(anything, "user_logged_in").never
+
+    post auth_exercism_path,
+      params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier' },
+      as: :json
+
+    assert_response :ok
+  end
 end
