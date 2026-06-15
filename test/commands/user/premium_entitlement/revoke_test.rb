@@ -10,7 +10,7 @@ class User::PremiumEntitlement::RevokeTest < ActiveSupport::TestCase
     assert entitlement.reload.revoked_at
   end
 
-  test "fires DowngradeToStandard on 1->0 transition" do
+  test "calls DowngradeToStandard after revoking" do
     user = create(:user)
     create(:premium_entitlement, :insider, user:)
 
@@ -19,20 +19,10 @@ class User::PremiumEntitlement::RevokeTest < ActiveSupport::TestCase
     User::PremiumEntitlement::Revoke.(user, PremiumEntitlement::EXERCISM_INSIDER)
   end
 
-  test "does not fire DowngradeToStandard when Stripe still active" do
+  test "does not call DowngradeToStandard when Stripe still providing premium" do
     user = create(:user)
     user.data.update!(subscription_status: "active")
     create(:premium_entitlement, :insider, user:)
-
-    User::DowngradeToStandard.expects(:call).never
-
-    User::PremiumEntitlement::Revoke.(user, PremiumEntitlement::EXERCISM_INSIDER)
-  end
-
-  test "does not fire DowngradeToStandard when another entitlement keeps user premium" do
-    user = create(:user)
-    create(:premium_entitlement, :insider, user:)
-    create(:premium_entitlement, :bootcamp, user:)
 
     User::DowngradeToStandard.expects(:call).never
 

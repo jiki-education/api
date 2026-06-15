@@ -4,18 +4,19 @@ class User::PremiumEntitlement::Revoke
   initialize_with :user, :source
 
   def call
-    entitlement = user.premium_entitlements.active.find_by(source: source)
     return unless entitlement
 
     entitlement.update!(revoked_at: Time.current)
 
-    return if user.premium_entitlements.active.exists?
     return if stripe_providing_premium?
 
     User::DowngradeToStandard.(user)
   end
 
   private
+  memoize
+  def entitlement = user.premium_entitlements.active.find_by(source: source)
+
   # True when Stripe is currently entitling the user to premium, so revoking
   # this entitlement shouldn't flip them back to standard.
   def stripe_providing_premium?

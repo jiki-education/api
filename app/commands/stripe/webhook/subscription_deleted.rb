@@ -14,9 +14,8 @@ class Stripe::Webhook::SubscriptionDeleted
     # Update subscriptions array
     update_subscriptions_array!
 
-    # Downgrade to standard tier via dedicated command (sends email).
-    # Skip if a non-Stripe entitlement (e.g. Exercism Insider) still covers them.
-    User::DowngradeToStandard.(user) unless user.premium_entitlements.active.exists?
+    # Downgrade to standard tier via dedicated command (sends email)
+    User::DowngradeToStandard.(user)
 
     # Update remaining subscription fields
     user.data.update!(

@@ -48,4 +48,17 @@ class User::DowngradeToStandardTest < ActiveSupport::TestCase
 
     User::DowngradeToStandard.(user)
   end
+
+  test "does not downgrade when an active premium entitlement still covers the user" do
+    user = create(:user)
+    user.data.update!(membership_type: "premium")
+    create(:premium_entitlement, :insider, user:)
+
+    User::Identify.expects(:defer).never
+    Analytics::TrackEvent.expects(:defer).never
+
+    User::DowngradeToStandard.(user)
+
+    assert_equal "premium", user.data.reload.membership_type
+  end
 end
