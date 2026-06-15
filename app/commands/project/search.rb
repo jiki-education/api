@@ -36,15 +36,15 @@ class Project::Search
 
   def apply_ordering!
     if user
-      # Order by whether user has unlocked the project (unlocked first), then by title
+      # Scope the join to the current user so other users' user_projects don't filter projects out.
       @projects = @projects.
-        left_joins(:user_projects).
-        where("user_projects.user_id IS NULL OR user_projects.user_id = ?", user.id).
-        select(sanitize_sql_array(["projects.*, CASE WHEN user_projects.user_id = ? THEN 0 ELSE 1 END as lock_order", user.id])).
-        order("lock_order ASC, projects.title ASC").
-        distinct
+        joins(sanitize_sql_array([
+                                   "LEFT JOIN user_projects ON user_projects.project_id = projects.id AND user_projects.user_id = ?",
+                                   user.id
+                                 ])).
+        select("projects.*, CASE WHEN user_projects.user_id IS NOT NULL THEN 0 ELSE 1 END as lock_order").
+        order("lock_order ASC, projects.title ASC")
     else
-      # Default ordering by title
       @projects = @projects.order(:title)
     end
   end
