@@ -45,14 +45,18 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
   end
 
   test "POST signup sends confirmation email" do
+    # Confirmation mail is delivered asynchronously (deliver_later), so run the
+    # enqueued job to assert it actually goes out.
     assert_difference "ActionMailer::Base.deliveries.size", 1 do
-      post user_registration_path, params: with_turnstile(
-        user: {
-          email: "newuser@example.com",
-          password: "password123",
-          password_confirmation: "password123"
-        }
-      ), as: :json
+      perform_enqueued_jobs do
+        post user_registration_path, params: with_turnstile(
+          user: {
+            email: "newuser@example.com",
+            password: "password123",
+            password_confirmation: "password123"
+          }
+        ), as: :json
+      end
     end
 
     assert_response :created

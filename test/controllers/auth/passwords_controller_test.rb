@@ -39,9 +39,11 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
   test "POST password reset email respects user locale" do
     create(:user, :hungarian, email: "magyar@example.com", name: "József")
 
-    post user_password_path, params: with_turnstile(
-      user: { email: "magyar@example.com" }
-    ), as: :json
+    perform_enqueued_jobs do
+      post user_password_path, params: with_turnstile(
+        user: { email: "magyar@example.com" }
+      ), as: :json
+    end
 
     mail = ActionMailer::Base.deliveries.last
     assert_equal "Jelszó visszaállítása", mail.subject
