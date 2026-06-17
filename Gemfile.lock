@@ -465,6 +465,8 @@ GEM
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
+    skylight (7.1.1)
+      activesupport (>= 7.2.0)
     solid_queue (1.4.0)
       activejob (>= 7.1)
       activerecord (>= 7.1)
@@ -570,6 +572,7 @@ DEPENDENCIES
   rubocop-rails
   sentry-rails
   sentry-ruby
+  skylight
   solid_queue
   solid_queue_monitor
   stripe

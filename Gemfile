@@ -73,6 +73,9 @@ gem "stripe"
 gem "sentry-ruby"
 gem "sentry-rails"
 
+# Performance monitoring (APM dashboard; free for OSS)
+gem "skylight"
+
 # Product analytics
 gem "posthog-ruby"
 gem "posthog-rails"
