@@ -14,13 +14,12 @@ amazon:
   region: <%= Jiki.config.s3_active_storage_region %>
   bucket: <%= Jiki.config.s3_active_storage_bucket %>
 <% unless Jiki.env.production? %>
+  # LocalStack needs path-style addressing; the default checksum handling
+  # (unlike Cloudflare R2) works fine, so no checksum overrides here.
   endpoint: <%= Jiki.config.r2_endpoint %>
   access_key_id: FAKE
   secret_access_key: FAKE
   force_path_style: true
-  # Mirror the R2/LocalStack checksum handling (see the r2 service below).
-  request_checksum_calculation: when_required
-  response_checksum_validation: when_required
 <% end %>
 
 # Cloudflare R2 for user uploads (avatars, etc.)
