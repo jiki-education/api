@@ -33,6 +33,9 @@ Rails.application.configure do
   # Store uploaded files on R2 (see config/storage.yml for options).
   config.active_storage.service = :r2
 
+  # Exercise submission files go to S3 (LocalStack in dev), mirroring production.
+  config.x.exercise_submission_storage_service = :amazon
+
   # Use letter_opener to preview emails in browser instead of sending
   config.action_mailer.delivery_method = :letter_opener
   config.action_mailer.perform_deliveries = true

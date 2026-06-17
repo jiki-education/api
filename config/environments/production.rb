@@ -24,6 +24,10 @@ Rails.application.configure do
   # Store uploaded files on R2 (see config/storage.yml for options).
   config.active_storage.service = :r2
 
+  # Exercise submission files go to S3 instead of R2 (lower-latency writes/reads
+  # from ECS). Existing blobs keep their stored service_name and stay readable.
+  config.x.exercise_submission_storage_service = :amazon
+
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
 

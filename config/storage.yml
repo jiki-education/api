@@ -7,11 +7,20 @@ local:
   root: <%= Rails.root.join("storage") %>
 
 # Amazon S3 for Active Storage (exercise submission files)
-# Uses IAM role authentication in production (ECS task role)
+# Production uses IAM role authentication (ECS task role); dev/test use the
+# same LocalStack instance as R2.
 amazon:
   service: S3
-  region: eu-west-1
-  bucket: jiki-active-storage
+  region: <%= Jiki.config.s3_active_storage_region %>
+  bucket: <%= Jiki.config.s3_active_storage_bucket %>
+<% unless Jiki.env.production? %>
+  # LocalStack needs path-style addressing; the default checksum handling
+  # (unlike Cloudflare R2) works fine, so no checksum overrides here.
+  endpoint: <%= Jiki.config.r2_endpoint %>
+  access_key_id: FAKE
+  secret_access_key: FAKE
+  force_path_style: true
+<% end %>
 
 # Cloudflare R2 for user uploads (avatars, etc.)
 # Uses S3-compatible API with public access via uploads.jiki.io
