@@ -72,9 +72,11 @@ class Auth::ConfirmationsControllerTest < ApplicationControllerTest
     create(:user, :unconfirmed, email: "unconfirmed@example.com")
 
     assert_difference "ActionMailer::Base.deliveries.size", 1 do
-      post user_confirmation_path, params: {
-        user: { email: "unconfirmed@example.com" }
-      }, as: :json
+      perform_enqueued_jobs do
+        post user_confirmation_path, params: {
+          user: { email: "unconfirmed@example.com" }
+        }, as: :json
+      end
     end
 
     assert_response :ok

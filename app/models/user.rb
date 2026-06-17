@@ -97,4 +97,20 @@ class User < ApplicationRecord
   def to_ary
     nil
   end
+
+  private
+  # Send Devise emails (confirmation, password reset) asynchronously via
+  # Solid Queue instead of blocking the request thread with MJML rendering
+  # and the SES API call. Devise defaults to deliver_now.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
+  end
+
+  # OAuth users authenticate via the provider, so Devise must not require a
+  # password on them. Lets FindOrCreateFromOauth store a cheap placeholder hash.
+  def password_required?
+    return false if uses_oauth?
+
+    super
+  end
 end

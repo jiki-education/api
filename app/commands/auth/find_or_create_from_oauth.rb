@@ -51,7 +51,11 @@ module Auth
           email:,
           name:,
           confirmed_at: Time.current, # The provider verified the email
-          password: SecureRandom.hex(32), # Random password (won't be used)
+          # OAuth users authenticate via the provider and never use this password.
+          # Store a cheap (min-cost) bcrypt hash rather than paying the full
+          # cost-12 hash (~480ms on prod) for a credential that's never checked.
+          # It's still a valid hash, so password-auth paths won't raise.
+          encrypted_password: BCrypt::Password.create(SecureRandom.uuid, cost: BCrypt::Engine::MIN_COST),
           handle:
         ).tap do |user|
           User::Avatar::CopyFromUrl.defer(user, avatar_url) if avatar_url.present?
