@@ -1,0 +1,9 @@
+# Skylight APM configuration.
+# Reports only in production by default (controlled by Skylight's report
+# environments). The authentication token is empty in dev/test, so the agent
+# stays inert there.
+authentication: <%= Jiki.secrets.skylight_key %>
+
+# Don't report the ECS/ALB health check - it's high-volume and uninteresting.
+ignored_endpoints:
+  - External::HealthController#check
