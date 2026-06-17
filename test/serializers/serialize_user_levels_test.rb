@@ -100,7 +100,7 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     assert_equal(expected, SerializeUserLevels.(user.user_levels))
   end
 
-  test "appends the first lesson of the next level as not_started when the current level is complete" do
+  test "appends the first lesson of a freshly-unlocked level (UserLevel, no UserLessons) as not_started" do
     user = create(:user)
     level1 = create(:level, slug: "basics", position: 1)
     level2 = create(:level, slug: "advanced", position: 2)
