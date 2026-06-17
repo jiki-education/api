@@ -135,6 +135,35 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     assert_equal(expected, SerializeUserLevels.(user.user_levels))
   end
 
+  test "does not append a not_started lesson to a completed level" do
+    user = create(:user)
+    level = create(:level, slug: "basics")
+
+    lesson1 = create(:lesson, :exercise, level: level, slug: "lesson-1", position: 1)
+    lesson2 = create(:lesson, :exercise, level: level, slug: "lesson-2", position: 2)
+    # lesson-3 has no UserLesson record. Normal progression can't complete a level
+    # with an unstarted lesson, but a completed level must never advertise a next
+    # lesson even if content drifts.
+    create(:lesson, :exercise, level: level, slug: "lesson-3", position: 3)
+
+    create(:user_level, user: user, level: level, completed_at: Time.current)
+    create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current)
+    create(:user_lesson, user: user, lesson: lesson2, completed_at: Time.current)
+
+    expected = [
+      {
+        level_slug: "basics",
+        status: "completed",
+        user_lessons: [
+          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "completed", walkthrough_video_watched_percentage: nil }
+        ]
+      }
+    ]
+
+    assert_equal(expected, SerializeUserLevels.(user.user_levels))
+  end
+
   test "maintains level position order" do
     user = create(:user)
     level1 = create(:level, slug: "level-c", position: 3)

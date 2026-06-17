@@ -28,8 +28,9 @@ class SerializeUserLevels
       rows.each do |row|
         if row[:user_lesson_id].present?
           lessons << serialize_lesson(row, row[:completed_at].present? ? "completed" : "started")
-        elsif !in_progress
+        elsif !in_progress && row[:user_level_completed_at].blank?
           # First lesson with no UserLesson record: this is the next lesson up.
+          # A completed level never advertises a next lesson.
           lessons << serialize_lesson(row, "not_started")
           break
         else
