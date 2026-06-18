@@ -155,7 +155,8 @@ class Internal::SubscriptionsController < Internal::BaseController
         type: "checkout_payment_incomplete",
         message: "Your payment wasn't completed. Please try again.",
         decline_reason: e.decline_reason,
-        price_id: e.price_id
+        interval: e.interval,
+        currency: e.currency
       }
     }, status: :unprocessable_entity
   rescue ArgumentError => e

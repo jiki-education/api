@@ -7,9 +7,13 @@ class Stripe::VerifyCheckoutSession
     verify_ownership!
 
     # An incomplete session is an expected outcome (declined/abandoned/expired payment),
-    # not a bug. Surface the decline reason and the attempted price (which encodes
-    # interval + currency) so the UI can offer a precise "retry" CTA.
-    raise StripeCheckoutSessionIncompleteError.new(decline_reason:, price_id: attempted_price_id) unless session.status == "complete"
+    # not a bug. Surface the decline reason and the attempted plan (interval + currency,
+    # which Jiki prices vary by) so the UI can offer a precise "retry" CTA.
+    unless session.status == "complete"
+      raise StripeCheckoutSessionIncompleteError.new(
+        decline_reason:, interval: attempted_interval, currency: session.currency
+      )
+    end
     raise ArgumentError, "Checkout session has no subscription" unless session.subscription.present?
 
     persist_customer_id!
@@ -43,11 +47,17 @@ class Stripe::VerifyCheckoutSession
   memoize
   def subscription = ::Stripe::Subscription.retrieve(session.subscription)
 
-  # The price the customer tried to buy, stamped into the session metadata at
-  # creation. Encodes both interval and currency, so the front-end can retry the
-  # exact plan. Nil for sessions created before this shipped.
-  def attempted_price_id
-    session.metadata&.[](:price_id) || session.metadata&.[]('price_id')
+  # The interval the customer tried to buy, derived from the price stamped into the
+  # session metadata at creation. (Currency is read separately off the session, since
+  # Jiki prices are multi-currency.) Nil for sessions created before this shipped, or
+  # an unrecognised price.
+  def attempted_interval
+    price_id = session.metadata&.[](:price_id) || session.metadata&.[]('price_id')
+    return nil if price_id.blank?
+
+    Stripe::DetermineSubscriptionDetails.interval_for_price_id(price_id)
+  rescue ArgumentError
+    nil
   end
 
   def verify_ownership!

@@ -66,14 +66,15 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     end
   end
 
-  test "raises StripeCheckoutSessionIncompleteError with the decline reason and attempted price when not complete" do
+  test "raises StripeCheckoutSessionIncompleteError with the decline reason and attempted plan when not complete" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock
-    stripe_session.stubs(:metadata).returns("price_id" => "price_abc")
+    stripe_session.stubs(:metadata).returns("price_id" => Jiki.config.stripe_premium_monthly_price_id)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("open")
+    stripe_session.stubs(:currency).returns("gbp")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
     payment_intent = stub(last_payment_error: stub(message: "Your card has insufficient funds."))
@@ -86,7 +87,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
     assert_equal "Your card has insufficient funds.", error.decline_reason
-    assert_equal "price_abc", error.price_id
+    assert_equal "monthly", error.interval
+    assert_equal "gbp", error.currency
   end
 
   test "derives the decline reason from the subscription invoice in subscription mode" do
@@ -97,6 +99,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("open")
+    stripe_session.stubs(:currency).returns("usd")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
     # Subscription-mode: the session has no PaymentIntent; it lives on the invoice.
@@ -123,6 +126,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("expired")
+    stripe_session.stubs(:currency).returns("usd")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
     detailed = stub(payment_intent: nil, subscription: nil)
@@ -144,6 +148,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("open")
+    stripe_session.stubs(:currency).returns("usd")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
     ::Stripe::Checkout::Session.expects(:retrieve).
       with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
