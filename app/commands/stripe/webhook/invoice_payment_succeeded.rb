@@ -9,7 +9,7 @@ class Stripe::Webhook::InvoicePaymentSucceeded
       return
     end
 
-    return unless invoice.subscription.present?
+    return unless subscription_id.present?
 
     subscription_item = subscription.items.data.first
     return unless subscription_item&.current_period_end
@@ -34,7 +34,10 @@ class Stripe::Webhook::InvoicePaymentSucceeded
   def invoice = event.data.object
 
   memoize
-  def subscription = Stripe::Subscription.retrieve(invoice.subscription)
+  def subscription_id = invoice.parent&.subscription_details&.subscription
+
+  memoize
+  def subscription = Stripe::Subscription.retrieve(subscription_id)
 
   memoize
   def user

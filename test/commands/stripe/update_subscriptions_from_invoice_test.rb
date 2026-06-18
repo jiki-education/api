@@ -16,9 +16,10 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
       }]
     )
 
-    invoice = mock_invoice(subscription: "sub_123")
+    invoice = mock
+    subscription = mock_subscription_with_id("sub_123")
 
-    Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, nil)
+    Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, subscription)
 
     user.data.reload
     sub_entry = user.data.subscriptions.first
@@ -33,7 +34,7 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
       subscriptions: []
     )
 
-    invoice = mock_invoice(subscription: "sub_123")
+    invoice = mock
     subscription = mock_subscription_with_id("sub_123")
 
     Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, subscription)
@@ -64,22 +65,23 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
       }]
     )
 
-    invoice = mock_invoice(subscription: "sub_123")
+    invoice = mock
+    subscription = mock_subscription_with_id("sub_123")
 
-    Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, nil)
+    Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, subscription)
 
     user.data.reload
     assert_equal 1, user.data.subscriptions.length
   end
 
-  test "returns early if invoice has no subscription" do
+  test "returns early when there is no subscription" do
     user = create(:user)
     user.data.update!(
       stripe_customer_id: "cus_123",
       subscriptions: []
     )
 
-    invoice = mock_invoice(subscription: nil)
+    invoice = mock
 
     Stripe::UpdateSubscriptionsFromInvoice.(user, invoice, nil)
 
@@ -88,12 +90,6 @@ class Stripe::UpdateSubscriptionsFromInvoiceTest < ActiveSupport::TestCase
   end
 
   private
-  def mock_invoice(subscription: "sub_123")
-    invoice = mock
-    invoice.stubs(:subscription).returns(subscription)
-    invoice
-  end
-
   def mock_subscription_with_id(id)
     subscription = mock
     subscription.stubs(:id).returns(id)

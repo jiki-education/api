@@ -9,7 +9,7 @@ class Stripe::Webhook::InvoicePaymentFailed
       return
     end
 
-    return unless invoice.subscription.present?
+    return unless subscription_id.present?
 
     # Update subscriptions array
     update_subscriptions_array!
@@ -29,7 +29,7 @@ class Stripe::Webhook::InvoicePaymentFailed
   private
   def update_subscriptions_array!
     # Record payment failure timestamp in subscription entry
-    if (current_sub = user_subscriptions.find { |s| s['stripe_subscription_id'] == invoice.subscription })
+    if (current_sub = user_subscriptions.find { |s| s['stripe_subscription_id'] == subscription_id })
       current_sub['payment_failed_at'] ||= Time.current.iso8601
       user.data.update!(subscriptions: user_subscriptions)
     end
@@ -37,6 +37,9 @@ class Stripe::Webhook::InvoicePaymentFailed
 
   memoize
   def invoice = event.data.object
+
+  memoize
+  def subscription_id = invoice.parent&.subscription_details&.subscription
 
   memoize
   def user_subscriptions = user.data.subscriptions || []

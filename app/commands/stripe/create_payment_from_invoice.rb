@@ -12,8 +12,8 @@ class Stripe::CreatePaymentFromInvoice
       external_receipt_url: invoice.hosted_invoice_url,
       data: {
         stripe_invoice_id: invoice.id,
-        stripe_charge_id: invoice.charge,
-        stripe_subscription_id: invoice.subscription,
+        stripe_charge_id: invoice.payments&.data&.first&.payment&.charge,
+        stripe_subscription_id: subscription&.id,
         stripe_customer_id: invoice.customer,
         billing_reason: invoice.billing_reason,
         period_start: format_timestamp(subscription_item&.current_period_start),
