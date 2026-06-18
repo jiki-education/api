@@ -136,6 +136,8 @@ class Internal::SubscriptionsController < Internal::BaseController
       success: result[:success],
       interval: result[:interval],
       payment_status: result[:payment_status],
+      payment_state: result[:payment_state],
+      decline_reason: result[:decline_reason],
       subscription_status: result[:subscription_status]
     }
   rescue SecurityError => e

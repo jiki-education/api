@@ -252,6 +252,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       success: true,
       interval: "monthly",
       payment_status: "paid",
+      payment_state: "paid",
+      decline_reason: nil,
       subscription_status: "active"
     })
 
@@ -264,7 +266,31 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert json["success"]
     assert_equal "monthly", json["interval"]
     assert_equal "paid", json["payment_status"]
+    assert_equal "paid", json["payment_state"]
+    assert_nil json["decline_reason"]
     assert_equal "active", json["subscription_status"]
+  end
+
+  test "POST verify_checkout passes through payment_state and decline_reason for a failed async payment" do
+    session_id = "cs_test_123"
+
+    Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
+      success: true,
+      interval: "monthly",
+      payment_status: "unpaid",
+      payment_state: "failed",
+      decline_reason: "Your card has insufficient funds.",
+      subscription_status: "incomplete"
+    })
+
+    post internal_subscriptions_verify_checkout_path,
+      params: { session_id: },
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert_equal "failed", json["payment_state"]
+    assert_equal "Your card has insufficient funds.", json["decline_reason"]
   end
 
   test "POST verify_checkout returns incomplete status for async payments" do
@@ -274,6 +300,8 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       success: true,
       interval: "monthly",
       payment_status: "unpaid",
+      payment_state: "processing",
+      decline_reason: nil,
       subscription_status: "incomplete"
     })
 
@@ -286,6 +314,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert json["success"]
     assert_equal "monthly", json["interval"]
     assert_equal "unpaid", json["payment_status"]
+    assert_equal "processing", json["payment_state"]
     assert_equal "incomplete", json["subscription_status"]
   end
 
