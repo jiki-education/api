@@ -79,6 +79,7 @@ class Stripe::Webhook::InvoicePaymentSucceededTest < ActiveSupport::TestCase
     invoice.stubs(:parent).returns(nil)
     event = mock_event(invoice)
 
+    Stripe::Subscription.expects(:retrieve).never
     Stripe::UpdateSubscriptionsFromInvoice.expects(:call).never
     Stripe::CreatePaymentFromInvoice.expects(:call).never
 
