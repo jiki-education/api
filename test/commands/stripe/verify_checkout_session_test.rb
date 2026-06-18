@@ -77,7 +77,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     payment_intent = stub(last_payment_error: stub(message: "Your card has insufficient funds."))
     detailed = stub(payment_intent:)
     ::Stripe::Checkout::Session.expects(:retrieve).
-      with(id: "cs_test_123", expand: [ "payment_intent", "subscription.latest_invoice.payments" ]).
+      with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
       returns(detailed)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
@@ -98,7 +98,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
 
     detailed = stub(payment_intent: nil, subscription: nil)
     ::Stripe::Checkout::Session.expects(:retrieve).
-      with(id: "cs_test_123", expand: [ "payment_intent", "subscription.latest_invoice.payments" ]).
+      with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
       returns(detailed)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
@@ -117,7 +117,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:status).returns("open")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
     ::Stripe::Checkout::Session.expects(:retrieve).
-      with(id: "cs_test_123", expand: [ "payment_intent", "subscription.latest_invoice.payments" ]).
+      with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
       raises(::Stripe::InvalidRequestError.new("bad expand", "expand"))
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
