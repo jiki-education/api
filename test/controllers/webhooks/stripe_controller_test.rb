@@ -32,18 +32,18 @@ class Webhooks::StripeControllerTest < ApplicationControllerTest
     assert_response :bad_request
   end
 
-  test "POST create returns ok even on processing errors" do
+  test "POST create returns 500 on unexpected errors so Stripe retries" do
     payload = '{"type":"test.event"}'
     signature = "valid_signature"
 
-    Stripe::Webhook::HandleEvent.expects(:call).
-      raises(StandardError.new("Processing error"))
+    boom = StandardError.new("Processing error")
+    Stripe::Webhook::HandleEvent.expects(:call).raises(boom)
+    Sentry.expects(:capture_exception).with(boom)
 
     post webhooks_stripe_path,
       params: payload,
       headers: { 'Stripe-Signature' => signature }
 
-    # Should still return 200 to prevent Stripe retries
-    assert_response :ok
+    assert_response :internal_server_error
   end
 end
