@@ -7,8 +7,9 @@ class Stripe::VerifyCheckoutSession
     verify_ownership!
 
     # An incomplete session is an expected outcome (declined/abandoned/expired payment),
-    # not a bug. Surface the decline reason so the UI can be specific.
-    raise StripeCheckoutSessionIncompleteError, decline_reason unless session.status == "complete"
+    # not a bug. Surface the decline reason and the attempted price (which encodes
+    # interval + currency) so the UI can offer a precise "retry" CTA.
+    raise StripeCheckoutSessionIncompleteError.new(decline_reason:, price_id: attempted_price_id) unless session.status == "complete"
     raise ArgumentError, "Checkout session has no subscription" unless session.subscription.present?
 
     persist_customer_id!
@@ -41,6 +42,13 @@ class Stripe::VerifyCheckoutSession
 
   memoize
   def subscription = ::Stripe::Subscription.retrieve(session.subscription)
+
+  # The price the customer tried to buy, stamped into the session metadata at
+  # creation. Encodes both interval and currency, so the front-end can retry the
+  # exact plan. Nil for sessions created before this shipped.
+  def attempted_price_id
+    session.metadata&.[](:price_id) || session.metadata&.[]('price_id')
+  end
 
   def verify_ownership!
     metadata_user_id = session.metadata&.[](:user_id) || session.metadata&.[]('user_id')

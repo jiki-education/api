@@ -60,10 +60,11 @@ class AssistantConversationAccessDeniedError < RuntimeError; end
 class StripeSubscriptionCancellationError < RuntimeError; end
 
 class StripeCheckoutSessionIncompleteError < RuntimeError
-  attr_reader :decline_reason
+  attr_reader :decline_reason, :price_id
 
-  def initialize(decline_reason = nil)
+  def initialize(decline_reason: nil, price_id: nil)
     @decline_reason = decline_reason
+    @price_id = price_id
     super(decline_reason || "Checkout session is not complete")
   end
 end

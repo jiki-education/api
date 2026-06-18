@@ -66,12 +66,12 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     end
   end
 
-  test "raises StripeCheckoutSessionIncompleteError with the decline reason when not complete" do
+  test "raises StripeCheckoutSessionIncompleteError with the decline reason and attempted price when not complete" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
     stripe_session = mock
-    stripe_session.stubs(:metadata).returns(nil)
+    stripe_session.stubs(:metadata).returns("price_id" => "price_abc")
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("open")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
@@ -86,6 +86,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
     assert_equal "Your card has insufficient funds.", error.decline_reason
+    assert_equal "price_abc", error.price_id
   end
 
   test "derives the decline reason from the subscription invoice in subscription mode" do

@@ -16,7 +16,8 @@ class Stripe::CreateCheckoutSession
       mode: 'subscription',
       return_url: return_url,
       metadata: {
-        user_id: user.id
+        user_id: user.id,
+        price_id: price_id
       },
       subscription_data: {
         metadata: {

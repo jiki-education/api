@@ -361,12 +361,12 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "invalid_session", json["error"]["type"]
   end
 
-  test "POST verify_checkout returns checkout_payment_incomplete with decline reason" do
+  test "POST verify_checkout returns checkout_payment_incomplete with decline reason and price" do
     session_id = "cs_test_123"
 
     Stripe::VerifyCheckoutSession.expects(:call).
       with(@user, session_id).
-      raises(StripeCheckoutSessionIncompleteError.new("Your card has insufficient funds."))
+      raises(StripeCheckoutSessionIncompleteError.new(decline_reason: "Your card has insufficient funds.", price_id: "price_abc"))
 
     post internal_subscriptions_verify_checkout_path,
       params: { session_id: },
@@ -376,6 +376,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     json = response.parsed_body
     assert_equal "checkout_payment_incomplete", json["error"]["type"]
     assert_equal "Your card has insufficient funds.", json["error"]["decline_reason"]
+    assert_equal "price_abc", json["error"]["price_id"]
   end
 
   test "POST verify_checkout handles general errors gracefully" do
