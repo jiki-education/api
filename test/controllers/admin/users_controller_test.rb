@@ -11,6 +11,8 @@ class Admin::UsersControllerTest < ApplicationControllerTest
   guard_admin! :admin_user_path, args: [1], method: :get
   guard_admin! :admin_user_path, args: [1], method: :patch
   guard_admin! :admin_user_path, args: [1], method: :delete
+  guard_admin! :reset_password_admin_user_path, args: [1], method: :patch
+  guard_admin! :reset_otp_admin_user_path, args: [1], method: :delete
 
   # INDEX tests
 
@@ -140,9 +142,9 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
   # UPDATE tests
 
-  test "PATCH update calls User::Update command with correct params" do
+  test "PATCH update calls User::UpdateByAdmin command with correct params" do
     user = create(:user)
-    User::Update.expects(:call).with(
+    User::UpdateByAdmin.expects(:call).with(
       user,
       { "email" => "newemail@example.com" }
     ).returns(user)
@@ -254,15 +256,52 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     assert_includes json["error"]["errors"]["email"], "has already been taken"
   end
 
-  test "PATCH update ignores non-email fields" do
-    user = create(:user, name: "Original Name", email: "original@example.com", admin: false)
+  test "PATCH update can promote a user to admin" do
+    user = create(:user, admin: false)
+
+    patch admin_user_path(user),
+      params: { user: { admin: true } },
+      as: :json
+
+    assert_response :success
+    assert user.reload.admin
+  end
+
+  test "PATCH update can demote a user from admin" do
+    user = create(:user, admin: true)
+
+    patch admin_user_path(user),
+      params: { user: { admin: false } },
+      as: :json
+
+    assert_response :success
+    refute user.reload.admin
+  end
+
+  test "PATCH update returns 422 when demoting user 1" do
+    # User 1 may already exist (e.g. the signed-in admin on a fresh database)
+    user = User.find_by(id: 1) || create(:user, :admin, id: 1)
+    user.update!(admin: true)
+
+    patch admin_user_path(user),
+      params: { user: { admin: false } },
+      as: :json
+
+    assert_response :unprocessable_entity
+    json = response.parsed_body
+    assert_equal "validation_error", json["error"]["type"]
+    assert json["error"]["errors"]["admin"].present?
+    assert user.reload.admin
+  end
+
+  test "PATCH update ignores non-permitted fields" do
+    user = create(:user, name: "Original Name", email: "original@example.com")
 
     patch admin_user_path(user),
       params: {
         user: {
           email: "new@example.com",
           name: "Hacker Name",
-          admin: true,
           locale: "fr"
         }
       },
@@ -273,8 +312,95 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     user.reload
     assert_equal "new@example.com", user.email
     assert_equal "Original Name", user.name
-    refute user.admin
     refute_equal "fr", user.locale
+  end
+
+  # PASSWORD RESET tests
+
+  test "PATCH reset_password calls User::UpdatePassword command with correct params" do
+    user = create(:user)
+    User::UpdatePassword.expects(:call).with(user, "newpassword123")
+
+    patch reset_password_admin_user_path(user),
+      params: { password: "newpassword123" },
+      as: :json
+
+    assert_response :no_content
+  end
+
+  test "PATCH reset_password updates the user's password" do
+    user = create(:user, password: "oldpassword")
+
+    patch reset_password_admin_user_path(user),
+      params: { password: "newpassword123" },
+      as: :json
+
+    assert_response :no_content
+    assert user.reload.valid_password?("newpassword123")
+  end
+
+  test "PATCH reset_password returns 422 for a password under 8 characters" do
+    user = create(:user, password: "oldpassword")
+
+    patch reset_password_admin_user_path(user),
+      params: { password: "short" },
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :password_too_short)
+    assert user.reload.valid_password?("oldpassword")
+  end
+
+  test "PATCH reset_password returns 422 for a missing password" do
+    user = create(:user)
+
+    patch reset_password_admin_user_path(user), as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :password_too_short)
+  end
+
+  test "PATCH reset_password returns 404 for non-existent user" do
+    patch reset_password_admin_user_path(99_999),
+      params: { password: "newpassword123" },
+      as: :json
+
+    assert_json_error(:not_found, error_type: :user_not_found)
+  end
+
+  # OTP RESET tests
+
+  test "DELETE reset_otp calls User::DisableOtp command" do
+    user = create(:user)
+    User::DisableOtp.expects(:call).with(user)
+
+    delete reset_otp_admin_user_path(user), as: :json
+
+    assert_response :success
+  end
+
+  test "DELETE reset_otp disables OTP for the user" do
+    user = create(:user)
+    user.data.update!(otp_secret: "ABC123", otp_enabled_at: Time.current)
+
+    delete reset_otp_admin_user_path(user), as: :json
+
+    assert_response :success
+    user.reload
+    assert_nil user.otp_secret
+    assert_nil user.otp_enabled_at
+  end
+
+  test "DELETE reset_otp is a no-op when OTP isn't enabled" do
+    user = create(:user)
+
+    delete reset_otp_admin_user_path(user), as: :json
+
+    assert_response :success
+  end
+
+  test "DELETE reset_otp returns 404 for non-existent user" do
+    delete reset_otp_admin_user_path(99_999), as: :json
+
+    assert_json_error(:not_found, error_type: :user_not_found)
   end
 
   # DELETE tests
@@ -298,6 +424,17 @@ class Admin::UsersControllerTest < ApplicationControllerTest
 
     assert_response :no_content
     assert_nil User.find_by(id: user_id)
+  end
+
+  test "DELETE destroy returns 422 when deleting user 1" do
+    # User 1 may already exist (e.g. the signed-in admin on a fresh database)
+    user = User.find_by(id: 1) || create(:user, :admin, id: 1)
+
+    assert_no_difference -> { User.count } do
+      delete admin_user_path(user), as: :json
+    end
+
+    assert_json_error(:unprocessable_entity, error_type: :cannot_delete_root_admin)
   end
 
   test "DELETE destroy returns 404 for non-existent user" do

@@ -30,6 +30,7 @@ en:
     user_project_not_found: "User project not found"
     user_video_not_found: "User video not found"
     validation_error: "Validation failed"
+    cannot_delete_root_admin: "The root admin user cannot be deleted"
     invalid_event: "Unknown analytics event"
 
     # File submission errors
@@ -50,6 +51,7 @@ en:
 
     # Settings errors
     invalid_password: "Current password is incorrect"
+    password_too_short: "Password must be at least 8 characters"
     locale_update_failed: "Locale update failed"
     name_update_failed: "Name update failed"
     email_update_failed: "Email update failed"

@@ -71,6 +71,14 @@ class UserTest < ActiveSupport::TestCase
     assert user.valid?
   end
 
+  test "root_admin? returns true only for user 1" do
+    user = build(:user, id: 1)
+    assert user.root_admin?
+
+    user = build(:user, id: 2)
+    refute user.root_admin?
+  end
+
   test "deleting user cascades to delete user_lessons and user_levels" do
     user = create(:user)
     level = create(:level)

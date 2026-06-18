@@ -38,6 +38,11 @@ class User < ApplicationRecord
   # OAuth users have random passwords, so skip password validation for them
   validates :password, presence: true, if: -> { new_record? && encrypted_password.blank? && !uses_oauth? }
 
+  # User 1 is the root admin and can never be demoted or deleted
+  ROOT_ADMIN_ID = 1
+
+  def root_admin? = id == ROOT_ADMIN_ID
+
   def uses_oauth? = exercism_id.present? || google_id.present?
 
   def flagged?(key) = key.present? && flags.exists?(key:)

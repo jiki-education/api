@@ -34,6 +34,13 @@ class Auth::AccountDeletionsController < ApplicationController
         message: "Deletion token has expired"
       }
     }, status: :unprocessable_entity
+  rescue RootAdminProtectedError
+    render json: {
+      error: {
+        type: "root_admin_protected",
+        message: "This account cannot be deleted"
+      }
+    }, status: :unprocessable_entity
   rescue StripeSubscriptionCancellationError
     render json: {
       error: {

@@ -22,6 +22,29 @@
         89
       ],
       "note": "IDs are integers from ActiveRecord objects, not user input. Safe from SQL injection."
+    },
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 105,
+      "fingerprint": "87dee046a6feaa41a3f402437bed189e873a96ef0da38216871883074db87562",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/admin/users_controller.rb",
+      "line": 63,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:user).permit(:email, :admin)",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Admin::UsersController",
+        "method": "user_params"
+      },
+      "user_input": ":admin",
+      "confidence": "High",
+      "cwe_id": [
+        915
+      ],
+      "note": "Admin-only endpoint (Admin::BaseController enforces admin auth with 2FA). Permitting :admin is intentional - this endpoint exists to grant/revoke admin status."
     }
   ],
   "updated": "2025-10-21 00:00:00 +0000",
