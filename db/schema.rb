@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -436,6 +436,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
     t.boolean "receive_event_emails", default: true, null: false
     t.boolean "receive_milestone_emails", default: true, null: false
     t.boolean "receive_newsletters", default: true, null: false
+    t.boolean "receive_onboarding_emails", default: true, null: false
     t.jsonb "signup_attribution"
     t.boolean "streaks_enabled", default: false, null: false
     t.string "stripe_customer_id"
@@ -498,6 +499,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
     t.index ["level_id"], name: "index_user_levels_on_level_id"
     t.index ["user_id", "level_id"], name: "index_user_levels_on_user_id_and_level_id", unique: true
     t.index ["user_id"], name: "index_user_levels_on_user_id"
+  end
+
+  create_table "user_notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "email_status", default: 0, null: false
+    t.jsonb "params"
+    t.datetime "read_at"
+    t.integer "status", default: 0, null: false
+    t.string "type", null: false
+    t.string "uniqueness_key", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "type"], name: "index_user_notifications_on_user_id_and_type"
+    t.index ["user_id", "uniqueness_key"], name: "index_user_notifications_on_user_and_uniqueness_key", unique: true
+    t.index ["user_id"], name: "index_user_notifications_on_user_id"
   end
 
   create_table "user_projects", force: :cascade do |t|
@@ -583,6 +599,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   add_foreign_key "user_levels", "levels"
   add_foreign_key "user_levels", "user_lessons", column: "current_user_lesson_id"
   add_foreign_key "user_levels", "users"
+  add_foreign_key "user_notifications", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
   add_foreign_key "user_videos", "users"

@@ -22,6 +22,7 @@ class User < ApplicationRecord
   has_many :user_videos, dependent: :destroy
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
   has_many :badges, through: :acquired_badges
+  has_many :notifications, class_name: "User::Notification", dependent: :destroy
   has_many :flags, class_name: "User::Flag", dependent: :destroy
   has_many :assistant_conversations, dependent: :destroy
   has_many :payments, dependent: :destroy

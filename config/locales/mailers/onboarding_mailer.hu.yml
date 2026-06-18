@@ -1,0 +1,78 @@
+hu:
+  onboarding_mailer:
+    overview:
+      subject: "Üdv a Jikin — itt egy gyors körkép"
+      preview: "Egy rövid bemutató arról, mi vár rád a következő héten."
+      greeting: "Szia %{name},"
+      body_markdown: |
+        Üdv a Jikin! A következő hét során néhány rövid emailt küldök neked a platform különböző részeiről.
+
+        A Jikit azért építettük, hogy abszolút kezdőtől magabiztos, képzett programozóvá válj. Ezt apró lépéseken, valódi projekteken és személyre szabott tanulási stílusunkkal érjük el.
+
+        Holnap megmutatom, hogyan működik a kódolási oldal. Addig is [nyisd meg a Jikit](https://jiki.io), és próbáld ki az első feladatot.
+
+        Üdv,
+        Jeremy
+    coding:
+      subject: "Hogyan működik a kódolás a Jikin"
+      preview: "Az interaktív vázlatfüzet és hogyan használd ki a legjobban."
+      greeting: "Szia %{name},"
+      body_markdown: |
+        A legtöbb platform olvasással és memorizálással tanít kódolni. A Jiki gyakorlattal — minden feladat futtatható környezetben él, azonnali visszajelzéssel.
+
+        Ha elakadsz, a vázlatfüzetben szabadon kísérletezhetsz. Nincs büntetés a próbálkozásért — így dolgoznak a valódi fejlesztők is.
+
+        Próbáld meg a következő leckét: [tovább tanulni](https://jiki.io).
+
+        Üdv,
+        Jeremy
+    building:
+      subject: "Valódi dolgok építése a Jikin"
+      preview: "Miért fontosak a projektek és mit fogsz építeni."
+      greeting: "Szia %{name},"
+      body_markdown: |
+        A leckék koncepciókat tanítanak, a projektek elmélyítik őket. A Jiki minden tanfolyamába be vannak fonva projektek — kis, befejezhető dolgok, amikre büszke lehetsz.
+
+        Az első projekt a második szinten érkezik. A tanfolyam végére fél tucatot is kiadtál belőlük.
+
+        Csak így tovább — [következő lecke](https://jiki.io).
+
+        Üdv,
+        Jeremy
+    backstory:
+      subject: "Miért építettük a Jikit"
+      preview: "Egy rövid történet arról, honnan jött a Jiki."
+      greeting: "Szia %{name},"
+      body_markdown: |
+        Jeremy vagyok. Több mint egy évtizede vezetem az [Exercism](https://exercism.org) nevű ingyenes platformot, ami emberek millióinak segített elmélyíteni a kódolási tudásukat.
+
+        Az Exercism remekül működik azoknak, akik már ismerik az alapokat. De a kezdők — akik még sosem írtak kódot — folyamatosan azt mondták, valami szelídebbre, strukturáltabbra, vezetettebbre van szükségük.
+
+        Ez a Jiki. Ugyanaz a csapat, ugyanaz a filozófia, kifejezetten az első lépéseidre tervezve.
+
+        Üdv,
+        Jeremy
+    premium:
+      subject: "Hozd ki többet a Jikiből Premiummal"
+      preview: "Mit ad a Premium, és miért létezik."
+      greeting: "Szia %{name},"
+      body_markdown: |
+        A Jiki ingyenes változata messzire elvisz. A Premium még tovább: minden tanfolyam feloldva, AI-támogatás amikor elakadsz, és közvetlen segítség tőlünk.
+
+        A Premium a Jiki fenntarthatóságát is biztosítja. Egy kis csapat vagyunk, gondosan építjük ezt — az előfizetésed teszi lehetővé.
+
+        [Nézd meg a Premiumot](https://jiki.io/premium) — nincs nyomás, csak egy lehetőség, ha készen állsz.
+
+        Üdv,
+        Jeremy
+    community:
+      subject: "Gyere és köszönj"
+      preview: "A Jiki közösség — hol találsz minket."
+      greeting: "Szia %{name},"
+      body_markdown: |
+        Egyedül tanulni kódolni nehéz. Másokkal együtt tanulni — akár csak megkérdezni, hogy „ez normális?" — óriási különbséget jelent.
+
+        Gyere és köszönj a [Discordunkon](https://jiki.io/discord). Mutatkozz be, oszd meg mivel foglalkozol, kérdezz bármit. Barátságos társaság vagyunk.
+
+        Üdv,
+        Jeremy

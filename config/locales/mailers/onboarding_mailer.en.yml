@@ -1,0 +1,78 @@
+en:
+  onboarding_mailer:
+    overview:
+      subject: "Welcome to Jiki — here's the lay of the land"
+      preview: "A quick tour of what's coming over the next week."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Welcome to Jiki! Over the next week or so I'll send you a few short emails introducing you to different parts of the platform.
+
+        Jiki is built to take you from absolute beginner to a confident, capable coder. We do that through small steps, real projects, and a learning style that meets you where you are.
+
+        Tomorrow I'll show you how the coding side of Jiki actually works. For now, [open Jiki](https://jiki.io) and try your first exercise.
+
+        Cheers,
+        Jeremy
+    coding:
+      subject: "How coding works on Jiki"
+      preview: "The interactive scratchpad and how to get the most out of it."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Most platforms teach coding through reading and recall. Jiki teaches it through doing — every exercise runs your code in an interactive environment with instant feedback.
+
+        When you get stuck, the scratchpad lets you experiment freely. There's no penalty for trying things — that's how real engineers work.
+
+        Give the next lesson a go: [continue learning](https://jiki.io).
+
+        Cheers,
+        Jeremy
+    building:
+      subject: "Building real things on Jiki"
+      preview: "Why projects matter and what you'll build."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Lessons teach concepts; projects make them stick. Every course on Jiki has projects woven through it — small, complete things you can be proud of.
+
+        The first project arrives in your second level. By the end of the course, you'll have shipped half a dozen of them.
+
+        Keep going — [next lesson](https://jiki.io).
+
+        Cheers,
+        Jeremy
+    backstory:
+      subject: "Why we built Jiki"
+      preview: "A quick story about where Jiki came from."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        I'm Jeremy. For over a decade I've run [Exercism](https://exercism.org), a free platform that's helped millions of people deepen their coding skills.
+
+        Exercism works brilliantly for people who already know the basics. But beginners — the people who'd never written a line of code — kept telling us they needed something gentler, more structured, more guided.
+
+        That's Jiki. Same team, same philosophy, designed specifically for your first steps.
+
+        Cheers,
+        Jeremy
+    premium:
+      subject: "Get more out of Jiki with Premium"
+      preview: "What Premium unlocks, and why it exists."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Jiki's free tier gets you a long way. Premium goes further: every course unlocked, AI-powered help when you're stuck, and direct support from us.
+
+        Premium also keeps Jiki sustainable. We're a small team building this carefully — your subscription is what makes that possible.
+
+        [Have a look at Premium](https://jiki.io/premium) — no pressure, just an option when you're ready.
+
+        Cheers,
+        Jeremy
+    community:
+      subject: "Come say hi"
+      preview: "The Jiki community — where to find us."
+      greeting: "Hi %{name},"
+      body_markdown: |
+        Learning to code alone is hard. Learning alongside others — even just being able to ask "is this normal?" — makes a huge difference.
+
+        Come and say hi on [our Discord](https://jiki.io/discord). Introduce yourself, share what you're working on, ask anything. We're a friendly bunch.
+
+        Cheers,
+        Jeremy
