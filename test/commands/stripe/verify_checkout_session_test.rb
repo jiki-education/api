@@ -295,6 +295,27 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "incomplete", user.data.subscription_status
   end
 
+  test "degrades payment_state to processing when the payment intent lookup fails" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    stripe_session = mock_stripe_session(payment_status: "unpaid")
+    stripe_subscription = mock_stripe_subscription(
+      status: "incomplete",
+      price_id: Jiki.config.stripe_premium_monthly_price_id
+    )
+    stripe_subscription.stubs(:latest_invoice).returns("in_1")
+
+    ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
+    ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
+    ::Stripe::Invoice.expects(:retrieve).with(id: "in_1", expand: ["payments"]).raises(::Stripe::APIError.new("boom"))
+
+    result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+
+    assert_equal "processing", result[:payment_state]
+    assert_nil result[:decline_reason]
+  end
+
   test "reports payment_state failed with the decline reason when the first payment is declined" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
