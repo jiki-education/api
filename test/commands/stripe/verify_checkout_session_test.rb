@@ -64,7 +64,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     end
   end
 
-  test "raises ArgumentError when session is not complete" do
+  test "raises StripeCheckoutSessionIncompleteError with the decline reason when not complete" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -72,13 +72,58 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:metadata).returns(nil)
     stripe_session.stubs(:customer).returns("cus_123")
     stripe_session.stubs(:status).returns("open")
-
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
-    error = assert_raises(ArgumentError) do
+    payment_intent = stub(last_payment_error: stub(message: "Your card has insufficient funds."))
+    detailed = stub(payment_intent:)
+    ::Stripe::Checkout::Session.expects(:retrieve).
+      with(id: "cs_test_123", expand: [ "payment_intent", "subscription.latest_invoice.payments" ]).
+      returns(detailed)
+
+    error = assert_raises(StripeCheckoutSessionIncompleteError) do
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
-    assert_match(/not complete/, error.message)
+    assert_equal "Your card has insufficient funds.", error.decline_reason
+  end
+
+  test "raises StripeCheckoutSessionIncompleteError with nil reason when no payment was attempted" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    stripe_session = mock
+    stripe_session.stubs(:metadata).returns(nil)
+    stripe_session.stubs(:customer).returns("cus_123")
+    stripe_session.stubs(:status).returns("expired")
+    ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
+
+    detailed = stub(payment_intent: nil, subscription: nil)
+    ::Stripe::Checkout::Session.expects(:retrieve).
+      with(id: "cs_test_123", expand: [ "payment_intent", "subscription.latest_invoice.payments" ]).
+      returns(detailed)
+
+    error = assert_raises(StripeCheckoutSessionIncompleteError) do
+      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    end
+    assert_nil error.decline_reason
+  end
+
+  test "swallows Stripe errors while fetching the decline reason" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    stripe_session = mock
+    stripe_session.stubs(:metadata).returns(nil)
+    stripe_session.stubs(:customer).returns("cus_123")
+    stripe_session.stubs(:status).returns("open")
+    ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
+    ::Stripe::Checkout::Session.expects(:retrieve).
+      with(id: "cs_test_123", expand: [ "payment_intent", "subscription.latest_invoice.payments" ]).
+      raises(::Stripe::InvalidRequestError.new("bad expand", "expand"))
+
+    error = assert_raises(StripeCheckoutSessionIncompleteError) do
+      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    end
+    assert_nil error.decline_reason
   end
 
   test "raises ArgumentError when session has no subscription" do

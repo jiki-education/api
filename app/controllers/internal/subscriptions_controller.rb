@@ -146,6 +146,15 @@ class Internal::SubscriptionsController < Internal::BaseController
         message: "Checkout session does not belong to current user"
       }
     }, status: :forbidden
+  rescue StripeCheckoutSessionIncompleteError => e
+    Rails.logger.info("Checkout session incomplete: #{e.decline_reason || 'no reason given'}")
+    render json: {
+      error: {
+        type: "checkout_payment_incomplete",
+        message: "Your payment wasn't completed. Please try again.",
+        decline_reason: e.decline_reason
+      }
+    }, status: :unprocessable_entity
   rescue ArgumentError => e
     Rails.logger.error("Invalid checkout session: #{e.message}")
     render json: {
