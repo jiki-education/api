@@ -20,10 +20,13 @@ class Webhooks::StripeController < Webhooks::BaseController
       Rails.logger.error("Stripe webhook transient error: #{e.message}")
       head :internal_server_error
     rescue StandardError => e
-      # Permanent errors - return 200 to prevent retries
+      # Unexpected errors are likely deploy-fixable bugs (e.g. a Stripe API
+      # schema change). Return 500 so Stripe retries within its retry window,
+      # rather than swallowing the event as delivered and losing it.
       Rails.logger.error("Stripe webhook processing error: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
-      head :ok
+      Sentry.capture_exception(e)
+      head :internal_server_error
     end
   end
 end

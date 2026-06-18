@@ -154,14 +154,27 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
     assert_equal "annual", user.data.subscriptions.last["interval"]
   end
 
+  test "leaves subscription_valid_until nil when subscription item has no period end" do
+    user = create(:user)
+
+    subscription = mock_subscription(status: "active", period_end: nil)
+
+    assert_nothing_raised do
+      Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
+    end
+
+    user.data.reload
+    assert_nil user.data.subscription_valid_until
+  end
+
   private
-  def mock_subscription(status:, id: "sub_123")
+  def mock_subscription(status:, id: "sub_123", period_end: 1.month.from_now.to_i)
     subscription = mock
     subscription.expects(:id).returns(id).at_least_once
     subscription.expects(:status).returns(status).at_least_once
 
     item = mock
-    item.expects(:current_period_end).returns(1.month.from_now.to_i).at_least_once
+    item.expects(:current_period_end).returns(period_end).at_least_once
     items_data = mock
     items_data.expects(:data).returns([item]).at_least_once
     subscription.expects(:items).returns(items_data).at_least_once

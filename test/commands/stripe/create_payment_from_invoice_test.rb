@@ -54,8 +54,7 @@ class Stripe::CreatePaymentFromInvoiceTest < ActiveSupport::TestCase
     invoice.stubs(:amount_paid).returns(amount_paid)
     invoice.stubs(:currency).returns("usd")
     invoice.stubs(:hosted_invoice_url).returns("https://invoice.stripe.com/test")
-    invoice.stubs(:charge).returns("ch_456")
-    invoice.stubs(:subscription).returns("sub_789")
+    invoice.stubs(:payments).returns(stub(data: [stub(payment: stub(charge: "ch_456"))]))
     invoice.stubs(:customer).returns("cus_abc")
     invoice.stubs(:billing_reason).returns("subscription_create")
     invoice
@@ -70,6 +69,7 @@ class Stripe::CreatePaymentFromInvoiceTest < ActiveSupport::TestCase
     items.stubs(:data).returns([item])
 
     subscription = mock
+    subscription.stubs(:id).returns("sub_789")
     subscription.stubs(:items).returns(items)
     subscription
   end

@@ -4,10 +4,10 @@ class Stripe::UpdateSubscriptionsFromInvoice
   initialize_with :user, :invoice, :subscription
 
   def call
-    return unless invoice.subscription.present?
+    return unless subscription.present?
 
     # Find or create subscription entry
-    current_sub = user_subscriptions.find { |s| s['stripe_subscription_id'] == invoice.subscription }
+    current_sub = user_subscriptions.find { |s| s['stripe_subscription_id'] == subscription.id }
 
     if current_sub
       # Clear payment failure timestamp if present

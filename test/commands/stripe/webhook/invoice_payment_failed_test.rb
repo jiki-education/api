@@ -22,7 +22,7 @@ class Stripe::Webhook::InvoicePaymentFailedTest < ActiveSupport::TestCase
 
     invoice = mock
     invoice.stubs(:customer).returns("cus_123")
-    invoice.stubs(:subscription).returns("sub_123")
+    invoice.stubs(:parent).returns(stub(subscription_details: stub(subscription: "sub_123")))
 
     event = mock
     event.stubs(:data).returns(mock(object: invoice))
@@ -63,7 +63,7 @@ class Stripe::Webhook::InvoicePaymentFailedTest < ActiveSupport::TestCase
 
     invoice = mock
     invoice.stubs(:customer).returns("cus_123")
-    invoice.stubs(:subscription).returns("sub_123")
+    invoice.stubs(:parent).returns(stub(subscription_details: stub(subscription: "sub_123")))
 
     event = mock
     event.stubs(:data).returns(mock(object: invoice))
@@ -84,7 +84,7 @@ class Stripe::Webhook::InvoicePaymentFailedTest < ActiveSupport::TestCase
 
     invoice = mock
     invoice.stubs(:customer).returns("cus_123")
-    invoice.stubs(:subscription).returns(nil)
+    invoice.stubs(:parent).returns(nil)
 
     event = mock
     event.stubs(:data).returns(mock(object: invoice))

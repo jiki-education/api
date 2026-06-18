@@ -23,7 +23,7 @@ class Stripe::SyncSubscriptionToUser
       stripe_subscription_status: subscription.status,
       subscription_status: status,
       subscription_interval: interval,
-      subscription_valid_until: Time.zone.at(subscription_item.current_period_end)
+      subscription_valid_until: subscription_valid_until
     )
   end
 
@@ -45,6 +45,12 @@ class Stripe::SyncSubscriptionToUser
 
   memoize
   def subscriptions = user.data.subscriptions || []
+
+  memoize
+  def subscription_valid_until
+    period_end = subscription_item&.current_period_end
+    period_end ? Time.zone.at(period_end) : nil
+  end
 
   memoize
   def subscription_item = subscription.items.data.first
