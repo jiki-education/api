@@ -4,18 +4,14 @@ class Stripe::VerifyCheckoutSession
   initialize_with :user, :session_id
 
   def call
-    session = ::Stripe::Checkout::Session.retrieve(session_id)
-
-    verify_ownership!(session)
+    verify_ownership!
 
     # An incomplete session is an expected outcome (declined/abandoned/expired payment),
     # not a bug. Surface the decline reason so the UI can be specific.
     raise StripeCheckoutSessionIncompleteError, decline_reason unless session.status == "complete"
     raise ArgumentError, "Checkout session has no subscription" unless session.subscription.present?
 
-    persist_customer_id!(session)
-
-    subscription = ::Stripe::Subscription.retrieve(session.subscription)
+    persist_customer_id!
 
     subscription_item = subscription.items.data.first
     raise ArgumentError, "Subscription has no items" unless subscription_item
@@ -33,12 +29,20 @@ class Stripe::VerifyCheckoutSession
       success: true,
       interval: interval,
       payment_status: session.payment_status,
+      payment_state: payment_state,
+      decline_reason: payment_state == "failed" ? first_invoice_payment_intent&.last_payment_error&.message : nil,
       subscription_status: status
     }
   end
 
   private
-  def verify_ownership!(session)
+  memoize
+  def session = ::Stripe::Checkout::Session.retrieve(session_id)
+
+  memoize
+  def subscription = ::Stripe::Subscription.retrieve(session.subscription)
+
+  def verify_ownership!
     metadata_user_id = session.metadata&.[](:user_id) || session.metadata&.[]('user_id')
 
     if metadata_user_id.present?
@@ -50,7 +54,7 @@ class Stripe::VerifyCheckoutSession
     raise SecurityError, "Checkout session does not belong to current user"
   end
 
-  def persist_customer_id!(session)
+  def persist_customer_id!
     return if session.customer.blank?
 
     user.data.with_lock do
@@ -60,9 +64,41 @@ class Stripe::VerifyCheckoutSession
     end
   end
 
-  # Best-effort customer-facing decline reason for an incomplete checkout. Returns
-  # nil for abandoned/expired sessions with no payment attempt, and never raises -
-  # a missing reason just degrades to the generic "payment wasn't completed" message.
+  # Disambiguates the "complete but unpaid" Checkout outcome into a three-way
+  # signal the front-end can branch on: a still-clearing async payment (processing)
+  # vs a declined first payment (failed). "paid"/"no_payment_required" short-circuit
+  # so the common case needs no extra Stripe calls.
+  memoize
+  def payment_state
+    return "paid" if session.payment_status.in?(%w[paid no_payment_required])
+
+    case first_invoice_payment_intent&.status
+    when "succeeded" then "paid"
+    when "requires_payment_method", "canceled" then "failed"
+    when "processing", "requires_action", "requires_confirmation" then "processing"
+    else first_invoice_payment_intent&.last_payment_error ? "failed" : "processing"
+    end
+  end
+
+  # The PaymentIntent behind the subscription's first invoice. On Basil+ the invoice
+  # no longer exposes payment_intent directly, so it is reached via invoice.payments.
+  # Best-effort: returns nil (=> "processing") on any Stripe error rather than raising.
+  memoize
+  def first_invoice_payment_intent
+    invoice_id = subscription.latest_invoice
+    return nil if invoice_id.blank?
+
+    invoice = ::Stripe::Invoice.retrieve(id: invoice_id, expand: ["payments"])
+    payment_intent_id = invoice.payments&.data&.first&.payment&.payment_intent
+    payment_intent_id ? ::Stripe::PaymentIntent.retrieve(payment_intent_id) : nil
+  rescue ::Stripe::StripeError => e
+    Rails.logger.warn("Could not determine checkout payment state for #{session_id}: #{e.message}")
+    nil
+  end
+
+  # Best-effort customer-facing decline reason for an incomplete (status != complete)
+  # checkout. Returns nil for abandoned/expired sessions with no payment attempt, and
+  # never raises - a missing reason degrades to the generic "payment wasn't completed".
   def decline_reason
     declined_payment_intent&.last_payment_error&.message
   rescue ::Stripe::StripeError => e

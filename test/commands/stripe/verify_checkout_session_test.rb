@@ -17,6 +17,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert result[:success]
     assert_equal "monthly", result[:interval]
     assert_equal "paid", result[:payment_status]
+    assert_equal "paid", result[:payment_state]
+    assert_nil result[:decline_reason]
     assert_equal "active", result[:subscription_status]
 
     user.data.reload
@@ -205,7 +207,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     end
   end
 
-  test "handles incomplete subscription for async payments" do
+  test "handles incomplete subscription for async payments and reports payment_state processing" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -214,20 +216,55 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       status: "incomplete",
       price_id: Jiki.config.stripe_premium_monthly_price_id
     )
+    stripe_subscription.stubs(:latest_invoice).returns("in_1")
 
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
+
+    invoice = stub(payments: stub(data: [stub(payment: stub(payment_intent: "pi_1"))]))
+    ::Stripe::Invoice.expects(:retrieve).with(id: "in_1", expand: ["payments"]).returns(invoice)
+    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(stub(status: "processing"))
 
     result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
 
     assert result[:success]
     assert_equal "monthly", result[:interval]
     assert_equal "unpaid", result[:payment_status]
+    assert_equal "processing", result[:payment_state]
+    assert_nil result[:decline_reason]
     assert_equal "incomplete", result[:subscription_status]
 
     user.data.reload
     refute user.premium?
     assert_equal "incomplete", user.data.subscription_status
+  end
+
+  test "reports payment_state failed with the decline reason when the first payment is declined" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    stripe_session = mock_stripe_session(payment_status: "unpaid")
+    stripe_subscription = mock_stripe_subscription(
+      status: "incomplete",
+      price_id: Jiki.config.stripe_premium_monthly_price_id
+    )
+    stripe_subscription.stubs(:latest_invoice).returns("in_1")
+
+    ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
+    ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
+
+    invoice = stub(payments: stub(data: [stub(payment: stub(payment_intent: "pi_1"))]))
+    ::Stripe::Invoice.expects(:retrieve).with(id: "in_1", expand: ["payments"]).returns(invoice)
+    payment_intent = stub(
+      status: "requires_payment_method",
+      last_payment_error: stub(message: "Your card has insufficient funds.")
+    )
+    ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(payment_intent)
+
+    result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+
+    assert_equal "failed", result[:payment_state]
+    assert_equal "Your card has insufficient funds.", result[:decline_reason]
   end
 
   private
