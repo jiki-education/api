@@ -103,6 +103,8 @@ class Stripe::VerifyCheckoutSession
   # Best-effort: returns nil (=> "processing") on any Stripe error rather than raising.
   memoize
   def first_invoice_payment_intent
+    return nil if session.subscription.blank?
+
     invoice_id = subscription.latest_invoice
     return nil if invoice_id.blank?
 

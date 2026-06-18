@@ -160,6 +160,30 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_nil error.decline_reason
   end
 
+  test "does not adopt the customer id when the checkout is incomplete" do
+    user = create(:user)
+    assert_nil user.data.stripe_customer_id
+
+    stripe_session = mock
+    stripe_session.stubs(:metadata).returns(
+      "user_id" => user.id.to_s, "price_id" => Jiki.config.stripe_premium_monthly_price_id
+    )
+    stripe_session.stubs(:status).returns("open")
+    stripe_session.stubs(:currency).returns("usd")
+    ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
+
+    detailed = stub(payment_intent: nil, subscription: nil)
+    ::Stripe::Checkout::Session.expects(:retrieve).
+      with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
+      returns(detailed)
+
+    assert_raises(StripeCheckoutSessionIncompleteError) do
+      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    end
+
+    assert_nil user.data.reload.stripe_customer_id
+  end
+
   test "raises ArgumentError when session has no subscription" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
