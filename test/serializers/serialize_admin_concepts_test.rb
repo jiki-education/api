@@ -19,23 +19,4 @@ class SerializeAdminConceptsTest < ActiveSupport::TestCase
     assert_equal "Learn about loops", result[0][:description]
     assert_equal video_sources, result[0][:video_data]
   end
-
-  test "includes children_count" do
-    parent = create(:concept)
-    create(:concept, parent: parent)
-    create(:concept, parent: parent)
-
-    result = SerializeAdminConcepts.([parent.reload])
-
-    assert_equal 2, result[0][:children_count]
-  end
-
-  test "does not include ancestors in collection" do
-    parent = create(:concept)
-    child = create(:concept, parent: parent)
-
-    result = SerializeAdminConcepts.([child])
-
-    refute result[0].key?(:ancestors)
-  end
 end

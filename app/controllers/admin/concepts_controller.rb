@@ -54,9 +54,7 @@ class Admin::ConceptsController < Admin::BaseController
     params.require(:concept).permit(
       :title,
       :slug,
-      :description,
-      :content_markdown,
-      :parent_concept_id
+      :description
     )
   end
 end

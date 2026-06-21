@@ -97,8 +97,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
       concept: {
         title: "Strings",
         slug: "strings",
-        description: "Learn about strings",
-        content_markdown: "# Strings\n\nText content"
+        description: "Learn about strings"
       }
     }
 
@@ -133,8 +132,8 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
 
   # SHOW tests
 
-  test "GET show returns concept with markdown" do
-    concept = create(:concept, title: "Strings", content_markdown: "# Strings\n\nContent")
+  test "GET show returns concept" do
+    concept = create(:concept, title: "Strings")
 
     get admin_concept_path(concept.id), as: :json
 
@@ -168,21 +167,6 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     assert_json_response({
       concept: SerializeAdminConcept.(concept)
     })
-  end
-
-  test "PATCH update updates markdown and regenerates HTML" do
-    concept = create(:concept, content_markdown: "# Original")
-    update_params = {
-      concept: {
-        content_markdown: "# Updated"
-      }
-    }
-
-    patch admin_concept_path(concept.id), params: update_params, as: :json
-
-    assert_response :success
-    assert_equal "# Updated", concept.reload.content_markdown
-    assert_includes concept.content_html, "Updated"
   end
 
   test "PATCH update returns validation error for invalid attributes" do
@@ -229,90 +213,5 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     delete admin_concept_path(999_999), as: :json
 
     assert_json_error(:not_found, error_type: :concept_not_found)
-  end
-
-  # Parent-child hierarchy tests
-
-  test "POST create with parent_concept_id" do
-    parent = create(:concept)
-    concept_params = {
-      concept: {
-        title: "Child Concept",
-        description: "A child concept",
-        content_markdown: "# Child",
-        parent_concept_id: parent.id
-      }
-    }
-
-    post admin_concepts_path, params: concept_params, as: :json
-
-    assert_response :created
-    concept = Concept.last
-    assert_equal parent.id, concept.parent_concept_id
-  end
-
-  test "PATCH update parent_concept_id" do
-    parent = create(:concept)
-    concept = create(:concept)
-    update_params = {
-      concept: {
-        parent_concept_id: parent.id
-      }
-    }
-
-    patch admin_concept_path(concept.id), params: update_params, as: :json
-
-    assert_response :success
-    assert_equal parent.id, concept.reload.parent_concept_id
-  end
-
-  test "PATCH update returns validation error for circular reference" do
-    parent = create(:concept)
-    child = create(:concept, parent: parent)
-    update_params = {
-      concept: {
-        parent_concept_id: child.id
-      }
-    }
-
-    patch admin_concept_path(parent.id), params: update_params, as: :json
-
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["parent_concept_id"], "would create a circular reference"
-  end
-
-  test "GET show includes ancestors and children_count" do
-    Prosopite.finish
-    grandparent = create(:concept, title: "Grandparent")
-    parent = create(:concept, title: "Parent", parent: grandparent)
-    concept = create(:concept, title: "Concept", parent: parent)
-    create(:concept, parent: concept) # child
-
-    Prosopite.scan
-    get admin_concept_path(concept.id), as: :json
-
-    assert_response :success
-    response_data = JSON.parse(response.body)
-    assert_equal 1, response_data["concept"]["children_count"]
-    assert_equal 2, response_data["concept"]["ancestors"].length
-    assert_equal grandparent.slug, response_data["concept"]["ancestors"][0]["slug"]
-    assert_equal parent.slug, response_data["concept"]["ancestors"][1]["slug"]
-  end
-
-  test "GET index includes children_count" do
-    Prosopite.finish
-    parent = create(:concept, title: "Parent")
-    create(:concept, parent: parent)
-    create(:concept, parent: parent)
-
-    Prosopite.scan
-    get admin_concepts_path, as: :json
-
-    assert_response :success
-    response_data = JSON.parse(response.body)
-    parent_result = response_data["results"].find { |c| c["title"] == "Parent" }
-    assert_equal 2, parent_result["children_count"]
   end
 end

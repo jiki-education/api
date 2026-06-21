@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,18 +85,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   end
 
   create_table "concepts", force: :cascade do |t|
-    t.integer "children_count", default: 0, null: false
-    t.text "content_html", null: false
-    t.text "content_markdown", null: false
     t.datetime "created_at", null: false
     t.text "description", null: false
-    t.bigint "parent_concept_id"
     t.string "slug", null: false
     t.string "title", null: false
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
     t.string "uuid", null: false
-    t.index ["parent_concept_id"], name: "index_concepts_on_parent_concept_id"
     t.index ["slug"], name: "index_concepts_on_slug", unique: true
     t.index ["unlocked_by_lesson_id"], name: "index_concepts_on_unlocked_by_lesson_id"
     t.index ["uuid"], name: "index_concepts_on_uuid", unique: true
@@ -436,6 +431,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
     t.boolean "receive_event_emails", default: true, null: false
     t.boolean "receive_milestone_emails", default: true, null: false
     t.boolean "receive_newsletters", default: true, null: false
+    t.boolean "receive_onboarding_emails", default: true, null: false
     t.jsonb "signup_attribution"
     t.boolean "streaks_enabled", default: false, null: false
     t.string "stripe_customer_id"
@@ -500,6 +496,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
     t.index ["user_id"], name: "index_user_levels_on_user_id"
   end
 
+  create_table "user_notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "email_status", default: 0, null: false
+    t.jsonb "params"
+    t.datetime "read_at"
+    t.integer "status", default: 0, null: false
+    t.string "type", null: false
+    t.string "uniqueness_key", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "type"], name: "index_user_notifications_on_user_id_and_type"
+    t.index ["user_id", "uniqueness_key"], name: "index_user_notifications_on_user_and_uniqueness_key", unique: true
+    t.index ["user_id"], name: "index_user_notifications_on_user_id"
+  end
+
   create_table "user_projects", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -552,7 +563,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assistant_conversations", "users"
   add_foreign_key "badge_translations", "badges"
-  add_foreign_key "concepts", "concepts", column: "parent_concept_id", on_delete: :nullify
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
   add_foreign_key "lesson_concepts", "concepts"
@@ -583,6 +593,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   add_foreign_key "user_levels", "levels"
   add_foreign_key "user_levels", "user_lessons", column: "current_user_lesson_id"
   add_foreign_key "user_levels", "users"
+  add_foreign_key "user_notifications", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"
   add_foreign_key "user_videos", "users"

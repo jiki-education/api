@@ -32,34 +32,6 @@ class SerializeConceptsTest < ActiveSupport::TestCase
     refute result[0].key?(:id)
   end
 
-  test "does not include content_html or content_markdown" do
-    concept = create(:concept)
-
-    result = SerializeConcepts.([concept])
-
-    refute result[0].key?(:content_html)
-    refute result[0].key?(:content_markdown)
-  end
-
-  test "includes children_count" do
-    parent = create(:concept)
-    create(:concept, parent: parent)
-    create(:concept, parent: parent)
-
-    result = SerializeConcepts.([parent.reload])
-
-    assert_equal 2, result[0][:children_count]
-  end
-
-  test "does not include ancestors in collection" do
-    parent = create(:concept)
-    child = create(:concept, parent: parent)
-
-    result = SerializeConcepts.([child])
-
-    refute result[0].key?(:ancestors)
-  end
-
   test "user_may_access is true when no user provided" do
     concept = create(:concept)
 
