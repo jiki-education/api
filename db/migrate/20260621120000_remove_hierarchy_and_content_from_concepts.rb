@@ -18,8 +18,13 @@ class RemoveHierarchyAndContentFromConcepts < ActiveRecord::Migration[8.1]
   end
 
   def down
-    add_column :concepts, :content_html, :text, null: false
-    add_column :concepts, :content_markdown, :text, null: false
+    # Add with a temporary default to backfill existing rows, then drop the
+    # default to match the original schema (NOT NULL, no default).
+    add_column :concepts, :content_html, :text, null: false, default: ""
+    add_column :concepts, :content_markdown, :text, null: false, default: ""
+    change_column_default :concepts, :content_html, from: "", to: nil
+    change_column_default :concepts, :content_markdown, from: "", to: nil
+
     add_column :concepts, :children_count, :integer, null: false, default: 0
     add_reference :concepts, :parent_concept, foreign_key: { to_table: :concepts }, index: true
 
