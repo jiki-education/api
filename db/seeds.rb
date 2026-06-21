@@ -62,20 +62,8 @@ concepts_data.each do |concept_data|
     slug: concept_data[:slug],
     title: concept_data[:title],
     description: concept_data[:description],
-    content_markdown: concept_data[:content_markdown],
     unlocked_by_lesson: unlocking_lesson
   )
-end
-
-# Second pass: link parents (all concepts exist now, so a single pass resolves everything)
-concepts_data.each do |concept_data|
-  parent = nil
-  if concept_data[:parent_slug]
-    parent = Concept.find_by(slug: concept_data[:parent_slug])
-    raise "Concept '#{concept_data[:slug]}' references missing parent '#{concept_data[:parent_slug]}'" unless parent
-  end
-
-  Concept.find_by!(uuid: concept_data[:uuid]).update!(parent:)
 end
 puts "✓ Concepts: #{concepts_data.size}"
 

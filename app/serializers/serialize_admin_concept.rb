@@ -9,21 +9,7 @@ class SerializeAdminConcept
       title: concept.title,
       slug: concept.slug,
       description: concept.description,
-      content_markdown: concept.content_markdown,
-      video_data: concept.unlocked_by_lesson&.data&.[](:sources),
-      children_count: concept.children_count,
-      ancestors: serialize_ancestors
+      video_data: concept.unlocked_by_lesson&.data&.[](:sources)
     }
-  end
-
-  private
-  def serialize_ancestors
-    concept.ancestors.map do |ancestor|
-      {
-        id: ancestor.id,
-        title: ancestor.title,
-        slug: ancestor.slug
-      }
-    end
   end
 end

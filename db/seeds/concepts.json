@@ -4,8 +4,6 @@
     "slug": "using-functions",
     "title": "Using Functions",
     "description": "Use built-in functions to make things happen.",
-    "content_markdown": "# Using Functions\n\nFunctions are little machines you use to make things happen. You'll learn how to use them in your code.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "using-functions"
   },
   {
@@ -13,8 +11,6 @@
     "slug": "using-functions-with-inputs",
     "title": "Using Functions With Inputs",
     "description": "Pass inputs (arguments) to functions to control their behaviour.",
-    "content_markdown": "# Using Functions With Inputs\n\nMany functions take inputs that change what they do. You'll learn how to pass values into a function when you use it.",
-    "parent_slug": "using-functions",
     "unlocked_by_lesson_slug": "function-inputs"
   },
   {
@@ -22,8 +18,6 @@
     "slug": "using-functions-with-return-values",
     "title": "Using Functions With Return Values",
     "description": "Use the values that functions give back to you.",
-    "content_markdown": "# Using Functions With Return Values\n\nSome functions hand a value back when they're done. You'll learn how to capture and use that value.",
-    "parent_slug": "using-functions",
     "unlocked_by_lesson_slug": "functions-that-return-things"
   },
   {
@@ -31,8 +25,6 @@
     "slug": "creating-functions",
     "title": "Creating Functions",
     "description": "Write your own reusable functions.",
-    "content_markdown": "# Creating Functions\n\nWhen built-in functions aren't enough, you can write your own. You'll learn how to define a function from scratch.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "making-functions"
   },
   {
@@ -40,8 +32,6 @@
     "slug": "creating-functions-with-inputs",
     "title": "Creating Functions With Inputs",
     "description": "Define functions that accept inputs (parameters).",
-    "content_markdown": "# Creating Functions With Inputs\n\nYou'll learn how to declare parameters on your own functions so callers can pass values in.",
-    "parent_slug": "creating-functions",
     "unlocked_by_lesson_slug": "making-functions-with-inputs"
   },
   {
@@ -49,8 +39,6 @@
     "slug": "creating-functions-with-return-values",
     "title": "Creating Functions With Return Values",
     "description": "Make your own functions hand a value back to the caller.",
-    "content_markdown": "# Creating Functions With Return Values\n\nYou'll learn how to use `return` so your own functions give a result back.",
-    "parent_slug": "creating-functions",
     "unlocked_by_lesson_slug": "making-functions-with-return-values"
   },
   {
@@ -58,8 +46,6 @@
     "slug": "function-composition",
     "title": "Function Composition",
     "description": "Combine multiple functions together to solve bigger problems.",
-    "content_markdown": "# Function Composition\n\nYou'll learn how to use the output of one function as the input of another, building bigger solutions from smaller pieces.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "using-multiple-functions-together"
   },
   {
@@ -67,8 +53,6 @@
     "slug": "variables",
     "title": "Variables",
     "description": "Store and reuse values by giving them names.",
-    "content_markdown": "# Variables\n\nVariables let you save a value and refer to it by name later.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "creating-variables"
   },
   {
@@ -76,17 +60,13 @@
     "slug": "arithmetic",
     "title": "Arithmetic",
     "description": "Do maths with numbers and variables.",
-    "content_markdown": "# Arithmetic\n\nUse `+`, `-`, `*`, `/` and friends to do calculations.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "variables-together"
   },
   {
     "uuid": "b83c6002-c3e2-4c72-ba93-4b7a6662dd6c",
-    "slug": "state",
-    "title": "State",
+    "slug": "updating-variables",
+    "title": "Updating Variables",
     "description": "Update variables to track changing values over time.",
-    "content_markdown": "# State\n\nAs your program runs, the values stored in variables can change. That changing data is called state.",
-    "parent_slug": "variables",
     "unlocked_by_lesson_slug": "updating-variables"
   },
   {
@@ -94,8 +74,6 @@
     "slug": "strings",
     "title": "Strings",
     "description": "Work with text in your programs.",
-    "content_markdown": "# Strings\n\nStrings are pieces of text. You'll learn how to create and use them.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "strings"
   },
   {
@@ -103,8 +81,6 @@
     "slug": "string-concatenation",
     "title": "String Concatenation",
     "description": "Join strings together with `+`.",
-    "content_markdown": "# String Concatenation\n\nYou'll learn how to glue strings together end to end.",
-    "parent_slug": "strings",
     "unlocked_by_lesson_slug": "string-concatenation"
   },
   {
@@ -112,8 +88,6 @@
     "slug": "string-templates",
     "title": "String Templates",
     "description": "Build strings by interpolating values into a template.",
-    "content_markdown": "# String Templates\n\nTemplates let you slot variables and expressions into a string without lots of `+`s.",
-    "parent_slug": "strings",
     "unlocked_by_lesson_slug": "string-concatenation"
   },
   {
@@ -121,8 +95,6 @@
     "slug": "string-indexing",
     "title": "String Indexing",
     "description": "Access individual characters by position.",
-    "content_markdown": "# String Indexing\n\nEach character in a string has a position. You'll learn how to grab the one you want.",
-    "parent_slug": "strings",
     "unlocked_by_lesson_slug": "string-indexing"
   },
   {
@@ -130,8 +102,6 @@
     "slug": "string-iteration",
     "title": "String Iteration",
     "description": "Loop through a string one character at a time.",
-    "content_markdown": "# String Iteration\n\nYou'll learn how to walk through a string character by character.",
-    "parent_slug": "strings",
     "unlocked_by_lesson_slug": "string-iteration"
   },
   {
@@ -139,8 +109,6 @@
     "slug": "colors",
     "title": "Colors",
     "description": "Specify and use colours in your drawings.",
-    "content_markdown": "# Colors\n\nYou'll learn how to pick and use colours when drawing.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "colors"
   },
   {
@@ -148,8 +116,6 @@
     "slug": "hsl",
     "title": "HSL Colors",
     "description": "Describe colours by hue, saturation and lightness.",
-    "content_markdown": "# HSL Colors\n\nHSL is one way to specify a colour by its hue, saturation, and lightness.",
-    "parent_slug": "colors",
     "unlocked_by_lesson_slug": "colors"
   },
   {
@@ -157,26 +123,13 @@
     "slug": "rgb",
     "title": "RGB Colors",
     "description": "Describe colours by mixing red, green and blue.",
-    "content_markdown": "# RGB Colors\n\nRGB is another way to specify a colour, by mixing red, green, and blue.",
-    "parent_slug": "colors",
     "unlocked_by_lesson_slug": "colors"
-  },
-  {
-    "uuid": "8c5a209c-d4d1-4ec1-b060-3e1fee05359e",
-    "slug": "loops",
-    "title": "Loops",
-    "description": "Repeat actions in your code without rewriting them.",
-    "content_markdown": "# Loops\n\nLoops let you do the same thing many times without repeating yourself.",
-    "parent_slug": null,
-    "unlocked_by_lesson_slug": "repeat-loop"
   },
   {
     "uuid": "688567f0-bdce-4059-8fb6-7b9f92b2a418",
     "slug": "repeat",
     "title": "Repeat Loop",
     "description": "Repeat a block of code a fixed number of times.",
-    "content_markdown": "# Repeat Loop\n\nThe repeat loop runs the same block a set number of times.",
-    "parent_slug": "loops",
     "unlocked_by_lesson_slug": "repeat-loop"
   },
   {
@@ -184,8 +137,6 @@
     "slug": "nested-loops",
     "title": "Nested Loops",
     "description": "Put loops inside other loops.",
-    "content_markdown": "# Nested Loops\n\nA loop inside another loop is a nested loop, useful for grids and 2D problems.",
-    "parent_slug": "loops",
     "unlocked_by_lesson_slug": "nested-loops"
   },
   {
@@ -193,8 +144,6 @@
     "slug": "repeat-while",
     "title": "Repeat While",
     "description": "Repeat code until a condition stops being true.",
-    "content_markdown": "# Repeat While\n\nUse repeat-while when you don't know in advance how many times to loop.",
-    "parent_slug": "loops",
     "unlocked_by_lesson_slug": "repeat-without-count"
   },
   {
@@ -202,8 +151,6 @@
     "slug": "for-loops",
     "title": "For Loops",
     "description": "Loop with a counter, with full control over start, stop and step.",
-    "content_markdown": "# For Loops\n\nFor loops give you fine control over how a counter advances each iteration.",
-    "parent_slug": "loops",
     "unlocked_by_lesson_slug": "for-while-loops"
   },
   {
@@ -211,8 +158,6 @@
     "slug": "break",
     "title": "Break",
     "description": "Exit a loop early.",
-    "content_markdown": "# Break\n\n`break` stops a loop immediately, even if the condition is still true.",
-    "parent_slug": "loops",
     "unlocked_by_lesson_slug": "for-while-loops"
   },
   {
@@ -220,26 +165,13 @@
     "slug": "continue",
     "title": "Continue",
     "description": "Skip the rest of the current loop iteration and move to the next.",
-    "content_markdown": "# Continue\n\n`continue` skips the rest of this iteration and jumps to the next one.",
-    "parent_slug": "loops",
     "unlocked_by_lesson_slug": "for-while-loops"
-  },
-  {
-    "uuid": "55171d51-6995-4f7f-8789-9cf1ac295ae1",
-    "slug": "conditionals",
-    "title": "Conditionals",
-    "description": "Make decisions in code based on whether something is true.",
-    "content_markdown": "# Conditionals\n\nConditionals let your program take different paths depending on the situation.",
-    "parent_slug": null,
-    "unlocked_by_lesson_slug": "if-statements"
   },
   {
     "uuid": "d30e6157-538c-49e0-b0d9-866831d37079",
     "slug": "if",
     "title": "If Statements",
     "description": "Run code only when a condition is true.",
-    "content_markdown": "# If Statements\n\n`if` runs a block of code only when its condition is true.",
-    "parent_slug": "conditionals",
     "unlocked_by_lesson_slug": "if-statements"
   },
   {
@@ -247,8 +179,6 @@
     "slug": "else",
     "title": "Else",
     "description": "Run alternative code when an `if` condition is false.",
-    "content_markdown": "# Else\n\n`else` runs when the `if` condition wasn't true.",
-    "parent_slug": "conditionals",
     "unlocked_by_lesson_slug": "else-statements"
   },
   {
@@ -256,8 +186,6 @@
     "slug": "else-if",
     "title": "Else If",
     "description": "Chain multiple conditions in order.",
-    "content_markdown": "# Else If\n\n`else if` lets you check additional conditions in sequence.",
-    "parent_slug": "conditionals",
     "unlocked_by_lesson_slug": "else-statements"
   },
   {
@@ -265,8 +193,6 @@
     "slug": "logical-and",
     "title": "Logical And",
     "description": "Combine conditions that must all be true.",
-    "content_markdown": "# Logical And\n\n`and` is true only when both sides are true.",
-    "parent_slug": "conditionals",
     "unlocked_by_lesson_slug": "and-or"
   },
   {
@@ -274,8 +200,6 @@
     "slug": "logical-or",
     "title": "Logical Or",
     "description": "Combine conditions where at least one must be true.",
-    "content_markdown": "# Logical Or\n\n`or` is true when either side is true.",
-    "parent_slug": "conditionals",
     "unlocked_by_lesson_slug": "and-or"
   },
   {
@@ -283,8 +207,6 @@
     "slug": "logical-not",
     "title": "Logical Not",
     "description": "Flip a condition's truth value.",
-    "content_markdown": "# Logical Not\n\n`not` turns true into false and false into true.",
-    "parent_slug": "conditionals",
     "unlocked_by_lesson_slug": "remainder"
   },
   {
@@ -292,17 +214,13 @@
     "slug": "modulo",
     "title": "Modulo",
     "description": "Get the remainder of a division.",
-    "content_markdown": "# Modulo\n\nThe modulo operator gives you what's left over after dividing.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "remainder"
   },
   {
     "uuid": "95acb8f2-920a-4efa-88fb-a1f6250c1b18",
-    "slug": "conditionals-and-state",
-    "title": "Using If and State",
+    "slug": "state",
+    "title": "State",
     "description": "Combining if statements with variables that change over time so your program reacts and behaves differently as it runs.",
-    "content_markdown": "# Conditionals and State\n\nMixing conditionals with state lets your program respond differently as values change.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "state"
   },
   {
@@ -310,8 +228,6 @@
     "slug": "scope",
     "title": "Scope",
     "description": "Understand where variables exist and where they don't.",
-    "content_markdown": "# Scope\n\nVariables defined inside a block only exist inside that block.",
-    "parent_slug": "variables",
     "unlocked_by_lesson_slug": "scope"
   },
   {
@@ -319,8 +235,6 @@
     "slug": "random",
     "title": "Random",
     "description": "Add randomness to your programs.",
-    "content_markdown": "# Random\n\nRandom values let your programs behave differently each time they run.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "random-numbers"
   },
   {
@@ -328,8 +242,6 @@
     "slug": "animation",
     "title": "Animation",
     "description": "Make things move on screen.",
-    "content_markdown": "# Animation\n\nAnimation is what happens when you draw, change something, and redraw, repeatedly.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "animation"
   },
   {
@@ -337,8 +249,6 @@
     "slug": "scenarios",
     "title": "Scenarios",
     "description": "Run your code against different starting conditions.",
-    "content_markdown": "# Scenarios\n\nScenarios let you verify your code works in lots of different situations, not just one.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "scenarios"
   },
   {
@@ -346,8 +256,6 @@
     "slug": "methods",
     "title": "Methods",
     "description": "Use functions that come attached to a value.",
-    "content_markdown": "# Methods\n\nMethods are functions that belong to a value, like `.length` or `.toUpperCase()`.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "methods-and-strings"
   },
   {
@@ -355,8 +263,6 @@
     "slug": "properties",
     "title": "Properties",
     "description": "Access named values attached to a thing.",
-    "content_markdown": "# Properties\n\nProperties are named values that hang off another value.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "methods-and-strings"
   },
   {
@@ -364,8 +270,6 @@
     "slug": "arrays",
     "title": "Arrays",
     "description": "Store an ordered collection of values.",
-    "content_markdown": "# Arrays\n\nArrays let you store and work with lists of values.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "arrays"
   },
   {
@@ -373,8 +277,6 @@
     "slug": "building-arrays",
     "title": "Building Arrays",
     "description": "Build up an array piece by piece, often by appending in a loop.",
-    "content_markdown": "# Building Arrays\n\nStart with an empty array and grow it as you go.",
-    "parent_slug": "arrays",
     "unlocked_by_lesson_slug": "building-arrays"
   },
   {
@@ -382,8 +284,6 @@
     "slug": "dictionaries",
     "title": "Dictionaries",
     "description": "Store values under named keys.",
-    "content_markdown": "# Dictionaries\n\nDictionaries (also called maps) store data under named keys.",
-    "parent_slug": null,
     "unlocked_by_lesson_slug": "dictionaries"
   },
   {
@@ -391,8 +291,6 @@
     "slug": "updating-dictionaries",
     "title": "Updating Dictionaries",
     "description": "Add, change and remove keys in a dictionary.",
-    "content_markdown": "# Updating Dictionaries\n\nDictionaries aren't fixed once created — you can add new keys, change values, and remove entries.",
-    "parent_slug": "dictionaries",
     "unlocked_by_lesson_slug": "updating-dictionaries"
   }
 ]
