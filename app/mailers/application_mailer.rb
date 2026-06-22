@@ -63,13 +63,15 @@ class ApplicationMailer < ActionMailer::Base
   # @param user [User] The recipient user
   # @param unsubscribe_key [Symbol, nil] The preference key (e.g., :newsletters, :milestone_emails)
   #   If nil, only checks global email validity
+  # @param force [Boolean] When true, skip the bounce/complaint and preference guards so the
+  #   email always renders/sends. Used only for admin preview and test sends.
   # @param args [Hash] Options passed to mail() (to:, subject:, etc.)
   # @return [Mail::Message, nil] The mail message, or nil if user shouldn't receive email
-  def mail_to_user(user, unsubscribe_key: nil, **args, &block)
-    return unless user.may_receive_emails?
+  def mail_to_user(user, unsubscribe_key: nil, force: false, **args, &block)
+    return unless force || user.may_receive_emails?
 
     if unsubscribe_key
-      return unless user.public_send("receive_#{unsubscribe_key}?")
+      return unless force || user.public_send("receive_#{unsubscribe_key}?")
 
       add_unsubscribe_headers!(user, unsubscribe_key)
     end

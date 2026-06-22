@@ -29,6 +29,10 @@ en:
     email_template_not_found: "Email template not found"
     user_project_not_found: "User project not found"
     user_video_not_found: "User video not found"
+    mailshot_not_found: "Mailshot not found"
+    unknown_segment: "Unknown audience segment"
+    mailshot_body_blank: "Add content before sending this mailshot"
+    mailshot_already_sent: "This mailshot has already been sent and can't be deleted"
     validation_error: "Validation failed"
     invalid_event: "Unknown analytics event"
 
