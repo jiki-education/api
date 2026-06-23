@@ -54,7 +54,8 @@ class User::SendEmail
     conditions = [
       has_affirmative_communication_preference?,
       user.may_receive_emails?,
-      user.email_valid?
+      user.email_valid?,
+      user.confirmed?
     ]
 
     return true if conditions.all?

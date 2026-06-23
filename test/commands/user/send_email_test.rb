@@ -33,6 +33,14 @@ class User::SendEmailTest < ActiveSupport::TestCase
     assert user_level.email_skipped?
   end
 
+  test "does not send if the user is unconfirmed" do
+    user_level = create(:user_level, completed_at: Time.current)
+    user_level.user.expects(confirmed?: false)
+
+    refute_email_sent(user_level)
+    assert user_level.email_skipped?
+  end
+
   test "only sends for email pending status" do
     user = create(:user)
     level = create(:level)
