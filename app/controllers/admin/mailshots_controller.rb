@@ -69,10 +69,10 @@ class Admin::MailshotsController < Admin::BaseController
   end
 
   def mailshot_params
-    params.require(:mailshot).permit(:slug, :subject, :body_markdown, :email_communication_preferences_key)
+    params.require(:mailshot).permit(:slug, :subject, :preview_text, :body_markdown, :email_communication_preferences_key)
   end
 
   def preview_params
-    params.require(:mailshot).permit(:subject, :body_markdown)
+    params.require(:mailshot).permit(:subject, :preview_text, :body_markdown)
   end
 end

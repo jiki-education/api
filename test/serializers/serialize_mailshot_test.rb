@@ -5,6 +5,7 @@ class SerializeMailshotTest < ActiveSupport::TestCase
     mailshot = create(:mailshot,
       slug: "june-news",
       subject: "June news",
+      preview_text: "The latest from Jiki",
       body_markdown: "## Hello",
       sent_to_audiences: ["premium_users"])
     create(:user_mailshot, mailshot:)
@@ -14,6 +15,7 @@ class SerializeMailshotTest < ActiveSupport::TestCase
         id: mailshot.id,
         slug: "june-news",
         subject: "June news",
+        preview_text: "The latest from Jiki",
         body_markdown: "## Hello",
         email_communication_preferences_key: "newsletters",
         sent_to_audiences: ["premium_users"],
