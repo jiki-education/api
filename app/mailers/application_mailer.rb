@@ -97,17 +97,26 @@ class ApplicationMailer < ActionMailer::Base
     markdown.gsub(/\[([^\]]+)\]\(([^)]+)\)/, '\1 (\2)')
   end
 
-  # Generate unsubscribe URL for frontend
+  # Generate the human-facing unsubscribe URL (a frontend page, opened via GET
+  # from the in-body footer link).
   def unsubscribe_url(token:, key: nil)
     url = "#{Jiki.config.frontend_base_url}/unsubscribe?token=#{token}"
     key.present? ? "#{url}&key=#{key}" : url
+  end
+
+  # The RFC 8058 one-click target. Mail providers send a server-to-server POST
+  # here, so it must point at the API's own unauthenticated POST endpoint
+  # (Auth::UnsubscribeController), NOT the frontend page.
+  def one_click_unsubscribe_url(token:, key: nil)
+    url = "#{Jiki.config.api_base_url}/auth/unsubscribe/#{token}"
+    key.present? ? "#{url}?key=#{key}" : url
   end
 
   # Add RFC 8058 one-click unsubscribe headers
   def add_unsubscribe_headers!(user, unsubscribe_key)
     return unless user&.unsubscribe_token
 
-    headers['List-Unsubscribe'] = "<#{unsubscribe_url(token: user.unsubscribe_token, key: unsubscribe_key)}>"
+    headers['List-Unsubscribe'] = "<#{one_click_unsubscribe_url(token: user.unsubscribe_token, key: unsubscribe_key)}>"
     headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
   end
 end

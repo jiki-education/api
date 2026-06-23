@@ -24,13 +24,15 @@ class MailshotMailerTest < ActionMailer::TestCase
     assert_match "Three new exercises inside", html
   end
 
-  test "sets one-click unsubscribe headers for the newsletters preference" do
+  test "points one-click unsubscribe at the API endpoint for the newsletters preference" do
     user = create(:user)
     mailshot = create(:mailshot)
 
     mail = MailshotMailer.send_mailshot(user, mailshot)
 
-    assert_match "key=newsletters", mail.header["List-Unsubscribe"].to_s
+    header = mail.header["List-Unsubscribe"].to_s
+    assert_match "#{Jiki.config.api_base_url}/auth/unsubscribe/#{user.unsubscribe_token}", header
+    assert_match "key=newsletters", header
     assert_equal "List-Unsubscribe=One-Click", mail.header["List-Unsubscribe-Post"].to_s
   end
 

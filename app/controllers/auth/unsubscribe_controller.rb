@@ -3,7 +3,7 @@
 # RFC 8058 one-click unsubscribe: POST request with unsubscribe token
 class Auth::UnsubscribeController < ApplicationController
   def create
-    user = User::Unsubscribe.(params[:token])
+    user = User::Unsubscribe.(params[:token], key: params[:key])
     render json: { unsubscribed: true, email: user.email }, status: :ok
   rescue InvalidUnsubscribeTokenError
     render_404(:invalid_unsubscribe_token)

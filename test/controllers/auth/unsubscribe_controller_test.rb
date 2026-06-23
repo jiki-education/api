@@ -37,6 +37,18 @@ class Auth::UnsubscribeControllerTest < ApplicationControllerTest
     assert_equal %w[unsubscribed email meta].sort, json.keys.sort
   end
 
+  test "POST create with a key unsubscribes from just that preference" do
+    user = create(:user)
+    token = user.data.unsubscribe_token
+
+    post auth_unsubscribe_path(token, key: "newsletters"), as: :json
+
+    assert_response :ok
+    user.reload
+    refute user.data.receive_newsletters
+    assert_nil user.data.email_complaint_at # not a full unsubscribe
+  end
+
   test "POST create returns 404 for invalid token" do
     post auth_unsubscribe_path("invalid-token-that-does-not-exist"), as: :json
 
