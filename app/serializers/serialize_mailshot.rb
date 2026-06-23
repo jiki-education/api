@@ -8,6 +8,7 @@ class SerializeMailshot
       id: mailshot.id,
       slug: mailshot.slug,
       subject: mailshot.subject,
+      preview_text: mailshot.preview_text,
       body_markdown: mailshot.body_markdown,
       email_communication_preferences_key: mailshot.email_communication_preferences_key,
       sent_to_audiences: mailshot.sent_to_audiences,

@@ -1,7 +1,7 @@
 require "test_helper"
 
 class MailshotMailerTest < ActionMailer::TestCase
-  test "renders subject, recipient, from address and body" do
+  test "renders subject, recipient, from and body" do
     user = create(:user)
     mailshot = create(:mailshot, subject: "Monthly news", body_markdown: "## Heading")
 
@@ -10,8 +10,18 @@ class MailshotMailerTest < ActionMailer::TestCase
     assert_equal "Monthly news", mail.subject
     assert_equal [user.email], mail.to
     assert_equal ["hello@hello.jiki.io"], mail.from
+    assert_equal "Jeremy Walker <hello@hello.jiki.io>", mail[:from].value
     assert_match "Heading", mail.html_part.body.to_s
     assert_match "Heading", mail.text_part.body.to_s
+  end
+
+  test "uses preview_text as the preheader" do
+    user = create(:user)
+    mailshot = create(:mailshot, subject: "Monthly news", preview_text: "Three new exercises inside")
+
+    html = MailshotMailer.send_mailshot(user, mailshot).html_part.body.to_s
+
+    assert_match "Three new exercises inside", html
   end
 
   test "sets one-click unsubscribe headers for the newsletters preference" do

@@ -5,6 +5,9 @@
 class MailshotMailer < ApplicationMailer
   self.email_category = :marketing
 
+  # Mailshots come from Jeremy personally rather than the default "Jiki" name.
+  FROM_NAME = "Jeremy Walker".freeze
+
   def send_mailshot(user, mailshot)
     @mailshot = mailshot
     @header_image = "newsletter.jpg"
@@ -12,6 +15,7 @@ class MailshotMailer < ApplicationMailer
     mail_to_user(
       user,
       unsubscribe_key: mailshot.unsubscribe_key,
+      from: "#{FROM_NAME} <#{Jiki.config.marketing_from_email}>",
       subject: mailshot.subject
     )
   end

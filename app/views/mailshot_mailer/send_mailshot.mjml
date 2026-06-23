@@ -1,5 +1,5 @@
 - content_for :title, @mailshot.subject
-- content_for :preview, @mailshot.subject
+- content_for :preview, @mailshot.preview_text
 
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
