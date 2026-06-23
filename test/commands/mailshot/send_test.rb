@@ -38,4 +38,14 @@ class Mailshot::SendTest < ActiveSupport::TestCase
       Mailshot::Send.(mailshot, "nonsense")
     end
   end
+
+  test "raises when the body is blank" do
+    mailshot = create(:mailshot, body_markdown: "")
+
+    Mailshot::SendToSegment.expects(:defer).never
+
+    assert_raises(Mailshot::BlankBodyError) do
+      Mailshot::Send.(mailshot, "all_users")
+    end
+  end
 end

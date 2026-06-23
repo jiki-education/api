@@ -46,9 +46,6 @@ class Admin::MailshotsController < Admin::BaseController
   end
 
   def send_to_segment
-    return render_422(:unknown_segment, segment: params[:segment]) unless Mailshot::SEGMENTS.key?(params[:segment])
-    return render_422(:mailshot_body_blank) unless @mailshot.ready_to_send?
-
     # A re-send of an already-sent segment is a no-op, so report 0 queued.
     already_sent = @mailshot.sent_to_audience?(params[:segment])
     Mailshot::Send.(@mailshot, params[:segment])
@@ -58,6 +55,10 @@ class Admin::MailshotsController < Admin::BaseController
       mailshot: SerializeMailshot.(@mailshot.reload),
       audience_count:
     }
+  rescue Mailshot::UnknownSegmentError
+    render_422(:unknown_segment, segment: params[:segment])
+  rescue Mailshot::BlankBodyError
+    render_422(:mailshot_body_blank)
   end
 
   private

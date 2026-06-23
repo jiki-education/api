@@ -3,6 +3,7 @@ class Mailshot < ApplicationRecord
   # namespaced constant can't be opened before Mailshot autoloads. It is
   # available app-wide wherever Mailshot is referenced.
   class UnknownSegmentError < RuntimeError; end
+  class BlankBodyError < RuntimeError; end
 
   has_many :user_mailshots, class_name: "User::Mailshot", dependent: :destroy
 

@@ -5,6 +5,7 @@ class Mailshot::Send
 
   def call
     raise Mailshot::UnknownSegmentError, segment_key unless Mailshot::SEGMENTS.key?(segment_key)
+    raise Mailshot::BlankBodyError unless mailshot.ready_to_send?
 
     # Sending the same segment twice is a no-op — the per-user unique index
     # would skip everyone anyway, but this avoids enqueuing pointless work.
