@@ -67,6 +67,7 @@ class ApplicationMailer < ActionMailer::Base
   # @return [Mail::Message, nil] The mail message, or nil if user shouldn't receive email
   def mail_to_user(user, unsubscribe_key: nil, **args, &block)
     return unless user.may_receive_emails?
+    return unless user.email_valid?
 
     if unsubscribe_key
       return unless user.public_send("receive_#{unsubscribe_key}?")

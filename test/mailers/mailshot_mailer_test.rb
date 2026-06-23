@@ -33,4 +33,14 @@ class MailshotMailerTest < ActionMailer::TestCase
 
     assert_nil mail.to
   end
+
+  test "does not send when the recipient's email has bounced" do
+    user = create(:user)
+    user.data.update!(email_bounced_at: Time.current)
+    mailshot = create(:mailshot)
+
+    mail = MailshotMailer.send_mailshot(user, mailshot)
+
+    assert_nil mail.to
+  end
 end
