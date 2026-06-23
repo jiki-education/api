@@ -71,6 +71,18 @@ class Admin::MailshotsControllerTest < ApplicationControllerTest
     assert_equal "", Mailshot.last.body_markdown
   end
 
+  test "POST create rejects a preference key outside the allowed list" do
+    post admin_mailshots_path,
+      params: { mailshot: { slug: "x", subject: "x", email_communication_preferences_key: "event_emails" } },
+      as: :json
+
+    assert_json_error(
+      :unprocessable_entity,
+      error_type: :validation_error,
+      errors: { email_communication_preferences_key: ["is not included in the list"] }
+    )
+  end
+
   test "POST create returns validation errors" do
     post admin_mailshots_path,
       params: { mailshot: { body_markdown: "Hi" } },

@@ -5,10 +5,16 @@ class Mailshot < ApplicationRecord
   class UnknownSegmentError < RuntimeError; end
   class BlankBodyError < RuntimeError; end
 
+  # Communication-preference keys a mailshot is allowed to use. Only newsletters
+  # for now; expand this list (and confirm a matching receive_* preference and
+  # NOTIFICATION_SLUGS entry exist) to support other kinds.
+  ALLOWED_PREFERENCE_KEYS = %w[newsletters].freeze
+
   has_many :user_mailshots, class_name: "User::Mailshot", dependent: :destroy
 
   validates :slug, presence: true, uniqueness: true
   validates :subject, presence: true
+  validates :email_communication_preferences_key, inclusion: { in: ALLOWED_PREFERENCE_KEYS }
   # body_markdown may be blank while drafting; presence is enforced at send time.
 
   # Named audience segments → lambdas returning a User relation.
