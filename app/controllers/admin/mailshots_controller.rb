@@ -55,9 +55,9 @@ class Admin::MailshotsController < Admin::BaseController
       mailshot: SerializeMailshot.(@mailshot.reload),
       audience_count:
     }
-  rescue Mailshot::UnknownSegmentError
+  rescue MailshotUnknownSegmentError
     render_422(:unknown_segment, segment: params[:segment])
-  rescue Mailshot::BlankBodyError
+  rescue MailshotBlankBodyError
     render_422(:mailshot_body_blank)
   end
 

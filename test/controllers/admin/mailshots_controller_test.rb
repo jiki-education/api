@@ -12,6 +12,9 @@ class Admin::MailshotsControllerTest < ApplicationControllerTest
   guard_admin! :admin_mailshot_path, args: [1], method: :get
   guard_admin! :admin_mailshot_path, args: [1], method: :patch
   guard_admin! :admin_mailshot_path, args: [1], method: :delete
+  guard_admin! :preview_admin_mailshot_path, args: [1], method: :post
+  guard_admin! :send_test_admin_mailshot_path, args: [1], method: :post
+  guard_admin! :send_admin_mailshot_path, args: [1], method: :post
 
   # INDEX
 

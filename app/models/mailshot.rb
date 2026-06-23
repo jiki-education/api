@@ -1,10 +1,4 @@
 class Mailshot < ApplicationRecord
-  # Defined here (rather than config/initializers/exceptions.rb) because the
-  # namespaced constant can't be opened before Mailshot autoloads. It is
-  # available app-wide wherever Mailshot is referenced.
-  class UnknownSegmentError < RuntimeError; end
-  class BlankBodyError < RuntimeError; end
-
   # Communication-preference keys a mailshot is allowed to use. Only newsletters
   # for now; expand this list (and confirm a matching receive_* preference and
   # NOTIFICATION_SLUGS entry exist) to support other kinds.

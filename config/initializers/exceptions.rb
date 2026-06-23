@@ -59,6 +59,10 @@ class AssistantConversationAccessDeniedError < RuntimeError; end
 # Stripe errors
 class StripeSubscriptionCancellationError < RuntimeError; end
 
+# Mailshot errors
+class MailshotUnknownSegmentError < RuntimeError; end
+class MailshotBlankBodyError < RuntimeError; end
+
 class StripeCheckoutSessionIncompleteError < RuntimeError
   attr_reader :decline_reason, :interval, :currency
 

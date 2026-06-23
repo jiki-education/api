@@ -34,7 +34,7 @@ class Mailshot::SendTest < ActiveSupport::TestCase
   test "raises for an unknown segment" do
     mailshot = create(:mailshot)
 
-    assert_raises(Mailshot::UnknownSegmentError) do
+    assert_raises(MailshotUnknownSegmentError) do
       Mailshot::Send.(mailshot, "nonsense")
     end
   end
@@ -44,7 +44,7 @@ class Mailshot::SendTest < ActiveSupport::TestCase
 
     Mailshot::SendToSegment.expects(:defer).never
 
-    assert_raises(Mailshot::BlankBodyError) do
+    assert_raises(MailshotBlankBodyError) do
       Mailshot::Send.(mailshot, "all_users")
     end
   end
