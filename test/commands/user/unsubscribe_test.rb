@@ -25,6 +25,27 @@ class User::UnsubscribeTest < ActiveSupport::TestCase
     assert_kind_of User, result
   end
 
+  test "with a valid key turns off just that preference and does not mark a complaint" do
+    user = create(:user)
+    token = user.data.unsubscribe_token
+
+    User::Unsubscribe.(token, key: "newsletters")
+
+    user.reload
+    refute user.data.receive_newsletters
+    assert user.data.receive_milestone_emails # other prefs untouched
+    assert_nil user.data.email_complaint_at
+  end
+
+  test "with a blank key falls back to a full unsubscribe" do
+    user = create(:user)
+    token = user.data.unsubscribe_token
+
+    User::Unsubscribe.(token, key: "")
+
+    assert user.reload.data.email_complaint_at.present?
+  end
+
   test "raises InvalidUnsubscribeTokenError for non-existent token" do
     error = assert_raises InvalidUnsubscribeTokenError do
       User::Unsubscribe.('invalid-token-that-does-not-exist')
