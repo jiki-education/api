@@ -5,14 +5,13 @@
 class MailshotMailer < ApplicationMailer
   self.email_category = :marketing
 
-  def send_mailshot(user, mailshot, force: false)
+  def send_mailshot(user, mailshot)
     @mailshot = mailshot
     @header_image = "newsletter.jpg"
 
     mail_to_user(
       user,
       unsubscribe_key: mailshot.unsubscribe_key,
-      force:,
       subject: mailshot.subject
     )
   end

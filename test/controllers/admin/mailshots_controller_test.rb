@@ -135,13 +135,11 @@ class Admin::MailshotsControllerTest < ApplicationControllerTest
 
   # TEST SEND
 
-  test "POST test sends to the current admin without recording a send" do
+  test "POST test sends to the current admin" do
     mailshot = create(:mailshot)
 
-    assert_no_difference "User::Mailshot.count" do
-      assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
-        post send_test_admin_mailshot_path(mailshot), as: :json
-      end
+    assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+      post send_test_admin_mailshot_path(mailshot), as: :json
     end
 
     assert_response :success

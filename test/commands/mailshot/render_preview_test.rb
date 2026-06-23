@@ -12,14 +12,4 @@ class Mailshot::RenderPreviewTest < ActiveSupport::TestCase
     assert_match(/<table/, html) # MJML compiled to HTML tables
     refute_match(/<mj-/, html)   # no raw MJML left
   end
-
-  test "renders even when the user has opted out" do
-    user = create(:user)
-    user.data.update!(receive_newsletters: false)
-    mailshot = create(:mailshot, body_markdown: "preview body")
-
-    html = Mailshot::RenderPreview.(mailshot, user)
-
-    assert_match "preview body", html
-  end
 end

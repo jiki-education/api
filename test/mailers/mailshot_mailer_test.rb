@@ -33,14 +33,4 @@ class MailshotMailerTest < ActionMailer::TestCase
 
     assert_nil mail.to
   end
-
-  test "force: true sends even when the user has opted out" do
-    user = create(:user)
-    user.data.update!(receive_newsletters: false)
-    mailshot = create(:mailshot)
-
-    mail = MailshotMailer.send_mailshot(user, mailshot, force: true)
-
-    assert_equal [user.email], mail.to
-  end
 end
