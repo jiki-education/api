@@ -1,0 +1,7 @@
+- content_for :title, @mailshot.subject
+- content_for :preview, @mailshot.subject
+
+%mj-section{ "background-color": "#ffffff" }
+  %mj-column
+    %mj-text
+      = markdown_to_html(@mailshot.body_markdown)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_22_120200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -211,6 +211,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
     t.index ["course_id"], name: "index_levels_on_course_id"
     t.index ["slug"], name: "index_levels_on_slug", unique: true
     t.index ["uuid"], name: "index_levels_on_uuid", unique: true
+  end
+
+  create_table "mailshots", force: :cascade do |t|
+    t.text "body_markdown", default: "", null: false
+    t.datetime "created_at", null: false
+    t.string "email_communication_preferences_key", default: "newsletters", null: false
+    t.jsonb "sent_to_audiences", default: [], null: false
+    t.string "slug", null: false
+    t.string "subject", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slug"], name: "index_mailshots_on_slug", unique: true
   end
 
   create_table "payments", force: :cascade do |t|
@@ -496,6 +507,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
     t.index ["user_id"], name: "index_user_levels_on_user_id"
   end
 
+  create_table "user_mailshots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "email_status", default: 0, null: false
+    t.bigint "mailshot_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["mailshot_id"], name: "index_user_mailshots_on_mailshot_id"
+    t.index ["user_id", "mailshot_id"], name: "index_user_mailshots_on_user_id_and_mailshot_id", unique: true
+    t.index ["user_id"], name: "index_user_mailshots_on_user_id"
+  end
+
   create_table "user_notifications", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "email_status", default: 0, null: false
@@ -593,6 +615,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_21_120000) do
   add_foreign_key "user_levels", "levels"
   add_foreign_key "user_levels", "user_lessons", column: "current_user_lesson_id"
   add_foreign_key "user_levels", "users"
+  add_foreign_key "user_mailshots", "mailshots"
+  add_foreign_key "user_mailshots", "users"
   add_foreign_key "user_notifications", "users"
   add_foreign_key "user_projects", "projects"
   add_foreign_key "user_projects", "users"

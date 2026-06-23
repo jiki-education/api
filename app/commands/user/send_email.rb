@@ -53,7 +53,9 @@ class User::SendEmail
   def guard_user_wants_email!
     conditions = [
       has_affirmative_communication_preference?,
-      user.may_receive_emails?
+      user.may_receive_emails?,
+      user.email_valid?,
+      user.confirmed?
     ]
 
     return true if conditions.all?

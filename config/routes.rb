@@ -190,6 +190,15 @@ Rails.application.routes.draw do
         end
       end
     end
+    resources :mailshots, only: %i[index show create update destroy] do
+      member do
+        post :preview
+        # Named send_test (not :test) so the URL helper isn't `test_*`, which
+        # Minitest would treat as a test method.
+        post "test", action: :send_test, as: :send_test
+        post "send", action: :send_to_segment
+      end
+    end
     resources :images, only: [:create]
     resource :seeds, only: [:create]
   end

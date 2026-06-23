@@ -26,6 +26,7 @@ class User < ApplicationRecord
   has_many :assistant_conversations, dependent: :destroy
   has_many :payments, dependent: :destroy
   has_many :premium_entitlements, class_name: "::PremiumEntitlement", dependent: :destroy
+  has_many :user_mailshots, class_name: "User::Mailshot", dependent: :destroy
 
   after_initialize do
     build_data if new_record? && !data
