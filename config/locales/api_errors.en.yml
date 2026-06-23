@@ -26,7 +26,6 @@ en:
     project_not_found: "Project not found"
     concept_not_found: "Concept not found"
     badge_not_found: "Badge not found"
-    email_template_not_found: "Email template not found"
     user_project_not_found: "User project not found"
     user_video_not_found: "User video not found"
     mailshot_not_found: "Mailshot not found"
