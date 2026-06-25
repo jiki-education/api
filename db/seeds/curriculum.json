@@ -701,8 +701,8 @@
       "lessons": [
         {
           "uuid": "4f2e8180-3de9-420b-8d93-4e5bb8c26c5c",
-          "slug": "and-or",
-          "title": "And / Or",
+          "slug": "logic-gates",
+          "title": "Logic Gates",
           "description": "Learn how to combine conditions together.",
           "type": "video",
           "data": {
@@ -747,6 +747,16 @@
                 "id": "Px02iBHwKLMDkhRrMiwgdcjM00fVo6JVY5MgfwT4kU0000k"
               }
             ]
+          }
+        },
+        {
+          "uuid": "37f853ca-4e91-4583-80f4-883dab39f506",
+          "slug": "annalyns-infiltration",
+          "title": "Annalyn's Infiltration",
+          "description": "Combine and, or, and not to decide which quest actions Annalyn can take.",
+          "type": "exercise",
+          "data": {
+            "slug": "annalyns-infiltration"
           }
         },
         {
