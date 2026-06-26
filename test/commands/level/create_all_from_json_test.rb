@@ -44,9 +44,9 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
 
     Level::CreateAllFromJson.(course, file_path)
 
-    # Verify counts haven't changed (17 levels, 120 lessons total)
+    # Verify counts haven't changed (17 levels, 121 lessons total)
     assert_equal 17, Level.count
-    assert_equal 120, Lesson.count
+    assert_equal 121, Lesson.count
 
     # Verify the same records were updated, not recreated
     assert_equal level_ids, Level.pluck(:id).sort

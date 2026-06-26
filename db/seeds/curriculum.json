@@ -715,6 +715,16 @@
           }
         },
         {
+          "uuid": "8bfec956-4c12-42b7-bd22-273edcb25256",
+          "slug": "rock-paper-scissors",
+          "title": "Rock, Paper, Scissors",
+          "description": "Determine the winner of a Rock Paper Scissors game.",
+          "type": "exercise",
+          "data": {
+            "slug": "rock-paper-scissors"
+          }
+        },
+        {
           "uuid": "9e5495b0-4d5b-472d-a75f-077cef677027",
           "slug": "bouncer-dress-code",
           "title": "Bouncer Dress Code",
@@ -750,6 +760,16 @@
           }
         },
         {
+          "uuid": "41c61b8e-082a-4177-93b3-d43f627d2734",
+          "slug": "stripey-fabric",
+          "title": "Stripey Fabric",
+          "description": "Weave a striped pattern by choosing each stripe's colour with modulo and logical-or.",
+          "type": "exercise",
+          "data": {
+            "slug": "stripey-fabric"
+          }
+        },
+        {
           "uuid": "37f853ca-4e91-4583-80f4-883dab39f506",
           "slug": "annalyns-infiltration",
           "title": "Annalyn's Infiltration",
@@ -757,16 +777,6 @@
           "type": "exercise",
           "data": {
             "slug": "annalyns-infiltration"
-          }
-        },
-        {
-          "uuid": "8bfec956-4c12-42b7-bd22-273edcb25256",
-          "slug": "rock-paper-scissors-determine-winner",
-          "title": "Rock Paper Scissors - Determine Winner",
-          "description": "Determine the winner of a Rock Paper Scissors game.",
-          "type": "exercise",
-          "data": {
-            "slug": "rock-paper-scissors-determine-winner"
           }
         },
         {
