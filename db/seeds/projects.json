@@ -24,6 +24,14 @@
     "unlocked_by_lesson_slug": "scroll-and-shoot"
   },
   {
+    "uuid": "c55117cc-be52-45d5-b05d-750bfe9a5ba6",
+    "slug": "checkerboard",
+    "title": "Checkerboard",
+    "description": "Draw a checkerboard and lay out the pieces ready to play.",
+    "exercise_slug": "checkerboard",
+    "unlocked_by_lesson_slug": "build-wall"
+  },
+  {
     "uuid": "9ac002cb-2df6-4366-91e5-b07eb0ba75b4",
     "slug": "caesar-cipher",
     "title": "Caesar Cipher",

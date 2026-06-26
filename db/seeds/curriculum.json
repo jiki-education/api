@@ -701,8 +701,8 @@
       "lessons": [
         {
           "uuid": "4f2e8180-3de9-420b-8d93-4e5bb8c26c5c",
-          "slug": "and-or",
-          "title": "And / Or",
+          "slug": "logic-gates",
+          "title": "Logic Gates",
           "description": "Learn how to combine conditions together.",
           "type": "video",
           "data": {
@@ -712,6 +712,16 @@
                 "id": "yjZUdaMolP7AvvLBWuyilzEDPwf5UcJVour0122tTWoM"
               }
             ]
+          }
+        },
+        {
+          "uuid": "8bfec956-4c12-42b7-bd22-273edcb25256",
+          "slug": "rock-paper-scissors",
+          "title": "Rock, Paper, Scissors",
+          "description": "Determine the winner of a Rock Paper Scissors game.",
+          "type": "exercise",
+          "data": {
+            "slug": "rock-paper-scissors"
           }
         },
         {
@@ -750,13 +760,23 @@
           }
         },
         {
-          "uuid": "8bfec956-4c12-42b7-bd22-273edcb25256",
-          "slug": "rock-paper-scissors-determine-winner",
-          "title": "Rock Paper Scissors - Determine Winner",
-          "description": "Determine the winner of a Rock Paper Scissors game.",
+          "uuid": "41c61b8e-082a-4177-93b3-d43f627d2734",
+          "slug": "stripey-fabric",
+          "title": "Stripey Fabric",
+          "description": "Weave a striped pattern by choosing each stripe's colour with modulo and logical-or.",
           "type": "exercise",
           "data": {
-            "slug": "rock-paper-scissors-determine-winner"
+            "slug": "stripey-fabric"
+          }
+        },
+        {
+          "uuid": "37f853ca-4e91-4583-80f4-883dab39f506",
+          "slug": "annalyns-infiltration",
+          "title": "Annalyn's Infiltration",
+          "description": "Combine and, or, and not to decide which quest actions Annalyn can take.",
+          "type": "exercise",
+          "data": {
+            "slug": "annalyns-infiltration"
           }
         },
         {

@@ -193,14 +193,14 @@
     "slug": "logical-and",
     "title": "Logical And",
     "description": "Combine conditions that must all be true.",
-    "unlocked_by_lesson_slug": "and-or"
+    "unlocked_by_lesson_slug": "logic-gates"
   },
   {
     "uuid": "65386b70-945f-42a2-9250-72f8390b5bdb",
     "slug": "logical-or",
     "title": "Logical Or",
     "description": "Combine conditions where at least one must be true.",
-    "unlocked_by_lesson_slug": "and-or"
+    "unlocked_by_lesson_slug": "logic-gates"
   },
   {
     "uuid": "e3f673d6-7588-4022-96c9-cee018d26ae9",
