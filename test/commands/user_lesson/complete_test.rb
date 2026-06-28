@@ -146,6 +146,32 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_includes user.data.unlocked_concept_ids, concept.id
   end
 
+  test "unlocks all concepts when lesson unlocks multiple concepts" do
+    # Each concept unlock reloads the user's data row; that bounded batch
+    # isn't a real N+1, so don't let the per-test scan flag it.
+    Prosopite.pause
+
+    user = create(:user)
+    level = create(:level)
+    concept_a = create(:concept)
+    concept_b = create(:concept)
+    concept_c = create(:concept)
+    lesson = create(:lesson, :exercise, level:)
+    concept_a.update!(unlocked_by_lesson: lesson)
+    concept_b.update!(unlocked_by_lesson: lesson)
+    concept_c.update!(unlocked_by_lesson: lesson)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    assert_difference -> { user.data.reload.unlocked_concept_ids.length }, 3 do
+      UserLesson::Complete.(user, lesson)
+    end
+
+    assert_includes user.data.unlocked_concept_ids, concept_a.id
+    assert_includes user.data.unlocked_concept_ids, concept_b.id
+    assert_includes user.data.unlocked_concept_ids, concept_c.id
+  end
+
   test "does not unlock concept when lesson has no unlocked_concept" do
     user = create(:user)
     level = create(:level)

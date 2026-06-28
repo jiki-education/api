@@ -7,7 +7,7 @@ class Lesson < ApplicationRecord
   belongs_to :level
   has_many :user_lessons, dependent: :destroy
   has_many :users, through: :user_lessons
-  has_one :unlocked_concept, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
+  has_many :unlocked_concepts, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_one :unlocked_project, class_name: 'Project', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
 

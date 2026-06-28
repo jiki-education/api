@@ -32,8 +32,8 @@ class UserLesson::Complete
   end
 
   def handle_side_effects!
-    # Unlock concept if this lesson unlocks one
-    Concept::UnlockForUser.(lesson.unlocked_concept, user) if lesson.unlocked_concept
+    # Unlock any concepts this lesson unlocks
+    lesson.unlocked_concepts.each { |concept| Concept::UnlockForUser.(concept, user) }
 
     # Emit unlock event if this lesson unlocks a project. The project becomes
     # unlocked by virtue of this lesson being completed - no UserProject row is
