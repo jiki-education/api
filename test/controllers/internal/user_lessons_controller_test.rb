@@ -185,7 +185,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     concept = create(:concept, slug: "variables", title: "Variables")
     project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
     level = create(:level)
-    lesson = create(:lesson, :exercise, level:, unlocked_concept: concept, unlocked_project: project)
+    lesson = create(:lesson, :exercise, level:, unlocked_concepts: [concept], unlocked_project: project)
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson:)
 
