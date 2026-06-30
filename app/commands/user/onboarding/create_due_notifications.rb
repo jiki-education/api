@@ -6,12 +6,11 @@ class User::Onboarding::CreateDueNotifications
   # Day after signup → notification kind.
   # Anchored on User#created_at, gated on confirmed_at being present at send time.
   EMAILS = {
-    0 => :onboarding_overview,
-    1 => :onboarding_coding,
-    2 => :onboarding_building,
-    4 => :onboarding_backstory,
-    6 => :onboarding_premium,
-    8 => :onboarding_community
+    1 => :onboarding_overview,
+    2 => :onboarding_coding,
+    3 => :onboarding_building,
+    4 => :onboarding_premium,
+    5 => :onboarding_community
   }.freeze
 
   # Safety window — if the cron job doesn't run for a while, we don't miss

@@ -1,48 +1,73 @@
 en:
   onboarding_mailer:
     overview:
-      subject: "Welcome to Jiki — here's the lay of the land"
-      preview: "A quick tour of what's coming over the next week."
-      greeting: "Hi %{name},"
+      subject: "The Two Halves of Becoming a Developer in %{year}"
+      preview: "For the last few years I've been slowly learning Japanese."
+      greeting: "Hi there,"
       body_markdown: |
-        Welcome to Jiki! Over the next week or so I'll send you a few short emails introducing you to different parts of the platform.
+        For the last few years I've been slowly learning Japanese. I visit Japan regularly and try and immerse myself in the language, but it's hard, because now-a-days with the help of Google Translate, it's pretty easy to spend time in Japan and not speak a word of Japanese.
 
-        Jiki is built to take you from absolute beginner to a confident, capable coder. We do that through small steps, real projects, and a learning style that meets you where you are.
+        Coding has recently started to take that same journey. For the last 30 years, if you wanted to do anything with tech, you had to learn to code. It was the only way for you to communicate with a computer.
+        But over the last two years, with LLMs, that's changed. You can now use your native language and tell the LLM what you want it to do, and it'll write the code for you - translating your instructions to the computer.
 
-        Tomorrow I'll show you how the coding side of Jiki actually works. For now, [open Jiki](https://jiki.io) and try your first exercise.
+        Just like I don't have to wait to be fluent in Japanese before I can explore Japan, it no longer makes any sense to spend years getting good at coding before you start building things.
 
-        Cheers,
+        But if I want to really get into Japanese culture and make Japanese friends, I need to learn Japanese. And, if you want to get into tech, you still need to learn to code. Code is no longer the gatekeeper, but it's the differnce between "getting by" and actually thriving.
+      
+        So if you want to get into tech today, split your learning time in two:
+        1. **Learn to code.** Work through Jiki's Coding Fundamentals and you'll have great foundations.
+        2. **Make stuff.** Work through "Build with Jeremy", getting into the weeds creating products that people can actually use!
+
+        If you want to learn more, read [this blog post](...).
+
+        Over the next few days, I'll tell you a little more about both of those threads and how you can make the most of [Jiki](https://jiki.io). Until then, get stuck in and have fun!
+
+        Thanks for reading!
         Jeremy
     coding:
-      subject: "How coding works on Jiki"
-      preview: "The interactive scratchpad and how to get the most out of it."
-      greeting: "Hi %{name},"
+      subject: "Build Rock Solid Coding Fundamentals"
+      preview: "Learning to code has a reputation for being technical and hard."
+      greeting: "Hi there,"
       body_markdown: |
-        Most platforms teach coding through reading and recall. Jiki teaches it through doing — every exercise runs your code in an interactive environment with instant feedback.
+        Learning to code has a reputation for being technical and hard.
+        When I started to learn to code, I was an 8 yr old kid who nothing about programming other than I could suddenly make cool stuff. I didn't know it was suposed to be hard. I just knew I suddenly had a new outlet for my creativity.
 
-        When you get stuck, the scratchpad lets you experiment freely. There's no penalty for trying things — that's how real engineers work.
+        As you learn to code, I don't want you to see it as some technical discipline to master, I want you to see it as somewhere you can unleash **your** creativity - where you can have fun making things and solving puzzles. Becuase that's what coding really is - problem solving.
 
-        Give the next lesson a go: [continue learning](https://jiki.io).
+        It doesn't matter [what language you learn](...), what matters is that you build a really good undersatnding of how coding works.
 
-        Cheers,
+        As you progress, there will be times where coding does feel hard and frustrating. But this isn't because **coding** is hard, it's because **learning** is hard.
+       If you want to get good at anything, you have to go through phases where the challenge feels too much, but you have to perceviere. 
+        
+        If you're not sure if the coding part is worth the effort, take a read of [this blog post](...) that explains why you should still learn to code in %{year}.
+
+        I'll email you again tomorrow to talk a bit more about the Building side of [Jiki](...).
+
+        Thanks for reading!
         Jeremy
     building:
-      subject: "Building real things on Jiki"
-      preview: "Why projects matter and what you'll build."
-      greeting: "Hi %{name},"
+      subject: "The Best Way to Learn is to Make Stuff!"
+      preview: "I really believe that now is the best possible time to get into tech. "
+      greeting: "Hi there,"
       body_markdown: |
-        Lessons teach concepts; projects make them stick. Every course on Jiki has projects woven through it — small, complete things you can be proud of.
+        I really believe that now is the best possible time to get into tech. There's never been an easier time to learn the fundamentals and to quickly be able to make things.
 
-        The first project arrives in your second level. By the end of the course, you'll have shipped half a dozen of them.
+        But (and this is a big but!) where a lot of people are going wrong is that they're handing over the reins entirely to an LLM and not actually learning. And that feels great for a little bit - you can magically make all this stuff appear - but if all you're doing is telling Claude or ChatGPT what to do, you're not actually learning anything!
 
-        Keep going — [next lesson](https://jiki.io).
+        So I'm putting together step-by-step projects that you can work with, and where I WANT you to use LLMs to do a lot of the work for you, BUT where I want you to make sure you actually understand what's happening at each stage.
 
-        Cheers,
+        The point of these projects is to be able to **learn** all the different parts of building software. You can join me as I build things, and I'll explain exactly what I'm doing and why, then you can work with an LLM to apply those same ideas to your projects.
+
+        Just don't get addicted to the dopamine hits of the LLM doing your work for you. Make sure you take the time to understand what's going on!
+
+        Hopefully I'll see you [on a livestream](https://youtube.com/@jiki-coding) soon!
+
+        Thanks for reading!
         Jeremy
     backstory:
       subject: "Why we built Jiki"
-      preview: "A quick story about where Jiki came from."
-      greeting: "Hi %{name},"
+      preview: ""
+      greeting: "Hi there,"
       body_markdown: |
         I'm Jeremy. For over a decade I've run [Exercism](https://exercism.org), a free platform that's helped millions of people deepen their coding skills.
 
@@ -53,26 +78,37 @@ en:
         Cheers,
         Jeremy
     premium:
-      subject: "Get more out of Jiki with Premium"
-      preview: "What Premium unlocks, and why it exists."
-      greeting: "Hi %{name},"
+      subject: "Get more out of Jiki (and help us out)"
+      preview: "We made Jiki free because we want it to be accessible to everyone regardless"
+      greeting: "Hi there,"
       body_markdown: |
-        Jiki's free tier gets you a long way. Premium goes further: every course unlocked, AI-powered help when you're stuck, and direct support from us.
+        We made Jiki free because we want it to be accessible to everyone regardless of their financial situation. You get hundreds of hours of videos and exercises, all availble with nothing asked in return.
 
-        Premium also keeps Jiki sustainable. We're a small team building this carefully — your subscription is what makes that possible.
+        But Jiki costs money to run, and we need to be able to pay our rents and food, so we've added a Premium tier that adds some extra benefits that I think will really help you:
+        - Ask Jiki to help you get unstuck
+        - Projects where you can put your skills together
+        - Tons more extra "Build With Jeremy" content where you can learn alongside me.
+        - Badges on the site and in community spaces
 
-        [Have a look at Premium](https://jiki.io/premium) — no pressure, just an option when you're ready.
+        We've made it super-affordable using Pariy Purchasing Pricing so that it should feel like a reasonable price wherever you are in the world.
 
-        Cheers,
+        If you're enjoying Jiki, want to accelerate your learning, and want to support me and the Jiki team, then please [upgrade to Premium](https://jiki.io/premium).
+
+        Thank you,
         Jeremy
     community:
-      subject: "Come say hi"
-      preview: "The Jiki community — where to find us."
-      greeting: "Hi %{name},"
+      subject: "Don't Struggle Alone - Join Jiki's Community"
+      preview: "You're a lot more likely to suceed learning anything if you're part of a group."
+      greeting: "Hi there,"
       body_markdown: |
-        Learning to code alone is hard. Learning alongside others — even just being able to ask "is this normal?" — makes a huge difference.
+        You're a lot more likely to suceed learning anything if you're part of a group. Coding is no different.
 
-        Come and say hi on [our Discord](https://jiki.io/discord). Introduce yourself, share what you're working on, ask anything. We're a friendly bunch.
+        If you'd like to get help, chat about your coding journey, or just hang out with others, there are some places to do it:
+        - [Our forum](https://jiki.io/r/forum) - the place to go for slower, long-form conversation
+        - [Exercism's Discord](https://jiki.io/r/discord) - the place to go for real time chat with others that are online. Look for the #jiki-chat and #jiki-get-help channels.
+        - [YouTube](https://jiki.io/r/youtube) - join our AMAs (Ask Me Anything) and other live streams to ask me your questions!
 
-        Cheers,
+        Remember that there are people from lots of different cultures in these spaces, so please be respectful to everyone as you chat.
+
+        See you there!
         Jeremy
