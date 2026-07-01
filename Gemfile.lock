@@ -143,6 +143,9 @@ GEM
     brakeman (8.0.5)
       racc
     builder (3.3.0)
+    bundler-audit (0.9.3)
+      bundler (>= 1.2.0)
+      thor (~> 1.0)
     childprocess (5.1.0)
       logger (~> 1.5)
     commonmarker (2.8.2-aarch64-linux)
@@ -152,12 +155,12 @@ GEM
     commonmarker (2.8.2-x86_64-darwin)
     commonmarker (2.8.2-x86_64-linux)
     commonmarker (2.8.2-x86_64-linux-musl)
-    concurrent-ruby (1.3.6)
+    concurrent-ruby (1.3.7)
     connection_pool (3.0.2)
     crack (1.0.1)
       bigdecimal
       rexml
-    crass (1.0.6)
+    crass (1.0.7)
     csv (3.3.5)
     date (3.5.1)
     debug (1.11.1)
@@ -186,7 +189,7 @@ GEM
       railties (>= 6.1.0)
     faker (3.8.0)
       i18n (>= 1.8.11, < 2)
-    faraday (2.14.2)
+    faraday (2.14.3)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -194,7 +197,7 @@ GEM
       faraday (>= 1, < 3)
     faraday-multipart (1.2.0)
       multipart-post (~> 2.0)
-    faraday-net_http (3.4.3)
+    faraday-net_http (3.4.4)
       net-http (~> 0.5)
     friendly_id (5.7.0)
       activerecord (>= 4.0.0)
@@ -248,7 +251,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     jmespath (1.6.2)
-    json (2.19.8)
+    json (2.20.0)
     jwt (3.2.0)
       base64
     kaminari (1.2.2)
@@ -302,13 +305,13 @@ GEM
     mrml (1.10.0-x86_64-darwin)
     mrml (1.10.0-x86_64-linux)
     mrml (1.10.0-x86_64-linux-musl)
-    msgpack (1.8.1)
+    msgpack (1.8.3)
     multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.6.4)
+    net-imap (0.6.4.1)
       date
       net-protocol
     net-pop (0.1.2)
@@ -318,21 +321,21 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
-    nokogiri (1.19.3-aarch64-linux-gnu)
+    nokogiri (1.19.4-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.3-aarch64-linux-musl)
+    nokogiri (1.19.4-aarch64-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.3-arm-linux-gnu)
+    nokogiri (1.19.4-arm-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.3-arm-linux-musl)
+    nokogiri (1.19.4-arm-linux-musl)
       racc (~> 1.4)
-    nokogiri (1.19.3-arm64-darwin)
+    nokogiri (1.19.4-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.3-x86_64-darwin)
+    nokogiri (1.19.4-x86_64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.3-x86_64-linux-gnu)
+    nokogiri (1.19.4-x86_64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.3-x86_64-linux-musl)
+    nokogiri (1.19.4-x86_64-linux-musl)
       racc (~> 1.4)
     openssl (4.0.2)
     orm_adapter (0.5.0)
@@ -533,6 +536,7 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   bootsnap
   brakeman
+  bundler-audit
   commonmarker
   debug
   devise (~> 5.0)
