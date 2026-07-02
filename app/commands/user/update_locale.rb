@@ -5,7 +5,7 @@ class User
     initialize_with :user, :new_locale
 
     def call
-      user.data.update!(explicit_locale: new_locale)
+      user.update!(locale: new_locale)
     end
   end
 end
