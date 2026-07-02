@@ -73,7 +73,6 @@ class ApplicationController < ActionController::API
   # be derived from them until/unless they make an explicit choice.
   def set_user_locales
     return unless user_signed_in?
-    return if current_user.data.locales.present?
 
     User::UpdateLocales.(current_user, request.headers["Accept-Language"])
   end

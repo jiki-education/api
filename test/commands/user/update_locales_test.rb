@@ -18,4 +18,24 @@ class User::UpdateLocalesTest < ActiveSupport::TestCase
 
     assert_empty user.data.reload.locales
   end
+
+  test "does not overwrite existing locales" do
+    user = create(:user)
+    user.data.update_column(:locales, %w[hu])
+    User::ParseAcceptLanguage.expects(:call).never
+
+    User::UpdateLocales.(user, "en")
+
+    assert_equal %w[hu], user.data.reload.locales
+  end
+
+  test "overwrites existing locales with force: true" do
+    user = create(:user)
+    user.data.update_column(:locales, %w[hu])
+    User::ParseAcceptLanguage.expects(:call).with("en").returns(%w[en])
+
+    User::UpdateLocales.(user, "en", force: true)
+
+    assert_equal %w[en], user.data.reload.locales
+  end
 end
