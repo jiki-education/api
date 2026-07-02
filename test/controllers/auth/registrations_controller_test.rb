@@ -125,6 +125,86 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert_equal "JP", User.find_by(email: "jp2@example.com").data.country_code
   end
 
+  test "POST signup forwards Accept-Language header to User::Bootstrap" do
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "email",
+      has_entries(accept_language: "hu, en;q=0.8")
+    )
+
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "hu@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "HU User",
+          handle: "huuser"
+        }
+      ),
+      headers: { "Accept-Language" => "hu, en;q=0.8" },
+      as: :json
+
+    assert_response :created
+  end
+
+  test "POST signup persists locales from Accept-Language header" do
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "hu2@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "HU User",
+          handle: "huuser2"
+        }
+      ),
+      headers: { "Accept-Language" => "hu, en;q=0.8" },
+      as: :json
+
+    assert_response :created
+
+    user = User.find_by(email: "hu2@example.com")
+    assert_equal %w[hu en], user.data.locales
+    assert_nil user.data.explicit_locale
+  end
+
+  test "POST signup sets explicit_locale from locale param" do
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "hu3@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "HU User",
+          handle: "huuser3",
+          locale: "hu"
+        }
+      ),
+      as: :json
+
+    assert_response :created
+    assert_equal "hu", User.find_by(email: "hu3@example.com").data.explicit_locale
+  end
+
+  test "POST signup ignores an unsupported locale param" do
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "de@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "DE User",
+          handle: "deuser",
+          locale: "de"
+        }
+      ),
+      as: :json
+
+    assert_response :created
+    assert_nil User.find_by(email: "de@example.com").data.explicit_locale
+  end
+
   test "POST signup does not call User::Bootstrap on failed registration" do
     assert_no_enqueued_jobs do
       post user_registration_path, params: with_turnstile(

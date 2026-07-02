@@ -227,4 +227,13 @@ class User::BootstrapTest < ActiveSupport::TestCase
 
     assert_nil user.data.reload.country_code
   end
+
+  test "calls User::UpdateLocales with accept_language" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::UpdateLocales.expects(:call).with(user, "hu, en-GB;q=0.9, en;q=0.8")
+
+    User::Bootstrap.(user, "email", accept_language: "hu, en-GB;q=0.9, en;q=0.8")
+  end
 end
