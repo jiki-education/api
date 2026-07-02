@@ -5,20 +5,20 @@ en:
       preview: "For the last few years I've been slowly learning Japanese."
       greeting: "Hi there,"
       body_markdown: |
-        For the last few years I've been slowly learning Japanese. I visit Japan regularly and try and immerse myself in the language, but it's hard, because now-a-days with the help of Google Translate, it's pretty easy to spend time in Japan and not speak a word of Japanese.
+        For the last few years I've been slowly learning Japanese. I visit Japan regularly and try and immerse myself in the language, but it's hard, because nowadays, with the help of Google Translate, it's pretty easy to spend time in Japan and not speak a word of Japanese.
 
         Coding has recently started to take that same journey. For the last 30 years, if you wanted to do anything with tech, you had to learn to code. It was the only way for you to communicate with a computer.
         But over the last two years, with LLMs, that's changed. You can now use your native language and tell the LLM what you want it to do, and it'll write the code for you - translating your instructions to the computer.
 
         Just like I don't have to wait to be fluent in Japanese before I can explore Japan, it no longer makes any sense to spend years getting good at coding before you start building things.
 
-        But if I want to really get into Japanese culture and make Japanese friends, I need to learn Japanese. And, if you want to get into tech, you still need to learn to code. Code is no longer the gatekeeper, but it's the differnce between "getting by" and actually thriving.
-      
+        But if I want to really get into Japanese culture and make Japanese friends, I need to learn Japanese. And, if you want to get into tech, you still need to learn to code. Code is no longer the gatekeeper, but it's the difference between "getting by" and actually thriving.
+
         So if you want to get into tech today, split your learning time in two:
         1. **Learn to code.** Work through Jiki's Coding Fundamentals and you'll have great foundations.
         2. **Make stuff.** Work through "Build with Jeremy", getting into the weeds creating products that people can actually use!
 
-        If you want to learn more, read [this blog post](...).
+        If you want to learn more, read [this blog post](https://jiki.io/blog/how-to-get-into-tech-in-2026).
 
         Over the next few days, I'll tell you a little more about both of those threads and how you can make the most of [Jiki](https://jiki.io). Until then, get stuck in and have fun!
 
@@ -30,24 +30,24 @@ en:
       greeting: "Hi there,"
       body_markdown: |
         Learning to code has a reputation for being technical and hard.
-        When I started to learn to code, I was an 8 yr old kid who nothing about programming other than I could suddenly make cool stuff. I didn't know it was suposed to be hard. I just knew I suddenly had a new outlet for my creativity.
+        When I started to learn to code, I was an 8-year-old kid who knew nothing about programming other than that I could suddenly make cool stuff. I didn't know it was supposed to be hard. I just knew I suddenly had a new outlet for my creativity.
 
-        As you learn to code, I don't want you to see it as some technical discipline to master, I want you to see it as somewhere you can unleash **your** creativity - where you can have fun making things and solving puzzles. Becuase that's what coding really is - problem solving.
+        As you learn to code, I don't want you to see it as some technical discipline to master, I want you to see it as somewhere you can unleash **your** creativity - where you can have fun making things and solving puzzles. Because that's what coding really is - problem solving.
 
-        It doesn't matter [what language you learn](...), what matters is that you build a really good undersatnding of how coding works.
+        It doesn't matter [what language you learn](https://jiki.io/blog/just-learn-to-code), what matters is that you build a really good understanding of how coding works.
 
         As you progress, there will be times where coding does feel hard and frustrating. But this isn't because **coding** is hard, it's because **learning** is hard.
-       If you want to get good at anything, you have to go through phases where the challenge feels too much, but you have to perceviere. 
-        
-        If you're not sure if the coding part is worth the effort, take a read of [this blog post](...) that explains why you should still learn to code in %{year}.
+        If you want to get good at anything, you have to go through phases where the challenge feels too much, but you have to persevere.
 
-        I'll email you again tomorrow to talk a bit more about the Building side of [Jiki](...).
+        If you're not sure if the coding part is worth the effort, take a read of [this blog post](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) that explains why you should still learn to code in %{year}.
+
+        I'll email you again tomorrow to talk a bit more about the Building side of [Jiki](https://jiki.io).
 
         Thanks for reading!
         Jeremy
     building:
       subject: "The Best Way to Learn is to Make Stuff!"
-      preview: "I really believe that now is the best possible time to get into tech. "
+      preview: "I really believe that now is the best possible time to get into tech."
       greeting: "Hi there,"
       body_markdown: |
         I really believe that now is the best possible time to get into tech. There's never been an easier time to learn the fundamentals and to quickly be able to make things.
@@ -64,25 +64,12 @@ en:
 
         Thanks for reading!
         Jeremy
-    backstory:
-      subject: "Why we built Jiki"
-      preview: ""
-      greeting: "Hi there,"
-      body_markdown: |
-        I'm Jeremy. For over a decade I've run [Exercism](https://exercism.org), a free platform that's helped millions of people deepen their coding skills.
-
-        Exercism works brilliantly for people who already know the basics. But beginners — the people who'd never written a line of code — kept telling us they needed something gentler, more structured, more guided.
-
-        That's Jiki. Same team, same philosophy, designed specifically for your first steps.
-
-        Cheers,
-        Jeremy
     premium:
       subject: "Get more out of Jiki (and help us out)"
       preview: "We made Jiki free because we want it to be accessible to everyone regardless"
       greeting: "Hi there,"
       body_markdown: |
-        We made Jiki free because we want it to be accessible to everyone regardless of their financial situation. You get hundreds of hours of videos and exercises, all availble with nothing asked in return.
+        We made Jiki free because we want it to be accessible to everyone regardless of their financial situation. You get hundreds of hours of videos and exercises, all available with nothing asked in return.
 
         But Jiki costs money to run, and we need to be able to pay our rents and food, so we've added a Premium tier that adds some extra benefits that I think will really help you:
         - Ask Jiki to help you get unstuck
@@ -90,7 +77,7 @@ en:
         - Tons more extra "Build With Jeremy" content where you can learn alongside me.
         - Badges on the site and in community spaces
 
-        We've made it super-affordable using Pariy Purchasing Pricing so that it should feel like a reasonable price wherever you are in the world.
+        We've made it super-affordable using Parity Purchasing Pricing so that it should feel like a reasonable price wherever you are in the world.
 
         If you're enjoying Jiki, want to accelerate your learning, and want to support me and the Jiki team, then please [upgrade to Premium](https://jiki.io/premium).
 
@@ -98,10 +85,10 @@ en:
         Jeremy
     community:
       subject: "Don't Struggle Alone - Join Jiki's Community"
-      preview: "You're a lot more likely to suceed learning anything if you're part of a group."
+      preview: "You're a lot more likely to succeed learning anything if you're part of a group."
       greeting: "Hi there,"
       body_markdown: |
-        You're a lot more likely to suceed learning anything if you're part of a group. Coding is no different.
+        You're a lot more likely to succeed learning anything if you're part of a group. Coding is no different.
 
         If you'd like to get help, chat about your coding journey, or just hang out with others, there are some places to do it:
         - [Our forum](https://jiki.io/r/forum) - the place to go for slower, long-form conversation

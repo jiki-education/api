@@ -5,4 +5,4 @@
   %mj-column
     %mj-text
       = t('.greeting', name: @user.name)
-      = markdown_to_html(t('.body_markdown'))
+      = markdown_to_html(t('.body_markdown', year: @year))
