@@ -5,7 +5,6 @@ FactoryBot.define do
     password_confirmation { password }
     name { Faker::Name.name }
     handle { Faker::Internet.unique.username(specifier: 5..15, separators: %w[_]) }
-    locale { "en" }
     confirmed_at { Time.current }
 
     trait :hungarian do

@@ -7,6 +7,7 @@ class User::UpdateLocaleTest < ActiveSupport::TestCase
     User::UpdateLocale.(user, "hu")
 
     assert_equal "hu", user.reload.locale
+    assert_equal "hu", user.data.explicit_locale
   end
 
   test "raises on invalid locale" do

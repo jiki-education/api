@@ -1,10 +1,11 @@
 class User::Bootstrap
   include Mandate
 
-  initialize_with :user, :provider, attribution: nil, country_code: nil
+  initialize_with :user, :provider, attribution: nil, country_code: nil, accept_language: nil
 
   def call
     set_country_code!
+    set_locales!
     send_welcome_email!
     enroll_in_course!
     award_member_badge!
@@ -19,6 +20,13 @@ class User::Bootstrap
     return if code.blank? || code == "XX"
 
     user.data.update_column(:country_code, code)
+  end
+
+  def set_locales!
+    locales = User::ParseAcceptLanguage.(accept_language)
+    return if locales.empty?
+
+    user.data.update_column(:locales, locales)
   end
 
   # Email-signup users are unconfirmed at this point — they'll get the welcome

@@ -7,7 +7,8 @@ module Auth
       if user.previously_new_record?
         User::Bootstrap.(user, "exercism",
           attribution: signup_attribution_params,
-          country_code: request.headers["CF-IPCountry"])
+          country_code: request.headers["CF-IPCountry"],
+          accept_language: request.headers["Accept-Language"])
       end
 
       User::Exercism::ReconcileEntitlements.(

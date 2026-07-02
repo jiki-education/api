@@ -227,4 +227,31 @@ class User::BootstrapTest < ActiveSupport::TestCase
 
     assert_nil user.data.reload.country_code
   end
+
+  test "sets locales from accept_language" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email", accept_language: "hu, en-GB;q=0.9, en;q=0.8")
+
+    assert_equal %w[hu en-GB en], user.data.reload.locales
+  end
+
+  test "does not set locales when accept_language is nil" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email")
+
+    assert_empty user.data.reload.locales
+  end
+
+  test "does not set locales when accept_language is unparseable" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "email", accept_language: "!!!")
+
+    assert_empty user.data.reload.locales
+  end
 end

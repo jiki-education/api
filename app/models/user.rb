@@ -33,11 +33,19 @@ class User < ApplicationRecord
     build_activity_data if new_record? && !activity_data
   end
 
-  validates :locale, presence: true, inclusion: { in: %w[en hu] }
   validates :handle, presence: true, uniqueness: true
 
   # OAuth users have random passwords, so skip password validation for them
   validates :password, presence: true, if: -> { new_record? && encrypted_password.blank? && !uses_oauth? }
+
+  # Locale is derived on User::Data (see there). Defined here rather than left
+  # to the data delegation below so it can be assigned during User.new, which
+  # runs before after_initialize has built the data record.
+  def locale = (data || build_data).locale
+
+  def locale=(value)
+    (data || build_data).locale = value
+  end
 
   def uses_oauth? = exercism_id.present? || google_id.present?
 
