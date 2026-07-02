@@ -1,8 +1,9 @@
 require "test_helper"
 
 class User::Onboarding::CreateDueNotificationsTest < ActiveSupport::TestCase
-  test "creates the day-0 notification for users created just now" do
+  test "creates the day-1 overview notification for users created ~1 day ago" do
     user = create(:user)
+    user.update_column(:created_at, 1.day.ago - 1.hour)
 
     User::Onboarding::CreateDueNotifications.()
 
@@ -10,9 +11,9 @@ class User::Onboarding::CreateDueNotificationsTest < ActiveSupport::TestCase
     assert_kind_of User::Notifications::OnboardingOverviewNotification, user.notifications.first
   end
 
-  test "creates the day-1 notification for users created ~1 day ago" do
+  test "creates the day-2 coding notification for users created ~2 days ago" do
     user = create(:user)
-    user.update_column(:created_at, 1.day.ago - 1.hour)
+    user.update_column(:created_at, 2.days.ago - 1.hour)
 
     User::Onboarding::CreateDueNotifications.()
 
@@ -41,7 +42,7 @@ class User::Onboarding::CreateDueNotificationsTest < ActiveSupport::TestCase
   test "skips the premium onboarding email for premium users" do
     user = create(:user)
     make_premium(user)
-    user.update_column(:created_at, 6.days.ago - 1.hour)
+    user.update_column(:created_at, 4.days.ago - 1.hour)
 
     User::Onboarding::CreateDueNotifications.()
 
@@ -51,7 +52,7 @@ class User::Onboarding::CreateDueNotificationsTest < ActiveSupport::TestCase
 
   test "sends the premium onboarding email for standard users" do
     user = create(:user)
-    user.update_column(:created_at, 6.days.ago - 1.hour)
+    user.update_column(:created_at, 4.days.ago - 1.hour)
 
     User::Onboarding::CreateDueNotifications.()
 
@@ -61,6 +62,7 @@ class User::Onboarding::CreateDueNotificationsTest < ActiveSupport::TestCase
 
   test "is idempotent — re-running does not create duplicates" do
     user = create(:user)
+    user.update_column(:created_at, 1.day.ago - 1.hour)
 
     User::Onboarding::CreateDueNotifications.()
     User::Onboarding::CreateDueNotifications.()
@@ -71,6 +73,8 @@ class User::Onboarding::CreateDueNotificationsTest < ActiveSupport::TestCase
   test "one user failing does not stop the batch" do
     user_a = create(:user)
     user_b = create(:user)
+    user_a.update_column(:created_at, 1.day.ago - 1.hour)
+    user_b.update_column(:created_at, 1.day.ago - 1.hour)
 
     User::Notification::Create.expects(:call).with(user_a, :onboarding_overview).raises("boom")
     User::Notification::Create.expects(:call).with(user_b, :onboarding_overview).once

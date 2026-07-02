@@ -13,14 +13,20 @@ class OnboardingMailer < ApplicationMailer
   def overview(user)   = send_onboarding(user, :overview)
   def coding(user)     = send_onboarding(user, :coding)
   def building(user)   = send_onboarding(user, :building)
-  def backstory(user)  = send_onboarding(user, :backstory)
   def premium(user)    = send_onboarding(user, :premium)
   def community(user)  = send_onboarding(user, :community)
 
   private
   def send_onboarding(user, action)
     @user = user
+    @year = Time.current.year
     @header_image = "onboarding-#{action}.jpg"
     mail_to_user(user, unsubscribe_key: :onboarding_emails)
+  end
+
+  # Provide %{year} to the i18n-derived subject. Runs inside mail_to_user's
+  # I18n.with_locale block, so the subject is still localised correctly.
+  def default_i18n_subject(interpolations = {})
+    super(year: Time.current.year, **interpolations)
   end
 end

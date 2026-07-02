@@ -1,7 +1,7 @@
 require "test_helper"
 
 class OnboardingMailerTest < ActionMailer::TestCase
-  ACTIONS = %i[overview coding building backstory premium community].freeze
+  ACTIONS = %i[overview coding building premium community].freeze
 
   ACTIONS.each do |action|
     test "#{action} renders with subject, html and text bodies" do

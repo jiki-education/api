@@ -39,19 +39,6 @@ hu:
 
         Üdv,
         Jeremy
-    backstory:
-      subject: "Miért építettük a Jikit"
-      preview: "Egy rövid történet arról, honnan jött a Jiki."
-      greeting: "Szia %{name},"
-      body_markdown: |
-        Jeremy vagyok. Több mint egy évtizede vezetem az [Exercism](https://exercism.org) nevű ingyenes platformot, ami emberek millióinak segített elmélyíteni a kódolási tudásukat.
-
-        Az Exercism remekül működik azoknak, akik már ismerik az alapokat. De a kezdők — akik még sosem írtak kódot — folyamatosan azt mondták, valami szelídebbre, strukturáltabbra, vezetettebbre van szükségük.
-
-        Ez a Jiki. Ugyanaz a csapat, ugyanaz a filozófia, kifejezetten az első lépéseidre tervezve.
-
-        Üdv,
-        Jeremy
     premium:
       subject: "Hozd ki többet a Jikiből Premiummal"
       preview: "Mit ad a Premium, és miért létezik."
