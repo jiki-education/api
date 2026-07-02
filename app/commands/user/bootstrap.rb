@@ -22,12 +22,7 @@ class User::Bootstrap
     user.data.update_column(:country_code, code)
   end
 
-  def set_locales!
-    locales = User::ParseAcceptLanguage.(accept_language)
-    return if locales.empty?
-
-    user.data.update_column(:locales, locales)
-  end
+  def set_locales! = User::UpdateLocales.(user, accept_language)
 
   # Email-signup users are unconfirmed at this point — they'll get the welcome
   # email via User#after_confirmation. OAuth users are pre-confirmed so we send

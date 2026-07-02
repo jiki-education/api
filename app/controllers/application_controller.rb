@@ -75,10 +75,7 @@ class ApplicationController < ActionController::API
     return unless user_signed_in?
     return if current_user.data.locales.present?
 
-    locales = User::ParseAcceptLanguage.(request.headers["Accept-Language"])
-    return if locales.empty?
-
-    current_user.data.update_column(:locales, locales)
+    User::UpdateLocales.(current_user, request.headers["Accept-Language"])
   end
 
   def set_country_code
