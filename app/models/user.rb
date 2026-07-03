@@ -1,12 +1,6 @@
 class User < ApplicationRecord
   extend Mandate::Memoize
 
-  # Locale now lives on User::Data (see User::Data#locale). The users.locale
-  # column still exists but is being retired: ignoring it stops ActiveRecord
-  # defining accessors that would shadow the data record, so user.locale falls
-  # through method_missing to data. A later migration drops the column.
-  self.ignored_columns += %w[locale]
-
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
