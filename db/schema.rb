@@ -570,6 +570,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_120000) do
     t.string "exercism_id"
     t.string "google_id"
     t.string "handle", null: false
+    t.string "locale", default: "en", null: false
     t.string "name"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
