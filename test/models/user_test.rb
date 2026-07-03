@@ -53,21 +53,62 @@ class UserTest < ActiveSupport::TestCase
     assert user.valid?
   end
 
-  test "locale is required" do
-    user = build(:user, locale: nil)
-    refute user.valid?
-    assert_includes user.errors[:locale], "can't be blank"
+  test "locale defaults to en" do
+    user = create(:user)
+    assert_equal "en", user.locale
   end
 
-  test "locale must be en or hu" do
+  test "locale uses explicit choice over Accept-Language preferences" do
+    user = create(:user, locale: "hu")
+    user.data.update!(locales: %w[en])
+
+    assert_equal "hu", user.locale
+  end
+
+  test "locale is derived from an exact Accept-Language match" do
+    user = create(:user)
+    user.data.update!(locales: %w[hu en])
+
+    assert_equal "hu", user.locale
+  end
+
+  test "locale is derived from a language-part match" do
+    user = create(:user)
+    user.data.update!(locales: %w[hu-HU en])
+
+    assert_equal "hu", user.locale
+  end
+
+  test "locale skips unsupported preferences" do
+    user = create(:user)
+    user.data.update!(locales: %w[fr de hu])
+
+    assert_equal "hu", user.locale
+  end
+
+  test "locale falls back to en when no preference is supported" do
+    user = create(:user)
+    user.data.update!(locales: %w[fr de])
+
+    assert_equal "en", user.locale
+  end
+
+  test "assigning locale sets explicit_locale" do
+    user = create(:user, locale: "hu")
+    assert_equal "hu", user.data.explicit_locale
+
+    user.update!(locale: nil)
+    assert_nil user.data.reload.explicit_locale
+  end
+
+  test "explicit_locale must be a supported locale" do
     user = build(:user, locale: "fr")
     refute user.valid?
-    assert_includes user.errors[:locale], "is not included in the list"
-
-    user.locale = "en"
-    assert user.valid?
 
     user.locale = "hu"
+    assert user.valid?
+
+    user.locale = nil
     assert user.valid?
   end
 

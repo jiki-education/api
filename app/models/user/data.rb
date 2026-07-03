@@ -12,6 +12,18 @@ class User::Data < ApplicationRecord
   # Welcome emails are transactional — no preference check.
   def email_communication_preferences_key(_kind = nil) = nil
 
+  validates :explicit_locale, inclusion: { in: I18n::SUPPORTED_LOCALES }, allow_nil: true
+
+  # Locale is derived, never stored directly: an explicit user choice always
+  # wins, then the best match from the browser's Accept-Language preferences
+  # (stored in locales), then the default. Assigning locale records an
+  # explicit choice.
+  def locale = explicit_locale || locale_from_preferences || I18n.default_locale.to_s
+
+  def locale=(value)
+    self.explicit_locale = value.presence
+  end
+
   # Notification preference slugs mapped to column names
   NOTIFICATION_SLUGS = {
     "newsletters" => :receive_newsletters,
@@ -81,6 +93,20 @@ class User::Data < ApplicationRecord
   def may_receive_emails? = email_complaint_at.nil?
 
   private
+  # Walk the preferences in order, taking an exact match against a supported
+  # locale when there is one, else a language-part match (en-GB satisfies en,
+  # pt satisfies pt-BR).
+  def locale_from_preferences
+    locales.each do |tag|
+      return tag if I18n::SUPPORTED_LOCALES.include?(tag)
+
+      language = tag.split("-").first
+      match = I18n::SUPPORTED_LOCALES.find { |supported| supported.split("-").first == language }
+      return match if match
+    end
+    nil
+  end
+
   def generate_unsubscribe_token!
     self.unsubscribe_token ||= SecureRandom.uuid
   end

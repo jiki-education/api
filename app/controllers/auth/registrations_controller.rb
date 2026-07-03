@@ -10,7 +10,8 @@ class Auth::RegistrationsController < Devise::RegistrationsController
       if resource.persisted?
         User::Bootstrap.(resource, "email",
           attribution: signup_attribution_params,
-          country_code: request.headers["CF-IPCountry"])
+          country_code: request.headers["CF-IPCountry"],
+          accept_language: request.headers["Accept-Language"])
       end
     end
   end
@@ -35,7 +36,12 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  # The frontend can pass an explicit locale choice at signup. An unsupported
+  # value is treated as no signal (locale falls back to Accept-Language
+  # derivation) rather than failing the registration.
   def sign_up_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :name, :handle)
+    params.require(:user).permit(:email, :password, :password_confirmation, :name, :handle, :locale).tap do |permitted|
+      permitted.delete(:locale) unless I18n::SUPPORTED_LOCALES.include?(permitted[:locale])
+    end
   end
 end

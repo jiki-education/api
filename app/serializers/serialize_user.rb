@@ -9,6 +9,7 @@ class SerializeUser
       membership_type: user.data.membership_type,
       email: user.email,
       name: user.name,
+      locale: user.locale,
       avatar_url: user.avatar_url,
       uses_oauth: user.uses_oauth?,
       email_confirmed: user.confirmed?,

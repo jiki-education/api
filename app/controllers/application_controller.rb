@@ -6,6 +6,7 @@ class ApplicationController < ActionController::API
 
   before_action :set_current_user_agent
   before_action :set_current_user_ip
+  before_action :set_user_locales
   before_action :set_locale
   before_action :set_country_code
   before_action :extend_session_cookie!
@@ -66,6 +67,14 @@ class ApplicationController < ActionController::API
 
   def set_locale
     I18n.locale = params[:locale] || current_user&.locale || I18n.default_locale
+  end
+
+  # Capture the browser's language preferences once, so the user's locale can
+  # be derived from them until/unless they make an explicit choice.
+  def set_user_locales
+    return unless user_signed_in?
+
+    User::UpdateLocales.(current_user, request.headers["Accept-Language"])
   end
 
   def set_country_code

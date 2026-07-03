@@ -122,7 +122,7 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH locale fails with invalid locale" do
     patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
 
-    assert_json_error(:unprocessable_entity, error_type: :locale_update_failed, errors: { locale: ["is not included in the list"] })
+    assert_json_error(:unprocessable_entity, error_type: :locale_update_failed, errors: { "data.explicit_locale": ["is not included in the list"] })
     assert_equal "en", @user.reload.locale
   end
 

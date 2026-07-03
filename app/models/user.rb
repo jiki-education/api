@@ -1,6 +1,12 @@
 class User < ApplicationRecord
   extend Mandate::Memoize
 
+  # Locale now lives on User::Data (see User::Data#locale). The users.locale
+  # column still exists but is being retired: ignoring it stops ActiveRecord
+  # defining accessors that would shadow the data record, so user.locale falls
+  # through method_missing to data. A later migration drops the column.
+  self.ignored_columns += %w[locale]
+
   # Include default devise modules. Others available are:
   # :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -33,11 +39,14 @@ class User < ApplicationRecord
     build_activity_data if new_record? && !activity_data
   end
 
-  validates :locale, presence: true, inclusion: { in: %w[en hu] }
   validates :handle, presence: true, uniqueness: true
 
   # OAuth users have random passwords, so skip password validation for them
   validates :password, presence: true, if: -> { new_record? && encrypted_password.blank? && !uses_oauth? }
+
+  # Build data on demand so delegated methods (see method_missing below) work
+  # during User.new attribute assignment, which runs before after_initialize.
+  def data = super || build_data
 
   def uses_oauth? = exercism_id.present? || google_id.present?
 

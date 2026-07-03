@@ -21,7 +21,8 @@ class User::Search
     filter_name!
     filter_email!
 
-    @users.order(:name).page(page).per(per)
+    # data is needed for locale in SerializeAdminUser
+    @users.includes(:data).order(:name).page(page).per(per)
   end
 
   private
