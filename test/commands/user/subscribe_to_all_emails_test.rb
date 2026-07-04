@@ -7,7 +7,8 @@ class User::SubscribeToAllEmailsTest < ActiveSupport::TestCase
       receive_newsletters: false,
       receive_event_emails: false,
       receive_milestone_emails: false,
-      receive_activity_emails: false
+      receive_activity_emails: false,
+      receive_onboarding_emails: false
     )
 
     User::SubscribeToAllEmails.(user)
@@ -17,6 +18,7 @@ class User::SubscribeToAllEmailsTest < ActiveSupport::TestCase
     assert user.data.receive_event_emails?
     assert user.data.receive_milestone_emails?
     assert user.data.receive_activity_emails?
+    assert user.data.receive_onboarding_emails?
   end
 
   test "works when some preferences already true" do

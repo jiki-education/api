@@ -22,6 +22,7 @@ class SerializeSettingsTest < ActiveSupport::TestCase
       receive_event_emails: true,
       receive_milestone_emails: true,
       receive_activity_emails: true,
+      receive_onboarding_emails: true,
       streaks_enabled: false
     }
 

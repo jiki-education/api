@@ -9,7 +9,8 @@ class SerializeEmailPreferences
       newsletters: user.data.receive_newsletters,
       event_emails: user.data.receive_event_emails,
       milestone_emails: user.data.receive_milestone_emails,
-      activity_emails: user.data.receive_activity_emails
+      activity_emails: user.data.receive_activity_emails,
+      onboarding_emails: user.data.receive_onboarding_emails
     }
   end
 end

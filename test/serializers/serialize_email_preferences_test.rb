@@ -9,7 +9,8 @@ class SerializeEmailPreferencesTest < ActiveSupport::TestCase
       newsletters: true,
       event_emails: true,
       milestone_emails: true,
-      activity_emails: true
+      activity_emails: true,
+      onboarding_emails: true
     }
 
     assert_equal expected, SerializeEmailPreferences.(user)
@@ -21,7 +22,8 @@ class SerializeEmailPreferencesTest < ActiveSupport::TestCase
       receive_newsletters: false,
       receive_event_emails: false,
       receive_milestone_emails: true,
-      receive_activity_emails: false
+      receive_activity_emails: false,
+      receive_onboarding_emails: false
     )
 
     expected = {
@@ -29,7 +31,8 @@ class SerializeEmailPreferencesTest < ActiveSupport::TestCase
       newsletters: false,
       event_emails: false,
       milestone_emails: true,
-      activity_emails: false
+      activity_emails: false,
+      onboarding_emails: false
     }
 
     assert_equal expected, SerializeEmailPreferences.(user)

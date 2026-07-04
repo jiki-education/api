@@ -33,6 +33,18 @@ class External::EmailPreferencesControllerTest < ActionDispatch::IntegrationTest
     })
   end
 
+  test "PATCH update can update onboarding_emails" do
+    user = create(:user)
+    assert user.data.receive_onboarding_emails?
+
+    patch external_email_preference_path(token: user.data.unsubscribe_token),
+      params: { onboarding_emails: false },
+      as: :json
+
+    assert_response :success
+    refute user.data.reload.receive_onboarding_emails?
+  end
+
   test "PATCH update can update multiple preferences" do
     user = create(:user)
     assert user.data.receive_newsletters?
@@ -74,6 +86,7 @@ class External::EmailPreferencesControllerTest < ActionDispatch::IntegrationTest
     assert user.data.receive_event_emails?
     assert user.data.receive_milestone_emails?
     assert user.data.receive_activity_emails?
+    assert user.data.receive_onboarding_emails?
 
     post unsubscribe_all_external_email_preference_path(token: user.data.unsubscribe_token),
       as: :json
@@ -84,6 +97,7 @@ class External::EmailPreferencesControllerTest < ActionDispatch::IntegrationTest
     refute user.data.receive_event_emails?
     refute user.data.receive_milestone_emails?
     refute user.data.receive_activity_emails?
+    refute user.data.receive_onboarding_emails?
   end
 
   test "POST unsubscribe_all returns 404 for invalid token" do
@@ -99,7 +113,8 @@ class External::EmailPreferencesControllerTest < ActionDispatch::IntegrationTest
       receive_newsletters: false,
       receive_event_emails: false,
       receive_milestone_emails: false,
-      receive_activity_emails: false
+      receive_activity_emails: false,
+      receive_onboarding_emails: false
     )
 
     post subscribe_all_external_email_preference_path(token: user.data.unsubscribe_token),
@@ -111,6 +126,7 @@ class External::EmailPreferencesControllerTest < ActionDispatch::IntegrationTest
     assert user.data.receive_event_emails?
     assert user.data.receive_milestone_emails?
     assert user.data.receive_activity_emails?
+    assert user.data.receive_onboarding_emails?
   end
 
   test "POST subscribe_all returns 404 for invalid token" do
