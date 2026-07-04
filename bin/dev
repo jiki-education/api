@@ -30,10 +30,13 @@ else
     -e LAMBDA_DOCKER_FLAGS=--add-host=local.jiki.io:host-gateway \
     --add-host=local.jiki.io:host-gateway \
     --name localstack-jiki $(jq -r '.localstack' .dockerimages.json)
-
-  # Initialize LocalStack (create S3 buckets)
-  echo "Initializing LocalStack..."
-  bin/init-localstack
 fi
+
+# Always initialize LocalStack (create any missing S3 buckets).
+# LocalStack has no persistence, and a long-running container can predate
+# newly-added buckets, so run this on every boot. init-localstack is
+# idempotent (it skips buckets that already exist).
+echo "Initializing LocalStack..."
+bin/init-localstack
 
 hivemind Procfile.dev
