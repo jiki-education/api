@@ -35,7 +35,10 @@ class User::Onboarding::CreateDueNotifications
 
   private
   def due_users_for(day)
-    User.where.not(confirmed_at: nil).
+    # Preload :data so the premium? check below (delegated to User::Data)
+    # doesn't fire a query per user.
+    User.includes(:data).
+      where.not(confirmed_at: nil).
       where("created_at < ?", Time.current - day.days).
       where("created_at >= ?", Time.current - (day + SAFETY_OFFSET_IN_DAYS).days)
   end
