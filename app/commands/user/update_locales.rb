@@ -10,5 +10,8 @@ class User::UpdateLocales
     return if locales.empty?
 
     user.data.update_column(:locales, locales)
+
+    # Re-sync PostHog so the person's locale/locales reflect the new preferences.
+    User::Identify.defer(user)
   end
 end

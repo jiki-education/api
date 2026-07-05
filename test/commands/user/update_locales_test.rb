@@ -10,9 +10,18 @@ class User::UpdateLocalesTest < ActiveSupport::TestCase
     assert_equal %w[hu en], user.data.reload.locales
   end
 
+  test "re-identifies the user in PostHog when locales are stored" do
+    user = create(:user)
+    User::ParseAcceptLanguage.stubs(:call).returns(%w[hu en])
+    User::Identify.expects(:defer).with(user)
+
+    User::UpdateLocales.(user, "hu, en;q=0.8")
+  end
+
   test "does not store anything when no locales are parsed" do
     user = create(:user)
     User::ParseAcceptLanguage.expects(:call).with(nil).returns([])
+    User::Identify.expects(:defer).never
 
     User::UpdateLocales.(user, nil)
 
@@ -23,6 +32,7 @@ class User::UpdateLocalesTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update_column(:locales, %w[hu])
     User::ParseAcceptLanguage.expects(:call).never
+    User::Identify.expects(:defer).never
 
     User::UpdateLocales.(user, "en")
 
@@ -33,6 +43,7 @@ class User::UpdateLocalesTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update_column(:locales, %w[hu])
     User::ParseAcceptLanguage.expects(:call).with("en").returns(%w[en])
+    User::Identify.expects(:defer).with(user)
 
     User::UpdateLocales.(user, "en", force: true)
 

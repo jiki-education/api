@@ -23,6 +23,7 @@ class User::Identify
         username: user.handle,
         membership_type: user.membership_type,
         locale: user.locale,
+        locales: user.locales,
         signup_date: user.created_at.to_date.iso8601
       }.merge(geoip_properties)
     )
