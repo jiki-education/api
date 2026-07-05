@@ -3,13 +3,15 @@ class User::Onboarding::CreateDueNotifications
 
   queue_as :background
 
+  PREMIUM_KIND = :onboarding_premium
+
   # Day after the anchor → notification kind.
   # Gated on confirmed_at being present at send time.
   EMAILS = {
     1 => :onboarding_overview,
     2 => :onboarding_coding,
     3 => :onboarding_building,
-    4 => :onboarding_premium,
+    4 => PREMIUM_KIND,
     5 => :onboarding_community
   }.freeze
 
@@ -18,8 +20,6 @@ class User::Onboarding::CreateDueNotifications
   # is still eligible. Idempotency comes from User::Notification's uniqueness
   # key, so running this multiple times is safe.
   SAFETY_OFFSET_IN_DAYS = 1
-
-  PREMIUM_KIND = :onboarding_premium
 
   # Users who existed before launch never signed up "recently", so anchoring on
   # created_at would mean they never get the cadence. Instead anchor them on the
