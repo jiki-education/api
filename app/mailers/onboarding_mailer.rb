@@ -14,11 +14,11 @@ class OnboardingMailer < ApplicationMailer
   # The hash lets the CDN objects be served with immutable/infinite caching —
   # regenerate the hash and update the entry whenever an image changes.
   HEADER_IMAGES = {
-    overview: "onboarding-overview-1bdf7.webp",
-    coding: "onboarding-coding-76965.webp",
-    building: "onboarding-building-97890.webp",
-    premium: "onboarding-premium-886e9.webp",
-    community: "onboarding-community-b31ba.webp"
+    overview: "onboarding-overview-59828.jpg",
+    coding: "onboarding-coding-cebdf.jpg",
+    building: "onboarding-building-c8d7e.jpg",
+    premium: "onboarding-premium-70c37.jpg",
+    community: "onboarding-community-5a9bf.jpg"
   }.freeze
 
   def overview(user)   = send_onboarding(user, :overview)
