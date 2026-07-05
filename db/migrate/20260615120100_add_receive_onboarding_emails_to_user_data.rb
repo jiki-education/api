@@ -1,14 +1,10 @@
 class AddReceiveOnboardingEmailsToUserData < ActiveRecord::Migration[8.1]
   def up
+    # default: true applies to all existing rows too, so every user — existing
+    # and new — has the onboarding preference on. (Existing users still won't
+    # receive the cadence unless something anchors it for them, since
+    # CreateDueNotifications only looks at users created in the last few days.)
     add_column :user_data, :receive_onboarding_emails, :boolean, default: true, null: false
-
-    # Existing confirmed users have missed the onboarding window — don't
-    # retroactively start the cadence for them. New signups default to true.
-    execute <<~SQL.squish
-      UPDATE user_data
-      SET receive_onboarding_emails = false
-      WHERE user_id IN (SELECT id FROM users WHERE confirmed_at IS NOT NULL)
-    SQL
   end
 
   def down
