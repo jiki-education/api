@@ -7,6 +7,7 @@ class User::UnsubscribeFromAllEmailsTest < ActiveSupport::TestCase
     assert user.data.receive_event_emails?
     assert user.data.receive_milestone_emails?
     assert user.data.receive_activity_emails?
+    assert user.data.receive_onboarding_emails?
 
     User::UnsubscribeFromAllEmails.(user)
 
@@ -15,6 +16,7 @@ class User::UnsubscribeFromAllEmailsTest < ActiveSupport::TestCase
     refute user.data.receive_event_emails?
     refute user.data.receive_milestone_emails?
     refute user.data.receive_activity_emails?
+    refute user.data.receive_onboarding_emails?
   end
 
   test "works when some preferences already false" do

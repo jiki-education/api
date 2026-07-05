@@ -5,12 +5,8 @@ class User
     initialize_with :user
 
     def call
-      user.data.update!(
-        receive_newsletters: false,
-        receive_event_emails: false,
-        receive_milestone_emails: false,
-        receive_activity_emails: false
-      )
+      updates = User::Data::NOTIFICATION_SLUGS.values.index_with { false }
+      user.data.update!(updates)
     end
   end
 end

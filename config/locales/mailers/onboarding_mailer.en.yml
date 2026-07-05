@@ -1,0 +1,96 @@
+en:
+  onboarding_mailer:
+    overview:
+      subject: "The Two Halves of Becoming a Developer in 2026"
+      preview: "For the last few years I've been slowly learning Japanese."
+      greeting: "Hi there,"
+      body_markdown: |
+        For the last few years I've been **slowly learning Japanese**. I visit Japan regularly and try and immerse myself in the language, but it's hard, because nowadays, with the help of Google Translate, it's pretty easy to spend time in Japan and not speak a word of Japanese. **So my brain can be lazy**, but I can get along fine.
+
+        Coding has recently started to take that same journey. For the last 30 years, if you wanted to do anything with tech, **you had to learn to code**. It was the only way for you to communicate with a computer. But over the last two years, with LLMs, that's changed. You can now use your native language and tell the LLM what you want it to do, and **it'll write the code for you** - translating your instructions to the computer.
+
+        Just like I don't have to wait to be fluent in Japanese before I can explore Japan, **it no longer makes any sense to spend years getting good at coding** before you start building things.
+
+        But if I want to really get into Japanese culture and make Japanese friends, I need to learn Japanese. And, if you want to get into tech, you still need to learn to code. Code is no longer the gatekeeper, but it's **the difference between "getting by" and actually thriving**.
+
+        To get good fast, split your learning time into two chunks:
+        1. **Learn to code.** Work through Jiki's Coding Fundamentals and you'll have great foundations.
+        2. **Make stuff.** Work through "Build with Jeremy", getting into the weeds, creating products that people can actually use!
+
+        If you want to learn more about my thoughts on **how to get into tech in 2026**, read [this blog post](https://jiki.io/blog/how-to-get-into-tech-in-2026).
+
+        Over the next few days, I'll tell you a little more about both the coding and the building sides, and how you can make the most of [Jiki](https://jiki.io). Until then, **get stuck in and have fun!**
+
+        Thanks for reading!
+        Jeremy
+    coding:
+      subject: "Build Rock-Solid Coding Fundamentals"
+      preview: "Learning to code has a reputation for being technical and hard."
+      greeting: "Hi again,"
+      body_markdown: |
+        Learning to code has a reputation for being technical and hard. When I started to learn to code, I was an 8-year-old kid who knew nothing about programming other than that **I could suddenly make cool stuff**. I didn't know it was supposed to be hard. I just knew I suddenly had a new outlet for my creativity.
+
+        As you learn to code, **I don't want you to see it as some technical discipline to master**, I want you to see it as somewhere you can unleash **your** creativity - where you can **have fun making things** and solving puzzles. Because that's what coding really is - problem solving.
+
+        It doesn't matter [what programming language you learn](https://jiki.io/blog/just-learn-to-code), what matters is that you build a really good understanding of **how coding works**.
+
+        As you progress, there will be times when coding does feel hard and frustrating. But this isn't because _coding_ is hard, it's because **learning is hard**. If you want to get good at anything, you have to go through phases where the challenge feels too much, but you have to persevere.
+
+        If you're not sure if the coding part is worth the effort, take a read of [this blog post](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) that explains why you should still learn to code in 2026.
+
+        Thanks for reading!
+        Jeremy
+    building:
+      subject: "The Best Way to Learn is to Make Stuff!"
+      preview: "I really believe that now is the best possible time to get into tech."
+      greeting: "Hi there,"
+      body_markdown: |
+        I really believe that **now is the best possible time to get into tech**. There's never been an easier time to learn the fundamentals and to quickly be able to make things.
+
+        But (and this is a big but!) where a lot of people are going wrong is that they're handing over the reins entirely to an LLM and not actually learning. And that feels great for a little bit - you can magically make all this stuff appear - but if all you're doing is telling Claude or ChatGPT what to do, you're not actually learning anything!
+
+        So I'm putting together **step-by-step projects** that you can work with, where I _WANT_ you to use LLMs to do a lot of the work for you. But where I want you to make sure **you actually understand what's happening** at each stage.
+
+        The point of these projects is to be able to learn **all the different parts of building software**. You can join me as I build things, and I'll explain exactly what I'm doing and why, then you can work with an LLM to apply those same ideas to your projects.
+
+        Just **don't get addicted to the dopamine hits** of the LLM doing your work for you. Make sure you take the time to understand what's going on!
+
+        Hopefully I'll see you [on a livestream](https://youtube.com/@jiki-coding) soon!
+
+        Thanks for reading!
+        Jeremy
+    premium:
+      subject: "Get More Out of Jiki (and help us out)"
+      preview: "We made Jiki free because we want it to be accessible to everyone regardless"
+      greeting: "Hi there,"
+      body_markdown: |
+        We made Jiki free because we want it to be **accessible to everyone** regardless of their financial situation. Everyone gets hundreds of hours of exercises and videos, all available with nothing asked in return.
+
+        But **Jiki costs money to run**, and we need to be able to pay our rents and afford food (🍜) and caffeine (☕), so we've added a Premium tier that adds some extra benefits that I think will really help you:
+        - **Ask Jiki**: Our AI chat to help you quickly get unstuck or explore your questions.
+        - **Premium Projects**: Harder exercises, where you can combine the skills you're learning.
+        - **Build with Jeremy**: Tons more content where you can learn alongside me.
+        - **Badges**: Showcase your support on the site and in community spaces with Premium badges.
+
+        We've made it super-affordable using **Purchasing Power Parity**. That means that Premium costs about the same as two takeaway drinks in your country, so it should feel like a reasonable price wherever you are in the world.
+
+        If you're enjoying Jiki, want to **accelerate your learning**, and want to support me and the Jiki team, then please [upgrade to Premium](https://jiki.io/premium).
+
+        Thank you,
+        Jeremy
+    community:
+      subject: "Don't Struggle Alone - Join Jiki's Community"
+      preview: "You're a lot more likely to succeed learning anything if you're part of a group."
+      greeting: "Hi there,"
+      body_markdown: |
+        You're a lot more likely to succeed learning anything if **you're part of a group**. Coding is no different.
+
+        If you'd like to get help, chat about your coding journey, or just hang out with others, there are some places to do it:
+        - [Our forum](https://jiki.io/r/forum): The place to go for slower, long-form conversation. **Go deeper** here.
+        - [Exercism's Discord](https://jiki.io/r/discord): The place to go for **real-time chat** with others who are online. Look for the #jiki-chat and #jiki-get-help channels.
+        - [YouTube](https://jiki.io/r/youtube): Join our AMAs (Ask Me Anything) and other **livestreams** to ask me your questions!
+
+        Remember that there are people from lots of different cultures in these spaces, so **please be respectful** to everyone as you chat.
+
+        See you there!
+        Jeremy

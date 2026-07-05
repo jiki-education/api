@@ -33,6 +33,6 @@ class External::EmailPreferencesController < ApplicationController
   end
 
   def preference_params
-    params.permit(:newsletters, :event_emails, :milestone_emails, :activity_emails)
+    params.permit(:newsletters, :event_emails, :milestone_emails, :activity_emails, :onboarding_emails)
   end
 end
