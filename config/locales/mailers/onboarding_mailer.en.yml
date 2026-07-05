@@ -1,7 +1,7 @@
 en:
   onboarding_mailer:
     overview:
-      subject: "The Two Halves of Becoming a Developer in %{year}"
+      subject: "The Two Halves of Becoming a Developer in 2026"
       preview: "For the last few years I've been slowly learning Japanese."
       greeting: "Hi there,"
       body_markdown: |
@@ -15,7 +15,7 @@ en:
 
         To get good fast, split your learning time into two chunks:
         1. **Learn to code.** Work through Jiki's Coding Fundamentals and you'll have great foundations.
-        2. **Make stuff.** Work through "Build with Jeremy", getting into the weeds creating products that people can actually use!
+        2. **Make stuff.** Work through "Build with Jeremy", getting into the weeds, creating products that people can actually use!
 
         If you want to learn more about my thoughts on **how to get into tech in 2026**, read [this blog post](https://jiki.io/blog/how-to-get-into-tech-in-2026).
 
@@ -24,7 +24,7 @@ en:
         Thanks for reading!
         Jeremy
     coding:
-      subject: "Build Rock Solid Coding Fundamentals"
+      subject: "Build Rock-Solid Coding Fundamentals"
       preview: "Learning to code has a reputation for being technical and hard."
       greeting: "Hi again,"
       body_markdown: |
@@ -36,7 +36,7 @@ en:
 
         As you progress, there will be times when coding does feel hard and frustrating. But this isn't because _coding_ is hard, it's because **learning is hard**. If you want to get good at anything, you have to go through phases where the challenge feels too much, but you have to persevere.
 
-        If you're not sure if the coding part is worth the effort, take a read of [this blog post](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) that explains why you should still learn to code in %{year}.
+        If you're not sure if the coding part is worth the effort, take a read of [this blog post](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) that explains why you should still learn to code in 2026.
 
         Thanks for reading!
         Jeremy
@@ -60,7 +60,7 @@ en:
         Thanks for reading!
         Jeremy
     premium:
-      subject: "Get more out of Jiki (and help us out)"
+      subject: "Get More Out of Jiki (and help us out)"
       preview: "We made Jiki free because we want it to be accessible to everyone regardless"
       greeting: "Hi there,"
       body_markdown: |
