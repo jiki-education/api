@@ -14,6 +14,19 @@ namespace :posthog do
     puts "Next: upload them to Cloudflare R2 and re-sync the linked sources in PostHog."
   end
 
+  desc "Re-identify all users whose browser locales have been captured"
+  task backfill_locales: :environment do
+    scope = User::Data.where("cardinality(locales) > 0")
+    total = scope.count
+    puts "Enqueuing User::Identify for #{total} users with captured locales..."
+
+    scope.includes(:user).find_each do |data|
+      User::Identify.defer(data.user)
+    end
+
+    puts "Done."
+  end
+
   def dump_to_csv(path, scope, columns)
     row_count = 0
     CSV.open(path, "w") do |csv|
