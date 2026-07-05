@@ -3,8 +3,8 @@ class User::Onboarding::CreateDueNotifications
 
   queue_as :background
 
-  # Day after signup → notification kind.
-  # Anchored on User#created_at, gated on confirmed_at being present at send time.
+  # Day after the anchor → notification kind.
+  # Gated on confirmed_at being present at send time.
   EMAILS = {
     1 => :onboarding_overview,
     2 => :onboarding_coding,
@@ -14,12 +14,22 @@ class User::Onboarding::CreateDueNotifications
   }.freeze
 
   # Safety window — if the cron job doesn't run for a while, we don't miss
-  # users. Anyone created between N days ago and N+SAFETY_OFFSET days ago
+  # users. Anyone anchored between N days ago and N+SAFETY_OFFSET days ago
   # is still eligible. Idempotency comes from User::Notification's uniqueness
   # key, so running this multiple times is safe.
   SAFETY_OFFSET_IN_DAYS = 1
 
   PREMIUM_KIND = :onboarding_premium
+
+  # Users who existed before launch never signed up "recently", so anchoring on
+  # created_at would mean they never get the cadence. Instead anchor them on the
+  # launch date (keeping their created_at time-of-day, so the backfilled cohort
+  # spreads across the day rather than all firing at midnight). Post-launch
+  # signups have created_at >= LAUNCH_DATE, so GREATEST leaves them on created_at.
+  # Once every pre-launch user has passed day 6 this becomes a no-op and the
+  # constant + GREATEST can be removed.
+  LAUNCH_DATE = Date.new(2026, 7, 5)
+  ANCHOR_SQL = "GREATEST(created_at, CAST(:launch AS date) + created_at::time)".freeze
 
   def call
     EMAILS.each do |day, kind|
@@ -39,7 +49,7 @@ class User::Onboarding::CreateDueNotifications
     # doesn't fire a query per user.
     User.includes(:data).
       where.not(confirmed_at: nil).
-      where("created_at < ?", Time.current - day.days).
-      where("created_at >= ?", Time.current - (day + SAFETY_OFFSET_IN_DAYS).days)
+      where("#{ANCHOR_SQL} < :from", launch: LAUNCH_DATE, from: Time.current - day.days).
+      where("#{ANCHOR_SQL} >= :to", launch: LAUNCH_DATE, to: Time.current - (day + SAFETY_OFFSET_IN_DAYS).days)
   end
 end
