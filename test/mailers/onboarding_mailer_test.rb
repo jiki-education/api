@@ -47,7 +47,8 @@ class OnboardingMailerTest < ActionMailer::TestCase
 
       mail = OnboardingMailer.public_send(action, user)
 
-      assert_match "static/emails/onboarding-#{action}.jpg", mail.html_part.body.to_s
+      expected_image = OnboardingMailer::HEADER_IMAGES.fetch(action)
+      assert_match "static/emails/#{expected_image}", mail.html_part.body.to_s
     end
   end
 end

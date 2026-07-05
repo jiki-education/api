@@ -10,6 +10,17 @@
 class OnboardingMailer < ApplicationMailer
   self.email_category = :notifications
 
+  # Content-hashed header image filenames (see scripts/upload_email_images.sh).
+  # The hash lets the CDN objects be served with immutable/infinite caching —
+  # regenerate the hash and update the entry whenever an image changes.
+  HEADER_IMAGES = {
+    overview: "onboarding-overview-d9e12.png",
+    coding: "onboarding-coding-46906.png",
+    building: "onboarding-building-52caf.png",
+    premium: "onboarding-premium-ebd87.png",
+    community: "onboarding-community-a2aa1.png"
+  }.freeze
+
   def overview(user)   = send_onboarding(user, :overview)
   def coding(user)     = send_onboarding(user, :coding)
   def building(user)   = send_onboarding(user, :building)
@@ -20,7 +31,7 @@ class OnboardingMailer < ApplicationMailer
   def send_onboarding(user, action)
     @user = user
     @year = Time.current.year
-    @header_image = "onboarding-#{action}.jpg"
+    @header_image = HEADER_IMAGES.fetch(action)
     mail_to_user(user, unsubscribe_key: :onboarding_emails)
   end
 
