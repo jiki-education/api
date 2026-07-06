@@ -11,6 +11,7 @@
     %mj-style
       :plain
         a { font-weight: 500; }
+        strong, b { font-weight: 600; }
 
   %mj-body{ "background-color": "#ffffff" }
     = render 'mailers/shared/header', header_image: @header_image.presence || "default.jpg"
