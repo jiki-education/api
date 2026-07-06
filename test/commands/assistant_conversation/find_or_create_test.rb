@@ -52,7 +52,27 @@ class AssistantConversation::FindOrCreateTest < ActiveSupport::TestCase
       properties: {
         context_type: "lesson",
         context_id: lesson.id,
-        context_slug: "basic-movement"
+        context_slug: "basic-movement",
+        trial: true
+      }
+    )
+
+    AssistantConversation::FindOrCreate.(user, lesson)
+  end
+
+  test "sets trial to false for premium users" do
+    user = create(:user)
+    make_premium(user)
+    lesson = create(:lesson, :exercise, slug: "basic-movement")
+
+    Analytics::TrackEvent.expects(:defer).with(
+      user,
+      "assistant_conversation_started",
+      properties: {
+        context_type: "lesson",
+        context_id: lesson.id,
+        context_slug: "basic-movement",
+        trial: false
       }
     )
 
