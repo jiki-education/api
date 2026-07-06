@@ -20,7 +20,8 @@ class AssistantConversation::FindOrCreate
       properties: {
         context_type: context.class.name.downcase,
         context_id: context.id,
-        context_slug: context.try(:slug)
+        context_slug: context.try(:slug),
+        trial: !user.premium?
       }.compact
     )
   end
