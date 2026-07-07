@@ -102,6 +102,19 @@ module ActiveSupport
       result_two = yield
       assert_equal result_one, result_two
     end
+
+    # Temporarily override the live locale set. I18n::SUPPORTED_LOCALES is
+    # environment-gated (en-only in production, en/hu elsewhere), so locale
+    # logic has to be exercised against the eventual content set as well.
+    def with_supported_locales(locales)
+      original = I18n::SUPPORTED_LOCALES
+      I18n.send(:remove_const, :SUPPORTED_LOCALES)
+      I18n.const_set(:SUPPORTED_LOCALES, locales.freeze)
+      yield
+    ensure
+      I18n.send(:remove_const, :SUPPORTED_LOCALES)
+      I18n.const_set(:SUPPORTED_LOCALES, original)
+    end
   end
 end
 
