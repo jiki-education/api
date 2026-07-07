@@ -175,7 +175,7 @@ class User::DataTest < ActiveSupport::TestCase
     user.data.update!(explicit_locale: "hu")
 
     # An explicit choice wins outright; negotiation is never consulted.
-    User::NegotiateLocale.expects(:call).never
+    User::DetermineLocale.expects(:call).never
     assert_equal "hu", user.data.locale
   end
 
@@ -183,7 +183,7 @@ class User::DataTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(explicit_locale: nil, locales: %w[hu-HU en])
 
-    User::NegotiateLocale.expects(:call).with(%w[hu-HU en]).returns("hu")
+    User::DetermineLocale.expects(:call).with(%w[hu-HU en]).returns("hu")
     assert_equal "hu", user.data.locale
   end
 
@@ -191,7 +191,7 @@ class User::DataTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(explicit_locale: nil, locales: %w[xx-YY])
 
-    User::NegotiateLocale.expects(:call).with(%w[xx-YY]).returns(nil)
+    User::DetermineLocale.expects(:call).with(%w[xx-YY]).returns(nil)
     assert_equal I18n.default_locale.to_s, user.data.locale
   end
 

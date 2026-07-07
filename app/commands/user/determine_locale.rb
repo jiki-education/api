@@ -1,4 +1,4 @@
-class User::NegotiateLocale
+class User::DetermineLocale
   include Mandate
 
   initialize_with :tags
@@ -43,7 +43,7 @@ class User::NegotiateLocale
   end
 
   memoize
-  def parsed_tags = tags.filter_map { |tag| parse(tag) }
+  def parsed_tags = Array(tags).filter_map { |tag| parse(tag) }
 
   # Splits a tag into [language, region, canonical], normalising case since
   # Accept-Language isn't case-stable (language lowercased, region upcased so

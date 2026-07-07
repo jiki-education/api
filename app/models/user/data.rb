@@ -97,7 +97,7 @@ class User::Data < ApplicationRecord
   # Negotiate the browser's Accept-Language preferences (stored in locales)
   # down to a single supported content locale, or nil when none maps to a
   # live locale.
-  def locale_from_preferences = User::NegotiateLocale.(locales)
+  def locale_from_preferences = User::DetermineLocale.(locales)
 
   def generate_unsubscribe_token!
     self.unsubscribe_token ||= SecureRandom.uuid
