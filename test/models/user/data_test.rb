@@ -170,6 +170,41 @@ class User::DataTest < ActiveSupport::TestCase
     refute user.data.can_change_interval?
   end
 
+  test "locale returns explicit_locale when set" do
+    user = create(:user)
+    user.data.update!(explicit_locale: "hu")
+
+    # An explicit choice wins outright; negotiation is never consulted.
+    User::DetermineLocale.expects(:call).never
+    assert_equal "hu", user.data.locale
+  end
+
+  test "locale negotiates from preferences when no explicit choice" do
+    user = create(:user)
+    user.data.update!(explicit_locale: nil, locales: %w[hu-HU en])
+
+    User::DetermineLocale.expects(:call).with(%w[hu-HU en]).returns("hu")
+    assert_equal "hu", user.data.locale
+  end
+
+  test "locale falls back to the default when negotiation finds nothing" do
+    user = create(:user)
+    user.data.update!(explicit_locale: nil, locales: %w[xx-YY])
+
+    User::DetermineLocale.expects(:call).with(%w[xx-YY]).returns(nil)
+    assert_equal I18n.default_locale.to_s, user.data.locale
+  end
+
+  test "locale= records an explicit choice, and blanks clear it" do
+    user = create(:user)
+
+    user.data.locale = "hu"
+    assert_equal "hu", user.data.explicit_locale
+
+    user.data.locale = ""
+    assert_nil user.data.explicit_locale
+  end
+
   test "timezone defaults to UTC on create" do
     user = create(:user)
 

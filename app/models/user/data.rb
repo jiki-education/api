@@ -94,19 +94,10 @@ class User::Data < ApplicationRecord
   def may_receive_emails? = email_complaint_at.nil?
 
   private
-  # Walk the preferences in order, taking an exact match against a supported
-  # locale when there is one, else a language-part match (en-GB satisfies en,
-  # pt satisfies pt-BR).
-  def locale_from_preferences
-    locales.each do |tag|
-      return tag if I18n::SUPPORTED_LOCALES.include?(tag)
-
-      language = tag.split("-").first
-      match = I18n::SUPPORTED_LOCALES.find { |supported| supported.split("-").first == language }
-      return match if match
-    end
-    nil
-  end
+  # Negotiate the browser's Accept-Language preferences (stored in locales)
+  # down to a single supported content locale, or nil when none maps to a
+  # live locale.
+  def locale_from_preferences = User::DetermineLocale.(locales)
 
   def generate_unsubscribe_token!
     self.unsubscribe_token ||= SecureRandom.uuid
