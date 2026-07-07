@@ -98,7 +98,7 @@
         {
           "uuid": "c8e3c42b-00b7-4d10-8cb2-5557fc31203a",
           "slug": "snowman-basic",
-          "title": "Snowman Basic",
+          "title": "Snowman",
           "description": "Build a snowman from three circles.",
           "type": "exercise",
           "data": {
@@ -155,7 +155,7 @@
         {
           "uuid": "f05507d1-5019-478d-b4f5-293c8f5af60c",
           "slug": "cloud-rain-sun",
-          "title": "Cloud, Rain and Sun",
+          "title": "Cloud, Rain & Sun",
           "description": "Create a full weather scene with clouds, rain and sunshine.",
           "type": "exercise",
           "data": {
@@ -202,7 +202,7 @@
         {
           "uuid": "91e0b107-b97e-432a-b5f3-166fd455c3d8",
           "slug": "golf-rolling-ball-loop",
-          "title": "Golf Rolling Ball Loop",
+          "title": "Rolling Ball",
           "description": "Roll a golf ball into the hole using a loop.",
           "type": "exercise",
           "data": {
@@ -212,7 +212,7 @@
         {
           "uuid": "836bce90-74a5-47cb-94cd-8a773162a95f",
           "slug": "maze-solve-repeat",
-          "title": "Maze Solve Repeat",
+          "title": "Loopy Maze",
           "description": "Refactor a maze solution to use loops instead of repeated code.",
           "type": "exercise",
           "data": {
@@ -222,7 +222,7 @@
         {
           "uuid": "057f7bf7-b033-4174-ab04-f8aa4a58e6b6",
           "slug": "space-invaders-repeat",
-          "title": "Space Invaders Repeat",
+          "title": "Space Invaders: Repeat",
           "description": "Use loops to efficiently destroy a wave of aliens.",
           "type": "exercise",
           "data": {
@@ -269,7 +269,7 @@
         {
           "uuid": "3db959ac-3978-4276-ad90-56cc10ab36ec",
           "slug": "traffic-lights",
-          "title": "Traffic Light",
+          "title": "Traffic Lights",
           "description": "Draw a traffic light using variables for position and size.",
           "type": "exercise",
           "data": {
@@ -361,7 +361,7 @@
         {
           "uuid": "754677f0-92af-4160-a76f-2c644bb42161",
           "slug": "golf-rolling-ball-state",
-          "title": "Rolling Ball",
+          "title": "Stateful Ball",
           "description": "Roll a golf ball into the hole by tracking its position.",
           "type": "exercise",
           "data": {
@@ -408,7 +408,7 @@
         {
           "uuid": "4413424e-985d-42db-b1bf-73f7dcb250be",
           "slug": "dnd-roll",
-          "title": "DND Roll",
+          "title": "D&D Roll",
           "description": "Roll some dice and strike a goblin in a D&D adventure.",
           "type": "exercise",
           "data": {
@@ -598,7 +598,7 @@
         {
           "uuid": "3c5d1cdd-037e-43cb-8707-28fa9553bb52",
           "slug": "space-invaders-nested-repeat",
-          "title": "Space Invaders Nested Repeat",
+          "title": "Space Invaders: Nested Repeat",
           "description": "Fill the screen with rows and columns of aliens, then destroy them all.",
           "type": "exercise",
           "data": {
@@ -645,7 +645,7 @@
         {
           "uuid": "7a297816-5864-4487-b8b2-e8558eb800eb",
           "slug": "space-invaders-conditional",
-          "title": "Space Invaders Conditionals",
+          "title": "Space Invaders: Conditional",
           "description": "Only shoot when there's an alien in your sights.",
           "type": "exercise",
           "data": {
@@ -670,7 +670,7 @@
         {
           "uuid": "7125b4ad-713b-4b01-b31b-633689d5c268",
           "slug": "bouncer-wristbands",
-          "title": "Bouncer Wristbands",
+          "title": "Bouncer: Wristbands",
           "description": "Give clubbers the right coloured wristband based on their age.",
           "type": "exercise",
           "data": {
@@ -727,7 +727,7 @@
         {
           "uuid": "9e5495b0-4d5b-472d-a75f-077cef677027",
           "slug": "bouncer-dress-code",
-          "title": "Bouncer Dress Code",
+          "title": "Bouncer: Dress Code",
           "description": "Check both age and outfit before letting people in.",
           "type": "exercise",
           "data": {
@@ -797,7 +797,7 @@
         {
           "uuid": "a5f69847-dee4-47a5-b63e-a1c0f5ffdda1",
           "slug": "maze-automated-solve",
-          "title": "Solve the Maze Programatically",
+          "title": "Solve the Maze Programmatically",
           "description": "Write code that navigates any maze by itself.",
           "type": "exercise",
           "data": {
@@ -961,7 +961,7 @@
         {
           "uuid": "742af9dc-1267-42ea-8226-70d992568de1",
           "slug": "leap",
-          "title": "Leap Year",
+          "title": "Leap Years",
           "description": "Work out whether a year is a leap year.",
           "type": "exercise",
           "data": {
@@ -1100,7 +1100,7 @@
         {
           "uuid": "ed02c9bb-e49b-4019-b98e-cea282e7b8fe",
           "slug": "tile-search",
-          "title": "Contains",
+          "title": "Tile Search",
           "description": "Search through a rack of tiles to find a specific letter.",
           "type": "exercise",
           "data": {
@@ -1110,7 +1110,7 @@
         {
           "uuid": "8c2b791f-217b-4986-8b08-e3bc0014bb9c",
           "slug": "tile-rack",
-          "title": "Index Of",
+          "title": "Tile Rack",
           "description": "Find exactly where a letter sits on the tile rack.",
           "type": "exercise",
           "data": {
@@ -1120,7 +1120,7 @@
         {
           "uuid": "959d2fcf-9843-4dd4-bffa-0c52fd328f96",
           "slug": "sign-price",
-          "title": "Sign Painter Price",
+          "title": "Sign Price",
           "description": "Calculate the cost of painting a sign, letter by letter.",
           "type": "exercise",
           "data": {
@@ -1328,7 +1328,7 @@
         {
           "uuid": "ada11808-214f-4526-a2d7-aa66a5f4af22",
           "slug": "weather-symbols-part-1",
-          "title": "Symbols Part 1",
+          "title": "Weather Symbols (Part 1)",
           "description": "Map weather descriptions to the right combination of symbols.",
           "type": "exercise",
           "data": {
@@ -1338,7 +1338,7 @@
         {
           "uuid": "7aa0cf6a-a70d-435c-900c-31a0c8556758",
           "slug": "weather-symbols-part-2",
-          "title": "Symbols Part 2",
+          "title": "Weather Symbols (Part 2)",
           "description": "Draw weather scenes from lists of elements.",
           "type": "exercise",
           "data": {
@@ -1393,7 +1393,7 @@
         {
           "uuid": "c5dad5d3-dc0d-4de9-89dd-fe1e6363c207",
           "slug": "lunchbox",
-          "title": "Pack a Lunch",
+          "title": "Lunchbox",
           "description": "Fill a lunchbox with the right combination of items.",
           "type": "exercise",
           "data": {
