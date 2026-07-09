@@ -5,7 +5,7 @@ module Badges
                 "we write them to check our code works in different ways."
 
     def award_to?(user)
-      user.user_lessons.completed.joins(:lesson).where(lessons: { slug: 'owners-bouquets' }).exists?
+      user.user_lessons.completed.joins(:lesson).where(lessons: { slug: 'golf-scenarios' }).exists?
     end
   end
 end
