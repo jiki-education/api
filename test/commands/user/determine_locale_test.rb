@@ -3,7 +3,7 @@ require "test_helper"
 class User::DetermineLocaleTest < ActiveSupport::TestCase
   # The eventual full content-locale set. The resolver must be correct against
   # this even though production currently ships a subset.
-  FULL_SET = %w[en hu nl ja de fr pt-PT pt-BR es es-419].freeze
+  FULL_SET = %w[en hu nl ja de fr pt-PT pt-BR es-es es-419].freeze
 
   # Every row from the brief's acceptance oracle, evaluated against the full
   # content set: [Accept-Language preference list] => expected result.
@@ -19,11 +19,13 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     %w[pt-BR] => "pt-BR",                 # exact
     %w[pt-PT] => "pt-PT",                 # exact
     %w[pt] => "pt-BR",                    # bare pt -> Brazilian (CLDR)
-    %w[es-ES en] => "es",                 # Spain -> Peninsular
-    %w[es] => "es",                       # bare es -> Peninsular
+    %w[es-ES en] => "es-es",              # Spain -> Peninsular
+    %w[es] => "es-419",                   # bare es -> Latin American (larger audience)
     %w[es-MX es-419 en] => "es-419",      # es-MX collapses straight to es-419
     %w[es-AR en] => "es-419",             # Latin American region
-    %w[es-419] => "es-419",               # exact
+    %w[es-CL en] => "es-419",             # Firefox/Safari send country codes, not es-419
+    %w[es-PE en] => "es-419",             # ditto
+    %w[es-419] => "es-419",               # exact (Chromium sends this directly)
     %w[it-IT fr en] => "fr",              # it unsupported, next pref
     %w[zh-CN ja] => "ja",                 # zh unsupported, exact ja
     %w[xx-YY] => nil                      # nothing matches -> nil, caller applies the default
@@ -101,8 +103,8 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
   test "exact es-419 beats an earlier es region rule only when listed first" do
     with_supported_locales(FULL_SET) do
       # es-MX would collapse to es-419, but es-ES appears first and exact-fails,
-      # then collapses to es (Peninsular) before es-MX is reached in pass 2.
-      assert_equal "es", User::DetermineLocale.(%w[es-ES es-MX])
+      # then collapses to es-es (Peninsular) before es-MX is reached in pass 2.
+      assert_equal "es-es", User::DetermineLocale.(%w[es-ES es-MX])
     end
   end
 
