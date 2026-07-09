@@ -76,6 +76,8 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     with_supported_locales(FULL_SET) do
       assert_equal "pt-BR", User::DetermineLocale.(%w[PT-br])
       assert_equal "es-419", User::DetermineLocale.(%w[ES-419])
+      assert_equal "es-ES", User::DetermineLocale.(%w[es-es]) # lowercase region normalises to canonical es-ES
+      assert_equal "es-ES", User::DetermineLocale.(%w[ES-es])
       assert_equal "hu", User::DetermineLocale.(%w[HU])
     end
   end
