@@ -9,16 +9,16 @@ class Badges::ScenarioHandlerBadgeTest < ActiveSupport::TestCase
     refute badge.secret
   end
 
-  test "award_to? returns true when user completed owners-bouquets lesson" do
+  test "award_to? returns true when user completed golf-scenarios lesson" do
     badge = Badge.find_by_slug!('scenario_handler') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
-    lesson = create(:lesson, :exercise, slug: 'owners-bouquets')
+    lesson = create(:lesson, :exercise, slug: 'golf-scenarios')
     create(:user_lesson, :completed, user:, lesson:)
 
     assert badge.award_to?(user)
   end
 
-  test "award_to? returns false when user has not completed owners-bouquets lesson" do
+  test "award_to? returns false when user has not completed golf-scenarios lesson" do
     badge = Badge.find_by_slug!('scenario_handler') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
 
@@ -34,10 +34,10 @@ class Badges::ScenarioHandlerBadgeTest < ActiveSupport::TestCase
     refute badge.award_to?(user)
   end
 
-  test "award_to? returns false when user started but not completed owners-bouquets" do
+  test "award_to? returns false when user started but not completed golf-scenarios" do
     badge = Badge.find_by_slug!('scenario_handler') # rubocop:disable Rails/DynamicFindBy
     user = create(:user)
-    lesson = create(:lesson, :exercise, slug: 'owners-bouquets')
+    lesson = create(:lesson, :exercise, slug: 'golf-scenarios')
     create(:user_lesson, user:, lesson:) # Not completed
 
     refute badge.award_to?(user)
