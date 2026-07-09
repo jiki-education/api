@@ -8,7 +8,7 @@ module I18n
   SUPPORTED_LOCALES = (Jiki.env.production? ? %w[en] : %w[
     en
     hu
-    es-es es-419
+    es-ES es-419
     pt-PT pt-BR
   ]).freeze
 

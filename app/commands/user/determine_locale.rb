@@ -11,11 +11,11 @@ class User::DetermineLocale
   # A tag whose language is absent here simply collapses to its base language.
   LANGUAGE_VARIANTS = {
     "pt" => { bare: "pt-BR", regions: { "BR" => "pt-BR" }.freeze, fallback: "pt-PT" },
-    # Spanish ships two content variants: es-es (Peninsular/Spain) and es-419
+    # Spanish ships two content variants: es-ES (Peninsular/Spain) and es-419
     # (neutral Latin American). Only the ES region maps to Peninsular; every
     # other region collapses to es-419. A region-less "es" defaults to es-419,
     # since Latin America is the far larger Spanish-speaking audience.
-    "es" => { bare: "es-419", regions: { "ES" => "es-es" }.freeze, fallback: "es-419" }
+    "es" => { bare: "es-419", regions: { "ES" => "es-ES" }.freeze, fallback: "es-419" }
   }.freeze
 
   # Returns exactly one member of I18n::SUPPORTED_LOCALES, or nil when no
