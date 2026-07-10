@@ -97,9 +97,3 @@ en:
 
     # Exercism integration
     no_exercism_link: "This account isn't linked to Exercism"
-
-    # LEGACY: pre-rename projects API (see Internal::ProjectsController etc).
-    # Delete once the legacy projects endpoints are removed.
-    project_not_found: "Project not found"
-    user_project_not_found: "User project not found"
-    project_locked: "Complete the lesson that unlocks this project first"
