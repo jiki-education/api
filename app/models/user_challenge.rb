@@ -11,7 +11,13 @@ class UserChallenge < ApplicationRecord
   belongs_to :user
   belongs_to :challenge, foreign_key: :project_id, inverse_of: :user_challenges
 
-  has_many :exercise_submissions, as: :context, dependent: :destroy
+  # Transitional: rows are written with the legacy "UserProject" context_type
+  # (see polymorphic_name above) and will be written as "UserChallenge" once
+  # that override is removed, so reads must accept both until the backfill
+  # migration has run. Remove the lambda after the backfill.
+  has_many :exercise_submissions,
+    -> { unscope(where: :context_type).where(context_type: %w[UserProject UserChallenge]) },
+    as: :context, inverse_of: :context, dependent: :destroy
 
   # Validations
   # NB: project_id is the not-yet-renamed foreign key column for challenge.
@@ -22,9 +28,7 @@ class UserChallenge < ApplicationRecord
   def completed? = completed_at.present?
 
   def assistant_conversation
-    AssistantConversation.find_by(
-      user: user,
-      context: challenge
-    )
+    # Transitional read-both lookup (see AssistantConversation.for_context).
+    AssistantConversation.for_context(challenge).find_by(user:)
   end
 end
