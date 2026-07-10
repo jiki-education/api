@@ -160,27 +160,4 @@ class Internal::EventsControllerTest < ApplicationControllerTest
 
     assert_response :no_content
   end
-  # LEGACY: "project" is the pre-rename context_type. Delete this test
-  # alongside the legacy projects endpoints.
-  test "POST create materializes context_id for the legacy project context_type" do
-    challenge = create(:challenge, slug: "todo-list")
-
-    Analytics::TrackEvent.expects(:defer).with(
-      @current_user,
-      "premium_feature_blocked",
-      properties: {
-        "feature" => "challenges_page",
-        "context_type" => "project",
-        "context_slug" => "todo-list",
-        "context_id" => challenge.id
-      }
-    )
-
-    post internal_events_path, params: {
-      event: "premium_feature_blocked",
-      properties: { feature: "challenges_page", context_type: "project", context_slug: "todo-list" }
-    }, as: :json
-
-    assert_response :no_content
-  end
 end

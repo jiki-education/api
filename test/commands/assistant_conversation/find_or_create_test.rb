@@ -90,11 +90,11 @@ class AssistantConversation::FindOrCreateTest < ActiveSupport::TestCase
   end
   # Transitional read-both behaviour: delete this test when the transitional
   # code is removed after the backfill migration.
-  test "finds existing challenge conversation stored under the new Challenge context_type" do
+  test "finds existing challenge conversation stored under the legacy Project context_type" do
     user = create(:user)
     challenge = create(:challenge)
     existing_conversation = create(:assistant_conversation, user:, context: challenge)
-    existing_conversation.update_column(:context_type, "Challenge")
+    existing_conversation.update_column(:context_type, "Project")
 
     assert_no_difference 'AssistantConversation.count' do
       conversation = AssistantConversation::FindOrCreate.(user, challenge)

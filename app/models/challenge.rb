@@ -4,11 +4,6 @@ class Challenge < ApplicationRecord
   # The database table hasn't been renamed from the old "projects" naming yet.
   self.table_name = "projects"
 
-  # Polymorphic rows (assistant_conversations.context_type,
-  # friendly_id_slugs.sluggable_type) still store "Project". Keep writing
-  # that name until the data is migrated. See also the Project constant alias.
-  def self.polymorphic_name = "Project"
-
   extend FriendlyId
   friendly_id :slug, use: [:history]
 

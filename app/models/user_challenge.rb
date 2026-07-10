@@ -2,19 +2,13 @@ class UserChallenge < ApplicationRecord
   # The database table hasn't been renamed from the old "user_projects" naming yet.
   self.table_name = "user_projects"
 
-  # Polymorphic rows (exercise_submissions.context_type) still store
-  # "UserProject". Keep writing that name until the data is migrated.
-  # See also the UserProject constant alias.
-  def self.polymorphic_name = "UserProject"
-
   # Associations
   belongs_to :user
   belongs_to :challenge, foreign_key: :project_id, inverse_of: :user_challenges
 
-  # Transitional: rows are written with the legacy "UserProject" context_type
-  # (see polymorphic_name above) and will be written as "UserChallenge" once
-  # that override is removed, so reads must accept both until the backfill
-  # migration has run. Remove the lambda after the backfill.
+  # Transitional: rows written before the rename still have the legacy
+  # "UserProject" context_type, so reads must accept both names until the
+  # backfill migration has run. Remove the lambda after the backfill.
   has_many :exercise_submissions,
     -> { unscope(where: :context_type).where(context_type: %w[UserProject UserChallenge]) },
     as: :context, inverse_of: :context, dependent: :destroy
