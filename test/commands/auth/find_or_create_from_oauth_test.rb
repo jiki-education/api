@@ -156,6 +156,42 @@ class Auth::FindOrCreateFromOauthTest < ActiveSupport::TestCase
     })
   end
 
+  test "links existing user by email when payload email has different casing" do
+    existing_user = create(:user, email: 'existing@exercism.org', exercism_id: nil)
+
+    assert_no_difference 'User.count' do
+      user = find_or_create_exercism({ 'id' => '789', 'email' => 'Existing@Exercism.ORG', 'name' => 'Existing User' })
+
+      assert_equal existing_user.id, user.id
+      assert_equal '789', user.exercism_id
+    end
+  end
+
+  test "recovers when a concurrent request creates the user between lookup and insert" do
+    # Simulate the race: the email lookup finds nothing, but by the time we
+    # INSERT, a concurrent request has created the user.
+    concurrent_user = create(:user, email: 'raced@gmail.com', google_id: nil)
+    User.stubs(:find_by).with(google_id: 'google-123').returns(nil)
+    User.stubs(:find_by).with(email: 'raced@gmail.com').returns(nil, concurrent_user)
+    User.expects(:create!).raises(ActiveRecord::RecordNotUnique)
+
+    assert_no_difference 'User.count' do
+      user = find_or_create_google({ 'id' => 'google-123', 'email' => 'raced@gmail.com', 'name' => 'Raced User' })
+
+      assert_equal concurrent_user.id, user.id
+      assert_equal 'google-123', user.google_id
+      assert user.confirmed?
+    end
+  end
+
+  test "reraises RecordNotUnique when no user exists with the email" do
+    User.expects(:create!).raises(ActiveRecord::RecordNotUnique)
+
+    assert_raises(ActiveRecord::RecordNotUnique) do
+      find_or_create_google({ 'id' => 'google-123', 'email' => 'ghost@gmail.com', 'name' => 'Ghost User' })
+    end
+  end
+
   test "generates random password for new users" do
     user = find_or_create_exercism({ 'id' => '1530', 'email' => 'password@exercism.org', 'name' => 'Password Test' })
 

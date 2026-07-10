@@ -67,6 +67,11 @@ module Auth
         retries += 1
         handle = User::GenerateHandle.(email)
         retry
+      rescue ActiveRecord::RecordNotUnique
+        # A concurrent request (e.g. a double-click on the OAuth button, or a
+        # password signup racing this one) created the user between our email
+        # lookup and this INSERT. The account exists now, so link and use it.
+        find_by_email! || raise
       end
     end
 
@@ -79,7 +84,10 @@ module Auth
     def id_column = :"#{provider}_id"
 
     def id = payload['id']
-    def email = payload['email']
+
+    # Devise stores emails downcased (case_insensitive_keys), so downcase
+    # before looking up or the linking path misses existing accounts.
+    def email = payload['email']&.downcase
     def name = payload['name']
     def preferred_handle = payload['handle']
     def avatar_url = payload['avatar_url']
