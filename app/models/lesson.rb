@@ -8,7 +8,7 @@ class Lesson < ApplicationRecord
   has_many :user_lessons, dependent: :destroy
   has_many :users, through: :user_lessons
   has_many :unlocked_concepts, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
-  has_one :unlocked_project, class_name: 'Project', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
+  has_one :unlocked_challenge, class_name: 'Challenge', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
 
   self.translatable_fields = %i[title description]

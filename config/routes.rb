@@ -103,10 +103,10 @@ Rails.application.routes.draw do
       end
     end
 
-    # Projects with exercise submissions
-    resources :projects, only: %i[index show], param: :project_slug
-    resources :projects, only: [], param: :slug do
-      resources :exercise_submissions, only: [:create], controller: 'projects/exercise_submissions'
+    # Challenges with exercise submissions
+    resources :challenges, only: %i[index show], param: :challenge_slug
+    resources :challenges, only: [], param: :slug do
+      resources :exercise_submissions, only: [:create], controller: 'challenges/exercise_submissions'
     end
 
     resources :user_lessons, only: [:show], param: :lesson_slug do
@@ -116,6 +116,21 @@ Rails.application.routes.draw do
         patch :rate
         patch :walkthrough_video_percentage
       end
+    end
+
+    resources :user_challenges, only: [:show], param: :challenge_slug do
+      member do
+        post :start
+        patch :complete
+      end
+    end
+
+    # LEGACY: pre-rename projects API, identical to the old public surface.
+    # Kept so front ends deployed before the projects -> challenges rename
+    # keep working. Delete once the front end has been deployed.
+    resources :projects, only: %i[index show], param: :project_slug
+    resources :projects, only: [], param: :slug do
+      resources :exercise_submissions, only: [:create], controller: 'projects/exercise_submissions'
     end
 
     resources :user_projects, only: [:show], param: :project_slug do
@@ -169,6 +184,9 @@ Rails.application.routes.draw do
   # Admin routes
   namespace :admin do
     resources :concepts, only: %i[index show create update destroy]
+    resources :challenges, only: %i[index show create update destroy]
+    # LEGACY: pre-rename projects API. Delete once the admin front end
+    # has been deployed.
     resources :projects, only: %i[index show create update destroy]
     resources :users, only: %i[index show update destroy]
     resources :levels, only: %i[index create update] do

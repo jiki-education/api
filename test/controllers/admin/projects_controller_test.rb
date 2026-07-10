@@ -1,3 +1,5 @@
+# LEGACY: tests for the pre-rename projects API, kept identical to the old
+# public surface. Delete alongside the legacy projects endpoints.
 require "test_helper"
 
 class Admin::ProjectsControllerTest < ApplicationControllerTest
@@ -17,8 +19,8 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index returns all projects with pagination" do
     Prosopite.finish # Stop scan before creating test data
-    project1 = create(:project, title: "Calculator", slug: "calculator")
-    project2 = create(:project, title: "Todo App", slug: "todo-app")
+    project1 = create(:challenge, title: "Calculator", slug: "calculator")
+    project2 = create(:challenge, title: "Todo App", slug: "todo-app")
 
     Prosopite.scan # Resume scan for the actual request
     get admin_projects_path, as: :json
@@ -36,9 +38,9 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index filters by title" do
     Prosopite.finish
-    project1 = create(:project)
+    project1 = create(:challenge)
     project1.update!(title: "Calculator App")
-    project2 = create(:project)
+    project2 = create(:challenge)
     project2.update!(title: "Todo List")
 
     Prosopite.scan
@@ -57,9 +59,9 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination" do
     Prosopite.finish
-    project1 = create(:project, title: "AAA Project")
-    project2 = create(:project, title: "BBB Project")
-    create(:project, title: "CCC Project")
+    project1 = create(:challenge, title: "AAA Project")
+    project2 = create(:challenge, title: "BBB Project")
+    create(:challenge, title: "CCC Project")
 
     Prosopite.scan
     get admin_projects_path(page: 1, per: 2), as: :json
@@ -91,12 +93,12 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index does not use user filtering" do
     Prosopite.finish
-    project_1 = create(:project, title: "Apple Project")
-    project_2 = create(:project, title: "Zebra Project")
+    project_1 = create(:challenge, title: "Apple Project")
+    project_2 = create(:challenge, title: "Zebra Project")
 
     # Create a regular user and unlock a project
     regular_user = create(:user)
-    create(:user_project, user: regular_user, project: project_2)
+    create(:user_challenge, user: regular_user, challenge: project_2)
 
     Prosopite.scan
     get admin_projects_path, as: :json
@@ -157,7 +159,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   # SHOW tests
 
   test "GET show returns project" do
-    project = create(:project, title: "Calculator", exercise_slug: "calculator-project")
+    project = create(:challenge, title: "Calculator", exercise_slug: "calculator-project")
 
     get admin_project_path(project.id), as: :json
 
@@ -176,7 +178,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   # UPDATE tests
 
   test "PATCH update updates project with valid attributes" do
-    project = create(:project, title: "Original")
+    project = create(:challenge, title: "Original")
     update_params = {
       project: {
         title: "Updated"
@@ -194,7 +196,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update returns validation error for invalid attributes" do
-    project = create(:project)
+    project = create(:challenge)
     update_params = {
       project: {
         title: ""
@@ -224,7 +226,7 @@ class Admin::ProjectsControllerTest < ApplicationControllerTest
   # DESTROY tests
 
   test "DELETE destroy deletes project" do
-    project = create(:project)
+    project = create(:challenge)
 
     assert_difference "Project.count", -1 do
       delete admin_project_path(project.id), as: :json

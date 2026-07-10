@@ -6,19 +6,23 @@ class SerializeExerciseSubmission
   def call
     {
       uuid: submission.uuid,
-      context_type: submission.context_type,
+      context_type: context_type,
       context_slug: context_slug,
       files: submission.files.map { |file| serialize_file(file) }
     }
   end
 
   private
+  # The context_type column still stores the legacy "UserProject" name
+  # (see UserChallenge.polymorphic_name), so use the class name instead.
+  def context_type = submission.context.class.name
+
   def context_slug
     case submission.context
     when UserLesson
       submission.context.lesson.slug
-    when UserProject
-      submission.context.project.slug
+    when UserChallenge
+      submission.context.challenge.slug
     else
       raise "Unknown context type: #{submission.context_type}"
     end

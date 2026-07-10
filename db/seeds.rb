@@ -67,34 +67,34 @@ concepts_data.each do |concept_data|
 end
 puts "✓ Concepts: #{concepts_data.size}"
 
-# == Projects ==
-projects_file = Rails.root.join("db", "seeds", "projects.json")
-raise "Missing projects seed file at #{projects_file}" unless File.exist?(projects_file)
+# == Challenges ==
+challenges_file = Rails.root.join("db", "seeds", "challenges.json")
+raise "Missing challenges seed file at #{challenges_file}" unless File.exist?(challenges_file)
 
-projects_data = JSON.parse(File.read(projects_file), symbolize_names: true)
+challenges_data = JSON.parse(File.read(challenges_file), symbolize_names: true)
 
-projects_data.each do |project_data|
+challenges_data.each do |challenge_data|
   unlocking_lesson = nil
-  if project_data[:unlocked_by_lesson_slug]
-    unlocking_lesson = Lesson.find_by(slug: project_data[:unlocked_by_lesson_slug])
+  if challenge_data[:unlocked_by_lesson_slug]
+    unlocking_lesson = Lesson.find_by(slug: challenge_data[:unlocked_by_lesson_slug])
     unless unlocking_lesson
-      raise "Project '#{project_data[:slug]}' references missing lesson '#{project_data[:unlocked_by_lesson_slug]}'"
+      raise "Challenge '#{challenge_data[:slug]}' references missing lesson '#{challenge_data[:unlocked_by_lesson_slug]}'"
     end
   end
 
-  project = Project.find_by(uuid: project_data[:uuid]) ||
-            Project.find_or_initialize_by(slug: project_data[:slug])
+  challenge = Challenge.find_by(uuid: challenge_data[:uuid]) ||
+            Challenge.find_or_initialize_by(slug: challenge_data[:slug])
 
-  project.update!(
-    uuid: project_data[:uuid],
-    slug: project_data[:slug],
-    title: project_data[:title],
-    description: project_data[:description],
-    exercise_slug: project_data[:exercise_slug],
+  challenge.update!(
+    uuid: challenge_data[:uuid],
+    slug: challenge_data[:slug],
+    title: challenge_data[:title],
+    description: challenge_data[:description],
+    exercise_slug: challenge_data[:exercise_slug],
     unlocked_by_lesson: unlocking_lesson
   )
 end
-puts "✓ Projects: #{projects_data.size}"
+puts "✓ Challenges: #{challenges_data.size}"
 
 # == Badges ==
 # Each Badges::* class defines its copy via `seed`. Create any missing badges and

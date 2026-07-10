@@ -8,7 +8,7 @@ namespace :posthog do
 
     dump_to_csv(output_dir.join("lessons.csv"), Lesson.all, %i[id slug title type position level_id])
     dump_to_csv(output_dir.join("levels.csv"),  Level.all,  %i[id slug title position course_id])
-    dump_to_csv(output_dir.join("projects.csv"), Project.all, %i[id slug title exercise_slug])
+    dump_to_csv(output_dir.join("challenges.csv"), Challenge.all, %i[id slug title exercise_slug])
 
     puts "CSVs written to #{output_dir}"
     puts "Next: upload them to Cloudflare R2 and re-sync the linked sources in PostHog."

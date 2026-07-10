@@ -1,4 +1,4 @@
-class Project::Search
+class Challenge::Search
   include Mandate
 
   DEFAULT_PAGE = 1
@@ -16,10 +16,10 @@ class Project::Search
   end
 
   def call
-    @projects = Project.all
+    @challenges = Challenge.all
     apply_title_filter!
     apply_ordering!
-    @projects.page(page).per(per)
+    @challenges.page(page).per(per)
   end
 
   private
@@ -28,17 +28,18 @@ class Project::Search
   def apply_title_filter!
     return if title.blank?
 
-    @projects = @projects.where(
+    @challenges = @challenges.where(
       "title ILIKE ?",
       "%#{ActiveRecord::Base.sanitize_sql_like(title)}%"
     )
   end
 
   def apply_ordering!
-    return @projects = @projects.order(:title) unless user
+    return @challenges = @challenges.order(:title) unless user
 
-    # Scope the join to the current user so other users' user_projects don't filter projects out.
-    @projects = @projects.
+    # Scope the join to the current user so other users' user_challenges don't filter challenges out.
+    # NB: the underlying tables are still named projects / user_projects.
+    @challenges = @challenges.
       joins(sanitize_sql_array(
         [
           "LEFT JOIN user_projects ON user_projects.project_id = projects.id AND user_projects.user_id = ?",

@@ -1,25 +1,15 @@
-class Internal::ProjectsController < Internal::BaseController
-  before_action :require_premium!, only: [:show]
-  before_action :use_project!, only: [:show]
-
-  def index
-    projects = Project::Search.(
-      title: params[:title],
-      page: params[:page],
-      per: params[:per],
-      user: current_user
-    )
-
-    render json: SerializePaginatedCollection.(
-      projects,
-      serializer: SerializeProjects,
-      serializer_kwargs: { for_user: current_user }
-    )
-  end
-
+# LEGACY: pre-rename projects API, identical to the old public surface.
+# Kept so front ends deployed before the projects -> challenges rename
+# keep working. Delete once the front end has been deployed.
+class Internal::ProjectsController < Internal::ChallengesController
   def show
     render json: {
-      project: SerializeProject.(@project)
+      project: SerializeProject.(@challenge)
     }
   end
+
+  private
+  # The parent's before_action hooks call these, so overriding them swaps
+  # in the legacy :project_slug param and legacy error keys.
+  def use_challenge! = use_project!
 end

@@ -9,12 +9,12 @@ class Utils::RecordForIdentifierTest < ActiveSupport::TestCase
     assert_equal lesson, result
   end
 
-  test "finds project by slug" do
-    project = create(:project, slug: "calculator-app")
+  test "finds challenge by slug" do
+    challenge = create(:challenge, slug: "calculator-app")
 
-    result = Utils::RecordForIdentifier.("project", "calculator-app")
+    result = Utils::RecordForIdentifier.("challenge", "calculator-app")
 
-    assert_equal project, result
+    assert_equal challenge, result
   end
 
   test "raises ActiveRecord::RecordNotFound when lesson not found" do
@@ -23,9 +23,9 @@ class Utils::RecordForIdentifierTest < ActiveSupport::TestCase
     end
   end
 
-  test "raises ActiveRecord::RecordNotFound when project not found" do
+  test "raises ActiveRecord::RecordNotFound when challenge not found" do
     assert_raises(ActiveRecord::RecordNotFound) do
-      Utils::RecordForIdentifier.("project", "non-existent-slug")
+      Utils::RecordForIdentifier.("challenge", "non-existent-slug")
     end
   end
 
@@ -43,5 +43,14 @@ class Utils::RecordForIdentifierTest < ActiveSupport::TestCase
     end
 
     assert_match(/Unsupported context type: unknown/, error.message)
+  end
+  # LEGACY: "project" is the pre-rename name for "challenge". Delete this
+  # test alongside the legacy projects endpoints.
+  test "finds challenge by slug via the legacy project type" do
+    challenge = create(:challenge, slug: "legacy-calculator-app")
+
+    result = Utils::RecordForIdentifier.("project", "legacy-calculator-app")
+
+    assert_equal challenge, result
   end
 end

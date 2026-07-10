@@ -35,10 +35,10 @@ class UserLesson::Complete
     # Unlock any concepts this lesson unlocks
     lesson.unlocked_concepts.each { |concept| Concept::UnlockForUser.(concept, user) }
 
-    # Emit unlock event if this lesson unlocks a project. The project becomes
-    # unlocked by virtue of this lesson being completed - no UserProject row is
+    # Emit unlock event if this lesson unlocks a challenge. The challenge becomes
+    # unlocked by virtue of this lesson being completed - no UserChallenge row is
     # created here (the row is created when the user actually starts it).
-    emit_project_unlocked_event! if lesson.unlocked_project
+    emit_challenge_unlocked_event! if lesson.unlocked_challenge
 
     # Check for badges that might be awarded (badge's award_to? determines eligibility)
     AwardBadgeJob.perform_later(user, 'first_lesson')
@@ -57,8 +57,8 @@ class UserLesson::Complete
     Current.add_event(:lesson_unlocked, { lesson_slug: next_lesson.slug })
   end
 
-  def emit_project_unlocked_event!
-    Current.add_event(:project_unlocked, { project: SerializeProject.(lesson.unlocked_project) })
+  def emit_challenge_unlocked_event!
+    Current.add_event(:challenge_unlocked, { challenge: SerializeChallenge.(lesson.unlocked_challenge) })
   end
 
   def track_event!

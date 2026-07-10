@@ -13,15 +13,17 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
     assert_equal "UserLesson", submission.context_type
   end
 
-  test "creates submission with UUID for user_project" do
-    user_project = create(:user_project)
+  test "creates submission with UUID for user_challenge" do
+    user_challenge = create(:user_challenge)
     files = [{ filename: "main.rb", code: "puts 'hello'" }]
 
-    submission = ExerciseSubmission::Create.(user_project, files)
+    submission = ExerciseSubmission::Create.(user_challenge, files)
 
     assert submission.persisted?
     assert submission.uuid.present?
-    assert_equal user_project, submission.context
+    assert_equal user_challenge, submission.context
+    # The context_type column stores the legacy "UserProject" name until the
+    # data is migrated (see UserChallenge.polymorphic_name).
     assert_equal "UserProject", submission.context_type
   end
 
@@ -50,14 +52,14 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
     assert_equal user_lesson, submission.context
   end
 
-  test "associates with user_project correctly" do
-    user_project = create(:user_project)
+  test "associates with user_challenge correctly" do
+    user_challenge = create(:user_challenge)
     files = [{ filename: "solution.rb", code: "# solution" }]
 
-    submission = ExerciseSubmission::Create.(user_project, files)
+    submission = ExerciseSubmission::Create.(user_challenge, files)
 
-    assert_equal user_project.user, submission.user
-    assert_equal user_project, submission.context
+    assert_equal user_challenge.user, submission.user
+    assert_equal user_challenge, submission.context
   end
 
   test "each file has correct digest" do

@@ -1,25 +1,24 @@
-class Internal::UserProjectsController < Internal::BaseController
-  before_action :require_premium!
-  before_action :use_project!
-  before_action :use_user_project!, only: %i[show complete]
-
+# LEGACY: pre-rename projects API, identical to the old public surface.
+# Kept so front ends deployed before the projects -> challenges rename
+# keep working. Delete once the front end has been deployed.
+class Internal::UserProjectsController < Internal::UserChallengesController
   def show
     render json: {
-      user_project: SerializeUserProject.(@user_project)
+      user_project: SerializeUserProject.(@user_challenge)
     }
   end
 
   def start
-    UserProject::Start.(current_user, @project)
+    UserChallenge::Start.(current_user, @challenge)
 
     render json: {}
-  rescue ProjectLockedError
+  rescue ChallengeLockedError
     render_403(:project_locked)
   end
 
-  def complete
-    UserProject::Complete.(@user_project)
-
-    render json: {}
-  end
+  private
+  # The parent's before_action hooks call these, so overriding them swaps
+  # in the legacy :project_slug param and legacy error keys.
+  def use_challenge! = use_project!
+  def use_user_challenge! = use_user_project!
 end

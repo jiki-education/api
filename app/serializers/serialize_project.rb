@@ -1,13 +1,9 @@
+# LEGACY: pre-rename projects API. The output is identical to
+# SerializeChallenge. Delete once the legacy projects endpoints are removed.
 class SerializeProject
   include Mandate
 
-  initialize_with :project
+  initialize_with :challenge
 
-  def call
-    {
-      slug: project.slug,
-      title: project.title,
-      description: project.description
-    }
-  end
+  def call = SerializeChallenge.(challenge)
 end

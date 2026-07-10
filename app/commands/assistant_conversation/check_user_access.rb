@@ -17,11 +17,11 @@ class AssistantConversation::CheckUserAccess
   end
 
   private
-  # Scoped to lessons only. Project chat is premium-only (require_premium! on
-  # every project controller), so a standard user never reaches CheckUserAccess
-  # with a Project context. Keeping this lesson-scoped means a user who was
-  # premium, had project conversations, then downgraded still gets a fresh free
-  # lesson — their past project chats don't burn the standard-tier allowance.
+  # Scoped to lessons only. Challenge chat is premium-only (require_premium! on
+  # every challenge controller), so a standard user never reaches CheckUserAccess
+  # with a Challenge context. Keeping this lesson-scoped means a user who was
+  # premium, had challenge conversations, then downgraded still gets a fresh free
+  # lesson — their past challenge chats don't burn the standard-tier allowance.
   memoize
   def most_recent_lesson_conversation
     user.assistant_conversations.

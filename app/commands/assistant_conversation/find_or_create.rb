@@ -4,11 +4,14 @@ class AssistantConversation::FindOrCreate
   initialize_with :user, :context
 
   def call
-    AssistantConversation.find_or_create_by!(
-      user:,
-      context:
-    ).tap do |conversation|
-      track_event! if conversation.previously_new_record?
+    # Transitional read-both lookup (see AssistantConversation.for_context):
+    # challenge conversations may be stored under either polymorphic name
+    # until the backfill migration has run.
+    conversation = AssistantConversation.for_context(context).find_by(user:) ||
+                   AssistantConversation.create!(user:, context:)
+
+    conversation.tap do |c|
+      track_event! if c.previously_new_record?
     end
   end
 

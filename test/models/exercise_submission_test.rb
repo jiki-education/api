@@ -32,11 +32,11 @@ class ExerciseSubmissionTest < ActiveSupport::TestCase
     assert_equal user, submission.user
   end
 
-  test "delegates user to context for user_project" do
+  test "delegates user to context for user_challenge" do
     user = create(:user)
-    project = create(:project)
-    user_project = create(:user_project, user:, project:)
-    submission = create(:exercise_submission, context: user_project)
+    challenge = create(:challenge)
+    user_challenge = create(:user_challenge, user:, challenge:)
+    submission = create(:exercise_submission, context: user_challenge)
 
     assert_equal user, submission.user
   end

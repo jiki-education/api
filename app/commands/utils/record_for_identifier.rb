@@ -10,7 +10,9 @@ class Utils::RecordForIdentifier
   end
 
   private
-  VALID_TYPES = %w[lesson project].freeze
+  # LEGACY: "project" is the pre-rename name for "challenge". Delete it
+  # once the front end has been deployed.
+  VALID_TYPES = %w[lesson challenge project].freeze
   private_constant :VALID_TYPES
 
   def guard!
@@ -20,15 +22,17 @@ class Utils::RecordForIdentifier
   memoize
   def klass
     case type
-    when "lesson", "project"
+    when "lesson", "challenge"
       type.classify.constantize
+    when "project" # LEGACY: pre-rename name
+      Challenge
     end
   end
 
   memoize
   def key
     case type
-    when "lesson", "project"
+    when "lesson", "challenge", "project"
       :slug
     end
   end

@@ -17,8 +17,8 @@ class User < ApplicationRecord
   has_many :lessons, through: :user_lessons
   has_many :user_levels, dependent: :destroy
   has_many :levels, through: :user_levels
-  has_many :user_projects, dependent: :destroy
-  has_many :projects, through: :user_projects
+  has_many :user_challenges, dependent: :destroy
+  has_many :challenges, through: :user_challenges
   has_many :user_videos, dependent: :destroy
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
   has_many :badges, through: :acquired_badges

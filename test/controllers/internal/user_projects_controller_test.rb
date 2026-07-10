@@ -1,10 +1,12 @@
+# LEGACY: tests for the pre-rename projects API, kept identical to the old
+# public surface. Delete alongside the legacy projects endpoints.
 require "test_helper"
 
 class Internal::UserProjectsControllerTest < ApplicationControllerTest
   setup do
     setup_user
     make_premium(@current_user)
-    @project = create(:project)
+    @project = create(:challenge)
   end
 
   # Authentication guards
@@ -14,7 +16,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
 
   # GET /v1/user_projects/:slug tests
   test "GET show returns user project progress" do
-    user_project = create(:user_project, user: @current_user, project: @project)
+    user_project = create(:user_challenge, user: @current_user, challenge: @project)
     serialized_data = { project_slug: @project.slug, status: "started", conversation: [], data: {} }
 
     SerializeUserProject.expects(:call).with(user_project).returns(serialized_data)
@@ -58,7 +60,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
       assert_response :success
       assert_json_response({})
 
-      user_project = UserProject.find_by!(user: @current_user, project: @project)
+      user_project = UserProject.find_by!(user: @current_user, challenge: @project)
       assert_equal Time.current, user_project.started_at
     end
   end
@@ -74,7 +76,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
 
   test "POST start is idempotent" do
     post start_internal_user_project_path(project_slug: @project.slug), as: :json
-    original_started_at = UserProject.find_by!(user: @current_user, project: @project).started_at
+    original_started_at = UserProject.find_by!(user: @current_user, challenge: @project).started_at
 
     travel 1.hour do
       post start_internal_user_project_path(project_slug: @project.slug), as: :json
@@ -82,7 +84,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
     end
 
     assert_equal original_started_at,
-      UserProject.find_by!(user: @current_user, project: @project).started_at
+      UserProject.find_by!(user: @current_user, challenge: @project).started_at
   end
 
   test "POST start returns 404 for non-existent project" do
@@ -114,7 +116,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
 
   # PATCH /v1/user_projects/:slug/complete tests
   test "PATCH complete successfully completes a project" do
-    create(:user_project, user: @current_user, project: @project)
+    create(:user_challenge, user: @current_user, challenge: @project)
 
     patch complete_internal_user_project_path(project_slug: @project.slug),
       as: :json
@@ -124,7 +126,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH complete delegates to UserProject::Complete command" do
-    user_project = create(:user_project, user: @current_user, project: @project)
+    user_project = create(:user_challenge, user: @current_user, challenge: @project)
     UserProject::Complete.expects(:call).with(user_project)
 
     patch complete_internal_user_project_path(project_slug: @project.slug),
@@ -157,7 +159,7 @@ class Internal::UserProjectsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH complete is idempotent" do
-    user_project = create(:user_project, user: @current_user, project: @project)
+    user_project = create(:user_challenge, user: @current_user, challenge: @project)
 
     freeze_time do
       patch complete_internal_user_project_path(project_slug: @project.slug),

@@ -30,11 +30,11 @@ class SerializeExerciseSubmissionTest < ActiveSupport::TestCase
     assert_equal expected, SerializeExerciseSubmission.(submission)
   end
 
-  test "returns correct structure for project submission" do
+  test "returns correct structure for challenge submission" do
     user = create(:user)
-    project = create(:project, slug: "test-project")
-    user_project = create(:user_project, user:, project:)
-    submission = create(:exercise_submission, context: user_project, uuid: "def456")
+    challenge = create(:challenge, slug: "test-challenge")
+    user_challenge = create(:user_challenge, user:, challenge:)
+    submission = create(:exercise_submission, context: user_challenge, uuid: "def456")
 
     create(:exercise_submission_file,
       exercise_submission: submission,
@@ -42,8 +42,8 @@ class SerializeExerciseSubmissionTest < ActiveSupport::TestCase
 
     expected = {
       uuid: "def456",
-      context_type: "UserProject",
-      context_slug: "test-project",
+      context_type: "UserChallenge",
+      context_slug: "test-challenge",
       files: [
         { filename: "solution.rb", content: "puts 'hello'" }
       ]
