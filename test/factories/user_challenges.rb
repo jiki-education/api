@@ -1,7 +1,7 @@
 FactoryBot.define do
-  factory :user_project do
+  factory :user_challenge do
     user
-    project
+    challenge
 
     trait :started do
       started_at { Time.current }

@@ -44,14 +44,21 @@ class Internal::AssistantConversationsController < Internal::BaseController
 
   private
   def find_context
-    if params[:project_slug].present?
-      Project.find_by(slug: params[:project_slug])
+    if challenge_slug.present?
+      Challenge.find_by(slug: challenge_slug)
     else
       Lesson.find_by(slug: params[:lesson_slug])
     end
   end
 
+  # LEGACY: project_slug is the pre-rename param name. Delete the fallback
+  # once the front end has been deployed.
+  def challenge_slug = params[:challenge_slug].presence || params[:project_slug]
+
   def context_not_found_key
-    params[:project_slug].present? ? :project_not_found : :lesson_not_found
+    return :challenge_not_found if params[:challenge_slug].present?
+    return :project_not_found if params[:project_slug].present? # LEGACY: pre-rename param
+
+    :lesson_not_found
   end
 end

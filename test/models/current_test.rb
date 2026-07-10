@@ -25,9 +25,9 @@ class CurrentTest < ActiveSupport::TestCase
   end
 
   test "add_event accepts string type" do
-    Current.add_event("project_unlocked", {})
+    Current.add_event("challenge_unlocked", {})
 
-    assert_equal "project_unlocked", Current.events.first[:type]
+    assert_equal "challenge_unlocked", Current.events.first[:type]
   end
 
   test "add_event handles empty data hash" do

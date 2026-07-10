@@ -10,7 +10,7 @@ class Current < ActiveSupport::CurrentAttributes
   #
   # @example
   #   Current.add_event(:lesson_completed, {lesson_slug: 'intro-1'})
-  #   Current.add_event(:project_unlocked, {project_slug: 'calculator'})
+  #   Current.add_event(:challenge_unlocked, {challenge_slug: 'calculator'})
   def add_event(type, data = {})
     self.events ||= []
     self.events << { type: type.to_s, data: data }

@@ -1,3 +1,5 @@
+# LEGACY: tests for the pre-rename projects API, kept identical to the old
+# public surface. Delete alongside the legacy projects endpoints.
 require "test_helper"
 
 class Internal::ProjectsControllerTest < ApplicationControllerTest
@@ -13,13 +15,13 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
   # GET /v1/projects (index) tests
   test "GET index returns projects with unlocked first, then locked" do
     Prosopite.finish
-    project_zebra = create(:project, title: "Zebra Project")
-    project_apple = create(:project, title: "Apple Project")
-    project_middle = create(:project, title: "Middle Project")
+    project_zebra = create(:challenge, title: "Zebra Project")
+    project_apple = create(:challenge, title: "Apple Project")
+    project_middle = create(:challenge, title: "Middle Project")
 
     # Unlock Zebra and Middle for current user
-    create(:user_project, user: @current_user, project: project_zebra)
-    create(:user_project, user: @current_user, project: project_middle)
+    create(:user_challenge, user: @current_user, challenge: project_zebra)
+    create(:user_challenge, user: @current_user, challenge: project_middle)
 
     get internal_projects_path, as: :json
 
@@ -38,8 +40,8 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index returns all projects when user has none unlocked" do
     Prosopite.finish
-    project_apple = create(:project, title: "Apple Project")
-    project_banana = create(:project, title: "Banana Project")
+    project_apple = create(:challenge, title: "Apple Project")
+    project_banana = create(:challenge, title: "Banana Project")
 
     get internal_projects_path, as: :json
 
@@ -58,8 +60,8 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index shows started status" do
     Prosopite.finish
-    project = create(:project, title: "Calculator")
-    create(:user_project, user: @current_user, project:, started_at: Time.current, completed_at: nil)
+    project = create(:challenge, title: "Calculator")
+    create(:user_challenge, user: @current_user, challenge: project, started_at: Time.current, completed_at: nil)
 
     get internal_projects_path, as: :json
 
@@ -77,8 +79,8 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index shows completed status" do
     Prosopite.finish
-    project = create(:project, title: "Calculator")
-    create(:user_project, user: @current_user, project:, started_at: 2.days.ago, completed_at: Time.current)
+    project = create(:challenge, title: "Calculator")
+    create(:user_challenge, user: @current_user, challenge: project, started_at: 2.days.ago, completed_at: Time.current)
 
     get internal_projects_path, as: :json
 
@@ -96,11 +98,11 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index filters by title parameter" do
     Prosopite.finish
-    project_calc_app = create(:project, title: "Calculator App")
-    create(:project, title: "Todo List")
-    project_sci_calc = create(:project, title: "Scientific Calculator")
+    project_calc_app = create(:challenge, title: "Calculator App")
+    create(:challenge, title: "Todo List")
+    project_sci_calc = create(:challenge, title: "Scientific Calculator")
 
-    create(:user_project, user: @current_user, project: project_sci_calc)
+    create(:user_challenge, user: @current_user, challenge: project_sci_calc)
 
     get internal_projects_path(title: "Calculator"), as: :json
 
@@ -119,11 +121,11 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
-    project_apple = create(:project, title: "Apple")
-    create(:project, title: "Banana")
-    project_cherry = create(:project, title: "Cherry")
+    project_apple = create(:challenge, title: "Apple")
+    create(:challenge, title: "Banana")
+    project_cherry = create(:challenge, title: "Cherry")
 
-    create(:user_project, user: @current_user, project: project_cherry)
+    create(:user_challenge, user: @current_user, challenge: project_cherry)
 
     get internal_projects_path(page: 1, per: 2), as: :json
 
@@ -141,7 +143,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with per parameter" do
     Prosopite.finish
-    projects = Array.new(5) { |i| create(:project, title: "Project #{i}") }
+    projects = Array.new(5) { |i| create(:challenge, title: "Project #{i}") }
 
     get internal_projects_path(per: 3), as: :json
 
@@ -159,7 +161,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
 
   test "GET index returns correct fields" do
     Prosopite.finish
-    project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    project = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
 
     get internal_projects_path, as: :json
 
@@ -178,7 +180,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
   test "GET index is accessible to non-premium users" do
     Prosopite.finish
     make_non_premium(@current_user)
-    project = create(:project, title: "Calculator")
+    project = create(:challenge, title: "Calculator")
 
     get internal_projects_path, as: :json
 
@@ -197,7 +199,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
   # GET /v1/projects/:slug (show) tests
   test "GET show returns project by slug" do
     Prosopite.finish
-    project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    project = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
 
     get internal_project_path(project_slug: project.slug), as: :json
 
@@ -218,7 +220,7 @@ class Internal::ProjectsControllerTest < ApplicationControllerTest
   test "GET show returns 403 for non-premium user" do
     Prosopite.finish
     make_non_premium(@current_user)
-    project = create(:project, slug: "calculator")
+    project = create(:challenge, slug: "calculator")
 
     get internal_project_path(project_slug: project.slug), as: :json
 

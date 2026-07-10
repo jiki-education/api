@@ -57,40 +57,40 @@ class AssistantConversation::CheckUserAccessTest < ActiveSupport::TestCase
     assert AssistantConversation::CheckUserAccess.(user, lesson2)
   end
 
-  test "premium user is always allowed for project context" do
+  test "premium user is always allowed for challenge context" do
     user = create(:user)
     make_premium(user)
-    project = create(:project)
+    challenge = create(:challenge)
 
-    assert AssistantConversation::CheckUserAccess.(user, project)
+    assert AssistantConversation::CheckUserAccess.(user, challenge)
   end
 
-  test "standard user with no previous conversation is allowed for project context" do
+  test "standard user with no previous conversation is allowed for challenge context" do
     user = create(:user)
     make_non_premium(user)
-    project = create(:project)
+    challenge = create(:challenge)
 
-    assert AssistantConversation::CheckUserAccess.(user, project)
+    assert AssistantConversation::CheckUserAccess.(user, challenge)
   end
 
-  test "standard user with existing lesson conversation is denied for project context" do
+  test "standard user with existing lesson conversation is denied for challenge context" do
     user = create(:user)
     make_non_premium(user)
     lesson = create(:lesson, :exercise)
-    project = create(:project)
+    challenge = create(:challenge)
     create(:assistant_conversation, user:, context: lesson)
 
-    refute AssistantConversation::CheckUserAccess.(user, project)
+    refute AssistantConversation::CheckUserAccess.(user, challenge)
   end
 
-  test "standard user's project conversations do not consume the free lesson allowance" do
+  test "standard user's challenge conversations do not consume the free lesson allowance" do
     user = create(:user)
     make_non_premium(user)
-    project = create(:project)
+    challenge = create(:challenge)
     lesson = create(:lesson, :exercise)
-    create(:assistant_conversation, user:, context: project)
+    create(:assistant_conversation, user:, context: challenge)
 
-    # Project conversations are excluded from the free-lesson gate, so the
+    # Challenge conversations are excluded from the free-lesson gate, so the
     # lesson is still allowed as the user's free one.
     assert AssistantConversation::CheckUserAccess.(user, lesson)
   end

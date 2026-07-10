@@ -204,39 +204,39 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal initial_count, user.data.unlocked_concept_ids.length
   end
 
-  test "emits project_unlocked event when lesson has unlocked_project" do
+  test "emits challenge_unlocked event when lesson has unlocked_challenge" do
     user = create(:user)
     level = create(:level)
-    project = create(:project, slug: "calculator", title: "Calculator")
+    challenge = create(:challenge, slug: "calculator", title: "Calculator")
     lesson = create(:lesson, :exercise, level:)
-    project.update!(unlocked_by_lesson: lesson)
+    challenge.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
     Current.reset
     UserLesson::Complete.(user, lesson)
 
-    event = Current.events.find { |e| e[:type] == "project_unlocked" }
+    event = Current.events.find { |e| e[:type] == "challenge_unlocked" }
     assert event
-    assert_equal "calculator", event[:data][:project][:slug]
-    assert_equal "Calculator", event[:data][:project][:title]
+    assert_equal "calculator", event[:data][:challenge][:slug]
+    assert_equal "Calculator", event[:data][:challenge][:title]
   end
 
-  test "does not create a UserProject row when unlocking a project" do
+  test "does not create a UserChallenge row when unlocking a challenge" do
     user = create(:user)
     level = create(:level)
-    project = create(:project)
+    challenge = create(:challenge)
     lesson = create(:lesson, :exercise, level:)
-    project.update!(unlocked_by_lesson: lesson)
+    challenge.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
     create(:user_lesson, user:, lesson:)
 
-    assert_no_difference -> { user.user_projects.count } do
+    assert_no_difference -> { user.user_challenges.count } do
       UserLesson::Complete.(user, lesson)
     end
   end
 
-  test "does not emit project_unlocked event when lesson has no unlocked_project" do
+  test "does not emit challenge_unlocked event when lesson has no unlocked_challenge" do
     user = create(:user)
     level = create(:level)
     lesson = create(:lesson, :exercise, level:)
@@ -246,7 +246,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     Current.reset
     UserLesson::Complete.(user, lesson)
 
-    assert_nil((Current.events || []).find { |e| e[:type] == "project_unlocked" })
+    assert_nil((Current.events || []).find { |e| e[:type] == "challenge_unlocked" })
   end
 
   # Badge tests

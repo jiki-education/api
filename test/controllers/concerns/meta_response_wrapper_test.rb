@@ -68,7 +68,7 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
     TestMetaWrapperController.class_eval do
       def simple_response
         Current.add_event(:lesson_completed, { lesson_slug: "test" })
-        Current.add_event(:project_unlocked, { project_slug: "calculator" })
+        Current.add_event(:challenge_unlocked, { challenge_slug: "calculator" })
         render json: { lesson: { slug: "test" } }
       end
     end
@@ -84,8 +84,8 @@ class MetaResponseWrapperTest < ActionDispatch::IntegrationTest
     assert_equal "lesson_completed", json["meta"]["events"][0]["type"]
     assert_equal({ "lesson_slug" => "test" }, json["meta"]["events"][0]["data"])
 
-    assert_equal "project_unlocked", json["meta"]["events"][1]["type"]
-    assert_equal({ "project_slug" => "calculator" }, json["meta"]["events"][1]["data"])
+    assert_equal "challenge_unlocked", json["meta"]["events"][1]["type"]
+    assert_equal({ "challenge_slug" => "calculator" }, json["meta"]["events"][1]["data"])
   end
 
   test "merges events into existing meta" do

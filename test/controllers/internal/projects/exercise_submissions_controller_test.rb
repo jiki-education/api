@@ -1,12 +1,14 @@
+# LEGACY: tests for the pre-rename projects API, kept identical to the old
+# public surface. Delete alongside the legacy projects endpoints.
 require "test_helper"
 
 class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
     make_premium(@current_user)
-    @project = create(:project)
+    @project = create(:challenge)
     # Pre-create UserProject so it doesn't emit events during tests
-    create(:user_project, user: @current_user, project: @project)
+    create(:user_challenge, user: @current_user, challenge: @project)
   end
 
   guard_incorrect_token! :internal_project_exercise_submissions_path, args: ["test-slug"], method: :post
@@ -33,7 +35,7 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
     UserProject::Start.expects(:call).with(
       @current_user,
       @project
-    ).returns(create(:user_project))
+    ).returns(create(:user_challenge))
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },
@@ -55,7 +57,7 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
   end
 
   test "POST create calls ExerciseSubmission::Create" do
-    user_project = UserProject.find_by!(user: @current_user, project: @project)
+    user_project = UserProject.find_by!(user: @current_user, challenge: @project)
     files = [{ filename: "test.rb", code: "puts 'test'" }]
 
     UserProject::Start.stubs(:call).returns(user_project)
@@ -65,7 +67,7 @@ class Internal::Projects::ExerciseSubmissionsControllerTest < ApplicationControl
         file_params.length == 1 &&
         file_params[0]["filename"] == "test.rb" &&
         file_params[0]["code"] == "puts 'test'"
-    end.returns(create(:exercise_submission, :for_project))
+    end.returns(create(:exercise_submission, :for_challenge))
 
     post internal_project_exercise_submissions_path(project_slug: @project.slug),
       params: { submission: { files: } },

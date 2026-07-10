@@ -23,10 +23,10 @@ en:
     level_not_found: "Level not found"
     course_not_found: "Course not found"
     user_not_found: "User not found"
-    project_not_found: "Project not found"
+    challenge_not_found: "Challenge not found"
     concept_not_found: "Concept not found"
     badge_not_found: "Badge not found"
-    user_project_not_found: "User project not found"
+    user_challenge_not_found: "User challenge not found"
     user_video_not_found: "User video not found"
     mailshot_not_found: "Mailshot not found"
     unknown_segment: "Unknown audience segment"
@@ -44,7 +44,7 @@ en:
     # User progression errors
     lesson_in_progress: "Complete current lesson before starting a new one"
     level_not_completed: "Complete the current level first"
-    project_locked: "Complete the lesson that unlocks this project first"
+    challenge_locked: "Complete the lesson that unlocks this challenge first"
     user_lesson_not_found: "User lesson not found"
     user_level_not_found: "User level not found"
     language_already_chosen: "Language has already been chosen"
@@ -97,3 +97,9 @@ en:
 
     # Exercism integration
     no_exercism_link: "This account isn't linked to Exercism"
+
+    # LEGACY: pre-rename projects API (see Internal::ProjectsController etc).
+    # Delete once the legacy projects endpoints are removed.
+    project_not_found: "Project not found"
+    user_project_not_found: "User project not found"
+    project_locked: "Complete the lesson that unlocks this project first"

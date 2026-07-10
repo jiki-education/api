@@ -9,14 +9,14 @@ class SeedsTest < ActiveSupport::TestCase
     assert_operator course.levels.count, :>, 0
     assert_operator Lesson.count, :>, 0
     assert_operator Concept.count, :>, 0
-    assert_operator Project.count, :>, 0
+    assert_operator Challenge.count, :>, 0
     assert_operator Badge.count, :>, 0
 
     # Snapshot record IDs to prove the second run updates rather than recreates
     level_ids = Level.pluck(:id).sort
     lesson_ids = Lesson.pluck(:id).sort
     concept_ids = Concept.pluck(:id).sort
-    project_ids = Project.pluck(:id).sort
+    challenge_ids = Challenge.pluck(:id).sort
     badge_ids = Badge.pluck(:id).sort
 
     # Simulate a real production user with progress
@@ -38,7 +38,7 @@ class SeedsTest < ActiveSupport::TestCase
     assert_equal level_ids, Level.pluck(:id).sort
     assert_equal lesson_ids, Lesson.pluck(:id).sort
     assert_equal concept_ids, Concept.pluck(:id).sort
-    assert_equal project_ids, Project.pluck(:id).sort
+    assert_equal challenge_ids, Challenge.pluck(:id).sort
     assert_equal badge_ids, Badge.pluck(:id).sort
 
     # User progress survives

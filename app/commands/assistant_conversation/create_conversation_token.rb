@@ -31,14 +31,14 @@ class AssistantConversation::CreateConversationToken
   def context_kind
     case context
     when Lesson then 'lesson'
-    when Project then 'project'
+    when Challenge then 'challenge'
     end
   end
 
   def exercise_slug
     case context
     when Lesson then context.data[:slug]
-    when Project then context.exercise_slug
+    when Challenge then context.exercise_slug
     end
   end
 end

@@ -7,8 +7,8 @@ FactoryBot.define do
       association :context, factory: :user_lesson
     end
 
-    trait :for_project do
-      association :context, factory: :user_project
+    trait :for_challenge do
+      association :context, factory: :user_challenge
     end
   end
 end

@@ -179,13 +179,13 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     assert_equal 1, UserLesson.where(user: @current_user, lesson: @lesson).count
   end
 
-  test "PATCH complete emits events for unlocked concept and project" do
+  test "PATCH complete emits events for unlocked concept and challenge" do
     Prosopite.finish
 
     concept = create(:concept, slug: "variables", title: "Variables")
-    project = create(:project, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    challenge = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
     level = create(:level)
-    lesson = create(:lesson, :exercise, level:, unlocked_concepts: [concept], unlocked_project: project)
+    lesson = create(:lesson, :exercise, level:, unlocked_concepts: [concept], unlocked_challenge: challenge)
     create(:user_level, user: @current_user, level:)
     create(:user_lesson, user: @current_user, lesson:)
 
@@ -203,9 +203,9 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
             }
           },
           {
-            type: "project_unlocked",
+            type: "challenge_unlocked",
             data: {
-              project: SerializeProject.(project)
+              challenge: SerializeChallenge.(challenge)
             }
           }
         ]
