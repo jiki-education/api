@@ -1,15 +1,12 @@
 class Challenge < ApplicationRecord
   disable_sti!
 
-  # The database table hasn't been renamed from the old "projects" naming yet.
-  self.table_name = "projects"
-
   extend FriendlyId
   friendly_id :slug, use: [:history]
 
   # Associations
   belongs_to :unlocked_by_lesson, class_name: 'Lesson', optional: true
-  has_many :user_challenges, foreign_key: :project_id, inverse_of: :challenge, dependent: :destroy
+  has_many :user_challenges, dependent: :destroy
   has_many :users, through: :user_challenges
 
   # Validations

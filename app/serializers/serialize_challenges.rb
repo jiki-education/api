@@ -34,10 +34,9 @@ class SerializeChallenges
 
   memoize
   def user_challenge_rows
-    # NB: project_id is the not-yet-renamed foreign key column for challenge.
     UserChallenge.
-      where(user_id: for_user.id, project_id: challenges.map(&:id)).
-      pluck(:project_id, :started_at, :completed_at).
+      where(user_id: for_user.id, challenge_id: challenges.map(&:id)).
+      pluck(:challenge_id, :started_at, :completed_at).
       to_h { |challenge_id, started_at, completed_at| [challenge_id, { started_at:, completed_at: }] }
   end
 

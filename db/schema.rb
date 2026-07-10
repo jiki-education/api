@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_10_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -82,6 +82,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_badges_on_name", unique: true
     t.index ["type"], name: "index_badges_on_type", unique: true
+  end
+
+  create_table "challenges", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "exercise_slug", null: false
+    t.string "slug", null: false
+    t.string "title", null: false
+    t.bigint "unlocked_by_lesson_id"
+    t.datetime "updated_at", null: false
+    t.string "uuid", null: false
+    t.index ["slug"], name: "index_challenges_on_slug", unique: true
+    t.index ["unlocked_by_lesson_id"], name: "index_challenges_on_unlocked_by_lesson_id"
+    t.index ["uuid"], name: "index_challenges_on_uuid", unique: true
   end
 
   create_table "concepts", force: :cascade do |t|
@@ -253,20 +267,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
     t.index ["user_id"], name: "index_premium_entitlements_on_user_id"
   end
 
-  create_table "projects", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description", null: false
-    t.string "exercise_slug", null: false
-    t.string "slug", null: false
-    t.string "title", null: false
-    t.bigint "unlocked_by_lesson_id"
-    t.datetime "updated_at", null: false
-    t.string "uuid", null: false
-    t.index ["slug"], name: "index_projects_on_slug", unique: true
-    t.index ["unlocked_by_lesson_id"], name: "index_projects_on_unlocked_by_lesson_id"
-    t.index ["uuid"], name: "index_projects_on_uuid", unique: true
-  end
-
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
     t.string "concurrency_key", null: false
     t.datetime "created_at", null: false
@@ -411,6 +411,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
     t.index ["user_id"], name: "index_user_activity_data_on_user_id", unique: true
   end
 
+  create_table "user_challenges", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.bigint "challenge_id", null: false
+    t.datetime "started_at"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["challenge_id"], name: "index_user_challenges_on_challenge_id"
+    t.index ["user_id", "challenge_id"], name: "index_user_challenges_on_user_id_and_challenge_id", unique: true
+  end
+
   create_table "user_courses", force: :cascade do |t|
     t.datetime "completed_at"
     t.bigint "course_id", null: false
@@ -536,17 +547,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
     t.index ["user_id"], name: "index_user_notifications_on_user_id"
   end
 
-  create_table "user_projects", force: :cascade do |t|
-    t.datetime "completed_at"
-    t.datetime "created_at", null: false
-    t.bigint "project_id", null: false
-    t.datetime "started_at"
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["project_id"], name: "index_user_projects_on_project_id"
-    t.index ["user_id", "project_id"], name: "index_user_projects_on_user_id_and_project_id", unique: true
-  end
-
   create_table "user_videos", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -587,6 +587,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assistant_conversations", "users"
   add_foreign_key "badge_translations", "badges"
+  add_foreign_key "challenges", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "concepts", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "exercise_submission_files", "exercise_submissions"
   add_foreign_key "lesson_concepts", "concepts"
@@ -597,7 +598,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
   add_foreign_key "levels", "courses"
   add_foreign_key "payments", "users"
   add_foreign_key "premium_entitlements", "users"
-  add_foreign_key "projects", "lessons", column: "unlocked_by_lesson_id"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_claimed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_failed_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
@@ -607,6 +607,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
   add_foreign_key "user_acquired_badges", "badges"
   add_foreign_key "user_acquired_badges", "users"
   add_foreign_key "user_activity_data", "users"
+  add_foreign_key "user_challenges", "challenges"
+  add_foreign_key "user_challenges", "users"
   add_foreign_key "user_courses", "courses"
   add_foreign_key "user_courses", "user_levels", column: "current_user_level_id"
   add_foreign_key "user_courses", "users"
@@ -620,7 +622,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_05_120000) do
   add_foreign_key "user_mailshots", "mailshots"
   add_foreign_key "user_mailshots", "users"
   add_foreign_key "user_notifications", "users"
-  add_foreign_key "user_projects", "projects"
-  add_foreign_key "user_projects", "users"
   add_foreign_key "user_videos", "users"
 end
