@@ -22,9 +22,7 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
     assert submission.persisted?
     assert submission.uuid.present?
     assert_equal user_challenge, submission.context
-    # The context_type column stores the legacy "UserProject" name until the
-    # data is migrated (see UserChallenge.polymorphic_name).
-    assert_equal "UserProject", submission.context_type
+    assert_equal "UserChallenge", submission.context_type
   end
 
   test "creates all files via File::Create" do

@@ -125,22 +125,6 @@ class ApplicationController < ActionController::API
     render_404(:user_challenge_not_found)
   end
 
-  # LEGACY: pre-rename projects API. Delete once the legacy
-  # projects endpoints are removed.
-  def use_project!
-    @challenge = Challenge.find_by!(slug: params[:project_slug])
-  rescue ActiveRecord::RecordNotFound
-    render_404(:project_not_found)
-  end
-
-  # LEGACY: pre-rename projects API. Delete once the legacy
-  # projects endpoints are removed.
-  def use_user_project!
-    @user_challenge = UserChallenge.find_by!(user: current_user, challenge: @challenge)
-  rescue ActiveRecord::RecordNotFound
-    render_404(:user_project_not_found)
-  end
-
   def use_concept!
     @concept = Concept.friendly.find(params[:concept_slug])
   rescue ActiveRecord::RecordNotFound

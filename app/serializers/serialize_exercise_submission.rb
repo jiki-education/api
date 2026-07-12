@@ -13,8 +13,9 @@ class SerializeExerciseSubmission
   end
 
   private
-  # The context_type column still stores the legacy "UserProject" name
-  # (see UserChallenge.polymorphic_name), so use the class name instead.
+  # Rows written before the rename still store the legacy "UserProject"
+  # context_type, so use the class name instead of the raw column.
+  # Remove after the backfill migration.
   def context_type = submission.context.class.name
 
   def context_slug

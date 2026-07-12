@@ -44,13 +44,4 @@ class Utils::RecordForIdentifierTest < ActiveSupport::TestCase
 
     assert_match(/Unsupported context type: unknown/, error.message)
   end
-  # LEGACY: "project" is the pre-rename name for "challenge". Delete this
-  # test alongside the legacy projects endpoints.
-  test "finds challenge by slug via the legacy project type" do
-    challenge = create(:challenge, slug: "legacy-calculator-app")
-
-    result = Utils::RecordForIdentifier.("project", "legacy-calculator-app")
-
-    assert_equal challenge, result
-  end
 end

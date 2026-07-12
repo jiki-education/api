@@ -240,34 +240,4 @@ class Internal::AssistantConversationsControllerTest < ApplicationControllerTest
 
     assert_response :success
   end
-  # LEGACY: project_slug is the pre-rename param name. Delete these tests
-  # alongside the legacy projects endpoints.
-  test "POST create returns conversation token via the legacy project_slug param" do
-    make_premium(@current_user)
-    challenge = create(:challenge, slug: "calculator", exercise_slug: "jiki/calculator")
-
-    post internal_assistant_conversations_path,
-      params: with_turnstile(project_slug: "calculator"),
-      as: :json
-
-    assert_response :success
-    payload = JWT.decode(
-      response.parsed_body["token"],
-      Jiki.secrets.jwt_secret,
-      true,
-      { algorithm: 'HS256' }
-    ).first
-    assert_equal "calculator", payload['challenge_slug']
-    assert_equal "jiki/calculator", payload['exercise_slug']
-
-    assert_equal challenge, AssistantConversation.last.context
-  end
-
-  test "POST create returns 404 for non-existent challenge via the legacy project_slug param" do
-    post internal_assistant_conversations_path,
-      params: with_turnstile(project_slug: "non-existent"),
-      as: :json
-
-    assert_json_error(:not_found, error_type: :project_not_found)
-  end
 end

@@ -6,9 +6,7 @@ class Internal::EventsController < Internal::BaseController
 
   CONTEXT_MODELS = {
     "lesson" => Lesson,
-    "challenge" => Challenge,
-    # LEGACY: pre-rename name. Delete once the front end has been deployed.
-    "project" => Challenge
+    "challenge" => Challenge
   }.freeze
 
   def create
