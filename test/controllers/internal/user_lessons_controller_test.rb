@@ -49,16 +49,19 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :success
-    assert_json_response({})
+    user_lesson = UserLesson.find_by!(user: @current_user, lesson: @lesson)
+    assert_json_response({ user_lesson: SerializeUserLesson.(user_lesson) })
   end
 
   test "POST start delegates to UserLesson::Start command" do
-    UserLesson::Start.expects(:call).with(@current_user, @lesson)
+    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
+    UserLesson::Start.expects(:call).with(@current_user, @lesson).returns(user_lesson)
 
     post start_internal_user_lesson_path(lesson_slug: @lesson.slug),
       as: :json
 
     assert_response :success
+    assert_json_response({ user_lesson: SerializeUserLesson.(user_lesson) })
   end
 
   test "POST start returns 404 for non-existent lesson" do
@@ -153,13 +156,37 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     assert_response :success
   end
 
-  test "PATCH complete returns 422 when lesson not started" do
-    # No user_lesson created
+  test "PATCH complete starts the lesson when not started but startable" do
+    # No user_lesson created - e.g. the frontend's fire-and-forget start
+    # call was lost. Completion should heal by starting the lesson itself.
+    assert_difference "UserLesson.count", 1 do
+      patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
+        as: :json
+    end
+
+    assert_response :success
+    assert UserLesson.find_by!(user: @current_user, lesson: @lesson).completed_at.present?
+  end
+
+  test "PATCH complete returns 422 when lesson not started and another lesson is in progress" do
+    other_lesson = create(:lesson, :exercise, level: @level)
+    in_progress = create(:user_lesson, user: @current_user, lesson: other_lesson, completed_at: nil)
+    @user_level.update!(current_user_lesson: in_progress)
 
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
       as: :json
 
-    assert_json_error(:unprocessable_entity, error_type: :user_lesson_not_found)
+    assert_json_error(:unprocessable_entity, error_type: :lesson_in_progress)
+  end
+
+  test "PATCH complete returns 422 when lesson not started and user has no user_level" do
+    other_level = create(:level, course: @level.course, position: 2)
+    other_lesson = create(:lesson, :exercise, level: other_level)
+
+    patch complete_internal_user_lesson_path(lesson_slug: other_lesson.slug),
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :user_level_not_found)
   end
 
   test "PATCH complete preserves lesson record on re-completion" do

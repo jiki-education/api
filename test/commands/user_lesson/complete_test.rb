@@ -13,11 +13,25 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert user_lesson.reload.completed_at.present?
   end
 
-  test "raises error if user_lesson doesn't exist" do
+  test "starts and completes lesson when user_lesson doesn't exist but is startable" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+
+    assert_difference -> { UserLesson.count }, 1 do
+      UserLesson::Complete.(user, lesson)
+    end
+
+    user_lesson = UserLesson.find_by!(user:, lesson:)
+    assert user_lesson.completed_at.present?
+  end
+
+  test "raises error if user_lesson doesn't exist and lesson is not startable" do
     user = create(:user)
     lesson = create(:lesson, :exercise)
 
-    assert_raises(UserLessonNotFoundError) do
+    assert_raises(UserLevelNotFoundError) do
       UserLesson::Complete.(user, lesson)
     end
   end
@@ -52,14 +66,14 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal old_completed_at.to_i, user_lesson.reload.completed_at.to_i
   end
 
-  test "delegates to UserLesson::Find for lookup" do
+  test "delegates to UserLesson::Start for lookup" do
     user = create(:user)
     level = create(:level)
     lesson = create(:lesson, :exercise, level:)
     create(:user_level, user:, level:)
     user_lesson = create(:user_lesson, user:, lesson:)
 
-    UserLesson::Find.expects(:call).with(user, lesson).returns(user_lesson)
+    UserLesson::Start.expects(:call).with(user, lesson).returns(user_lesson)
 
     UserLesson::Complete.(user, lesson)
   end

@@ -12,9 +12,11 @@ class Internal::UserLessonsController < Internal::BaseController
   end
 
   def start
-    UserLesson::Start.(current_user, @lesson)
+    user_lesson = UserLesson::Start.(current_user, @lesson)
 
-    render json: {}
+    render json: {
+      user_lesson: SerializeUserLesson.(user_lesson)
+    }
   rescue LessonInProgressError
     render_422(:lesson_in_progress)
   rescue UserLevelNotFoundError
@@ -31,6 +33,8 @@ class Internal::UserLessonsController < Internal::BaseController
     render_422(:user_lesson_not_found)
   rescue UserLevelNotFoundError
     render_422(:user_level_not_found)
+  rescue LessonInProgressError
+    render_422(:lesson_in_progress)
   end
 
   def rate
