@@ -242,6 +242,22 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert json["error"]["errors"]["email"].present?
   end
 
+  test "POST signup does not report 422 to Sentry for auth namespace" do
+    Sentry.expects(:capture_message).never
+
+    post user_registration_path, params: with_turnstile(
+      user: {
+        email: "invalid-email",
+        password: "password123",
+        password_confirmation: "password123",
+        name: "New User",
+        handle: "newuser"
+      }
+    ), as: :json
+
+    assert_response :unprocessable_entity
+  end
+
   test "POST signup returns error with password mismatch" do
     assert_no_difference("User.count") do
       post user_registration_path, params: with_turnstile(

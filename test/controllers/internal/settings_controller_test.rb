@@ -126,6 +126,21 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert_equal "en", @user.reload.locale
   end
 
+  test "PATCH locale reports validation 422 to Sentry" do
+    # The frontend guards settings input upstream, so a server-side
+    # rejection means that guard has a hole.
+    Sentry.expects(:capture_message).with(
+      "API 422: locale_update_failed (internal/settings#locale)",
+      level: :warning,
+      fingerprint: %w[internal/settings locale locale_update_failed],
+      extra: instance_of(Hash)
+    )
+
+    patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
+
+    assert_response :unprocessable_entity
+  end
+
   # Handle tests
   test "PATCH handle updates successfully" do
     patch handle_internal_settings_path, params: { value: "new-handle" }, as: :json

@@ -77,8 +77,10 @@ class UserLesson::Complete
   memoize
   def next_lesson = level.lessons.where('position > ?', lesson.position).first
 
+  # Use start here rather than find, so if for some reason we've not
+  # had a valid API call to the start endpoint, we don't hurt the user.
   memoize
-  def user_lesson = UserLesson::Find.(user, lesson)
+  def user_lesson = UserLesson::Start.(user, lesson)
 
   memoize
   def user_level = UserLevel::Find.(user, level)
