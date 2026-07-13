@@ -29,7 +29,7 @@ class Admin::MailshotsController < Admin::BaseController
   end
 
   def destroy
-    return render_422(:mailshot_already_sent) if @mailshot.sent?
+    return render_422(:mailshot_already_sent, report: false) if @mailshot.sent?
 
     @mailshot.destroy!
     head :no_content
@@ -56,9 +56,9 @@ class Admin::MailshotsController < Admin::BaseController
       audience_count:
     }
   rescue MailshotUnknownSegmentError
-    render_422(:unknown_segment, segment: params[:segment])
+    render_422(:unknown_segment, report: false, segment: params[:segment])
   rescue MailshotBlankBodyError
-    render_422(:mailshot_body_blank)
+    render_422(:mailshot_body_blank, report: false)
   end
 
   private
