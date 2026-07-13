@@ -132,4 +132,44 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
       assert_equal 20, submission.files.count
     end
   end
+
+  test "persists progression_scores when a valid object is given" do
+    user_lesson = create(:user_lesson)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+    scores = { "version" => 1, "runs" => 5, "errors" => 0 }
+
+    submission = ExerciseSubmission::Create.(user_lesson, files, progression_scores: scores)
+
+    assert_equal scores, submission.progression_scores
+  end
+
+  test "persists nil progression_scores when none given" do
+    user_lesson = create(:user_lesson)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    submission = ExerciseSubmission::Create.(user_lesson, files)
+
+    assert_nil submission.progression_scores
+  end
+
+  test "silently normalizes malformed progression_scores to nil" do
+    user_lesson = create(:user_lesson)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    Prosopite.pause do
+      [
+        "1:5,10,0",
+        [1, 2, 3],
+        { "runs" => "5" },
+        { "runs" => 1.5 },
+        { "runs" => nil },
+        { "runs" => true },
+        {},
+        42
+      ].each do |bad|
+        submission = ExerciseSubmission::Create.(user_lesson, files, progression_scores: bad)
+        assert_nil submission.progression_scores, "expected #{bad.inspect} to normalize to nil"
+      end
+    end
+  end
 end

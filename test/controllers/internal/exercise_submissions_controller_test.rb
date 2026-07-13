@@ -102,6 +102,35 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     assert_response :created
   end
 
+  test "POST create passes progression_scores through to ExerciseSubmission::Create" do
+    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
+    files = [{ filename: "test.rb", code: "puts 'test'" }]
+    scores = { "version" => 1, "runs" => 5 }
+
+    UserLesson::Start.stubs(:call).returns(user_lesson)
+
+    ExerciseSubmission::Create.expects(:call).with do |_ul, _file_params, progression_scores:|
+      progression_scores.to_h == scores
+    end.returns(create(:exercise_submission))
+
+    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
+      params: { submission: { files:, progression_scores: scores } },
+      as: :json
+
+    assert_response :created
+  end
+
+  test "POST create with malformed progression_scores still succeeds" do
+    files = [{ filename: "test.rb", code: "puts 'test'" }]
+
+    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
+      params: { submission: { files:, progression_scores: "1:5,10,0" } },
+      as: :json
+
+    assert_response :created
+    assert_nil ExerciseSubmission.last.progression_scores
+  end
+
   test "POST create handles invalid lesson slug" do
     files = [{ filename: "test.rb", code: "code" }]
 

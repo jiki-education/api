@@ -15,7 +15,8 @@ class Internal::Challenges::ExerciseSubmissionsController < Internal::BaseContro
     # Create submission with UserChallenge as context
     ExerciseSubmission::Create.(
       user_challenge,
-      submission_params[:files]
+      submission_params[:files],
+      progression_scores: submission_params[:progression_scores]
     )
 
     render json: {}, status: :created
@@ -23,7 +24,7 @@ class Internal::Challenges::ExerciseSubmissionsController < Internal::BaseContro
 
   private
   def submission_params
-    params.require(:submission).permit(files: %i[filename code])
+    params.require(:submission).permit(files: %i[filename code], progression_scores: {})
   end
 
   def render_duplicate_filename_error(exception)

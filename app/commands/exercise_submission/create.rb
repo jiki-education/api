@@ -1,7 +1,7 @@
 class ExerciseSubmission::Create
   include Mandate
 
-  initialize_with :context, :files
+  initialize_with :context, :files, progression_scores: nil
 
   def call
     validate_files_present!
@@ -11,7 +11,8 @@ class ExerciseSubmission::Create
     ActiveRecord::Base.transaction do
       ExerciseSubmission.create!(
         context:,
-        uuid:
+        uuid:,
+        progression_scores: sanitized_progression_scores
       ).tap do |submission|
         files.each do |file_params|
           ExerciseSubmission::File::Create.(
@@ -44,4 +45,20 @@ class ExerciseSubmission::Create
 
   memoize
   def uuid = SecureRandom.uuid
+
+  # Analytics data from the frontend "stuckometer". Must never block a
+  # submission, so anything that isn't a JSON object of integer values is
+  # silently normalized to nil rather than raising.
+  memoize
+  def sanitized_progression_scores
+    scores = progression_scores
+    scores = scores.to_unsafe_h if scores.respond_to?(:to_unsafe_h)
+    return nil unless scores.is_a?(Hash)
+
+    scores = scores.to_h
+    return nil if scores.empty?
+    return nil unless scores.values.all?(Integer)
+
+    scores
+  end
 end
