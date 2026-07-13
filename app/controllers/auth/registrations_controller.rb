@@ -32,7 +32,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
         render json: { user: { email: resource.email, email_confirmed: false } }, status: :created
       end
     else
-      render_422(:validation_error, errors: resource.errors.messages)
+      render_422(:validation_error, report: false, errors: resource.errors.messages)
     end
   end
 

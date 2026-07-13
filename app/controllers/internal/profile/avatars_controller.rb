@@ -3,9 +3,9 @@ class Internal::Profile::AvatarsController < Internal::BaseController
     User::Avatar::Upload.(current_user, params[:avatar])
     render json: { profile: SerializeProfile.(current_user) }
   rescue InvalidAvatarError
-    render_422(:invalid_avatar)
+    render_422(:invalid_avatar, report: false)
   rescue AvatarTooLargeError
-    render_422(:avatar_too_large)
+    render_422(:avatar_too_large, report: false)
   end
 
   def destroy

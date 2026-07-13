@@ -328,6 +328,35 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     assert_json_error(:unprocessable_entity, error_type: :lesson_in_progress)
   end
 
+  test "POST start reports 422 to Sentry" do
+    lesson1 = create(:lesson, :exercise, level: @level)
+    lesson2 = create(:lesson, :exercise, level: @level)
+    in_progress = create(:user_lesson, user: @current_user, lesson: lesson1, completed_at: nil)
+    @user_level.update!(current_user_lesson: in_progress)
+
+    Sentry.expects(:capture_message).with(
+      "API 422: lesson_in_progress (internal/user_lessons#start)",
+      level: :warning,
+      fingerprint: %w[internal/user_lessons start lesson_in_progress],
+      extra: instance_of(Hash)
+    )
+
+    post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :lesson_in_progress)
+  end
+
+  test "GET show does not report 404 to Sentry" do
+    lesson = create(:lesson, :exercise, level: @level)
+
+    Sentry.expects(:capture_message).never
+
+    get internal_user_lesson_path(lesson_slug: lesson.slug), as: :json
+
+    assert_json_error(:not_found, error_type: :user_lesson_not_found)
+  end
+
   test "POST start returns 403 when user level not found" do
     other_level = create(:level, slug: "other-level", position: 999)
     other_lesson = create(:lesson, :exercise, level: other_level)

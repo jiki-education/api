@@ -9,7 +9,7 @@ class Auth::ConfirmationsController < Devise::ConfirmationsController
     if resource.errors.empty?
       sign_in_with_2fa_guard!(resource, sign_in_type: :signup)
     else
-      render_422(:invalid_token)
+      render_422(:invalid_token, report: false)
     end
   end
 

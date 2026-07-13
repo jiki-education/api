@@ -131,17 +131,35 @@ class ApplicationController < ActionController::API
     render_404(:concept_not_found)
   end
 
-  def render_error(status_code, error_type, extra = {})
+  # 400/422 responses usually mean the frontend and API disagree about state
+  # (the client showed the user something the server rejects), which is a bug
+  # in one of them. Report them to Sentry by default, fingerprinted by endpoint
+  # and error type so each distinct failure mode groups into a single issue.
+  # Pass report: false for expected, user-driven failures (e.g. form validation).
+  SENTRY_REPORTED_ERROR_STATUSES = %i[bad_request unprocessable_entity].freeze
+
+  def render_error(status_code, error_type, extra = {}, report: true)
     render json: {
       error: { type: error_type.to_s, message: I18n.t("api_errors.#{error_type}") }.merge(extra)
     }, status: status_code
+
+    report_error_to_sentry(error_type) if report && SENTRY_REPORTED_ERROR_STATUSES.include?(status_code)
   end
 
-  def render_400(error_type, **extra) = render_error(:bad_request, error_type, extra)
+  def render_400(error_type, report: true, **extra) = render_error(:bad_request, error_type, extra, report:)
   def render_401(error_type = :unauthenticated, **extra) = render_error(:unauthorized, error_type, extra)
   def render_403(error_type = :forbidden, **extra) = render_error(:forbidden, error_type, extra)
   def render_404(error_type = :not_found, **extra) = render_error(:not_found, error_type, extra)
-  def render_422(error_type, **extra) = render_error(:unprocessable_entity, error_type, extra)
+  def render_422(error_type, report: true, **extra) = render_error(:unprocessable_entity, error_type, extra, report:)
+
+  def report_error_to_sentry(error_type)
+    Sentry.capture_message(
+      "API #{response.status}: #{error_type} (#{controller_path}##{action_name})",
+      level: :warning,
+      fingerprint: [controller_path, action_name, error_type.to_s],
+      extra: { params: request.filtered_parameters }
+    )
+  end
 
   def render_success(message_type, status: :ok, **interpolations)
     render json: { message: I18n.t("api_messages.#{message_type}", **interpolations) }, status: status

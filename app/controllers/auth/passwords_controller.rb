@@ -18,7 +18,7 @@ class Auth::PasswordsController < Devise::PasswordsController
     if resource.errors.empty?
       render_success(:password_reset_success)
     else
-      render_422(:invalid_token, errors: resource.errors.messages)
+      render_422(:invalid_token, report: false, errors: resource.errors.messages)
     end
   end
 

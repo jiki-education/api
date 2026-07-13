@@ -126,6 +126,14 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert_equal "en", @user.reload.locale
   end
 
+  test "PATCH locale does not report validation 422 to Sentry" do
+    Sentry.expects(:capture_message).never
+
+    patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
+
+    assert_response :unprocessable_entity
+  end
+
   # Handle tests
   test "PATCH handle updates successfully" do
     patch handle_internal_settings_path, params: { value: "new-handle" }, as: :json

@@ -27,7 +27,7 @@ class Admin::UsersController < Admin::BaseController
       user: SerializeAdminUser.(user)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:validation_error, errors: e.record.errors.as_json)
+    render_422(:validation_error, report: false, errors: e.record.errors.as_json)
   end
 
   def destroy
