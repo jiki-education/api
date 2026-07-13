@@ -113,6 +113,14 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "POST create does not report 422 to Sentry for admin namespace" do
+    Sentry.expects(:capture_message).never
+
+    post admin_concepts_path, params: { concept: { title: "" } }, as: :json
+
+    assert_response :unprocessable_entity
+  end
+
   test "POST create returns validation error for invalid attributes" do
     concept_params = {
       concept: {

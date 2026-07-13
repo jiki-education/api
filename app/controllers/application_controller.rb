@@ -136,7 +136,12 @@ class ApplicationController < ActionController::API
   # in one of them. Report them to Sentry by default, fingerprinted by endpoint
   # and error type so each distinct failure mode groups into a single issue.
   # Pass report: false for expected, user-driven failures (e.g. form validation).
+  #
+  # Admin and auth endpoints are exempt as a class: their 4xxs are driven by
+  # hand-typed input (admin CRUD forms, signup validation, stale email links),
+  # not client/server drift.
   SENTRY_REPORTED_ERROR_STATUSES = %i[bad_request unprocessable_entity].freeze
+  SENTRY_EXEMPT_NAMESPACES = %w[admin auth].freeze
 
   def render_error(status_code, error_type, extra = {}, report: true)
     render json: {
@@ -153,6 +158,8 @@ class ApplicationController < ActionController::API
   def render_422(error_type, report: true, **extra) = render_error(:unprocessable_entity, error_type, extra, report:)
 
   def report_error_to_sentry(error_type)
+    return if SENTRY_EXEMPT_NAMESPACES.include?(controller_path.split("/").first)
+
     Sentry.capture_message(
       "API #{response.status}: #{error_type} (#{controller_path}##{action_name})",
       level: :warning,

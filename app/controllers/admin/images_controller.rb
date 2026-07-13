@@ -11,8 +11,8 @@ class Admin::ImagesController < Admin::BaseController
 
     render json: { url: result[:url] }, status: :created
   rescue ImageFileTooLargeError
-    render_422(:file_too_large, report: false)
+    render_422(:file_too_large)
   rescue InvalidImageTypeError
-    render_422(:invalid_image_type, report: false)
+    render_422(:invalid_image_type)
   end
 end

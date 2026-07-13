@@ -18,18 +18,18 @@ class Admin::MailshotsController < Admin::BaseController
     mailshot = Mailshot.create!(mailshot_params)
     render json: { mailshot: SerializeMailshot.(mailshot) }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:validation_error, report: false, errors: e.record.errors.as_json)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def update
     @mailshot.update!(mailshot_params)
     render json: { mailshot: SerializeMailshot.(@mailshot) }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:validation_error, report: false, errors: e.record.errors.as_json)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def destroy
-    return render_422(:mailshot_already_sent, report: false) if @mailshot.sent?
+    return render_422(:mailshot_already_sent) if @mailshot.sent?
 
     @mailshot.destroy!
     head :no_content
@@ -56,9 +56,9 @@ class Admin::MailshotsController < Admin::BaseController
       audience_count:
     }
   rescue MailshotUnknownSegmentError
-    render_422(:unknown_segment, report: false, segment: params[:segment])
+    render_422(:unknown_segment, segment: params[:segment])
   rescue MailshotBlankBodyError
-    render_422(:mailshot_body_blank, report: false)
+    render_422(:mailshot_body_blank)
   end
 
   private

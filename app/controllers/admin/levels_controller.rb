@@ -23,7 +23,7 @@ class Admin::LevelsController < Admin::BaseController
       level: SerializeAdminLevel.(level)
     }, status: :created
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:validation_error, report: false, errors: e.record.errors.as_json)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   def update
@@ -32,7 +32,7 @@ class Admin::LevelsController < Admin::BaseController
       level: SerializeAdminLevel.(level)
     }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:validation_error, report: false, errors: e.record.errors.as_json)
+    render_422(:validation_error, errors: e.record.errors.as_json)
   end
 
   private
