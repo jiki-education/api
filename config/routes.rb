@@ -103,6 +103,10 @@ Rails.application.routes.draw do
       end
     end
 
+    # Patch progression scores onto an existing submission (context-agnostic;
+    # works for both lesson and challenge submissions, keyed by uuid).
+    resources :exercise_submissions, only: [:update], param: :uuid
+
     # Challenges with exercise submissions
     resources :challenges, only: %i[index show], param: :challenge_slug
     resources :challenges, only: [], param: :slug do

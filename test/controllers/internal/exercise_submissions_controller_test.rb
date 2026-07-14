@@ -10,6 +10,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
   guard_incorrect_token! :internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :post
   guard_incorrect_token! :latest_internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :get
+  guard_incorrect_token! :internal_exercise_submission_path, args: ["test-uuid"], method: :patch
 
   # GET /internal/lessons/:slug/exercise_submissions/latest tests
   test "GET latest returns most recent submission" do
@@ -64,7 +65,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     end
 
     assert_response :created
-    assert_json_response({})
+    assert_json_response({ submission: { uuid: ExerciseSubmission.last.uuid } })
   end
 
   test "POST create starts UserLesson" do
@@ -100,35 +101,6 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
       as: :json
 
     assert_response :created
-  end
-
-  test "POST create passes progression_scores through to ExerciseSubmission::Create" do
-    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    files = [{ filename: "test.rb", code: "puts 'test'" }]
-    scores = { "version" => 1, "runs" => 5 }
-
-    UserLesson::Start.stubs(:call).returns(user_lesson)
-
-    ExerciseSubmission::Create.expects(:call).with do |_ul, _file_params, progression_scores:|
-      progression_scores.to_h == scores
-    end.returns(create(:exercise_submission))
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files:, progression_scores: scores } },
-      as: :json
-
-    assert_response :created
-  end
-
-  test "POST create with malformed progression_scores still succeeds" do
-    files = [{ filename: "test.rb", code: "puts 'test'" }]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files:, progression_scores: "1:5,10,0" } },
-      as: :json
-
-    assert_response :created
-    assert_nil ExerciseSubmission.last.progression_scores
   end
 
   test "POST create handles invalid lesson slug" do
@@ -274,5 +246,67 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/code.*required/i, json_response["error"]["message"])
+  end
+
+  # PATCH /internal/exercise_submissions/:uuid (progression scores) tests
+
+  test "PATCH update calls UpdateProgressionScores and returns 200" do
+    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
+    submission = create(:exercise_submission, context: user_lesson)
+    scores = { "version" => 1, "runs" => 5 }
+
+    ExerciseSubmission::UpdateProgressionScores.expects(:call).with do |sub, progression_scores|
+      sub == submission && progression_scores.to_h == scores
+    end
+
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { submission: { progression_scores: scores } },
+      as: :json
+
+    assert_response :ok
+    assert_json_response({})
+  end
+
+  test "PATCH update persists progression_scores for a challenge submission" do
+    user_challenge = create(:user_challenge, user: @current_user)
+    submission = create(:exercise_submission, context: user_challenge)
+    scores = { "version" => 1, "runs" => 5 }
+
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { submission: { progression_scores: scores } },
+      as: :json
+
+    assert_response :ok
+    assert_equal scores, submission.reload.progression_scores
+  end
+
+  test "PATCH update with malformed progression_scores still returns 200" do
+    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
+    submission = create(:exercise_submission, context: user_lesson)
+
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { submission: { progression_scores: "1:5,10,0" } },
+      as: :json
+
+    assert_response :ok
+    assert_nil submission.reload.progression_scores
+  end
+
+  test "PATCH update returns 404 for an unknown uuid" do
+    patch internal_exercise_submission_path("nonexistent"),
+      params: { submission: { progression_scores: { "runs" => 1 } } },
+      as: :json
+
+    assert_json_error(:not_found, error_type: :exercise_submission_not_found)
+  end
+
+  test "PATCH update returns 404 for another user's submission" do
+    submission = create(:exercise_submission, context: create(:user_lesson))
+
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { submission: { progression_scores: { "runs" => 1 } } },
+      as: :json
+
+    assert_json_error(:not_found, error_type: :exercise_submission_not_found)
   end
 end

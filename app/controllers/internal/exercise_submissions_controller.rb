@@ -1,5 +1,6 @@
 class Internal::ExerciseSubmissionsController < Internal::BaseController
-  before_action :use_lesson!
+  before_action :use_lesson!, only: %i[latest create]
+  before_action :use_submission!, only: :update
 
   rescue_from DuplicateFilenameError, with: :render_duplicate_filename_error
   rescue_from FileTooLargeError, with: :render_file_too_large_error
@@ -30,18 +31,41 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
     user_lesson = UserLesson::Start.(current_user, @lesson)
 
     # Create submission with UserLesson as context
-    ExerciseSubmission::Create.(
+    submission = ExerciseSubmission::Create.(
       user_lesson,
-      submission_params[:files],
-      progression_scores: submission_params[:progression_scores]
+      submission_params[:files]
     )
 
-    render json: {}, status: :created
+    # Return only the identifier: the client already has the files, and uses
+    # the uuid to patch progression scores in a follow-up request.
+    render json: {
+      submission: { uuid: submission.uuid }
+    }, status: :created
+  end
+
+  def update
+    ExerciseSubmission::UpdateProgressionScores.(
+      @submission,
+      progression_scores_params[:progression_scores]
+    )
+
+    render json: {}, status: :ok
   end
 
   private
   def submission_params
-    params.require(:submission).permit(files: %i[filename code], progression_scores: {})
+    params.require(:submission).permit(files: %i[filename code])
+  end
+
+  def progression_scores_params
+    params.require(:submission).permit(progression_scores: {})
+  end
+
+  # Looks up a submission by uuid, scoped to the current user (a submission
+  # delegates #user to its polymorphic context), 404ing otherwise.
+  def use_submission!
+    @submission = ExerciseSubmission.find_by(uuid: params[:uuid])
+    render_404(:exercise_submission_not_found) unless @submission&.user == current_user
   end
 
   def render_duplicate_filename_error(exception)
