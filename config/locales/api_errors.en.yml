@@ -28,6 +28,7 @@ en:
     badge_not_found: "Badge not found"
     user_challenge_not_found: "User challenge not found"
     user_video_not_found: "User video not found"
+    exercise_submission_not_found: "Exercise submission not found"
     mailshot_not_found: "Mailshot not found"
     unknown_segment: "Unknown audience segment"
     mailshot_body_blank: "Add content before sending this mailshot"

@@ -96,12 +96,16 @@ Rails.application.routes.draw do
     # Always have the param as lesson slug - auto-prefixed in the second
     resources :lessons, only: [:show], param: :lesson_slug
     resources :lessons, only: [], param: :slug do
-      resources :exercise_submissions, only: [:create] do
+      resources :exercise_submissions, only: [:create], controller: 'lessons/exercise_submissions' do
         collection do
           get :latest
         end
       end
     end
+
+    # Patch progression scores onto an existing submission (context-agnostic;
+    # works for both lesson and challenge submissions, keyed by uuid).
+    resources :exercise_submissions, only: [:update], param: :uuid
 
     # Challenges with exercise submissions
     resources :challenges, only: %i[index show], param: :challenge_slug
