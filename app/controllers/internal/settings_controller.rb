@@ -53,6 +53,8 @@ class Internal::SettingsController < Internal::BaseController
   def streaks
     User::UpdateStreaksEnabled.(current_user, params[:enabled])
     render json: { settings: SerializeSettings.(current_user) }
+  rescue InvalidBooleanError
+    render_422(:streaks_update_failed, errors: { enabled: ["must be true or false"] })
   rescue ActiveRecord::RecordInvalid => e
     render_422(:streaks_update_failed, errors: e.record.errors.as_json)
   end

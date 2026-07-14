@@ -18,4 +18,32 @@ class User::UpdateStreaksEnabledTest < ActiveSupport::TestCase
 
     refute user.data.reload.streaks_enabled
   end
+
+  test "casts string values" do
+    user = create(:user)
+
+    User::UpdateStreaksEnabled.(user, "true")
+    assert user.data.reload.streaks_enabled
+
+    User::UpdateStreaksEnabled.(user, "false")
+    refute user.data.reload.streaks_enabled
+  end
+
+  test "raises InvalidBooleanError for nil" do
+    user = create(:user)
+
+    assert_raises(InvalidBooleanError) do
+      User::UpdateStreaksEnabled.(user, nil)
+    end
+
+    refute user.data.reload.streaks_enabled
+  end
+
+  test "raises InvalidBooleanError for empty string" do
+    user = create(:user)
+
+    assert_raises(InvalidBooleanError) do
+      User::UpdateStreaksEnabled.(user, "")
+    end
+  end
 end
