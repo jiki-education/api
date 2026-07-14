@@ -52,6 +52,7 @@ class BadgeCriteriaNotFulfilledError < RuntimeError; end
 
 # Settings errors
 class InvalidNotificationSlugError < RuntimeError; end
+class InvalidBooleanError < RuntimeError; end
 
 # Assistant conversation errors
 class AssistantConversationAccessDeniedError < RuntimeError; end

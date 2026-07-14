@@ -199,4 +199,16 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     json = response.parsed_body
     refute json["settings"]["streaks_enabled"]
   end
+
+  test "PATCH streaks returns 422 when enabled is missing" do
+    patch streaks_internal_settings_path, params: {}, as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :streaks_update_failed, errors: { enabled: ["must be true or false"] })
+  end
+
+  test "PATCH streaks returns 422 when enabled is null" do
+    patch streaks_internal_settings_path, params: { enabled: nil }, as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :streaks_update_failed, errors: { enabled: ["must be true or false"] })
+  end
 end
