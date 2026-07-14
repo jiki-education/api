@@ -137,6 +137,8 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     )
 
     patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
+
+    assert_response :unprocessable_entity
   end
 
   # Handle tests

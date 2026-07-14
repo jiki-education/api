@@ -27,6 +27,12 @@ class User::UpdateStreaksEnabledTest < ActiveSupport::TestCase
 
     User::UpdateStreaksEnabled.(user, "false")
     refute user.data.reload.streaks_enabled
+
+    User::UpdateStreaksEnabled.(user, "1")
+    assert user.data.reload.streaks_enabled
+
+    User::UpdateStreaksEnabled.(user, "0")
+    refute user.data.reload.streaks_enabled
   end
 
   test "raises InvalidBooleanError for nil" do
