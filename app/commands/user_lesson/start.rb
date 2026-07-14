@@ -13,8 +13,8 @@ class UserLesson::Start
     validate_can_start_lesson!
 
     ActiveRecord::Base.transaction do
-      UserLesson.create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
-        # Guard against a concurrent request winning the race in create_or_find_by!
+      UserLesson.find_create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
+        # Guard against a concurrent request winning the race in find_create_or_find_by!
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
           user_course.update!(current_user_level: user_level)
@@ -49,7 +49,15 @@ class UserLesson::Start
       raise LessonInProgressError, "Complete current lesson before starting a new one"
     end
 
-    # Check if trying to start lesson in a different level
+    # Check if trying to start lesson in a different level.
+    #
+    # This deliberately only blocks when the current level's lessons are ALL
+    # complete: at that point the only legitimate way forward is the explicit
+    # level-completion flow (UserLevel::Complete), which advances
+    # current_user_level — so a cross-level start here means the client
+    # skipped that step. While the current level still has unfinished
+    # lessons, cross-level starts are permitted (e.g. revisiting lessons in
+    # other levels); the in-progress check above still guards each level.
     current_level = user_course.current_user_level&.level
     return unless current_level && current_level.id != lesson.level_id
     return unless all_lessons_complete?(current_level)

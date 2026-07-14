@@ -8,7 +8,17 @@ class ActiveRecord::Base
   def self.find_create_or_find_by!(*args, &block)
     find_by!(*args)
   rescue ActiveRecord::RecordNotFound
-    create_or_find_by!(*args, &block)
+    begin
+      create_or_find_by!(*args, &block)
+    rescue ActiveRecord::RecordInvalid => e
+      # create_or_find_by! only rescues the DB-level RecordNotUnique. If the
+      # model also has a uniqueness validation on the same columns, a row
+      # committed by a concurrent request is seen by the validation's SELECT
+      # first, raising RecordInvalid before the DB constraint gets a chance.
+      raise unless e.record.errors.any? { |error| error.type == :taken }
+
+      find_by!(*args)
+    end
   end
 
   def self.create_or_find!(attributes, &block)
