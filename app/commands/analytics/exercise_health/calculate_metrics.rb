@@ -8,6 +8,10 @@
 # Sessions inactive for less than INACTIVITY_CUTOFF are "in progress" and are
 # excluded from outcome denominators - counting them as abandoned inflates
 # drop-off for recently-started sessions.
+#
+# All per-session work (classification, percentiles, chat lookups) happens in
+# SQL: the database only ever returns one aggregate row per lesson, so memory
+# use doesn't grow with the number of users.
 class Analytics::ExerciseHealth::CalculateMetrics
   include Mandate
 
@@ -23,39 +27,33 @@ class Analytics::ExerciseHealth::CalculateMetrics
   def cutoff = INACTIVITY_CUTOFF.ago
 
   def metrics_for(lesson_id, slug, title)
-    sessions = sessions_by_lesson[lesson_id] || []
-    completed = sessions.select { |s| s[:status] == :completed }
-    bounced = sessions.select { |s| s[:status] == :bounced }
-    abandoned = sessions.select { |s| s[:status] == :abandoned }
-    classifiable = completed.size + bounced.size + abandoned.size
-
-    completer_median = median(completed.map { |s| s[:num_attempts] })
-    abandoner_median = median(abandoned.map { |s| s[:num_attempts] })
-    engaged = sessions.select { |s| s[:num_attempts] > 1 }
-    chatted = engaged.count { |s| chats.include?([s[:user_id], lesson_id]) }
+    stats = session_stats[lesson_id] || EMPTY_SESSION_STATS
+    classifiable = stats["num_completed"] + stats["num_bounced"] + stats["num_abandoned"]
+    completer_median = stats["completer_median_attempts"]
+    abandoner_median = stats["abandoner_median_attempts"]
 
     {
       lesson_id:,
       slug:,
       title:,
-      num_starts: sessions.size,
-      num_in_progress: sessions.size - classifiable,
+      num_starts: stats["num_starts"],
+      num_in_progress: stats["num_in_progress"],
       num_classifiable: classifiable,
-      num_completed: completed.size,
-      num_bounced: bounced.size,
-      num_abandoned: abandoned.size,
-      completion_pct: pct(completed.size, classifiable),
-      bounce_pct: pct(bounced.size, classifiable),
-      abandon_pct: pct(abandoned.size, classifiable),
+      num_completed: stats["num_completed"],
+      num_bounced: stats["num_bounced"],
+      num_abandoned: stats["num_abandoned"],
+      completion_pct: pct(stats["num_completed"], classifiable),
+      bounce_pct: pct(stats["num_bounced"], classifiable),
+      abandon_pct: pct(stats["num_abandoned"], classifiable),
       completer_median_attempts: completer_median,
-      completer_p90_attempts: p90(completed.map { |s| s[:num_attempts] }),
+      completer_p90_attempts: stats["completer_p90_attempts"],
       abandoner_median_attempts: abandoner_median,
       struggle_ratio: struggle_ratio(abandoner_median, completer_median),
-      median_minutes_to_complete: median(completed.filter_map { |s| s[:minutes] }),
-      avg_difficulty: average(sessions.filter_map { |s| s[:difficulty_rating] }),
-      avg_fun: average(sessions.filter_map { |s| s[:fun_rating] }),
-      num_engaged: engaged.size,
-      ask_jiki_pct: pct(chatted, engaged.size),
+      median_minutes_to_complete: stats["median_minutes_to_complete"]&.to_f,
+      avg_difficulty: stats["avg_difficulty"]&.to_f,
+      avg_fun: stats["avg_fun"]&.to_f,
+      num_engaged: stats["num_engaged"],
+      ask_jiki_pct: pct(stats["num_engaged_chatted"], stats["num_engaged"]),
       reach_start_pct: reach_start_pct(lesson_id),
       low_sample: classifiable < MIN_SAMPLE_SIZE
     }.tap do |metrics|
@@ -67,14 +65,10 @@ class Analytics::ExerciseHealth::CalculateMetrics
   # INACTIVITY_CUTOFF ago, what percentage went on to start this one?
   # Low values flag lessons that put people off before they even open them.
   def reach_start_pct(lesson_id)
-    prev_id = previous_lesson_ids[lesson_id]
-    return nil unless prev_id
+    stats = reach_stats[lesson_id]
+    return nil unless stats
 
-    reachers = previous_lesson_completers[prev_id]
-    return nil if reachers.blank?
-
-    starters = sessions_by_lesson[lesson_id]&.map { |s| s[:user_id] }&.to_set || Set.new
-    pct(reachers.count { |user_id| starters.include?(user_id) }, reachers.size)
+    pct(stats["num_starters"], stats["num_reachers"])
   end
 
   def struggle_ratio(abandoner_median, completer_median)
@@ -112,6 +106,9 @@ class Analytics::ExerciseHealth::CalculateMetrics
   def exercise_lessons = ordered_lessons.select { |_, _, _, type, _| type == "exercise" }
 
   memoize
+  def exercise_lesson_ids = exercise_lessons.map(&:first)
+
+  memoize
   def previous_lesson_ids
     {}.tap do |prev_ids|
       ordered_lessons.group_by { |_, _, _, _, course_id| course_id }.each_value do |course_lessons|
@@ -122,79 +119,109 @@ class Analytics::ExerciseHealth::CalculateMetrics
     end
   end
 
+  EMPTY_SESSION_STATS = {
+    "num_starts" => 0,
+    "num_in_progress" => 0,
+    "num_completed" => 0,
+    "num_bounced" => 0,
+    "num_abandoned" => 0,
+    "num_engaged" => 0,
+    "num_engaged_chatted" => 0
+  }.freeze
+
+  # One aggregate row per lesson. Sessions are classified in the CTE
+  # (mirroring the definitions above), then rolled up with FILTERed
+  # aggregates and discrete percentiles.
   memoize
-  def sessions_by_lesson
-    rows = UserLesson.where(lesson_id: exercise_lessons.map(&:first)).
-      left_joins(:exercise_submissions).
-      group("user_lessons.id").
-      pluck(
-        "user_lessons.id", :lesson_id, :user_id, :started_at, :completed_at,
-        :difficulty_rating, :fun_rating,
-        Arel.sql("COUNT(exercise_submissions.id)"),
-        Arel.sql("MAX(exercise_submissions.created_at)")
+  def session_stats
+    return {} if exercise_lesson_ids.empty?
+
+    sql = <<~SQL.squish
+      WITH sessions AS (
+        SELECT ul.lesson_id,
+               ul.difficulty_rating,
+               ul.fun_rating,
+               COUNT(es.id) AS num_attempts,
+               CASE
+                 WHEN ul.completed_at IS NOT NULL THEN 'completed'
+                 WHEN GREATEST(MAX(es.created_at), ul.started_at) IS NULL
+                   OR GREATEST(MAX(es.created_at), ul.started_at) >= :cutoff THEN 'in_progress'
+                 WHEN COUNT(es.id) = 0 THEN 'bounced'
+                 ELSE 'abandoned'
+               END AS status,
+               EXTRACT(EPOCH FROM (ul.completed_at - ul.started_at)) / 60.0 AS minutes,
+               EXISTS (
+                 SELECT 1 FROM assistant_conversations ac
+                 WHERE ac.user_id = ul.user_id
+                   AND ac.context_type = 'Lesson'
+                   AND ac.context_id = ul.lesson_id
+               ) AS chatted
+        FROM user_lessons ul
+        LEFT JOIN exercise_submissions es
+          ON es.context_type = 'UserLesson' AND es.context_id = ul.id
+        WHERE ul.lesson_id IN (:lesson_ids)
+        GROUP BY ul.id
       )
+      SELECT lesson_id,
+             COUNT(*) AS num_starts,
+             COUNT(*) FILTER (WHERE status = 'in_progress') AS num_in_progress,
+             COUNT(*) FILTER (WHERE status = 'completed') AS num_completed,
+             COUNT(*) FILTER (WHERE status = 'bounced') AS num_bounced,
+             COUNT(*) FILTER (WHERE status = 'abandoned') AS num_abandoned,
+             PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY num_attempts)
+               FILTER (WHERE status = 'completed') AS completer_median_attempts,
+             PERCENTILE_DISC(0.9) WITHIN GROUP (ORDER BY num_attempts)
+               FILTER (WHERE status = 'completed') AS completer_p90_attempts,
+             PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY num_attempts)
+               FILTER (WHERE status = 'abandoned') AS abandoner_median_attempts,
+             PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY minutes)
+               FILTER (WHERE status = 'completed' AND minutes IS NOT NULL) AS median_minutes_to_complete,
+             AVG(difficulty_rating) AS avg_difficulty,
+             AVG(fun_rating) AS avg_fun,
+             COUNT(*) FILTER (WHERE num_attempts > 1) AS num_engaged,
+             COUNT(*) FILTER (WHERE num_attempts > 1 AND chatted) AS num_engaged_chatted
+      FROM sessions
+      GROUP BY lesson_id
+    SQL
 
-    sessions = rows.map do |_, lesson_id, user_id, started_at, completed_at, difficulty_rating, fun_rating, num_attempts, last_attempt_at| # rubocop:disable Layout/LineLength
-      {
-        lesson_id:,
-        user_id:,
-        difficulty_rating:,
-        fun_rating:,
-        num_attempts:,
-        status: status_for(started_at, completed_at, num_attempts, last_attempt_at),
-        minutes: completed_at && started_at ? (completed_at - started_at) / 60.0 : nil
-      }
+    select_rows(sql, cutoff:, lesson_ids: exercise_lesson_ids)
+  end
+
+  # One aggregate row per lesson: how many users completed its predecessor
+  # at least INACTIVITY_CUTOFF ago, and how many of those started it.
+  memoize
+  def reach_stats
+    pairs = exercise_lesson_ids.filter_map do |lesson_id|
+      prev_id = previous_lesson_ids[lesson_id]
+      "(#{prev_id.to_i}, #{lesson_id.to_i})" if prev_id
     end
-    sessions.group_by { |s| s[:lesson_id] }
+    return {} if pairs.empty?
+
+    sql = <<~SQL.squish
+      SELECT pairs.target_id AS lesson_id,
+             COUNT(prev.id) AS num_reachers,
+             COUNT(started.id) AS num_starters
+      FROM (VALUES #{pairs.join(', ')}) AS pairs(prev_id, target_id)
+      JOIN user_lessons prev
+        ON prev.lesson_id = pairs.prev_id AND prev.completed_at <= :cutoff
+      LEFT JOIN user_lessons started
+        ON started.lesson_id = pairs.target_id AND started.user_id = prev.user_id
+      GROUP BY pairs.target_id
+    SQL
+
+    select_rows(sql, cutoff:)
   end
 
-  def status_for(started_at, completed_at, num_attempts, last_attempt_at)
-    return :completed if completed_at
-
-    last_activity = [last_attempt_at, started_at].compact.max
-    return :in_progress if last_activity.nil? || last_activity >= cutoff
-
-    num_attempts.zero? ? :bounced : :abandoned
-  end
-
-  memoize
-  def previous_lesson_completers
-    UserLesson.where(lesson_id: previous_lesson_ids.values_at(*exercise_lessons.map(&:first)).compact).
-      where(completed_at: ..cutoff).
-      pluck(:lesson_id, :user_id).
-      group_by(&:first).
-      transform_values { |pairs| pairs.map(&:last) }
-  end
-
-  memoize
-  def chats
-    AssistantConversation.where(
-      context_type: "Lesson",
-      context_id: exercise_lessons.map(&:first)
-    ).pluck(:user_id, :context_id).to_set
+  def select_rows(sql, binds)
+    ApplicationRecord.connection.
+      select_all(ApplicationRecord.sanitize_sql_array([sql, binds])).
+      to_a.
+      index_by { |row| row["lesson_id"] }
   end
 
   def pct(numerator, denominator)
     return nil if denominator.zero?
 
     numerator * 100.0 / denominator
-  end
-
-  def average(values)
-    return nil if values.empty?
-
-    values.sum.to_f / values.size
-  end
-
-  def median(values)
-    return nil if values.empty?
-
-    values.sort[(values.length - 1) / 2]
-  end
-
-  def p90(values)
-    return nil if values.empty?
-
-    values.sort[((values.length - 1) * 0.9).round]
   end
 end
