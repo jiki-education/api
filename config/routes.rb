@@ -168,6 +168,9 @@ Rails.application.routes.draw do
 
   # Admin routes
   namespace :admin do
+    namespace :analytics do
+      resources :exercises, only: [:index]
+    end
     resources :concepts, only: %i[index show create update destroy]
     resources :challenges, only: %i[index show create update destroy]
     resources :users, only: %i[index show update destroy]
