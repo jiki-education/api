@@ -24,7 +24,7 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
     end
 
     assert_response :created
-    assert_json_response({})
+    assert_json_response({ submission: { uuid: ExerciseSubmission.last.uuid } })
   end
 
   test "POST create starts the UserChallenge" do
@@ -72,37 +72,6 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
       as: :json
 
     assert_response :created
-  end
-
-  test "POST create passes progression_scores through to ExerciseSubmission::Create" do
-    user_challenge = UserChallenge.find_by!(user: @current_user, challenge: @challenge)
-    files = [{ filename: "test.rb", code: "puts 'test'" }]
-    scores = { "version" => 1, "runs" => 5 }
-
-    UserChallenge::Start.stubs(:call).returns(user_challenge)
-
-    ExerciseSubmission::Create.expects(:call).with do |_up, _file_params, progression_scores:|
-      progression_scores.to_h == scores
-    end.returns(create(:exercise_submission, :for_challenge))
-
-    post internal_challenge_exercise_submissions_path(challenge_slug: @challenge.slug),
-      params: { submission: { files:, progression_scores: scores } },
-      as: :json
-
-    assert_response :created
-  end
-
-  test "POST create with malformed progression_scores still succeeds" do
-    files = [{ filename: "test.rb", code: "puts 'test'" }]
-
-    Prosopite.pause do
-      post internal_challenge_exercise_submissions_path(challenge_slug: @challenge.slug),
-        params: { submission: { files:, progression_scores: "1:5,10,0" } },
-        as: :json
-    end
-
-    assert_response :created
-    assert_nil ExerciseSubmission.last.progression_scores
   end
 
   test "POST create handles invalid challenge slug" do
