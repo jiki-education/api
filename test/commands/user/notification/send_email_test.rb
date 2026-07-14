@@ -6,7 +6,7 @@ class User::Notification::SendEmailTest < ActiveSupport::TestCase
     notification = User::Notifications::OnboardingCodingNotification.create!(user:)
 
     assert_enqueued_with(
-      job: ActionMailer::MailDeliveryJob,
+      job: MailDeliveryJob,
       args: ["OnboardingMailer", "coding", "deliver_now", { args: [user] }]
     ) do
       User::Notification::SendEmail.(notification)
@@ -29,7 +29,7 @@ class User::Notification::SendEmailTest < ActiveSupport::TestCase
         notification = klass.create!(user:)
 
         assert_enqueued_with(
-          job: ActionMailer::MailDeliveryJob,
+          job: MailDeliveryJob,
           args: ["OnboardingMailer", expected_action, "deliver_now", { args: [user] }]
         ) do
           User::Notification::SendEmail.(notification)

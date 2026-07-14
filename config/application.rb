@@ -56,5 +56,10 @@ module Api
 
     # Configure ActiveJob to use Solid Queue as the queue adapter
     config.active_job.queue_adapter = :solid_queue
+
+    # Use our MailDeliveryJob subclass so transient AWS credential failures
+    # are retried instead of permanently dropping the email (see the class
+    # for why only that error is safe to retry).
+    config.action_mailer.delivery_job = "MailDeliveryJob"
   end
 end

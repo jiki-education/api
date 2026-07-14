@@ -4,7 +4,7 @@ class AccountDeletion::RequestDeletionTest < ActiveSupport::TestCase
   test "sends account deletion confirmation email" do
     user = create(:user)
 
-    assert_enqueued_with(job: ActionMailer::MailDeliveryJob) do
+    assert_enqueued_with(job: MailDeliveryJob) do
       AccountDeletion::RequestDeletion.(user)
     end
   end

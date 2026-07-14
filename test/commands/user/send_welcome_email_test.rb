@@ -5,7 +5,7 @@ class User::SendWelcomeEmailTest < ActiveSupport::TestCase
     user = create(:user)
 
     assert_enqueued_with(
-      job: ActionMailer::MailDeliveryJob,
+      job: MailDeliveryJob,
       args: ["AccountMailer", "welcome", "deliver_now", { args: [user] }]
     ) do
       User::SendWelcomeEmail.(user)

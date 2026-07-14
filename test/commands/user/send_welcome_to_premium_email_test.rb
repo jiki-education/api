@@ -5,7 +5,7 @@ class User::SendWelcomeToPremiumEmailTest < ActiveSupport::TestCase
     user = create(:user)
 
     assert_enqueued_with(
-      job: ActionMailer::MailDeliveryJob,
+      job: MailDeliveryJob,
       args: ["PremiumMailer", "welcome_to_premium", "deliver_now", { args: [user] }]
     ) do
       User::SendWelcomeToPremiumEmail.(user)

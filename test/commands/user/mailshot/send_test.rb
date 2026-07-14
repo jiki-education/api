@@ -6,7 +6,7 @@ class User::Mailshot::SendTest < ActiveSupport::TestCase
     mailshot = create(:mailshot)
 
     assert_difference "User::Mailshot.count", 1 do
-      assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+      assert_enqueued_jobs 1, only: MailDeliveryJob do
         User::Mailshot::Send.(user, mailshot)
       end
     end
@@ -25,7 +25,7 @@ class User::Mailshot::SendTest < ActiveSupport::TestCase
     User::SendEmail.expects(:call).never
 
     assert_no_difference "User::Mailshot.count" do
-      assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+      assert_no_enqueued_jobs only: MailDeliveryJob do
         User::Mailshot::Send.(user, mailshot)
       end
     end
@@ -36,7 +36,7 @@ class User::Mailshot::SendTest < ActiveSupport::TestCase
     user.data.update!(receive_newsletters: false)
     mailshot = create(:mailshot)
 
-    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+    assert_no_enqueued_jobs only: MailDeliveryJob do
       User::Mailshot::Send.(user, mailshot)
     end
 
