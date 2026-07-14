@@ -22,7 +22,7 @@ class User::UpgradeToPremiumTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(membership_type: "premium")
 
-    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+    assert_no_enqueued_jobs only: MailDeliveryJob do
       User::UpgradeToPremium.(user)
     end
 

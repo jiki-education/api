@@ -89,7 +89,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     create(:user_lesson, user: user_level.user, lesson:, completed_at: Time.current)
 
     # Level factory already includes email fields by default
-    assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+    assert_enqueued_jobs 1, only: MailDeliveryJob do
       UserLevel::Complete.(user_level)
     end
   end
@@ -110,7 +110,7 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     next_user_level = UserLevel.find_by(user: user_course.user, level: level2)
     refute_nil next_user_level
 
-    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+    assert_no_enqueued_jobs only: MailDeliveryJob do
       assert_no_difference -> { user_course.user.user_levels.count } do
         UserLevel::Complete.(user_level)
         assert_equal old_completed_at.to_i, user_level.reload.completed_at.to_i

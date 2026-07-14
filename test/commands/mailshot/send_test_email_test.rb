@@ -6,7 +6,7 @@ class Mailshot::SendTestEmailTest < ActiveSupport::TestCase
     mailshot = create(:mailshot)
 
     assert_difference "User::Mailshot.count", 1 do
-      assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+      assert_enqueued_jobs 1, only: MailDeliveryJob do
         Mailshot::SendTestEmail.(mailshot, admin)
       end
     end
@@ -18,7 +18,7 @@ class Mailshot::SendTestEmailTest < ActiveSupport::TestCase
     create(:user_mailshot, user: admin, mailshot:)
 
     assert_no_difference "User::Mailshot.count" do
-      assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+      assert_enqueued_jobs 1, only: MailDeliveryJob do
         Mailshot::SendTestEmail.(mailshot, admin)
       end
     end

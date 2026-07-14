@@ -8,7 +8,7 @@ class Auth::AccountDeletionsControllerTest < ApplicationControllerTest
     user = create(:user)
     sign_in_user(user)
 
-    assert_enqueued_with(job: ActionMailer::MailDeliveryJob) do
+    assert_enqueued_with(job: MailDeliveryJob) do
       post auth_account_deletion_request_path, as: :json
     end
 

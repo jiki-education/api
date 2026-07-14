@@ -14,7 +14,7 @@ class User::DowngradeToStandardTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(membership_type: "premium")
 
-    assert_enqueued_jobs 1, only: ActionMailer::MailDeliveryJob do
+    assert_enqueued_jobs 1, only: MailDeliveryJob do
       User::DowngradeToStandard.(user)
     end
   end
@@ -23,7 +23,7 @@ class User::DowngradeToStandardTest < ActiveSupport::TestCase
     user = create(:user)
     assert user.data.standard?
 
-    assert_no_enqueued_jobs only: ActionMailer::MailDeliveryJob do
+    assert_no_enqueued_jobs only: MailDeliveryJob do
       User::DowngradeToStandard.(user)
     end
 
