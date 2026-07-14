@@ -60,8 +60,10 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     UserLesson.stubs(:find_by).returns(nil)
     UserLesson.stubs(:find_by!).raises(ActiveRecord::RecordNotFound).then.returns(UserLesson.find(existing.id))
 
-    UserLesson::Start.(user_level.user, lesson)
+    result = UserLesson::Start.(user_level.user, lesson)
 
+    # Guard that the race path actually ran and returned the winner's row
+    assert_equal existing.id, result.id
     assert_nil user_level.reload.current_user_lesson_id
   end
 

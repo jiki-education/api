@@ -23,9 +23,10 @@ class ActiveRecordExtensionsTest < ActiveSupport::TestCase
   test "find_create_or_find_by! recovers when uniqueness validation loses a race" do
     user_lesson = create(:user_lesson)
 
-    # Simulate a concurrent request committing the row between the initial
-    # lookup and create!: the first find_by! misses, then the uniqueness
-    # validation inside create! sees the committed row and raises RecordInvalid.
+    # The row already exists in the DB (the race "winner"); stubbing the
+    # first find_by! to miss recreates the loser's view. create! then runs
+    # for real and its uniqueness validation sees the committed row, raising
+    # RecordInvalid — the exact failure mode from Sentry JIKI-API-M.
     UserLesson.stubs(:find_by!).raises(ActiveRecord::RecordNotFound).then.returns(user_lesson)
 
     result = nil
