@@ -33,6 +33,38 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     end
   end
 
+  test "returns existing user_lesson when a concurrent request wins the race" do
+    user_level = create(:user_level)
+    lesson = create(:lesson, :exercise, level: user_level.level)
+    existing = create(:user_lesson, user: user_level.user, lesson:, completed_at: nil)
+    user_level.update!(current_user_lesson: existing)
+
+    # Simulate losing a double-submit race: the short-circuit lookup ran
+    # before the winner committed, so it sees nothing, and the uniqueness
+    # validation inside create! then rejects the insert (JIKI-API-M).
+    UserLesson.stubs(:find_by).returns(nil)
+    UserLesson.stubs(:find_by!).raises(ActiveRecord::RecordNotFound).then.returns(UserLesson.find(existing.id))
+
+    result = nil
+    assert_no_difference -> { UserLesson.count } do
+      result = UserLesson::Start.(user_level.user, lesson)
+    end
+    assert_equal existing.id, result.id
+  end
+
+  test "does not update tracking pointers when losing the creation race" do
+    user_level = create(:user_level)
+    lesson = create(:lesson, :exercise, level: user_level.level)
+    existing = create(:user_lesson, user: user_level.user, lesson:, completed_at: nil)
+
+    UserLesson.stubs(:find_by).returns(nil)
+    UserLesson.stubs(:find_by!).raises(ActiveRecord::RecordNotFound).then.returns(UserLesson.find(existing.id))
+
+    UserLesson::Start.(user_level.user, lesson)
+
+    assert_nil user_level.reload.current_user_lesson_id
+  end
+
   test "raises UserLevelNotFoundError when not enrolled in course" do
     user = create(:user)
     lesson = create(:lesson, :exercise)

@@ -13,8 +13,8 @@ class UserLesson::Start
     validate_can_start_lesson!
 
     ActiveRecord::Base.transaction do
-      UserLesson.create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
-        # Guard against a concurrent request winning the race in create_or_find_by!
+      UserLesson.find_create_or_find_by!(user:, lesson:) { |ul| ul.started_at = Time.current }.tap do |user_lesson|
+        # Guard against a concurrent request winning the race in find_create_or_find_by!
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
           user_course.update!(current_user_level: user_level)
