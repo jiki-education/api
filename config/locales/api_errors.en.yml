@@ -43,6 +43,7 @@ en:
 
     # User progression errors
     lesson_in_progress: "Complete current lesson before starting a new one"
+    lesson_not_unlocked: "Complete earlier lessons in this level first"
     level_not_completed: "Complete the current level first"
     challenge_locked: "Complete the lesson that unlocks this challenge first"
     user_lesson_not_found: "User lesson not found"

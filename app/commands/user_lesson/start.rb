@@ -49,6 +49,14 @@ class UserLesson::Start
       raise LessonInProgressError, "Complete current lesson before starting a new one"
     end
 
+    # Enforce within-level ordering: a lesson may only start once every
+    # lesson before it in its level is complete. Without this, a deep link
+    # into a later lesson's page (or a code submission to it, which
+    # auto-starts) silently skips the user ahead in the gap between
+    # completing one lesson and starting the next — wedging their dashboard
+    # and making the advertised frontier lesson 422 (Sentry JIKI-API-S).
+    raise LessonNotUnlockedError, "Complete earlier lessons in this level first" unless earlier_lessons_complete?
+
     # Check if trying to start lesson in a different level.
     #
     # This deliberately only blocks when the current level's lessons are ALL
@@ -63,6 +71,13 @@ class UserLesson::Start
     return unless all_lessons_complete?(current_level)
 
     raise LevelNotCompletedError, "Complete the current level before starting lessons in the next level"
+  end
+
+  def earlier_lessons_complete?
+    lesson.level.lessons.
+      where(position: ...lesson.position).
+      where.not(id: UserLesson.where(user:).completed.select(:lesson_id)).
+      none?
   end
 
   def all_lessons_complete?(level)

@@ -103,6 +103,30 @@ class UserLesson::StartTest < ActiveSupport::TestCase
     assert_equal "Complete current lesson before starting a new one", error.message
   end
 
+  test "raises LessonNotUnlockedError when skipping an unstarted earlier lesson" do
+    user_level = create(:user_level)
+    create(:lesson, :exercise, level: user_level.level)
+    lesson2 = create(:lesson, :exercise, level: user_level.level)
+
+    error = assert_raises(LessonNotUnlockedError) do
+      UserLesson::Start.(user_level.user, lesson2)
+    end
+
+    assert_equal "Complete earlier lessons in this level first", error.message
+  end
+
+  test "raises LessonNotUnlockedError when an earlier lesson is started but incomplete" do
+    user_level = create(:user_level)
+    lesson1 = create(:lesson, :exercise, level: user_level.level)
+    lesson2 = create(:lesson, :exercise, level: user_level.level)
+    create(:user_lesson, user: user_level.user, lesson: lesson1, completed_at: nil)
+    user_level.update!(current_user_lesson: nil)
+
+    assert_raises(LessonNotUnlockedError) do
+      UserLesson::Start.(user_level.user, lesson2)
+    end
+  end
+
   test "allows starting new lesson when previous is completed" do
     user_level = create(:user_level)
     lesson1 = create(:lesson, :exercise, level: user_level.level)

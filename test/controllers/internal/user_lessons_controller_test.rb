@@ -343,6 +343,15 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   end
 
   # Error handler tests
+  test "POST start returns 422 when earlier lessons are not complete" do
+    lesson2 = create(:lesson, :exercise, level: @level)
+
+    post start_internal_user_lesson_path(lesson_slug: lesson2.slug),
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :lesson_not_unlocked)
+  end
+
   test "POST start returns 422 when lesson in progress" do
     lesson1 = create(:lesson, :exercise, level: @level)
     lesson2 = create(:lesson, :exercise, level: @level)
