@@ -61,47 +61,4 @@ class UserChallengeTest < ActiveSupport::TestCase
     user_challenge = build(:user_challenge)
     refute user_challenge.completed?
   end
-  # Transitional read-both behaviour: rows written before the rename are
-  # stored under the legacy "Project"/"UserProject" polymorphic names, new
-  # rows under "Challenge"/"UserChallenge". Delete these tests when the
-  # transitional read-both code is removed after the backfill migration.
-  test "assistant_conversation finds conversation stored under the new Challenge context_type" do
-    user_challenge = create(:user_challenge)
-    conversation = create(:assistant_conversation, user: user_challenge.user, context: user_challenge.challenge)
-
-    assert_equal "Challenge", conversation.context_type
-    assert_equal conversation, user_challenge.assistant_conversation
-  end
-
-  test "assistant_conversation finds conversation stored under the legacy Project context_type" do
-    user_challenge = create(:user_challenge)
-    conversation = create(:assistant_conversation, user: user_challenge.user, context: user_challenge.challenge)
-    conversation.update_column(:context_type, "Project")
-
-    assert_equal conversation, user_challenge.assistant_conversation
-  end
-
-  test "exercise_submissions includes rows stored under both polymorphic names" do
-    user_challenge = create(:user_challenge)
-    legacy_submission = create(:exercise_submission, context: user_challenge)
-    legacy_submission.update_column(:context_type, "UserProject")
-    new_submission = create(:exercise_submission, context: user_challenge)
-
-    assert_equal "UserChallenge", new_submission.context_type
-    assert_equal [legacy_submission, new_submission].sort_by(&:id),
-      user_challenge.exercise_submissions.order(:id).to_a
-  end
-
-  test "destroying a user_challenge destroys submissions stored under both polymorphic names" do
-    user_challenge = create(:user_challenge)
-    legacy_submission = create(:exercise_submission, context: user_challenge)
-    legacy_submission.update_column(:context_type, "UserProject")
-    create(:exercise_submission, context: user_challenge)
-
-    assert_difference "ExerciseSubmission.count", -2 do
-      Prosopite.pause do
-        user_challenge.destroy!
-      end
-    end
-  end
 end
