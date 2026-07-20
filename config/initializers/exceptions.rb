@@ -44,6 +44,7 @@ class InvalidLanguageError < RuntimeError; end
 class UserLevelNotFoundError < RuntimeError; end
 class UserLessonNotFoundError < RuntimeError; end
 class LessonInProgressError < RuntimeError; end
+class LessonNotUnlockedError < RuntimeError; end
 class LevelNotCompletedError < RuntimeError; end
 class ChallengeLockedError < RuntimeError; end
 

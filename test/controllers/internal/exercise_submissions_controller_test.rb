@@ -246,4 +246,16 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     assert_equal "invalid_submission", json_response["error"]["type"]
     assert_match(/code.*required/i, json_response["error"]["message"])
   end
+
+  test "POST create returns 403 when the lesson is not unlocked" do
+    lesson2 = create(:lesson, :exercise, level: @level)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    post internal_lesson_exercise_submissions_path(lesson_slug: lesson2.slug),
+      params: { submission: { files: } },
+      as: :json
+
+    assert_response :forbidden
+    assert_equal "lesson_not_unlocked", response.parsed_body["error"]["type"]
+  end
 end

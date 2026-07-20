@@ -7,6 +7,7 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
   rescue_from InvalidSubmissionError, with: :render_invalid_submission_error
   rescue_from UserLevelNotFoundError, with: :render_level_not_found_error
   rescue_from LessonInProgressError, with: :render_lesson_in_progress_error
+  rescue_from LessonNotUnlockedError, with: :render_lesson_not_unlocked_error
   rescue_from LevelNotCompletedError, with: :render_level_not_completed_error
 
   def latest
@@ -92,6 +93,15 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
     render json: {
       error: {
         type: "lesson_in_progress",
+        message: exception.message
+      }
+    }, status: :forbidden
+  end
+
+  def render_lesson_not_unlocked_error(exception)
+    render json: {
+      error: {
+        type: "lesson_not_unlocked",
         message: exception.message
       }
     }, status: :forbidden

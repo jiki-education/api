@@ -19,6 +19,8 @@ class Internal::UserLessonsController < Internal::BaseController
     }
   rescue LessonInProgressError
     render_422(:lesson_in_progress)
+  rescue LessonNotUnlockedError
+    render_422(:lesson_not_unlocked)
   rescue UserLevelNotFoundError
     render_403(:user_level_not_found)
   rescue LevelNotCompletedError
@@ -35,6 +37,8 @@ class Internal::UserLessonsController < Internal::BaseController
     render_422(:user_level_not_found)
   rescue LessonInProgressError
     render_422(:lesson_in_progress)
+  rescue LessonNotUnlockedError
+    render_422(:lesson_not_unlocked)
   end
 
   def rate
