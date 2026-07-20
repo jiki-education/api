@@ -14,6 +14,17 @@ class MailDeliveryJobTest < ActiveJob::TestCase
     end
   end
 
+  test "retries on Aws::SESV2::Errors::ExpiredTokenException instead of failing" do
+    user = create(:user)
+    OnboardingMailer.stubs(:community).raises(
+      Aws::SESV2::Errors::ExpiredTokenException.new(nil, "The security token included in the request is expired")
+    )
+
+    assert_enqueued_with(job: MailDeliveryJob) do
+      MailDeliveryJob.perform_now("OnboardingMailer", "community", "deliver_now", args: [user])
+    end
+  end
+
   test "does not retry other errors" do
     user = create(:user)
     OnboardingMailer.stubs(:community).raises(RuntimeError, "boom")
