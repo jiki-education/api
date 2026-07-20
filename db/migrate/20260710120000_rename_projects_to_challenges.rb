@@ -1,19 +1,6 @@
 class RenameProjectsToChallenges < ActiveRecord::Migration[8.1]
   def up
     # -- Backfill polymorphic type names --------------------------------------
-    # Dedupe conversations double-created during the step A -> step B rollout
-    # window (an old-name and a new-name row can coexist for the same
-    # user+context because the unique index treats the two strings as
-    # different contexts). Keep the new-name row.
-    execute <<~SQL
-      DELETE FROM assistant_conversations AS legacy
-      USING assistant_conversations AS kept
-      WHERE legacy.context_type = 'Project'
-        AND kept.context_type = 'Challenge'
-        AND legacy.user_id = kept.user_id
-        AND legacy.context_id = kept.context_id
-    SQL
-
     execute "UPDATE assistant_conversations SET context_type = 'Challenge' WHERE context_type = 'Project'"
     execute "UPDATE exercise_submissions SET context_type = 'UserChallenge' WHERE context_type = 'UserProject'"
     execute "UPDATE friendly_id_slugs SET sluggable_type = 'Challenge' WHERE sluggable_type = 'Project'"
