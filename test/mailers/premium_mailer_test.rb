@@ -17,6 +17,21 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_match "Thank you for subscribing to Jiki Premium", mail.text_part.body.to_s
   end
 
+  test "welcome_to_premium email renders with Hungarian locale" do
+    user = create(:user, :hungarian, name: "János Kovács")
+    mail = PremiumMailer.welcome_to_premium(user)
+
+    assert_equal "Üdvözlünk a Jiki Premiumban!", mail.subject
+    assert_equal ["hello@mail.jiki.io"], mail.from
+    assert_equal [user.email], mail.to
+
+    assert_match "Szia,", mail.html_part.body.to_s
+    assert_match "Köszönjük, hogy előfizettél a Jiki Premiumra", mail.html_part.body.to_s
+
+    assert_match "Szia,", mail.text_part.body.to_s
+    assert_match "Köszönjük, hogy előfizettél a Jiki Premiumra", mail.text_part.body.to_s
+  end
+
   test "welcome_to_premium email includes both HTML and text parts" do
     user = create(:user)
     mail = PremiumMailer.welcome_to_premium(user)
@@ -51,6 +66,21 @@ class PremiumMailerTest < ActionMailer::TestCase
 
     assert_match "Hi there,", mail.text_part.body.to_s
     assert_match "Your Jiki Premium subscription has ended", mail.text_part.body.to_s
+  end
+
+  test "subscription_ended email renders with Hungarian locale" do
+    user = create(:user, :hungarian, name: "János Kovács")
+    mail = PremiumMailer.subscription_ended(user)
+
+    assert_equal "A Jiki előfizetésed véget ért", mail.subject
+    assert_equal ["hello@mail.jiki.io"], mail.from
+    assert_equal [user.email], mail.to
+
+    assert_match "Szia,", mail.html_part.body.to_s
+    assert_match "A Jiki Premium előfizetésed véget ért", mail.html_part.body.to_s
+
+    assert_match "Szia,", mail.text_part.body.to_s
+    assert_match "A Jiki Premium előfizetésed véget ért", mail.text_part.body.to_s
   end
 
   test "subscription_ended email includes both HTML and text parts" do
