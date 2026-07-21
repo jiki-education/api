@@ -1,0 +1,26 @@
+hu:
+  premium_mailer:
+    welcome_to_premium:
+      subject: "Üdvözlünk a Jiki Premiumban!"
+      greeting: "Szia,"
+      body_markdown: |
+        Köszönjük, hogy előfizettél a Jiki Premiumra!
+
+        A [Premium oldalon](https://jiki.io/premium) megnézheted az összes funkciót, amihez hozzáférsz. Reméljük, rengeteg örömöd lelsz a Jiki használatában, és hamarosan látunk egy élő adásban!
+
+        Ha bármilyen kérdésed van, csak válaszolj erre az e-mailre.
+
+        Üdv,
+        Jeremy és a csapat
+    subscription_ended:
+      subject: "A Jiki előfizetésed véget ért"
+      greeting: "Szia,"
+      body_markdown: |
+        A Jiki Premium előfizetésed véget ért, és mostantól az ingyenes csomagunkat használod.
+
+        Továbbra is teljes hozzáférésed van a teljes Tanulj programozni szekciónkhoz. Ha szeretnél újra előfizetni, azt bármikor megteheted a [beállítások oldaladon](https://jiki.io/settings).
+
+        Köszönjük, hogy kipróbáltad a Jiki Premiumot.
+
+        Üdv,
+        Jeremy és a csapat
