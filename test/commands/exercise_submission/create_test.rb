@@ -165,6 +165,31 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
     refute_equal previous, submission
   end
 
+  test "creates new submission when file count differs from previous" do
+    user_lesson = create(:user_lesson)
+    files = [
+      { filename: "main.rb", code: "puts 'hello'" },
+      { filename: "helper.rb", code: "def help\nend" }
+    ]
+
+    Prosopite.pause do
+      previous = ExerciseSubmission::Create.(user_lesson, files)
+      submission = ExerciseSubmission::Create.(user_lesson, files.take(1))
+
+      refute_equal previous, submission
+    end
+  end
+
+  test "nil filename raises rather than deduplicating" do
+    user_lesson = create(:user_lesson)
+
+    ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: "puts 'hello'" }])
+
+    assert_raises(InvalidSubmissionError) do
+      ExerciseSubmission::Create.(user_lesson, [{ filename: nil, code: "puts 'hello'" }])
+    end
+  end
+
   test "nil code raises rather than deduplicating against a previous empty file" do
     user_lesson = create(:user_lesson)
 
