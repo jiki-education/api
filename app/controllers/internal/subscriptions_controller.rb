@@ -151,8 +151,9 @@ class Internal::SubscriptionsController < Internal::BaseController
       }
     }, status: :forbidden
   rescue StripeCheckoutSessionIncompleteError => e
+    # Expected user-driven outcome (declined/abandoned payment), not a bug -
+    # log only, don't report to Sentry.
     Rails.logger.info("Checkout session incomplete: #{e.decline_reason || 'no reason given'}")
-    Sentry.capture_exception(e, extra: { user_id: current_user.id, decline_reason: e.decline_reason })
     render json: {
       error: {
         type: "checkout_payment_incomplete",

@@ -49,8 +49,13 @@ class Stripe::CancelSubscriptionTest < ActiveSupport::TestCase
   end
 
   test "handles already deleted subscription gracefully" do
+    valid_until = 1.month.from_now.change(usec: 0)
     user = create(:user)
-    user.data.update!(stripe_subscription_id: "sub_123", subscription_status: "active")
+    user.data.update!(
+      stripe_subscription_id: "sub_123",
+      subscription_status: "active",
+      subscription_valid_until: valid_until
+    )
 
     error = ::Stripe::InvalidRequestError.new("No such subscription: sub_123", nil)
     ::Stripe::Subscription.expects(:update).raises(error)
@@ -58,6 +63,7 @@ class Stripe::CancelSubscriptionTest < ActiveSupport::TestCase
     result = Stripe::CancelSubscription.(user)
 
     assert result[:success]
+    assert_equal valid_until, result[:cancels_at]
     assert_equal "canceled", user.data.reload.subscription_status
   end
 

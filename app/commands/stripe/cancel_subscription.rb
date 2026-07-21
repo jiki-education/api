@@ -37,6 +37,9 @@ class Stripe::CancelSubscription
     user.data.update!(subscription_status: status)
   end
 
+  # cancels_at is when access ends: now for an immediate cancel, otherwise the
+  # end of the period the user has paid for (also correct when the subscription
+  # was already deleted in Stripe; nil if we never recorded a paid-until date).
   def result
     {
       success: true,
