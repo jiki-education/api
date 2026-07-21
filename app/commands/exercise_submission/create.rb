@@ -48,7 +48,7 @@ class ExerciseSubmission::Create
 
   memoize
   def previous_submission
-    context.exercise_submissions.includes(:files).order(id: :desc).first
+    context.exercise_submissions.order(id: :desc).first
   end
 
   def duplicate_of_previous?
@@ -58,7 +58,7 @@ class ExerciseSubmission::Create
     # a previous empty-string file's digest.
     return false if files.any? { |f| f[:code].nil? }
 
-    previous_submission.files.map { |f| [f.filename, f.digest] }.sort ==
+    previous_submission.files.pluck(:filename, :digest).sort ==
       files.map { |f| [f[:filename].to_s, ExerciseSubmission::File::GenerateDigest.(f[:code])] }.sort
   end
 
