@@ -53,6 +53,11 @@ class I18nParityTest < ActiveSupport::TestCase
 
   # Every locale we should check: production locales (bar en) plus any locale
   # that ships at least one catalog file under config/locales.
+  #
+  # PRODUCTION_LOCALES is unioned in deliberately even though it contributes
+  # nothing while production is en-only: when a locale is promoted, it must be
+  # checked (and hard-fail) even if it ships NO catalog files at all -
+  # otherwise a completely missing catalog would be silently skipped.
   def locales_to_check
     shipped = Dir.glob(LOCALES_DIR.join("**", "*.yml")).filter_map do |path|
       locale = File.basename(path).split(".")[-2]
