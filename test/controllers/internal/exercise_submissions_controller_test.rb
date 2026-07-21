@@ -179,6 +179,21 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     assert_match(/File 'large.rb' is too large/, json_response["error"]["message"])
   end
 
+  test "POST create reports 422 to Sentry" do
+    Sentry.expects(:capture_message).with(
+      "API 422: invalid_submission (internal/exercise_submissions#create)",
+      level: :warning,
+      fingerprint: %w[internal/exercise_submissions create invalid_submission],
+      extra: instance_of(Hash)
+    )
+
+    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
+      params: { submission: { files: [{ filename: "main.rb" }] } },
+      as: :json
+
+    assert_response :unprocessable_entity
+  end
+
   test "POST create returns 422 for empty files array" do
     post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
       params: { submission: { files: [] } },

@@ -108,6 +108,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }
   rescue StandardError => e
     Rails.logger.error("Failed to create portal session: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "portal_failed",
@@ -142,6 +143,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }
   rescue SecurityError => e
     Rails.logger.error("Security error verifying checkout: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "unauthorized",
@@ -149,6 +151,8 @@ class Internal::SubscriptionsController < Internal::BaseController
       }
     }, status: :forbidden
   rescue StripeCheckoutSessionIncompleteError => e
+    # Expected user-driven outcome (declined/abandoned payment), not a bug -
+    # log only, don't report to Sentry.
     Rails.logger.info("Checkout session incomplete: #{e.decline_reason || 'no reason given'}")
     render json: {
       error: {
@@ -161,6 +165,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }, status: :unprocessable_entity
   rescue ArgumentError => e
     Rails.logger.error("Invalid checkout session: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "invalid_session",
@@ -169,6 +174,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }, status: :unprocessable_entity
   rescue StandardError => e
     Rails.logger.error("Failed to verify checkout session: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "verification_failed",
@@ -223,6 +229,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }
   rescue ArgumentError => e
     Rails.logger.error("Invalid subscription update: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "invalid_request",
@@ -231,6 +238,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }, status: :unprocessable_entity
   rescue StandardError => e
     Rails.logger.error("Failed to update subscription: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "update_failed",
@@ -242,6 +250,15 @@ class Internal::SubscriptionsController < Internal::BaseController
   # DELETE /internal/subscriptions/cancel
   # Cancels subscription at period end
   def cancel
+    # Already cancelled (or scheduled to cancel): report that state as a
+    # success, not an error - the user has what they asked for.
+    if current_user.data.subscription_status.in?(%w[cancelling canceled])
+      return render json: {
+        success: true,
+        cancels_at: current_user.data.subscription_valid_until
+      }
+    end
+
     # Check user has subscription
     unless current_user.data.stripe_subscription_id.present?
       return render json: {
@@ -261,6 +278,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }
   rescue StandardError => e
     Rails.logger.error("Failed to cancel subscription: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "cancel_failed",
@@ -301,6 +319,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }
   rescue ArgumentError => e
     Rails.logger.error("Invalid subscription reactivation: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "invalid_request",
@@ -309,6 +328,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     }, status: :unprocessable_entity
   rescue StandardError => e
     Rails.logger.error("Failed to reactivate subscription: #{e.message}")
+    Sentry.capture_exception(e, extra: { user_id: current_user.id })
     render json: {
       error: {
         type: "reactivate_failed",
