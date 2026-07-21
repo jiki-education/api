@@ -1,0 +1,100 @@
+hu:
+  api_errors:
+    # Authentication errors
+    unauthenticated: "A folytatáshoz be kell jelentkezned vagy regisztrálnod kell."
+    invalid_credentials: "Hibás e-mail-cím vagy jelszó"
+    unconfirmed: "Kérjük, erősítsd meg az e-mail-címedet"
+    forbidden: "Ehhez admin jogosultság szükséges"
+    access_denied: "Hozzáférés megtagadva"
+    premium_required: "Ez a funkció csak prémium tagoknak érhető el"
+    invalid_signature: "Érvénytelen aláírás"
+    invalid_captcha: "A captcha-ellenőrzés sikertelen"
+
+    # Token errors
+    invalid_token: "A token érvénytelen vagy lejárt"
+    token_expired: "A token lejárt"
+    session_expired: "A munkameneted lejárt. Kérjük, jelentkezz be újra."
+    invalid_otp: "Érvénytelen ellenőrző kód"
+    invalid_unsubscribe_token: "Érvénytelen vagy lejárt leiratkozási token"
+
+    # Resource errors
+    not_found: "Az erőforrás nem található"
+    lesson_not_found: "A lecke nem található"
+    level_not_found: "A szint nem található"
+    course_not_found: "A kurzus nem található"
+    user_not_found: "A felhasználó nem található"
+    challenge_not_found: "A feladvány nem található"
+    concept_not_found: "A fogalom nem található"
+    badge_not_found: "A jelvény nem található"
+    user_challenge_not_found: "A felhasználói feladvány nem található"
+    user_video_not_found: "A felhasználói videó nem található"
+    mailshot_not_found: "A körlevél nem található"
+    unknown_segment: "Ismeretlen közönségszegmens"
+    mailshot_body_blank: "A körlevél elküldése előtt adj hozzá tartalmat"
+    mailshot_already_sent: "Ezt a körlevelet már elküldtük, ezért nem törölhető"
+    validation_error: "Az ellenőrzés sikertelen"
+    invalid_event: "Ismeretlen analitikai esemény"
+
+    # File submission errors
+    duplicate_filename: "Ismétlődő fájlnév a beküldésben"
+    file_too_large: "A fájl túllépi a maximális méretet"
+    too_many_files: "Túl sok fájl a beküldésben"
+    invalid_submission: "Érvénytelen beküldés"
+
+    # User progression errors
+    lesson_in_progress: "Fejezd be a jelenlegi leckét, mielőtt újat kezdenél"
+    lesson_not_unlocked: "Előbb fejezd be a szint korábbi leckéit"
+    level_not_completed: "Előbb fejezd be a jelenlegi szintet"
+    challenge_locked: "Előbb fejezd be a leckét, amely feloldja ezt a feladványt"
+    user_lesson_not_found: "A felhasználói lecke nem található"
+    user_level_not_found: "A felhasználói szint nem található"
+    language_already_chosen: "A nyelvet már kiválasztottad"
+    invalid_language: "Érvénytelen nyelvválasztás"
+    missing_course: "A course_slug paraméter kötelező"
+
+    # Settings errors
+    invalid_password: "A jelenlegi jelszó helytelen"
+    locale_update_failed: "A nyelv frissítése sikertelen"
+    name_update_failed: "A név frissítése sikertelen"
+    email_update_failed: "Az e-mail-cím frissítése sikertelen"
+    password_update_failed: "A jelszó frissítése sikertelen"
+    handle_update_failed: "A felhasználónév frissítése sikertelen"
+    notification_update_failed: "Az értesítés frissítése sikertelen"
+    streaks_update_failed: "A sorozatok frissítése sikertelen"
+    flag_invalid: "A jelölés érvénytelen"
+
+    # Image/Avatar errors
+    no_image_provided: "Nem adtál meg képfájlt"
+    invalid_image_type: "Érvénytelen képtípus"
+    invalid_avatar: "Érvénytelen avatár"
+    avatar_too_large: "Az avatárfájl túl nagy"
+
+    # Content errors
+    concept_locked: "Ez a fogalom zárolva van"
+    translation_error: "A fordítás sikertelen"
+    lesson_incomplete: "Előbb fejezd be a jelenlegi leckéket"
+
+    # Subscription errors
+    invalid_product: "Érvénytelen termék"
+    existing_subscription: "Már van aktív előfizetésed"
+    invalid_return_url: "Érvénytelen visszatérési URL"
+    checkout_failed: "A fizetés sikertelen"
+    no_customer: "Nem található Stripe-ügyfél"
+    portal_failed: "A portál-munkamenet sikertelen"
+    missing_session_id: "Hiányzó munkamenet-azonosító"
+    invalid_session: "Érvénytelen munkamenet"
+    verification_failed: "Az ellenőrzés sikertelen"
+    no_subscription: "Nincs aktív előfizetés"
+    same_tier: "Már ezen a csomagon vagy"
+    update_failed: "Az előfizetés frissítése sikertelen"
+    invalid_request: "Érvénytelen kérés"
+    cancel_failed: "A lemondás sikertelen"
+    not_cancelling: "Az előfizetés nincs lemondásra ütemezve"
+    reactivate_failed: "Az újraaktiválás sikertelen"
+
+    # External service errors
+    stripe_error: "Fizetésfeldolgozási hiba"
+    exercism_unavailable: "Nem sikerült elérni az Exercismet. Kérjük, próbáld újra röviddel később."
+
+    # Exercism integration
+    no_exercism_link: "Ez a fiók nincs összekapcsolva az Exercismmel"

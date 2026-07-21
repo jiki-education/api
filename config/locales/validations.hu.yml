@@ -1,0 +1,3 @@
+hu:
+  validations:
+    boolean_required: "csak igaz vagy hamis lehet"

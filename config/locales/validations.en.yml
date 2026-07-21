@@ -1,0 +1,4 @@
+en:
+  validations:
+    # Manual, non-ActiveRecord validation messages surfaced in 422 error hashes.
+    boolean_required: "must be true or false"

@@ -1,0 +1,14 @@
+hu:
+  activerecord:
+    attributes:
+      user:
+        name: "Név"
+        email: "E-mail-cím"
+        password: "Jelszó"
+        password_confirmation: "Jelszó megerősítése"
+        current_password: "Jelenlegi jelszó"
+        handle: "Felhasználónév"
+        locale: "Nyelv"
+      user/data:
+        explicit_locale: "Nyelv"
+        streaks_enabled: "Sorozatok"
