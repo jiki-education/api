@@ -690,18 +690,39 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "You don't have an active subscription", json["error"]["message"]
   end
 
-  test "DELETE cancel rejects when subscription already canceled" do
+  test "DELETE cancel returns success when subscription already canceled" do
     @user.data.update!(
       stripe_subscription_id: nil,
       subscription_status: "canceled"
     )
 
+    Stripe::CancelSubscription.expects(:call).never
+
     delete internal_subscriptions_cancel_path,
       as: :json
 
-    assert_response :bad_request
+    assert_response :success
     json = response.parsed_body
-    assert_equal "no_subscription", json["error"]["type"]
+    assert json["success"]
+  end
+
+  test "DELETE cancel returns success when subscription already cancelling" do
+    valid_until = 1.month.from_now.change(usec: 0)
+    @user.data.update!(
+      stripe_subscription_id: "sub_123",
+      subscription_status: "cancelling",
+      subscription_valid_until: valid_until
+    )
+
+    Stripe::CancelSubscription.expects(:call).never
+
+    delete internal_subscriptions_cancel_path,
+      as: :json
+
+    assert_response :success
+    json = response.parsed_body
+    assert json["success"]
+    assert_equal valid_until.iso8601(3), json["cancels_at"]
   end
 
   test "DELETE cancel handles Stripe errors gracefully" do
@@ -710,7 +731,9 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       subscription_status: "active"
     )
 
-    Stripe::CancelSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
+    error = StandardError.new("Stripe API error")
+    Stripe::CancelSubscription.expects(:call).raises(error)
+    Sentry.expects(:capture_exception).with(error, extra: { user_id: @user.id })
 
     delete internal_subscriptions_cancel_path,
       as: :json
