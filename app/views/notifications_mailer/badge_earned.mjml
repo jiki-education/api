@@ -7,7 +7,7 @@
       = t("notifications_mailer.badge_earned.greeting")
 
     - if @image_url.present?
-      %mj-image{ src: @image_url, alt: @badge.name, width: "100%" }
+      %mj-image{ src: @image_url, alt: @badge_name, width: "100%" }
 
     %mj-text
       = markdown_to_html(@content_markdown)
