@@ -8,6 +8,10 @@ class ExerciseSubmission::Create
     validate_file_count!
     validate_unique_filenames!
 
+    # Identical re-runs are common (the frontend submits on every test run),
+    # so silently return the previous submission rather than storing a copy.
+    return previous_submission if duplicate_of_previous?
+
     ActiveRecord::Base.transaction do
       ExerciseSubmission.create!(
         context:,
@@ -40,6 +44,22 @@ class ExerciseSubmission::Create
     duplicates = filenames.select { |fn| filenames.count(fn) > 1 }.uniq
 
     raise DuplicateFilenameError, "Duplicate filenames: #{duplicates.join(', ')}" if duplicates.any?
+  end
+
+  memoize
+  def previous_submission
+    context.exercise_submissions.order(id: :desc).first
+  end
+
+  def duplicate_of_previous?
+    return false unless previous_submission
+
+    # A nil code is invalid - let File::Create raise rather than matching
+    # a previous empty-string file's digest.
+    return false if files.any? { |f| f[:code].nil? }
+
+    previous_submission.files.pluck(:filename, :digest).sort ==
+      files.map { |f| [f[:filename].to_s, ExerciseSubmission::File::GenerateDigest.(f[:code])] }.sort
   end
 
   memoize

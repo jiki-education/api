@@ -132,4 +132,71 @@ class ExerciseSubmission::CreateTest < ActiveSupport::TestCase
       assert_equal 20, submission.files.count
     end
   end
+
+  test "returns previous submission when files are identical" do
+    user_lesson = create(:user_lesson)
+    files = [{ filename: "main.rb", code: "puts 'hello'" }]
+
+    previous = ExerciseSubmission::Create.(user_lesson, files)
+
+    User::ActivityLog::LogActivity.expects(:call).never
+
+    assert_no_difference -> { ExerciseSubmission.count } do
+      assert_equal previous, ExerciseSubmission::Create.(user_lesson, files)
+    end
+  end
+
+  test "creates new submission when code differs from previous" do
+    user_lesson = create(:user_lesson)
+
+    previous = ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: "puts 'hello'" }])
+    submission = ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: "puts 'goodbye'" }])
+
+    refute_equal previous, submission
+    assert submission.persisted?
+  end
+
+  test "creates new submission when filename differs from previous" do
+    user_lesson = create(:user_lesson)
+
+    previous = ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: "puts 'hello'" }])
+    submission = ExerciseSubmission::Create.(user_lesson, [{ filename: "other.rb", code: "puts 'hello'" }])
+
+    refute_equal previous, submission
+  end
+
+  test "creates new submission when file count differs from previous" do
+    user_lesson = create(:user_lesson)
+    files = [
+      { filename: "main.rb", code: "puts 'hello'" },
+      { filename: "helper.rb", code: "def help\nend" }
+    ]
+
+    Prosopite.pause do
+      previous = ExerciseSubmission::Create.(user_lesson, files)
+      submission = ExerciseSubmission::Create.(user_lesson, files.take(1))
+
+      refute_equal previous, submission
+    end
+  end
+
+  test "nil filename raises rather than deduplicating" do
+    user_lesson = create(:user_lesson)
+
+    ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: "puts 'hello'" }])
+
+    assert_raises(InvalidSubmissionError) do
+      ExerciseSubmission::Create.(user_lesson, [{ filename: nil, code: "puts 'hello'" }])
+    end
+  end
+
+  test "nil code raises rather than deduplicating against a previous empty file" do
+    user_lesson = create(:user_lesson)
+
+    ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: "" }])
+
+    assert_raises(InvalidSubmissionError) do
+      ExerciseSubmission::Create.(user_lesson, [{ filename: "main.rb", code: nil }])
+    end
+  end
 end
