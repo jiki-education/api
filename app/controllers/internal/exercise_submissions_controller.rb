@@ -45,39 +45,19 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
   end
 
   def render_duplicate_filename_error(exception)
-    render json: {
-      error: {
-        type: "duplicate_filename",
-        message: exception.message
-      }
-    }, status: :unprocessable_entity
+    render_422(:duplicate_filename, message: exception.message)
   end
 
   def render_file_too_large_error(exception)
-    render json: {
-      error: {
-        type: "file_too_large",
-        message: exception.message
-      }
-    }, status: :unprocessable_entity
+    render_422(:file_too_large, message: exception.message)
   end
 
   def render_too_many_files_error(exception)
-    render json: {
-      error: {
-        type: "too_many_files",
-        message: exception.message
-      }
-    }, status: :unprocessable_entity
+    render_422(:too_many_files, message: exception.message)
   end
 
   def render_invalid_submission_error(exception)
-    render json: {
-      error: {
-        type: "invalid_submission",
-        message: exception.message
-      }
-    }, status: :unprocessable_entity
+    render_422(:invalid_submission, message: exception.message)
   end
 
   def render_level_not_found_error(exception)

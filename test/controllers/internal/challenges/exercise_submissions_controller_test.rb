@@ -177,4 +177,19 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
       }
     })
   end
+
+  test "POST create reports 422 to Sentry" do
+    Sentry.expects(:capture_message).with(
+      "API 422: invalid_submission (internal/challenges/exercise_submissions#create)",
+      level: :warning,
+      fingerprint: %w[internal/challenges/exercise_submissions create invalid_submission],
+      extra: instance_of(Hash)
+    )
+
+    post internal_challenge_exercise_submissions_path(challenge_slug: @challenge.slug),
+      params: { submission: { files: [] } },
+      as: :json
+
+    assert_response :unprocessable_entity
+  end
 end
