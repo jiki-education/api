@@ -482,7 +482,7 @@ GEM
     solid_queue_monitor (2.2.0)
       rails (>= 7.0)
       solid_queue (>= 0.1.0)
-    stripe (19.3.0)
+    stripe (19.3.1)
       bigdecimal
       logger
     strscan (3.1.8)
