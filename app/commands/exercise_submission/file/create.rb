@@ -41,5 +41,5 @@ class ExerciseSubmission::File::Create
   end
 
   memoize
-  def digest = XXhash.xxh64(sanitized_content).to_s
+  def digest = ExerciseSubmission::File::GenerateDigest.(content)
 end
