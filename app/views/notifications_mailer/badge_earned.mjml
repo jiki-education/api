@@ -1,10 +1,10 @@
 - content_for :title, @subject
-- content_for :preview, "You've earned a new badge!"
+- content_for :preview, t("notifications_mailer.badge_earned.preview")
 
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     %mj-text
-      Hi there,
+      = t("notifications_mailer.badge_earned.greeting")
 
     - if @image_url.present?
       %mj-image{ src: @image_url, alt: @badge.name, width: "100%" }
@@ -12,6 +12,6 @@
     %mj-text
       = markdown_to_html(@content_markdown)
       %p
-        Cheers,
+        = t("notifications_mailer.badge_earned.signoff")
         %br
-        Jeremy &amp; Team
+        = t("notifications_mailer.badge_earned.team")

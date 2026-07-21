@@ -18,6 +18,7 @@ class ProgressionMailer < ApplicationMailer
     content = @level.content_for_locale(@user.locale)
     @subject = content[:milestone_email_subject]
     @content_markdown = content[:milestone_email_content_markdown]
+    @level_title = content[:title]
     @image_url = @level.milestone_email_image_url
     @header_image = "milestone-#{(@level.position % 3) + 1}.jpg"
 

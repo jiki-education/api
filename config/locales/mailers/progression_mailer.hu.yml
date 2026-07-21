@@ -1,0 +1,7 @@
+hu:
+  progression_mailer:
+    level_completed:
+      preview: "Teljesítetted ezt: %{level_title}!"
+      greeting: "Szia,"
+      signoff: "Üdv,"
+      team: "Jeremy és a csapat"

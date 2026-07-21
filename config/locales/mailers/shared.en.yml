@@ -1,0 +1,9 @@
+en:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "You are receiving this email because you have an account at %{jiki_link}."
+        manage_preferences_only_html: "Want to change how you receive these emails? You can %{preferences_link}"
+        manage_with_unsubscribe_html: "Want to change how you receive these emails? You can %{preferences_link} or %{unsubscribe_link} from this list."
+        update_preferences: "update your preferences"
+        unsubscribe: "unsubscribe"
