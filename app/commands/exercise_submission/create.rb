@@ -53,6 +53,7 @@ class ExerciseSubmission::Create
 
   def duplicate_of_previous?
     return false unless previous_submission
+
     # A nil code is invalid - let File::Create raise rather than matching
     # a previous empty-string file's digest.
     return false if files.any? { |f| f[:code].nil? }
