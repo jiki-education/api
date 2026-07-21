@@ -50,4 +50,19 @@ class I18nRenderingTest < ActionDispatch::IntegrationTest
     hu_invalid = I18n.with_locale(:hu) { I18n.t("errors.messages.invalid") }
     assert_equal [hu_invalid], body.dig("error", "errors", "email")
   end
+
+  # An unsupported ?locale param must be ignored, not raise I18n::InvalidLocale
+  test "unsupported locale param falls back to the user's locale" do
+    user = create(:user, locale: "hu")
+    make_non_premium(user)
+    sign_in_user(user)
+
+    get "#{internal_user_challenge_path(challenge_slug: 'anything')}?locale=xx", as: :json
+
+    assert_response :forbidden
+    assert_equal(
+      I18n.t("api_errors.premium_required", locale: :hu),
+      response.parsed_body.dig("error", "message")
+    )
+  end
 end

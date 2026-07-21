@@ -65,8 +65,13 @@ class ApplicationController < ActionController::API
     session[:last_seen] = Time.current.to_i if session[:last_seen].nil? || session[:last_seen] < 1.hour.ago.to_i
   end
 
+  # An unsupported params[:locale] is ignored rather than raising
+  # I18n::InvalidLocale (available_locales is enforced and narrower
+  # than what clients might send).
   def set_locale
-    I18n.locale = params[:locale] || current_user&.locale || I18n.default_locale
+    requested = params[:locale]
+    requested = nil unless I18n::SUPPORTED_LOCALES.include?(requested)
+    I18n.locale = requested || current_user&.locale || I18n.default_locale
   end
 
   # Capture the browser's language preferences once, so the user's locale can
