@@ -9,10 +9,10 @@ FactoryBot.define do
       locale { "hu" }
     end
 
-    trait :french do
-      locale { "fr" }
-      title { "Titre de la leçon" }
-      description { "Description de la leçon" }
+    trait :spanish do
+      locale { "es-ES" }
+      title { "Título de la lección" }
+      description { "Descripción de la lección" }
     end
   end
 end

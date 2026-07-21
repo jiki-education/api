@@ -38,18 +38,18 @@ class Lesson::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
     (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
 
     # Should include at least one from each constant
-    # Since we defined SUPPORTED_LOCALES = [:en, :hu] and WIP_LOCALES = [:fr]
-    # we expect both "hu" and "fr" to be in the target locales
+    # WIP_LOCALES carries every non-production locale, so we expect them
+    # all in the target locales
     assert_includes I18n::SUPPORTED_LOCALES.map(&:to_s), "en"
     assert_includes I18n::SUPPORTED_LOCALES.map(&:to_s), "hu"
-    assert_includes I18n::WIP_LOCALES.map(&:to_s), "fr"
+    assert_includes I18n::WIP_LOCALES.map(&:to_s), "hu"
 
     # Verify the command uses both
     Lesson::Translation::TranslateToLocale.stubs(:defer)
     result = Lesson::Translation::TranslateToAllLocales.(lesson)
 
-    assert_includes result, "hu" # From SUPPORTED_LOCALES
-    assert_includes result, "fr" # From WIP_LOCALES
+    assert_includes result, "hu" # From WIP_LOCALES (non-production SUPPORTED)
+    assert_includes result, "es-ES" # From WIP_LOCALES
   end
 
   test "uses .defer() for background job execution" do

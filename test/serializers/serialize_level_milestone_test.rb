@@ -67,7 +67,7 @@ class SerializeLevelMilestoneTest < ActiveSupport::TestCase
       milestone_content: "# Congratulations!"
     }
 
-    I18n.with_locale(:fr) do
+    I18n.with_locale(:hu) do
       assert_equal expected, SerializeLevelMilestone.(level)
     end
   end

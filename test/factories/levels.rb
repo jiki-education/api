@@ -19,7 +19,7 @@ FactoryBot.define do
     trait :with_all_translations do
       after(:create) do |level|
         create(:level_translation, :hungarian, level:)
-        create(:level_translation, :french, level:)
+        create(:level_translation, :spanish, level:)
       end
     end
   end

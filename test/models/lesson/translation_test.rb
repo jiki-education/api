@@ -59,7 +59,7 @@ class Lesson::TranslationTest < ActiveSupport::TestCase
   end
 
   test "accepts supported locales" do
-    %w[hu fr].each do |locale|
+    I18n::WIP_LOCALES.each do |locale|
       translation = build(:lesson_translation, locale:)
       assert translation.valid?, "Expected #{locale} to be valid"
     end

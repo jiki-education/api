@@ -110,7 +110,7 @@ class LevelTest < ActiveSupport::TestCase
   test "has many translations" do
     level = create(:level)
     translation1 = create(:level_translation, level:, locale: "hu")
-    translation2 = create(:level_translation, level:, locale: "fr")
+    translation2 = create(:level_translation, level:, locale: "es-ES")
 
     assert_equal [translation1, translation2], level.translations.order(:id).to_a
   end
