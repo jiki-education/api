@@ -46,7 +46,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
   test "falls back to English when translation missing" do
     lesson = create(:lesson, :exercise, slug: "intro", title: "Introduction", description: "Start here")
 
-    I18n.with_locale(:fr) do
+    I18n.with_locale(:hu) do
       result = SerializeLesson.(lesson, nil)
       assert_equal "Introduction", result[:title]
       assert_equal "Start here", result[:description]

@@ -37,7 +37,7 @@ class Lesson::Translation::TranslateToLocale
 
   memoize
   def supported_locales
-    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s)
+    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
   end
 
   memoize

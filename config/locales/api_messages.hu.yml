@@ -1,0 +1,4 @@
+hu:
+  api_messages:
+    password_reset_sent: "A visszaállítási útmutatót elküldtük ide: %{email}"
+    password_reset_success: "A jelszavad sikeresen visszaállt"

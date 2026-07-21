@@ -73,9 +73,7 @@ class Level::TranslationTest < ActiveSupport::TestCase
   end
 
   test "accepts supported locales" do
-    # Test supported locales (excluding English)
-    # Based on SUPPORTED_LOCALES and WIP_LOCALES in config/initializers/i18n.rb
-    %w[hu fr].each do |locale|
+    I18n::WIP_LOCALES.each do |locale|
       translation = build(:level_translation, locale:)
       assert translation.valid?, "Expected #{locale} to be valid"
     end

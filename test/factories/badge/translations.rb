@@ -12,13 +12,13 @@ FactoryBot.define do
       locale { "hu" }
     end
 
-    trait :french do
-      locale { "fr" }
-      name { "Badge français" }
-      description { "Description française" }
-      fun_fact { "Fait amusant français" }
-      email_subject { "Vous avez gagné un nouveau badge!" }
-      email_content_markdown { "Félicitations pour votre badge!" }
+    trait :spanish do
+      locale { "es-ES" }
+      name { "Insignia española" }
+      description { "Descripción española" }
+      fun_fact { "Dato curioso español" }
+      email_subject { "¡Has ganado una nueva insignia!" }
+      email_content_markdown { "¡Enhorabuena por tu insignia!" }
     end
   end
 end

@@ -44,7 +44,7 @@ class LessonTest < ActiveSupport::TestCase
   test "has many translations" do
     lesson = create(:lesson, :exercise)
     translation1 = create(:lesson_translation, lesson:, locale: "hu")
-    translation2 = create(:lesson_translation, lesson:, locale: "fr")
+    translation2 = create(:lesson_translation, lesson:, locale: "es-ES")
 
     assert_includes lesson.translations, translation1
     assert_includes lesson.translations, translation2

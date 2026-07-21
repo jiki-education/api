@@ -16,6 +16,7 @@ gem "bcrypt", "~> 3.1.7"
 
 # Authentication
 gem "devise", "~> 5.0"
+gem "devise-i18n" # Localized Devise messages (hu, etc.)
 gem "jwt" # For conversation tokens (AI assistant)
 gem "discourse_api" # For Discourse SSO integration
 gem "rotp", "~> 6.3" # TOTP for two-factor authentication
@@ -59,6 +60,9 @@ gem "liquid"
 # Uses GitHub source for CI/production
 # For local development, run: bundle config set --local local.jiki-config ../config
 gem "jiki-config", github: "jiki-education/config", branch: "main"
+
+# Localized ActiveRecord/ActiveModel/date defaults (hu, etc.)
+gem "rails-i18n"
 
 # Pagination
 gem "kaminari"

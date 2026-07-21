@@ -13,14 +13,14 @@ FactoryBot.define do
       locale { "hu" }
     end
 
-    trait :french do
-      locale { "fr" }
-      title { "Titre français" }
-      description { "Description française" }
-      milestone_summary { "Vous avez terminé ce niveau!" }
-      milestone_content { "# Félicitations!\n\nVous avez terminé toutes les leçons." }
-      milestone_email_subject { "Félicitations pour avoir terminé ce niveau!" }
-      milestone_email_content_markdown { "Vous avez terminé toutes les leçons. Beau travail!" }
+    trait :spanish do
+      locale { "es-ES" }
+      title { "Título español" }
+      description { "Descripción española" }
+      milestone_summary { "¡Has completado este nivel!" }
+      milestone_content { "# ¡Enhorabuena!\n\nHas terminado todas las lecciones." }
+      milestone_email_subject { "¡Enhorabuena por completar el nivel!" }
+      milestone_email_content_markdown { "Has terminado todas las lecciones. ¡Buen trabajo!" }
     end
   end
 end

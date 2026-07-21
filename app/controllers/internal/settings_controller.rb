@@ -54,7 +54,7 @@ class Internal::SettingsController < Internal::BaseController
     User::UpdateStreaksEnabled.(current_user, params[:enabled])
     render json: { settings: SerializeSettings.(current_user) }
   rescue InvalidBooleanError
-    render_422(:streaks_update_failed, errors: { enabled: ["must be true or false"] })
+    render_422(:streaks_update_failed, errors: { enabled: [I18n.t("validations.boolean_required")] })
   rescue ActiveRecord::RecordInvalid => e
     render_422(:streaks_update_failed, errors: e.record.errors.as_json)
   end
