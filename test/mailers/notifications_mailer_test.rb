@@ -22,6 +22,49 @@ class NotificationsMailerTest < ActionMailer::TestCase
     assert mail.html_part.body.to_s.present?
   end
 
+  test "badge_earned renders English chrome and footer by default" do
+    mail = NotificationsMailer.badge_earned(@user, @badge)
+
+    html = mail.html_part.body.to_s
+    text = mail.text_part.body.to_s
+
+    # Greeting and sign-off
+    assert_match "Hi there,", html
+    assert_match "Cheers,", html
+    assert_match "Hi there,", text
+    assert_match "Jeremy & Team", text
+
+    # Preview
+    assert_match "You&#39;ve earned a new badge!", html
+
+    # Shared footer chrome
+    assert_match "You are receiving this email because you have an account at", html
+    assert_match "update your preferences", html
+    assert_match "unsubscribe", html
+  end
+
+  test "badge_earned renders Hungarian chrome and footer for hu user" do
+    user = create(:user, :hungarian)
+
+    mail = NotificationsMailer.badge_earned(user, @badge)
+
+    html = mail.html_part.body.to_s
+    text = mail.text_part.body.to_s
+
+    # Greeting and sign-off
+    assert_match "Szia,", html
+    assert_match "Üdv,", html
+    assert_match "Jeremy és a csapat", text
+
+    # Preview
+    assert_match "Új jelvényt szereztél!", html
+
+    # Shared footer chrome (Hungarian)
+    assert_match "Ezt az e-mailt azért kapod", html
+    assert_match "módosítsd a beállításaidat", html
+    assert_match "iratkozz le", html
+  end
+
   test "badge_earned sets @header_image to badge-earned.jpg" do
     mail = NotificationsMailer.badge_earned(@user, @badge)
 

@@ -1,0 +1,7 @@
+hu:
+  notifications_mailer:
+    badge_earned:
+      preview: "Új jelvényt szereztél!"
+      greeting: "Szia,"
+      signoff: "Üdv,"
+      team: "Jeremy és a csapat"

@@ -1,15 +1,15 @@
 - content_for :title, @subject
-- content_for :preview, "You've completed #{@level.title}!"
+- content_for :preview, t("progression_mailer.level_completed.preview", level_title: @level_title)
 
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     - if @image_url.present?
-      %mj-image{ src: @image_url, alt: @level.title, width: "100%" }
+      %mj-image{ src: @image_url, alt: @level_title, width: "100%" }
 
     %mj-text
-      %p Hi there,
+      %p= t("progression_mailer.level_completed.greeting")
       = markdown_to_html(@content_markdown)
       %p
-        Cheers,
+        = t("progression_mailer.level_completed.signoff")
         %br
-        Jeremy &amp; Team
+        = t("progression_mailer.level_completed.team")

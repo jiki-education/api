@@ -20,6 +20,7 @@ class NotificationsMailer < ApplicationMailer
     content = badge.content_for_locale(user.locale)
     @subject = content[:email_subject]
     @content_markdown = content[:email_content_markdown]
+    @badge_name = content[:name]
     @image_url = badge.email_image_url
     @header_image = "badge-earned.jpg"
 

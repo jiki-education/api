@@ -1,0 +1,7 @@
+en:
+  notifications_mailer:
+    badge_earned:
+      preview: "You've earned a new badge!"
+      greeting: "Hi there,"
+      signoff: "Cheers,"
+      team: "Jeremy & Team"

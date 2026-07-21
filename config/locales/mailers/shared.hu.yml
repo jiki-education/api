@@ -1,0 +1,9 @@
+hu:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Ezt az e-mailt azért kapod, mert van egy fiókod a %{jiki_link} oldalon."
+        manage_preferences_only_html: "Szeretnéd módosítani, hogyan kapod ezeket az e-maileket? Ezt megteheted itt: %{preferences_link}"
+        manage_with_unsubscribe_html: "Szeretnéd módosítani, hogyan kapod ezeket az e-maileket? %{preferences_link}, vagy %{unsubscribe_link} erről a listáról."
+        update_preferences: "módosítsd a beállításaidat"
+        unsubscribe: "iratkozz le"

@@ -1,5 +1,7 @@
 -# Email footer with branding and links
 -# Receives: user (required), unsubscribe_key (optional)
+- link_style = "color: #64748b; text-decoration: underline; font-weight: 500;"
+- jiki_link = link_to("Jiki", "https://jiki.io", style: link_style)
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     %mj-divider{ "border-color": "#e2e7ed", "border-width": "1px", "padding": "24px 0" }
@@ -7,13 +9,11 @@
 %mj-section{ "background-color": "#ffffff", "padding-bottom": "24px" }
   %mj-column
     %mj-text{ align: "center", "font-size": "14px", color: "#64748b" }
-      != 'You are receiving this email because you have an account at <a href="https://jiki.io" style="color: #64748b; text-decoration: underline; font-weight: 500;">Jiki</a>.'
+      != t("mailers.shared.footer.account_notice_html", jiki_link: jiki_link)
       - if user&.unsubscribe_token
-        Want to change how you receive these emails? You can
-        %a{ href: unsubscribe_url(token: user.unsubscribe_token), style: "color: #64748b; text-decoration: underline; font-weight: 500;" }
-          update your preferences
+        - preferences_link = link_to(t("mailers.shared.footer.update_preferences"), unsubscribe_url(token: user.unsubscribe_token), style: link_style)
         - if unsubscribe_key.present?
-          or
-          %a{ href: unsubscribe_url(token: user.unsubscribe_token, key: unsubscribe_key), style: "color: #64748b; text-decoration: underline; font-weight: 500;" }
-            unsubscribe
-          from this list.
+          - unsubscribe_link = link_to(t("mailers.shared.footer.unsubscribe"), unsubscribe_url(token: user.unsubscribe_token, key: unsubscribe_key), style: link_style)
+          != t("mailers.shared.footer.manage_with_unsubscribe_html", preferences_link: preferences_link, unsubscribe_link: unsubscribe_link)
+        - else
+          != t("mailers.shared.footer.manage_preferences_only_html", preferences_link: preferences_link)
