@@ -12,6 +12,12 @@ class Stripe::Webhook::SubscriptionCreated
       return
     end
 
+    # Ensure the Stripe customer is linked. When we resolved the user via
+    # subscription metadata (because checkout.session.completed never set the
+    # customer id), link it now so future subscription.updated/deleted webhooks
+    # can find the user by customer id.
+    link_customer!
+
     # Sync subscription to user (handles both active and incomplete states)
     Stripe::SyncSubscriptionToUser.(user, subscription, interval)
 
@@ -22,9 +28,31 @@ class Stripe::Webhook::SubscriptionCreated
   memoize
   def subscription = event.data.object
 
+  # Resolve the user by Stripe customer id, falling back to the user_id we
+  # stamp into the subscription metadata at checkout. The fallback prevents a
+  # dropped or out-of-order checkout.session.completed webhook (which is what
+  # sets the customer id) from silently stranding a paid subscriber.
   memoize
   def user
+    user_from_customer || user_from_metadata
+  end
+
+  def user_from_customer
+    return nil if subscription.customer.blank?
+
     User.joins(:data).find_by(user_data: { stripe_customer_id: subscription.customer })
+  end
+
+  def user_from_metadata
+    user_id = subscription.metadata&.[](:user_id) || subscription.metadata&.[]('user_id')
+    user_id.present? ? User.find_by(id: user_id) : nil
+  end
+
+  def link_customer!
+    return if subscription.customer.blank?
+    return if user.data.stripe_customer_id.present?
+
+    user.data.update!(stripe_customer_id: subscription.customer)
   end
 
   memoize

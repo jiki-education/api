@@ -104,8 +104,57 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     assert_equal "never_subscribed", user.data.subscription_status
   end
 
+  test "resolves user via subscription metadata when customer is not linked" do
+    # The user has no stripe_customer_id - e.g. checkout.session.completed was
+    # dropped or arrived after this event, so it never linked the customer.
+    user = create(:user)
+
+    event = mock_event(
+      price_id: Jiki.config.stripe_premium_monthly_price_id,
+      metadata: { user_id: user.id.to_s }
+    )
+
+    Stripe::Webhook::SubscriptionCreated.(event)
+
+    user.data.reload
+    assert user.premium?
+    assert_equal "active", user.data.subscription_status
+    # The customer id is backfilled so future webhooks can find the user by it.
+    assert_equal "cus_123", user.data.stripe_customer_id
+  end
+
+  test "prefers customer lookup over metadata" do
+    customer_user = create(:user)
+    customer_user.data.update!(stripe_customer_id: "cus_123")
+    metadata_user = create(:user)
+
+    # metadata is deliberately not stubbed: the customer lookup must win and
+    # short-circuit before metadata is ever read.
+    event = mock_event(price_id: Jiki.config.stripe_premium_monthly_price_id)
+
+    Stripe::Webhook::SubscriptionCreated.(event)
+
+    assert customer_user.data.reload.premium?
+    refute metadata_user.data.reload.premium?
+  end
+
+  test "does nothing when user cannot be found by customer or metadata" do
+    subscription = mock
+    subscription.stubs(:status).returns("active")
+    subscription.stubs(:customer).returns("cus_unknown")
+    subscription.stubs(:metadata).returns({})
+
+    event = mock
+    event.stubs(:data).returns(mock(object: subscription))
+
+    # The subscription must be dropped, not synced to some arbitrary user.
+    Stripe::SyncSubscriptionToUser.expects(:call).never
+
+    Stripe::Webhook::SubscriptionCreated.(event)
+  end
+
   private
-  def mock_event(price_id:, status: "active", period_end: 1.month.from_now)
+  def mock_event(price_id:, status: "active", period_end: 1.month.from_now, customer: "cus_123", metadata: nil)
     price = mock
     price.stubs(:id).returns(price_id)
 
@@ -117,10 +166,13 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     items.stubs(:data).returns([item])
 
     subscription = mock
-    subscription.stubs(:customer).returns("cus_123")
+    subscription.stubs(:customer).returns(customer)
     subscription.stubs(:id).returns("sub_123")
     subscription.stubs(:status).returns(status)
     subscription.stubs(:items).returns(items)
+    # Only stub metadata when the test exercises the fallback; strict Mocha
+    # errors on stubs that go unused when the customer lookup short-circuits.
+    subscription.stubs(:metadata).returns(metadata) unless metadata.nil?
 
     event = mock
     event.stubs(:data).returns(mock(object: subscription))
