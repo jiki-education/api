@@ -147,9 +147,10 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
     event = mock
     event.stubs(:data).returns(mock(object: subscription))
 
-    assert_nothing_raised do
-      Stripe::Webhook::SubscriptionCreated.(event)
-    end
+    # The subscription must be dropped, not synced to some arbitrary user.
+    Stripe::SyncSubscriptionToUser.expects(:call).never
+
+    Stripe::Webhook::SubscriptionCreated.(event)
   end
 
   private
