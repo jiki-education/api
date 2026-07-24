@@ -35,6 +35,21 @@ class Mailshot::SendToSegmentTest < ActiveSupport::TestCase
     Mailshot::SendToSegment.(mailshot, "premium_users")
   end
 
+  test "only targets users who have completed Digital Clock (level 7, reaching level 8+)" do
+    level = create(:level, slug: "conditionals")
+    completed_user = create(:user)
+    create(:user_level, user: completed_user, level:, completed_at: Time.current)
+    incomplete_user = create(:user)
+    create(:user_level, user: incomplete_user, level:)
+    create(:user) # never started — must be excluded
+    mailshot = create(:mailshot)
+
+    User::Mailshot::Send.expects(:call).with(completed_user, mailshot).once
+    Mailshot::SendToSegment.stubs(:defer)
+
+    Mailshot::SendToSegment.(mailshot, "completed_digital_clock")
+  end
+
   test "stops without rescheduling when the batch is empty" do
     user = create(:user)
     mailshot = create(:mailshot)
