@@ -1,3 +1,10 @@
+# Video sources are `{ provider, id, durationSeconds, uploadDate }`.
+#
+# Every source MUST carry `durationSeconds` (integer) and `uploadDate` (ISO 8601
+# date) in addition to `provider` + `id` - not just concept walkthroughs. The
+# front-end relies on them to emit schema.org VideoObject JSON-LD (for Google
+# video indexing) on the public, server-rendered pages that show these videos, so
+# a source missing them is a broken source. Author them on every video source.
 module HasVideoData
   extend ActiveSupport::Concern
 
