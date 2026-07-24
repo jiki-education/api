@@ -17,7 +17,11 @@ class Mailshot < ApplicationRecord
     "all_users" => -> { User.all },
     "premium_users" => -> { User.joins(:data).merge(User::Data.where(membership_type: "premium")) },
     "free_users" => -> { User.joins(:data).merge(User::Data.where(membership_type: "standard")) },
-    "admin_users" => -> { User.where(admin: true) }
+    "admin_users" => -> { User.where(admin: true) },
+    "completed_digital_clock" => lambda {
+      level = Level.find_by!(slug: "conditionals")
+      User.joins(:user_levels).merge(UserLevel.where(level:).where.not(completed_at: nil))
+    }
   }.freeze
 
   def ready_to_send? = body_markdown.present?
