@@ -85,9 +85,13 @@ class ApplicationMailer < ActionMailer::Base
   end
 
   private
-  # Convert markdown to HTML for email templates
+  # Convert markdown to HTML for email templates.
+  # Inline max-width is required because email clients ignore stylesheets,
+  # and markdown images (unlike mj-image) aren't made responsive by MJML.
   def markdown_to_html(markdown)
-    Commonmarker.to_html(markdown).html_safe
+    fragment = Nokogiri::HTML::DocumentFragment.parse(Commonmarker.to_html(markdown))
+    fragment.css('img').each { |img| img['style'] = 'max-width:100%;height:auto' }
+    fragment.to_html.html_safe
   end
 
   # Convert markdown to plain text for email templates
