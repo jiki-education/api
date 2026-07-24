@@ -18,6 +18,16 @@ class SerializeConceptTest < ActiveSupport::TestCase
     assert_equal video_sources, result[:video_data]
   end
 
+  test "video_data passes through duration and upload date when present" do
+    video_sources = [{ provider: "mux", id: "abc123", durationSeconds: 372, uploadDate: "2026-05-15" }]
+    lesson = create(:lesson, :video, data: { sources: video_sources })
+    concept = create(:concept, unlocked_by_lesson: lesson)
+
+    result = SerializeConcept.(concept)
+
+    assert_equal video_sources, result[:video_data]
+  end
+
   test "video_data is nil when no unlocked_by_lesson" do
     concept = create(:concept)
 
