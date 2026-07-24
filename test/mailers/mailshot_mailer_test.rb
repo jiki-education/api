@@ -15,6 +15,15 @@ class MailshotMailerTest < ActionMailer::TestCase
     assert_match "Heading", mail.text_part.body.to_s
   end
 
+  test "adds max-width:100% style to inline images in the body" do
+    user = create(:user)
+    mailshot = create(:mailshot, body_markdown: "![alt text](https://assets.jiki.io/static/emails/example.webp)")
+
+    html = MailshotMailer.send_mailshot(user, mailshot).html_part.body.to_s
+
+    assert_match '<img src="https://assets.jiki.io/static/emails/example.webp" alt="alt text" style="max-width:100%;height:auto" />', html
+  end
+
   test "uses preview_text as the preheader" do
     user = create(:user)
     mailshot = create(:mailshot, subject: "Monthly news", preview_text: "Three new exercises inside")
