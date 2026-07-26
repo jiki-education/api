@@ -41,6 +41,42 @@ class UserLevel::CompleteTest < ActiveSupport::TestCase
     assert_nil next_user_level.completed_at
   end
 
+  test "advances current_user_level onto the next level" do
+    user_course = create(:user_course)
+    level1 = create(:level, course: user_course.course, position: 1)
+    level2 = create(:level, course: user_course.course, position: 2)
+    lesson = create(:lesson, :exercise, level: level1)
+    user_level = create(:user_level, user: user_course.user, level: level1)
+    user_course.update!(current_user_level: user_level)
+    create(:user_lesson, user: user_course.user, lesson:, completed_at: Time.current)
+
+    UserLevel::Complete.(user_level)
+
+    next_user_level = UserLevel.find_by(user: user_course.user, level: level2)
+    assert_equal next_user_level, user_course.reload.current_user_level
+  end
+
+  # Regression: a user previously advanced onto the next level, then pulled back
+  # (e.g. a curriculum change reopened this level), already has the next
+  # UserLevel. UserLevel::Start won't repoint the course pointer in that case,
+  # so completion must repoint it explicitly - otherwise the user is stranded on
+  # the completed level and every start on the next level 422s (level_not_completed).
+  test "advances current_user_level even when the next user_level already exists" do
+    user_course = create(:user_course)
+    level1 = create(:level, course: user_course.course, position: 1)
+    level2 = create(:level, course: user_course.course, position: 2)
+    lesson = create(:lesson, :exercise, level: level1)
+    user_level = create(:user_level, user: user_course.user, level: level1)
+    existing_next = create(:user_level, user: user_course.user, level: level2)
+    user_course.update!(current_user_level: user_level)
+    create(:user_lesson, user: user_course.user, lesson:, completed_at: Time.current)
+
+    UserLevel::Complete.(user_level)
+
+    assert_equal existing_next, user_course.reload.current_user_level
+    assert_nil existing_next.reload.completed_at
+  end
+
   test "does not create next user_level when no next level exists" do
     user_lesson = create(:user_lesson, :completed)
     user_level = UserLevel.find_by(user: user_lesson.user, level: user_lesson.lesson.level)
