@@ -14,10 +14,15 @@ class MigrateUsersBackToMultipleFunctions < ActiveRecord::Migration[8.1]
   def up
     mf = Level.find_by(slug: "multiple-functions")
     mp = Level.find_by(slug: "methods-and-properties")
-    return unless mf && mp
-
     pangram = Lesson.find_by(slug: "pangram")
+
+    # Bail unless the curriculum is in the expected post-reseed state: `pangram`
+    # must exist (it's the reason for the pull-back). If this migration ever
+    # runs before the reseed, doing nothing is the safe outcome.
+    return unless mf && mp && pangram
+
     mp_exercise_lesson_ids = mp.lessons.where(type: "exercise").pluck(:id)
+    return unless mp_exercise_lesson_ids.any?
 
     UserCourse.joins(:current_user_level).
       where(user_levels: { level_id: mp.id }).
@@ -29,13 +34,13 @@ class MigrateUsersBackToMultipleFunctions < ActiveRecord::Migration[8.1]
       next unless mf_user_level&.completed_at
 
       # Skip anyone who has already engaged past the parked state.
-      next if pangram && UserLesson.exists?(user_id:, lesson_id: pangram.id)
-      next if mp_exercise_lesson_ids.any? && UserLesson.exists?(user_id:, lesson_id: mp_exercise_lesson_ids)
+      next if UserLesson.exists?(user_id:, lesson_id: pangram.id)
+      next if UserLesson.exists?(user_id:, lesson_id: mp_exercise_lesson_ids)
 
-      transaction do
-        mf_user_level.update!(completed_at: nil, current_user_lesson: nil)
-        user_course.update!(current_user_level: mf_user_level)
-      end
+      # The migration runs in a single transaction, so these two updates are
+      # already atomic together.
+      mf_user_level.update!(completed_at: nil, current_user_lesson: nil)
+      user_course.update!(current_user_level: mf_user_level)
     end
   end
 
