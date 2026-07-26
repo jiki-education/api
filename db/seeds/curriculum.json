@@ -1349,6 +1349,16 @@
           }
         },
         {
+          "uuid": "324331d7-ca3d-4eb8-a6a1-a7c31b1e557f",
+          "slug": "alphanumeric",
+          "title": "Alphanumeric",
+          "description": "Build functions to classify text as letters, numbers or both.",
+          "type": "exercise",
+          "data": {
+            "slug": "alphanumeric"
+          }
+        },
+        {
           "uuid": "5cd72026-3e59-4b2b-91a6-e58f674575ea",
           "slug": "isbn-verifier",
           "title": "ISBN Verifier",
@@ -1359,13 +1369,33 @@
           }
         },
         {
-          "uuid": "324331d7-ca3d-4eb8-a6a1-a7c31b1e557f",
-          "slug": "alphanumeric",
-          "title": "Alphanumeric",
-          "description": "Build functions to classify text as letters, numbers or both.",
+          "uuid": "1252db03-432a-43c0-9e88-8bca96892a2a",
+          "slug": "luhn",
+          "title": "Luhn",
+          "description": "Validate identification numbers like credit cards using the Luhn checksum.",
           "type": "exercise",
           "data": {
-            "slug": "alphanumeric"
+            "slug": "luhn"
+          }
+        },
+        {
+          "uuid": "779dd868-1e0b-4861-bdf8-2e763a2ada34",
+          "slug": "digital-root",
+          "title": "Digital Root",
+          "description": "Collapse a number down to a single digit by repeatedly summing its digits.",
+          "type": "exercise",
+          "data": {
+            "slug": "digital-root"
+          }
+        },
+        {
+          "uuid": "dd8eed67-2a85-45f3-964f-7f049e5e1f28",
+          "slug": "run-length-encoding",
+          "title": "Run-Length Encoding",
+          "description": "Compress and decompress text by counting runs of repeated characters.",
+          "type": "exercise",
+          "data": {
+            "slug": "run-length-encoding"
           }
         }
       ]
