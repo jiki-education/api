@@ -1259,6 +1259,16 @@
           "data": {
             "slug": "lower-pangram"
           }
+        },
+        {
+          "uuid": "df636b72-0ec1-4ab2-8906-62068b8cf540",
+          "slug": "pangram",
+          "title": "Pangram",
+          "description": "Check if a sentence contains every letter of the alphabet, regardless of case.",
+          "type": "exercise",
+          "data": {
+            "slug": "pangram"
+          }
         }
       ]
     },
@@ -1290,13 +1300,13 @@
           }
         },
         {
-          "uuid": "df636b72-0ec1-4ab2-8906-62068b8cf540",
-          "slug": "pangram",
-          "title": "Pangram",
-          "description": "Check if a sentence contains every letter of the alphabet, regardless of case.",
+          "uuid": "c9f2a6b4-1d7e-4a83-9b5c-2e0f8a4d6c31",
+          "slug": "methodic-pangram",
+          "title": "Methodic Pangram",
+          "description": "Solve Pangram using JavaScript properties, rather than your custom functions",
           "type": "exercise",
           "data": {
-            "slug": "pangram"
+            "slug": "methodic-pangram"
           }
         },
         {
