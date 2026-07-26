@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_10_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_26_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -135,6 +135,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_120000) do
     t.bigint "context_id", null: false
     t.string "context_type", null: false
     t.datetime "created_at", null: false
+    t.jsonb "progression_scores"
     t.datetime "updated_at", null: false
     t.string "uuid", null: false
     t.index ["context_type", "context_id"], name: "index_exercise_submissions_on_context"
@@ -412,9 +413,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_10_120000) do
   end
 
   create_table "user_challenges", force: :cascade do |t|
+    t.bigint "challenge_id", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
-    t.bigint "challenge_id", null: false
     t.datetime "started_at"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
