@@ -13,10 +13,10 @@ You are fixing a GitHub issue for the jiki-education/api repository.
 ## Issue details
 
 ```json
-!`gh issue view $(echo "$ARGUMENTS" | grep -oE '[0-9]+$') --json number,title,body,labels,comments`
+!`gh issue view $(echo "$ARGUMENTS" | sed -E 's#.*issues/##; s#^[^0-9]*##; s#[^0-9].*##') --json number,title,body,labels,comments`
 ```
 
-Issue number: !`echo "$ARGUMENTS" | grep -oE '[0-9]+$'`
+Issue number: !`echo "$ARGUMENTS" | sed -E 's#.*issues/##; s#^[^0-9]*##; s#[^0-9].*##'`
 
 ## Critical: Two phase.
 
@@ -68,7 +68,7 @@ Only create the worktree **after the plan is approved**. The issue number has be
 ```bash
 git pull --ff-only origin main
 mkdir -p worktrees
-git worktree add worktrees/fix-<issue-number> -b fix/<issue-number>
+git worktree add worktrees/fix-<issue-number> -b fix-<issue-number>
 cd worktrees/fix-<issue-number>
 ```
 
@@ -105,7 +105,7 @@ Stage only the files you changed (do not use `git add -A` or `git add .`). Write
 Push the branch and create a pull request:
 
 ```bash
-git push -u origin fix/<issue-number>
+git push -u origin fix-<issue-number>
 ```
 
 Create the PR using `gh pr create`. The PR body must include `Closes #<issue-number>` to auto-close the issue on merge:
