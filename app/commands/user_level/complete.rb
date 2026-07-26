@@ -33,13 +33,23 @@ class UserLevel::Complete
     return unless next_level
 
     next_user_level = UserLevel::Start.(user, next_level)
+    advance_frontier!(next_user_level)
+  end
 
+  def advance_frontier!(next_user_level)
     # UserLevel::Start only repoints the course's current level when it CREATES
     # the UserLevel. If the user was previously advanced onto next_level and
     # later pulled back (e.g. a curriculum change that reopened this level),
     # that UserLevel already exists, so the pointer would be stranded on the
     # now-completed level and every start on next_level would 422
-    # (level_not_completed). Repoint explicitly so completion always advances.
+    # (level_not_completed). Repoint explicitly to cover that case.
+    #
+    # Only advance when this level IS the user's current frontier, though:
+    # completing an older, reopened level (while the frontier is further ahead)
+    # must not yank current_user_level backwards onto that old level's successor.
+    return unless user_course.current_user_level_id.nil? ||
+                  user_course.current_user_level_id == user_level.id
+
     user_course.update!(current_user_level: next_user_level)
   end
 
