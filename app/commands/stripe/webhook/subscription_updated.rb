@@ -10,7 +10,7 @@ class Stripe::Webhook::SubscriptionUpdated
     end
 
     # Check if price changed (interval change)
-    handle_plan_change if previous_attributes.key?('items')
+    handle_plan_change if previous_attribute_keys.include?('items')
 
     # Check if cancellation was scheduled/unscheduled
     handle_cancellation_change
@@ -125,6 +125,8 @@ class Stripe::Webhook::SubscriptionUpdated
     User.joins(:data).find_by(user_data: { stripe_subscription_id: subscription.id })
   end
 
+  # Stripe delivers previous_attributes as a Stripe::StripeObject (symbol keys,
+  # no #key?), so normalise to a plain list of stringified keys.
   memoize
-  def previous_attributes = event.data.previous_attributes || {}
+  def previous_attribute_keys = (event.data.previous_attributes&.keys || []).map(&:to_s)
 end

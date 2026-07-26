@@ -1,6 +1,13 @@
 require "test_helper"
 
 class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
+  # Stripe delivers previous_attributes as a Stripe::StripeObject (symbol keys,
+  # no #key?), not a plain Hash. Build a real one so tests exercise the same
+  # object shape as production - see https://github.com/jiki-education/api/issues/558.
+  def stripe_previous_attributes(**attrs)
+    Stripe::StripeObject.construct_from(attrs)
+  end
+
   def add_items_mock_to_subscription(subscription, period_end, price_id = nil)
     item = mock
     item.stubs(:current_period_end).returns(period_end.to_i) if period_end
@@ -58,7 +65,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, @period_end)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -75,7 +82,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -108,7 +115,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -125,7 +132,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -141,7 +148,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -159,7 +166,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -178,7 +185,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     add_items_mock_to_subscription(subscription, new_period_end)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -192,7 +199,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes(items: true)))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -213,6 +220,25 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     assert_nil new_sub["ended_at"]
   end
 
+  # Regression for #558: previous_attributes arrives as a Stripe::StripeObject,
+  # which has no #key?. Detecting the 'items' change must not raise.
+  test "detects items change on a real Stripe::StripeObject without raising" do
+    @user.data.update!(subscription_interval: "monthly")
+
+    subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
+
+    previous_attributes = Stripe::StripeObject.construct_from(items: { data: [] })
+    event = mock
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes:))
+
+    assert_nothing_raised do
+      Stripe::Webhook::SubscriptionUpdated.(event)
+    end
+
+    @user.data.reload
+    assert_equal "annual", @user.data.subscription_interval
+  end
+
   test "handles interval change from annual to monthly" do
     @user.data.update!(
       subscription_interval: "annual",
@@ -230,7 +256,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock_subscription_with_price(Jiki.config.stripe_premium_monthly_price_id)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes(items: true)))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -256,7 +282,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -273,7 +299,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(true)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -291,7 +317,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:cancel_at_period_end).returns(false)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: {}))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
@@ -314,7 +340,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription.stubs(:items).returns(items)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes(items: true)))
 
     error = assert_raises(ArgumentError) do
       Stripe::Webhook::SubscriptionUpdated.(event)
@@ -352,7 +378,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
 
     event = mock
-    event.stubs(:data).returns(mock(object: subscription, previous_attributes: { 'items' => true }))
+    event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes(items: true)))
 
     Stripe::Webhook::SubscriptionUpdated.(event)
 
