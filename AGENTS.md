@@ -211,6 +211,15 @@ If you need to add a new config key, include a PR to the config gem (`../config`
 - **Never** use `RAILS_ENV=test` to run any database commands. If you encounter test database issues, ask the user what to do.
 - Rails handles the test DB automatically when running tests.
 
+### Curriculum changes
+
+Editing the lessons on a level that existing users have progressed through can wedge them (a `UserLevel` whose lessons are all complete but which `current_user_level` still points at → `level_not_completed` 422s on the next lesson). Never hand-roll the user reconciliation in a migration — use the tested `Curriculum::` commands, which handle every affected population safely:
+
+- `Curriculum::AppendLesson.(level, attrs, reopen_completed:)` — add a lesson (always appended at the end; mid-level inserts scramble ordering).
+- `Curriculum::MoveLesson.(lesson, to_level, reopen_completed:)` — move a lesson to another level (appended at the end).
+
+`reopen_completed:` (default false) re-opens the level for users who already completed it so the new/moved lesson resurfaces — a completed level never advertises a next lesson, so it's otherwise invisible to them.
+
 ### Exceptions
 
 Any exceptions that are referenced outside of the file in which they're raised, should be defined in `config/initializers/exceptions.rb`. This allows exceptions to be shared across multiple commands and accessed throughout the application.
