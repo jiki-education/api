@@ -292,5 +292,12 @@
     "title": "Updating Dictionaries",
     "description": "Add, change and remove keys in a dictionary.",
     "unlocked_by_lesson_slug": "updating-dictionaries"
+  },
+  {
+    "uuid": "aa71ccc5-a084-47f8-bb74-8e815cd976f6",
+    "slug": "type-conversion",
+    "title": "Type Conversion",
+    "description": "Convert values between types, like turning a string of digits into a number with Number().",
+    "unlocked_by_lesson_slug": "for-while-loops"
   }
 ]

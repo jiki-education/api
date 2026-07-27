@@ -67,6 +67,13 @@ concepts_data.each do |concept_data|
 end
 puts "✓ Concepts: #{concepts_data.size}"
 
+# Retroactively unlock newly-added (or re-pointed) concepts for users who already
+# completed the unlocking lesson - the unlock event only fires at completion time,
+# so without this they'd never receive concepts introduced after they progressed.
+# Idempotent and non-destructive; safe to run on every reseed.
+updated = Curriculum::BackfillUnlockedConcepts.()
+puts "✓ Backfilled unlocked concepts (#{updated} users updated)"
+
 # == Challenges ==
 challenges_file = Rails.root.join("db", "seeds", "challenges.json")
 raise "Missing challenges seed file at #{challenges_file}" unless File.exist?(challenges_file)
