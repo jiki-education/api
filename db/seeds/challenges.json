@@ -32,6 +32,14 @@
     "unlocked_by_lesson_slug": "build-wall"
   },
   {
+    "uuid": "0265ba73-f152-4769-bfb4-1ab513fece97",
+    "slug": "acronym",
+    "title": "Acronym",
+    "description": "Build acronyms from phrases and titles.",
+    "exercise_slug": "acronym",
+    "unlocked_by_lesson_slug": "pangram"
+  },
+  {
     "uuid": "9ac002cb-2df6-4366-91e5-b07eb0ba75b4",
     "slug": "caesar-cipher",
     "title": "Caesar Cipher",
@@ -40,12 +48,12 @@
     "unlocked_by_lesson_slug": "alphanumeric"
   },
   {
-    "uuid": "0265ba73-f152-4769-bfb4-1ab513fece97",
-    "slug": "acronym",
-    "title": "Acronym",
-    "description": "Build acronyms from phrases and titles.",
-    "exercise_slug": "acronym",
-    "unlocked_by_lesson_slug": "pangram"
+    "uuid": "6005fe87-7785-49b1-afd7-479213e039ec",
+    "slug": "run-length-encoding",
+    "title": "Run-Length Encoding",
+    "description": "Compress and decompress text by squashing repeated characters into counts.",
+    "exercise_slug": "run-length-encoding",
+    "unlocked_by_lesson_slug": "digital-root"
   },
   {
     "uuid": "6c959b93-4c3b-4db9-bc7e-3669ddf8c52d",
