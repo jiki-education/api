@@ -45,7 +45,7 @@
     "title": "Acronym",
     "description": "Build acronyms from phrases and titles.",
     "exercise_slug": "acronym",
-    "unlocked_by_lesson_slug": "isbn-verifier"
+    "unlocked_by_lesson_slug": "pangram"
   },
   {
     "uuid": "6c959b93-4c3b-4db9-bc7e-3669ddf8c52d",
