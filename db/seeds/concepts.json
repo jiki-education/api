@@ -154,6 +154,13 @@
     "unlocked_by_lesson_slug": "for-while-loops"
   },
   {
+    "uuid": "4b582ead-f1c4-4b9c-99a7-614eb813b19c",
+    "slug": "while-loops",
+    "title": "While Loops",
+    "description": "Loop while a condition stays true, for when you don't know how many times you'll loop.",
+    "unlocked_by_lesson_slug": "for-while-loops"
+  },
+  {
     "uuid": "c4231c24-8819-450a-975d-4a83945b2a12",
     "slug": "break",
     "title": "Break",
