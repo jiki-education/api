@@ -1329,7 +1329,7 @@
       "milestone_summary": "Congratulations! You've mastered advanced loops.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Advanced Loops level. Keep going!",
       "milestone_email_subject": "More than just repeat",
-      "milestone_email_content_markdown": "Great work. You've now got for loops, while loops, break, and continue under your belt. These are the loops you'll reach for most often outside of this course, so they're well worth the time you've put in.\n\nEach one has a slightly different job, and getting a feel for which to reach for will come with practice.\n\nNext we'll look at lists, which is how programs store and work with collections of things. Have fun!",
+      "milestone_email_content_markdown": "Great work. You've now got for loops, while loops, break, and continue under your belt. These are the loops you'll reach for most often outside of this course, so they're well worth the time you've put in.\n\nEach one has a slightly different job, and getting a feel for which to reach for will come with practice.\n\nNext we'll look at arrays, which is how programs store and work with collections of things. Have fun!",
       "lessons": [
         {
           "uuid": "d65be08e-af22-4f7c-aec6-a3b5a18d63c3",
@@ -1392,19 +1392,19 @@
     },
     {
       "uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
-      "slug": "lists",
-      "title": "Lists",
+      "slug": "arrays",
+      "title": "Arrays",
       "description": "Learn how to work with arrays to store and manipulate collections of data.",
-      "milestone_summary": "Congratulations! You've learned to read and work with lists.",
-      "milestone_content": "# Level Complete!\n\nYou've completed the Lists level. Keep going!",
+      "milestone_summary": "Congratulations! You've learned to read and work with arrays.",
+      "milestone_content": "# Level Complete!\n\nYou've completed the Arrays level. Keep going!",
       "milestone_email_subject": "Quite the collection",
-      "milestone_email_content_markdown": "Brilliant work. Lists (or arrays, as a lot of programmers call them) are one of the most useful tools in any language. Pretty much any time you're dealing with more than one of something, you'll reach for a list.\n\nYou've now got a good grasp of how to read from them and work through their contents.\n\nNext, we'll look at building lists up from scratch, piece by piece. Have fun!",
+      "milestone_email_content_markdown": "Brilliant work. Arrays (or lists, as some people call them) are one of the most useful tools in any language. Pretty much any time you're dealing with more than one of something, you'll reach for an array.\n\nYou've now got a good grasp of how to read from them and work through their contents.\n\nNext, we'll look at building arrays up from scratch, piece by piece. Have fun!",
       "lessons": [
         {
           "uuid": "5777cce0-3792-41cc-90df-83bc94ef8c74",
           "slug": "arrays",
           "title": "Arrays",
-          "description": "Learn how to store collections of things in lists.",
+          "description": "Learn how to store collections of things in arrays.",
           "type": "video",
           "data": {
             "sources": [
@@ -1421,7 +1421,7 @@
           "uuid": "ada11808-214f-4526-a2d7-aa66a5f4af22",
           "slug": "weather-symbols",
           "title": "Weather Symbols",
-          "description": "Draw a six-day weather forecast from a list of descriptions.",
+          "description": "Draw a six-day weather forecast from an array of descriptions.",
           "type": "exercise",
           "data": {
             "slug": "weather-symbols"
@@ -1463,17 +1463,17 @@
       "uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
       "slug": "building-arrays",
       "title": "Building Arrays",
-      "description": "Learn how to build up lists piece by piece.",
-      "milestone_summary": "Congratulations! You've learned to build lists up from scratch.",
+      "description": "Learn how to build up arrays piece by piece.",
+      "milestone_summary": "Congratulations! You've learned to build arrays up from scratch.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Building Arrays level. Keep going!",
       "milestone_email_subject": "Building things up",
-      "milestone_email_content_markdown": "Nice work! Reading from lists is handy, but being able to build them up piece by piece is where they really come into their own. Loop over something, collect the bits you care about into a new list, and hand it back — that's a pattern you'll reach for again and again.\n\nNext up: dictionaries. These let you store values against named keys rather than just positions. Have fun!",
+      "milestone_email_content_markdown": "Nice work! Reading from arrays is handy, but being able to build them up piece by piece is where they really come into their own. Loop over something, collect the bits you care about into a new array, and hand it back — that's a pattern you'll reach for again and again.\n\nNext up: dictionaries. These let you store values against named keys rather than just positions. Have fun!",
       "lessons": [
         {
           "uuid": "80abd705-95da-4a53-a371-c88edbe07317",
           "slug": "building-arrays",
           "title": "Building Arrays",
-          "description": "Learn how to build up lists piece by piece.",
+          "description": "Learn how to build up arrays piece by piece.",
           "type": "video",
           "data": {
             "sources": [
@@ -1615,7 +1615,7 @@
       "milestone_summary": "Congratulations! You've learned to change and update dictionaries.",
       "milestone_content": "# Level Complete!\n\nYou've completed the Changing Dictionaries level. Keep going!",
       "milestone_email_subject": "That's a wrap",
-      "milestone_email_content_markdown": "And that's the last level of Coding Fundamentals. Hopefully dictionaries are feeling like a useful tool to add to the mix alongside lists.\n\nThis is a real achievement. You've now covered every core building block of programming: functions, variables, state, conditionals, loops, strings, lists, and dictionaries. Everything else from here is combinations and refinements of what you already know.\n\nWe're really proud of you for getting this far. Have fun!",
+      "milestone_email_content_markdown": "And that's the last level of Coding Fundamentals. Hopefully dictionaries are feeling like a useful tool to add to the mix alongside arrays.\n\nThis is a real achievement. You've now covered every core building block of programming: functions, variables, state, conditionals, loops, strings, arrays, and dictionaries. Everything else from here is combinations and refinements of what you already know.\n\nWe're really proud of you for getting this far. Have fun!",
       "lessons": [
         {
           "uuid": "a56c131a-5182-4692-9f5b-3ab8afd3561f",
