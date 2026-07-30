@@ -1527,16 +1527,6 @@
           }
         },
         {
-          "uuid": "97f4f083-fe33-4ef8-97ca-02b4dc0fc27e",
-          "slug": "extract-words",
-          "title": "Extract Words",
-          "description": "Pull individual words out of a sentence.",
-          "type": "exercise",
-          "data": {
-            "slug": "extract-words"
-          }
-        },
-        {
           "uuid": "c7f70657-698d-4abc-85e9-26b9b5520ca7",
           "slug": "chop-shop",
           "title": "The Chop Shop",
