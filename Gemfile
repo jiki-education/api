@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.0.rc1"
+gem "rails", "~> 8.1.3"
 
 gem "openssl", "~> 4.0"
 # Use postgresql as the database for Active Record
