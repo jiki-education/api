@@ -12,6 +12,7 @@ class SerializeUserTest < ActiveSupport::TestCase
         email: "test@example.com",
         name: "Test User",
         locale: "en",
+        locales: ["en"],
         avatar_url: "https://example.com/avatar.png",
         uses_oauth: false,
         email_confirmed: user.confirmed?,
@@ -161,6 +162,24 @@ class SerializeUserTest < ActiveSupport::TestCase
     result = SerializeUser.(user)
 
     assert_equal "hu", result[:locale]
+  end
+
+  test "serializes locales including draft locales, resolved locale first" do
+    user = create(:user)
+    user.data.update!(locales: %w[es-ES en])
+
+    result = SerializeUser.(user)
+
+    assert_equal %w[es-ES en], result[:locales]
+  end
+
+  test "serializes locales including the explicit choice even if not among preferences" do
+    user = create(:user, locale: "hu")
+    user.data.update!(locales: %w[en])
+
+    result = SerializeUser.(user)
+
+    assert_equal %w[hu en], result[:locales]
   end
 
   test "serializes admin: false for regular user" do
