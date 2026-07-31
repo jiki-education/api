@@ -12,6 +12,7 @@ class SerializeUserTest < ActiveSupport::TestCase
         email: "test@example.com",
         name: "Test User",
         locale: "en",
+        explicit_locale: nil,
         locales: ["en"],
         avatar_url: "https://example.com/avatar.png",
         uses_oauth: false,
@@ -180,6 +181,26 @@ class SerializeUserTest < ActiveSupport::TestCase
     result = SerializeUser.(user)
 
     assert_equal %w[hu en], result[:locales]
+  end
+
+  test "serializes explicit_locale and leads locales with it" do
+    user = create(:user, locale: "hu")
+    user.data.update!(locales: %w[fr en])
+
+    with_supported_locales(%w[en]) do
+      result = SerializeUser.(user)
+
+      # hu is chosen but not live: en is still served, hu still leads the list.
+      assert_equal "hu", result[:explicit_locale]
+      assert_equal "en", result[:locale]
+      assert_equal %w[hu en], result[:locales]
+    end
+  end
+
+  test "serializes explicit_locale as nil when no choice has been made" do
+    user = create(:user)
+
+    assert_nil SerializeUser.(user)[:explicit_locale]
   end
 
   test "serializes admin: false for regular user" do

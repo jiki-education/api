@@ -119,6 +119,16 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
     assert_equal "hu", @user.reload.locale
   end
 
+  test "PATCH locale accepts a draft locale, which is recorded but not yet served" do
+    with_supported_locales(%w[en]) do
+      patch locale_internal_settings_path, params: { value: "hu" }, as: :json
+
+      assert_response :success
+      assert_equal "hu", @user.reload.data.explicit_locale
+      assert_equal "en", @user.reload.locale
+    end
+  end
+
   test "PATCH locale fails with invalid locale" do
     patch locale_internal_settings_path, params: { value: "invalid" }, as: :json
 
