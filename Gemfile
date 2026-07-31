@@ -33,6 +33,12 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.0"
 
+# Backs Active Storage's default :vips variant processor. Rails >= 8.1.3.1 loads
+# the vips transformer eagerly at boot, so this is required for the app to boot
+# at all, not just to generate variants. Needs the libvips system library, which
+# the Dockerfile installs.
+gem "ruby-vips", "~> 2.0"
+
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 gem "rack-cors"
 
