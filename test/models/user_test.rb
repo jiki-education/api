@@ -101,7 +101,7 @@ class UserTest < ActiveSupport::TestCase
     assert_nil user.data.reload.explicit_locale
   end
 
-  test "explicit_locale must be a supported locale" do
+  test "explicit_locale must be a live or draft locale" do
     user = build(:user, locale: "fr")
     refute user.valid?
 
@@ -110,6 +110,15 @@ class UserTest < ActiveSupport::TestCase
 
     user.locale = nil
     assert user.valid?
+  end
+
+  test "explicit_locale accepts a draft locale that isn't live yet" do
+    # The test env ships the draft set as live, so narrow it to prove the
+    # validation really does span live + draft rather than just live.
+    with_supported_locales(%w[en]) do
+      assert build(:user, locale: "hu").valid?
+      refute build(:user, locale: "fr").valid?
+    end
   end
 
   test "deleting user cascades to delete user_lessons and user_levels" do

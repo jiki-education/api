@@ -12,23 +12,38 @@ class User::Data < ApplicationRecord
   # Welcome emails are transactional — no preference check.
   def email_communication_preferences_key(_kind = nil) = nil
 
-  validates :explicit_locale, inclusion: { in: I18n::SUPPORTED_LOCALES }, allow_nil: true
+  # Draft locales are selectable: a user can commit to one before it ships,
+  # and we hold that choice until it does. Resolved lazily (rather than at
+  # class-load) so the locale sets can be swapped in tests.
+  validates :explicit_locale,
+    inclusion: { in: ->(_) { I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES } },
+    allow_nil: true
 
-  # Locale is derived, never stored directly: an explicit user choice always
-  # wins, then the best match from the browser's Accept-Language preferences
-  # (stored in locales), then the default. Assigning locale records an
-  # explicit choice.
-  def locale = explicit_locale || locale_from_preferences || I18n.default_locale.to_s
+  # Locale is derived, never stored directly: an explicit user choice wins
+  # while that locale is live, then the best match from the browser's
+  # Accept-Language preferences (stored in locales), then the default.
+  # Assigning locale records an explicit choice.
+  def locale = live_explicit_locale || locale_from_preferences || I18n.default_locale.to_s
 
   def locale=(value)
     self.explicit_locale = value.presence
   end
 
-  # Every locale (live or draft) the user could plausibly want: their
-  # resolved locale first, then the rest of their Accept-Language
-  # preferences normalised into our locale forms. The FE decides which of
-  # these are worth surfacing.
-  def available_locales = ([locale] + User::DetermineLocales.(locales)).uniq
+  # Every locale (live or draft) the user could plausibly want: their explicit
+  # choice first, then the locale they're actually served, then the rest of
+  # their Accept-Language preferences normalised into our locale forms. The FE
+  # decides which of these are worth surfacing.
+  def available_locales = [selected_locale, locale, *User::DetermineLocales.(locales)].compact.uniq
+
+  # The stored choice, but only while it's still a locale we recognise. A value
+  # that has since been dropped from both the live and draft sets is treated as
+  # though it were never set, rather than surfaced as a selection the user can't
+  # act on.
+  def selected_locale
+    return nil unless (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).include?(explicit_locale)
+
+    explicit_locale
+  end
 
   # Notification preference slugs mapped to column names
   NOTIFICATION_SLUGS = {
@@ -100,6 +115,16 @@ class User::Data < ApplicationRecord
   def may_receive_emails? = email_complaint_at.nil?
 
   private
+  # An explicit choice only drives what we serve while that locale is live.
+  # Picking a draft locale records the intent (and keeps surfacing it via
+  # selected_locale) but must not strand the user on content that doesn't
+  # exist yet, so until it ships we fall through to the usual negotiation.
+  def live_explicit_locale
+    return nil unless I18n::SUPPORTED_LOCALES.include?(explicit_locale)
+
+    explicit_locale
+  end
+
   # Negotiate the browser's Accept-Language preferences (stored in locales)
   # down to a single supported content locale, or nil when none maps to a
   # live locale.

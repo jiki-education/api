@@ -195,6 +195,67 @@ class User::DataTest < ActiveSupport::TestCase
     assert_equal I18n.default_locale.to_s, user.data.locale
   end
 
+  test "locale ignores an explicit choice that isn't live yet" do
+    user = create(:user)
+    user.data.update!(explicit_locale: "hu", locales: %w[en])
+
+    # hu is a draft locale here, so it must not drive what we serve.
+    with_supported_locales(%w[en]) do
+      assert_equal "en", user.data.locale
+    end
+  end
+
+  test "locale honours the explicit choice once it goes live" do
+    user = create(:user)
+    user.data.update!(explicit_locale: "hu", locales: %w[en])
+
+    with_supported_locales(%w[en hu]) do
+      assert_equal "hu", user.data.locale
+    end
+  end
+
+  test "selected_locale keeps a draft choice" do
+    user = create(:user)
+    user.data.update!(explicit_locale: "hu")
+
+    with_supported_locales(%w[en]) do
+      assert_equal "hu", user.data.selected_locale
+    end
+  end
+
+  test "selected_locale ignores a choice that's in neither the live nor draft set" do
+    user = create(:user)
+    user.data.update_column(:explicit_locale, "kl")
+
+    assert_nil user.data.selected_locale
+  end
+
+  test "selected_locale is nil when no explicit choice" do
+    user = create(:user)
+    user.data.update!(explicit_locale: nil)
+
+    assert_nil user.data.selected_locale
+  end
+
+  test "available_locales leads with the explicit choice, then the served locale" do
+    user = create(:user)
+    user.data.update!(explicit_locale: "hu", locales: %w[fr en])
+
+    with_supported_locales(%w[en]) do
+      # hu is chosen but not live, so en is served — both appear, choice first.
+      assert_equal %w[hu en], user.data.available_locales
+    end
+  end
+
+  test "available_locales dedupes when the explicit choice is also the served locale" do
+    user = create(:user)
+    user.data.update!(explicit_locale: "hu", locales: %w[hu en])
+
+    with_supported_locales(%w[en hu]) do
+      assert_equal %w[hu en], user.data.available_locales
+    end
+  end
+
   test "locale= records an explicit choice, and blanks clear it" do
     user = create(:user)
 

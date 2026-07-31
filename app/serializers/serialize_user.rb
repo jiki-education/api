@@ -10,6 +10,7 @@ class SerializeUser
       email: user.email,
       name: user.name,
       locale: user.locale,
+      explicit_locale: user.data.selected_locale,
       locales: user.data.available_locales,
       avatar_url: user.avatar_url,
       uses_oauth: user.uses_oauth?,
