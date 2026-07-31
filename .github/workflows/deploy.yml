@@ -36,12 +36,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      # Boots the app on the runner, outside the image, so it needs libvips
+      # here as well as in the Dockerfile.
       - name: Run Zeitwerk test
         run: bundle exec rails test:zeitwerk
 
