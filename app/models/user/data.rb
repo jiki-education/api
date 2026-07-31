@@ -24,6 +24,12 @@ class User::Data < ApplicationRecord
     self.explicit_locale = value.presence
   end
 
+  # Every locale (live or draft) the user could plausibly want: their
+  # resolved locale first, then the rest of their Accept-Language
+  # preferences normalised into our locale forms. The FE decides which of
+  # these are worth surfacing.
+  def available_locales = ([locale] + User::DetermineLocales.(locales)).uniq
+
   # Notification preference slugs mapped to column names
   NOTIFICATION_SLUGS = {
     "newsletters" => :receive_newsletters,
