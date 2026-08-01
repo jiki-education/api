@@ -243,7 +243,7 @@ class User::DataTest < ActiveSupport::TestCase
 
     with_supported_locales(%w[en]) do
       # hu is chosen but not live, so en is served — both appear, choice first.
-      assert_equal %w[hu en], user.data.available_locales
+      assert_equal %w[hu en fr], user.data.available_locales
     end
   end
 

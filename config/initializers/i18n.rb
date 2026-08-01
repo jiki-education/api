@@ -10,10 +10,19 @@ module I18n
   # Translation generation targets these everywhere (so content can be
   # pre-generated before a locale is promoted), but users can only select
   # them outside production.
+  #
+  # Mirrors the front end's ALL_LOCALES (app/lib/locales.ts), in canonical
+  # BCP-47 casing. The two must stay in step: the front end offers a locale
+  # switcher over its list, and anything missing here is rejected by the
+  # explicit_locale validation, so a locale present there but absent here
+  # shows up in the UI and then 422s when picked.
   WIP_LOCALES = %w[
-    hu
+    ar bn ca de el
     es-ES es-419
+    fa fr hi hu id it ja ko nl pl
     pt-PT pt-BR
+    ro ru sr sv sw tr uk ur vi
+    zh-CN zh-TW
   ].freeze
 
   # Locales users can actually select. Production ships PRODUCTION_LOCALES

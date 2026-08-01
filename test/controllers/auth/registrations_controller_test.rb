@@ -191,18 +191,18 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     post user_registration_path,
       params: with_turnstile(
         user: {
-          email: "de@example.com",
+          email: "kl@example.com",
           password: "password123",
           password_confirmation: "password123",
-          name: "DE User",
-          handle: "deuser",
-          locale: "de"
+          name: "KL User",
+          handle: "kluser",
+          locale: "kl"
         }
       ),
       as: :json
 
     assert_response :created
-    assert_nil User.find_by(email: "de@example.com").data.explicit_locale
+    assert_nil User.find_by(email: "kl@example.com").data.explicit_locale
   end
 
   test "POST signup does not call User::Bootstrap on failed registration" do

@@ -23,7 +23,17 @@ class User::NormalizeLocaleTags
     # (neutral Latin American). Only the ES region maps to Peninsular; every
     # other region collapses to es-419. A region-less "es" defaults to es-419,
     # since Latin America is the far larger Spanish-speaking audience.
-    "es" => { bare: "es-419", regions: { "ES" => "es-ES" }.freeze, fallback: "es-419" }
+    "es" => { bare: "es-419", regions: { "ES" => "es-ES" }.freeze, fallback: "es-419" },
+
+    # Chinese ships Simplified (zh-CN) and Traditional (zh-TW). The split is by
+    # script, not country, so the Traditional-writing regions are listed
+    # explicitly: Taiwan, Hong Kong and Macau. Everywhere else - and a
+    # region-less "zh" - gets Simplified, which is the far larger audience.
+    "zh" => {
+      bare: "zh-CN",
+      regions: { "TW" => "zh-TW", "HK" => "zh-TW", "MO" => "zh-TW" }.freeze,
+      fallback: "zh-CN"
+    }
   }.freeze
 
   def call
