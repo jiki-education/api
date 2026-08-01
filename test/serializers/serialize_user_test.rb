@@ -193,7 +193,7 @@ class SerializeUserTest < ActiveSupport::TestCase
       # hu is chosen but not live: en is still served, hu still leads the list.
       assert_equal "hu", result[:explicit_locale]
       assert_equal "en", result[:locale]
-      assert_equal %w[hu en], result[:locales]
+      assert_equal %w[hu en fr], result[:locales]
     end
   end
 

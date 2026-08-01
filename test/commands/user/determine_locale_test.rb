@@ -59,6 +59,31 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     end
   end
 
+  # Chinese splits by script rather than country, so the Traditional regions
+  # are enumerated and everything else falls to Simplified.
+  {
+    %w[zh-CN] => "zh-CN",       # exact
+    %w[zh-TW] => "zh-TW",       # exact
+    %w[zh] => "zh-CN",          # bare zh -> Simplified (larger audience)
+    %w[zh-HK] => "zh-TW",       # Hong Kong writes Traditional
+    %w[zh-MO] => "zh-TW",       # Macau writes Traditional
+    %w[zh-SG] => "zh-CN",       # Singapore writes Simplified
+    %w[zh-US] => "zh-CN"        # diaspora region -> Simplified
+  }.each do |tags, expected|
+    test "#{tags.join(', ')} negotiates to #{expected}" do
+      with_supported_locales(%w[en zh-CN zh-TW]) do
+        assert_equal expected, User::DetermineLocale.(tags)
+      end
+    end
+  end
+
+  test "zh-HK falls through when zh-TW is not live" do
+    with_supported_locales(%w[en zh-CN]) do
+      # Must not silently serve Simplified to a Traditional reader.
+      assert_equal "en", User::DetermineLocale.(%w[zh-HK en])
+    end
+  end
+
   # Edge cases.
   test "empty list returns nil" do
     with_supported_locales(FULL_SET) do
