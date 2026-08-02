@@ -88,6 +88,18 @@ class UserVideo::SetWatchedPercentageTest < ActiveSupport::TestCase
     assert_nil UserVideo.find_by!(user:, uuid:).completed_at
   end
 
+  test "recovers when find_or_create_by! races with a concurrent insert" do
+    user = create(:user)
+    uuid = SecureRandom.uuid
+
+    UserVideo.expects(:find_or_create_by!).with(user:, uuid:).raises(ActiveRecord::RecordInvalid)
+    existing = create(:user_video, user:, uuid:, watched_percentage: 20)
+
+    UserVideo::SetWatchedPercentage.(user, uuid, 50)
+
+    assert_equal 50, existing.reload.watched_percentage
+  end
+
   test "isolates progress between users" do
     user1 = create(:user)
     user2 = create(:user)
