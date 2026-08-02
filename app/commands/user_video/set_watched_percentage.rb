@@ -18,5 +18,7 @@ class UserVideo::SetWatchedPercentage
   memoize
   def user_video
     UserVideo.find_or_create_by!(user:, uuid:)
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+    UserVideo.find_by!(user:, uuid:)
   end
 end
