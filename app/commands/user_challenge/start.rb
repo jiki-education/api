@@ -6,8 +6,15 @@ class UserChallenge::Start
   def call
     raise ChallengeLockedError, "Challenge is locked" unless UserChallenge::UnlockedForUser.(user, challenge)
 
-    UserChallenge.find_or_create_by!(user:, challenge:).tap do |user_challenge|
-      user_challenge.update!(started_at: Time.current) if user_challenge.started_at.nil?
+    user_challenge.tap do |uc|
+      uc.update!(started_at: Time.current) if uc.started_at.nil?
     end
+  end
+
+  private
+  def user_challenge
+    UserChallenge.find_or_create_by!(user:, challenge:)
+  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+    UserChallenge.find_by!(user:, challenge:)
   end
 end
