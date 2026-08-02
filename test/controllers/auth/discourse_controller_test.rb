@@ -80,6 +80,16 @@ class Auth::DiscourseControllerTest < ApplicationControllerTest
     assert_equal nonce, decoded_payload["nonce"]
   end
 
+  test "GET sso renders 400 for authenticated user when signature is invalid" do
+    Jiki.secrets.stubs(:discourse_sso_secret).returns(@secret)
+    sign_in_user(@user)
+
+    get auth_discourse_sso_path, params: { sso: "not-valid-base64!!!", sig: "bogus" }
+
+    assert_response :bad_request
+    assert_json_response({ error: { type: "invalid_signature", message: I18n.t("api_errors.invalid_signature") } })
+  end
+
   test "GET sso preserves original SSO params in return_to URL for unauthenticated users" do
     Jiki.config.stubs(:frontend_base_url).returns("https://app.jiki.io")
 

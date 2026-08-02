@@ -21,5 +21,7 @@ class Auth::DiscourseController < ApplicationController
     AwardBadgeJob.perform_later(current_user, 'townsfolk')
 
     redirect_to sso.to_url("#{FORUM_URL}/session/sso_login"), allow_other_host: true
+  rescue DiscourseApi::SingleSignOn::ParseError
+    render_400(:invalid_signature)
   end
 end
