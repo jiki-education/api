@@ -75,4 +75,12 @@ class Utils::VerifyFrontendUrlTest < ActiveSupport::TestCase
   test "returns false for completely different domain" do
     refute Utils::VerifyFrontendUrl.("https://evil.com/callback")
   end
+
+  test "returns true for staging frontend origin" do
+    assert Utils::VerifyFrontendUrl.("https://staging.jiki.io/dashboard?checkout_return=true")
+  end
+
+  test "returns true for ngrok dev tunnel origin" do
+    assert Utils::VerifyFrontendUrl.("https://ihid.ngrok.dev/callback")
+  end
 end
