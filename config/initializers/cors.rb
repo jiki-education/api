@@ -7,10 +7,12 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # staging.jiki.io is a second frontend deployment that talks to this same
-    # (production) API from the browser, so its origin must be allowed alongside
-    # the canonical frontend_base_url (https://jiki.io).
-    origins Jiki.config.frontend_base_url, Jiki.config.admin_base_url, "https://staging.jiki.io", "ihid.ngrok.dev"
+    # staging.jiki.io and the ngrok dev tunnel are additional frontend
+    # deployments that talk to this same (production) API from the browser,
+    # so their origins must be allowed alongside the canonical
+    # frontend_base_url. Kept in sync with Utils::VerifyFrontendUrl.
+    origins Jiki.config.frontend_base_url, Jiki.config.admin_base_url,
+      *Utils::VerifyFrontendUrl::ADDITIONAL_ALLOWED_ORIGINS
 
     resource "*",
       headers: :any,
