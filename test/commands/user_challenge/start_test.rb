@@ -37,6 +37,19 @@ class UserChallenge::StartTest < ActiveSupport::TestCase
     refute_nil result.started_at
   end
 
+  test "recovers when find_or_create_by! races with a concurrent insert" do
+    user = create(:user)
+    challenge = create(:challenge)
+
+    UserChallenge.expects(:find_or_create_by!).with(user:, challenge:).raises(ActiveRecord::RecordInvalid)
+    existing = create(:user_challenge, user:, challenge:, started_at: nil)
+
+    result = UserChallenge::Start.(user, challenge)
+
+    assert_equal existing, result
+    refute_nil result.reload.started_at
+  end
+
   test "raises ChallengeLockedError when challenge is locked for user" do
     user = create(:user)
     lesson = create(:lesson, :exercise)
