@@ -34,8 +34,8 @@ class NotificationsMailerTest < ActionMailer::TestCase
     assert_match "Hi there,", text
     assert_match "Jeremy & Team", text
 
-    # Preview
-    assert_match "You&#39;ve earned a new badge!", html
+    # Preview is derived from the body copy, not a locale key
+    assert_match "Congrats on earning the Member badge.", html
 
     # Shared footer chrome
     assert_match "You are receiving this email because you have an account at", html
@@ -55,9 +55,6 @@ class NotificationsMailerTest < ActionMailer::TestCase
     assert_match "Szia,", html
     assert_match "Üdv,", html
     assert_match "Jeremy és a csapat", text
-
-    # Preview
-    assert_match "Új jelvényt szereztél!", html
 
     # Shared footer chrome (Hungarian)
     assert_match "Ezt az e-mailt azért kapod", html

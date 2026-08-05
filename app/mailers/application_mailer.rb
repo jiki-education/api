@@ -12,7 +12,10 @@
 # Upload new ones with scripts/upload_email_images.sh.
 class ApplicationMailer < ActionMailer::Base
   layout "mailer"
-  helper_method :unsubscribe_url, :markdown_to_html, :markdown_to_text
+  helper_method :unsubscribe_url, :markdown_to_html, :markdown_to_text, :preview_from
+
+  # Number of words of body copy used as inbox preview text.
+  PREVIEW_WORD_LIMIT = 25
 
   # Email configuration by category
   # Each mailer must set email_category to one of these keys
@@ -99,6 +102,21 @@ class ApplicationMailer < ActionMailer::Base
   def markdown_to_text(markdown)
     # Convert markdown links [text](url) to "text (url)"
     markdown.gsub(/\[([^\]]+)\]\(([^)]+)\)/, '\1 (\2)')
+  end
+
+  # Inbox preview text, derived from the start of the email body.
+  #
+  # Deriving it means entity names (level titles, badge names) never appear in
+  # config/locales/mailers/*.yml. Those names live in the per-locale prose that
+  # translators own, so the preview stays correct in every locale without the
+  # API needing a translated copy of the name.
+  def preview_from(markdown)
+    return "" if markdown.blank?
+
+    words = Nokogiri::HTML::DocumentFragment.parse(Commonmarker.to_html(markdown)).text.split
+    return words.join(' ') if words.length <= PREVIEW_WORD_LIMIT
+
+    "#{words.first(PREVIEW_WORD_LIMIT).join(' ')}…"
   end
 
   # Generate the human-facing unsubscribe URL (a frontend page, opened via GET

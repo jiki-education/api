@@ -1,10 +1,11 @@
 - content_for :title, @subject
-- content_for :preview, t("progression_mailer.level_completed.preview", level_title: @level_title)
+- content_for :preview, preview_from(@content_markdown)
 
 %mj-section{ "background-color": "#ffffff" }
   %mj-column
     - if @image_url.present?
-      %mj-image{ src: @image_url, alt: @level_title, width: "100%" }
+      -# Decorative: the body copy below already names the level.
+      %mj-image{ src: @image_url, alt: "", width: "100%" }
 
     %mj-text
       %p= t("progression_mailer.level_completed.greeting")
