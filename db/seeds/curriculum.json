@@ -1487,13 +1487,13 @@
           }
         },
         {
-          "uuid": "c5dad5d3-dc0d-4de9-89dd-fe1e6363c207",
-          "slug": "lunchbox",
-          "title": "Lunchbox",
-          "description": "Fill a lunchbox with the right combination of items.",
+          "uuid": "b940269f-2ebb-41cd-b7fa-02ffede96e9a",
+          "slug": "meal-prep",
+          "title": "Meal Prep",
+          "description": "Work out which ingredients you need to buy for your recipe.",
           "type": "exercise",
           "data": {
-            "slug": "lunchbox"
+            "slug": "meal-prep"
           }
         },
         {
@@ -1507,13 +1507,13 @@
           }
         },
         {
-          "uuid": "b940269f-2ebb-41cd-b7fa-02ffede96e9a",
-          "slug": "meal-prep",
-          "title": "Meal Prep",
-          "description": "Work out which ingredients you need to buy for your recipe.",
+          "uuid": "c5dad5d3-dc0d-4de9-89dd-fe1e6363c207",
+          "slug": "lunchbox",
+          "title": "Lunchbox",
+          "description": "Fill a lunchbox with the right combination of items.",
           "type": "exercise",
           "data": {
-            "slug": "meal-prep"
+            "slug": "lunchbox"
           }
         },
         {
@@ -1524,16 +1524,6 @@
           "type": "exercise",
           "data": {
             "slug": "wordle-process-guess"
-          }
-        },
-        {
-          "uuid": "97f4f083-fe33-4ef8-97ca-02b4dc0fc27e",
-          "slug": "extract-words",
-          "title": "Extract Words",
-          "description": "Pull individual words out of a sentence.",
-          "type": "exercise",
-          "data": {
-            "slug": "extract-words"
           }
         },
         {
