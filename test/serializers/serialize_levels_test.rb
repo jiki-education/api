@@ -10,14 +10,12 @@ class SerializeLevelsTest < ActiveSupport::TestCase
     expected = [
       {
         slug: "level-1",
-        milestone_summary: "Summary 1",
         lessons: [
           { slug: "l1", title: "Lesson 1", description: "Desc 1", type: "exercise", walkthrough_video_data: nil }
         ]
       },
       {
         slug: "level-2",
-        milestone_summary: "Summary 2",
         lessons: [
           { slug: "l2", title: "Lesson 2", description: "Desc 2", type: "video", walkthrough_video_data: nil }
         ]
@@ -38,7 +36,6 @@ class SerializeLevelsTest < ActiveSupport::TestCase
     expected = [
       {
         slug: "solo",
-        milestone_summary: "Solo summary",
         lessons: [
           { slug: "lesson-solo", title: "Solo Lesson", description: "Solo desc", type: "exercise", walkthrough_video_data: nil }
         ]
@@ -47,17 +44,12 @@ class SerializeLevelsTest < ActiveSupport::TestCase
     assert_equal(expected, SerializeLevels.([level]))
   end
 
-  test "uses translated milestone_summary for non-English locale" do
-    level1 = create(:level, slug: "level-1", milestone_summary: "English summary 1")
-    level2 = create(:level, slug: "level-2", milestone_summary: "English summary 2")
-    create(:level_translation, level: level1, locale: "hu", milestone_summary: "Magyar összefoglaló 1")
-    create(:level_translation, level: level2, locale: "hu", milestone_summary: "Magyar összefoglaló 2")
+  # The milestone screen this fed was removed - the front end renders it
+  # from its own next-intl catalogue and never read this field.
+  test "does not include milestone_summary" do
+    level = create(:level, slug: "level-1", milestone_summary: "Summary")
 
-    I18n.with_locale(:hu) do
-      result = SerializeLevels.([level1, level2])
-      assert_equal "Magyar összefoglaló 1", result[0][:milestone_summary]
-      assert_equal "Magyar összefoglaló 2", result[1][:milestone_summary]
-    end
+    refute SerializeLevels.([level])[0].key?(:milestone_summary)
   end
 
   test "lessons include translated title and description for non-English locale" do

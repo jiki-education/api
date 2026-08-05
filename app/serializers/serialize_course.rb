@@ -5,9 +5,7 @@ class SerializeCourse
 
   def call
     {
-      slug: course.slug,
-      title: course.title,
-      description: course.description
+      slug: course.slug
     }
   end
 end

@@ -4,18 +4,23 @@ class SerializeConceptTest < ActiveSupport::TestCase
   test "serializes concept with all fields" do
     video_sources = [{ provider: "mux", id: "abc123" }]
     lesson = create(:lesson, :video, data: { sources: video_sources })
-    concept = create(:concept,
-      title: "Loops",
-      slug: "loops",
-      description: "Learn about loops",
-      unlocked_by_lesson: lesson)
+    concept = create(:concept, slug: "loops", unlocked_by_lesson: lesson)
 
     result = SerializeConcept.(concept)
 
-    assert_equal "Loops", result[:title]
-    assert_equal "loops", result[:slug]
-    assert_equal "Learn about loops", result[:description]
-    assert_equal video_sources, result[:video_data]
+    assert_equal({ slug: "loops", video_data: video_sources }, result)
+  end
+
+  # Title and description are owned by the front-end curriculum catalogue
+  # (curriculum/src/concepts/<slug>/*.md), which is per-locale. The API's
+  # copies were unconditionally English.
+  test "does not include title or description" do
+    concept = create(:concept, title: "Loops", description: "Learn about loops")
+
+    result = SerializeConcept.(concept)
+
+    refute result.key?(:title)
+    refute result.key?(:description)
   end
 
   test "video_data passes through duration and upload date when present" do

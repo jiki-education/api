@@ -40,9 +40,7 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
-    json = response.parsed_body
-    assert_equal "Arrays", json["concept"]["title"]
-    assert_equal concept.slug, json["concept"]["slug"]
+    assert_json_response({ concept: SerializeConcept.(concept) })
   end
 
   test "GET show returns 404 for non-existent concept" do
@@ -63,9 +61,9 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
 
     json = response.parsed_body
     assert_equal 2, json["results"].size
-    titles = json["results"].map { |c| c["title"] }
-    assert_includes titles, "String Basics"
-    assert_includes titles, "String Advanced"
-    refute_includes titles, "Arrays"
+    slugs = json["results"].map { |c| c["slug"] }
+    assert_includes slugs, "string-basics"
+    assert_includes slugs, "string-advanced"
+    refute_includes slugs, "arrays"
   end
 end

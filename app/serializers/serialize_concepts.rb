@@ -6,9 +6,7 @@ class SerializeConcepts
   def call
     concepts.map do |concept|
       {
-        title: concept.title,
         slug: concept.slug,
-        description: concept.description,
         user_may_access: user_may_access?(concept)
       }
     end

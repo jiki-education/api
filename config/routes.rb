@@ -86,11 +86,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :levels, only: [:index] do
-      member do
-        get :milestone
-      end
-    end
+    resources :levels, only: [:index]
     resources :user_levels, only: [:index], param: :level_slug
 
     # Always have the param as lesson slug - auto-prefixed in the second

@@ -226,7 +226,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
           {
             type: "concept_unlocked",
             data: {
-              concept: SerializeConcept.(concept)
+              concept_slug: concept.slug
             }
           },
           {
