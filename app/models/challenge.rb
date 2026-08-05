@@ -10,6 +10,10 @@ class Challenge < ApplicationRecord
   has_many :users, through: :user_challenges
 
   # Validations
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description]
+
   validates :uuid, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
   validates :exercise_slug, presence: true

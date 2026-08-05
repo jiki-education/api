@@ -1,4 +1,7 @@
 class Badge < ApplicationRecord
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[name description fun_fact]
   include Translatable
 
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy

@@ -3,6 +3,10 @@ class Course < ApplicationRecord
   has_many :user_courses, dependent: :destroy
   has_many :users, through: :user_courses
 
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description]
+
   validates :slug, presence: true, uniqueness: true
   validates :position, presence: true, uniqueness: true
 

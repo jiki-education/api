@@ -13,6 +13,10 @@ class Level < ApplicationRecord
   # curriculum repo.
   self.translatable_fields = %i[milestone_email_subject milestone_email_content_markdown]
 
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description milestone_summary milestone_content]
+
   validates :uuid, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
   validates :position, presence: true, uniqueness: { scope: :course_id }

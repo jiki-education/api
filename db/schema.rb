@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,9 +57,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
   create_table "badge_translations", force: :cascade do |t|
     t.bigint "badge_id", null: false
     t.datetime "created_at", null: false
+    t.text "description"
     t.text "email_content_markdown", null: false
     t.text "email_subject", null: false
+    t.text "fun_fact"
     t.string "locale", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["badge_id", "locale"], name: "index_badge_translations_on_badge_id_and_locale", unique: true
     t.index ["badge_id"], name: "index_badge_translations_on_badge_id"
@@ -67,20 +70,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
 
   create_table "badges", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.text "email_content_markdown", default: "", null: false
     t.string "email_image_url", default: "", null: false
     t.text "email_subject", default: "", null: false
+    t.text "fun_fact"
+    t.string "name"
     t.integer "num_awardees", default: 0, null: false
     t.boolean "secret", default: false, null: false
     t.string "type", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_badges_on_name", unique: true
     t.index ["type"], name: "index_badges_on_type", unique: true
   end
 
   create_table "challenges", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.string "exercise_slug", null: false
     t.string "slug", null: false
+    t.string "title"
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
     t.string "uuid", null: false
@@ -91,7 +100,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
 
   create_table "concepts", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.string "slug", null: false
+    t.string "title"
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
     t.string "uuid", null: false
@@ -102,8 +113,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
 
   create_table "courses", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.integer "position", null: false
     t.string "slug", null: false
+    t.string "title"
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_courses_on_position", unique: true
     t.index ["slug"], name: "index_courses_on_slug", unique: true
@@ -150,12 +163,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
     t.index ["lesson_id"], name: "index_lesson_concepts_on_lesson_id"
   end
 
+  create_table "lesson_translations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.bigint "lesson_id", null: false
+    t.string "locale", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["lesson_id", "locale"], name: "index_lesson_translations_on_lesson_id_and_locale", unique: true
+    t.index ["lesson_id"], name: "index_lesson_translations_on_lesson_id"
+  end
+
   create_table "lessons", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.json "data", default: {}
+    t.text "description"
     t.bigint "level_id", null: false
     t.integer "position", null: false
     t.string "slug", null: false
+    t.string "title"
     t.string "type", null: false
     t.datetime "updated_at", null: false
     t.string "uuid", null: false
@@ -169,10 +195,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
 
   create_table "level_translations", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "description"
     t.bigint "level_id", null: false
     t.string "locale", null: false
+    t.text "milestone_content"
     t.text "milestone_email_content_markdown", null: false
     t.text "milestone_email_subject", null: false
+    t.text "milestone_summary"
+    t.string "title"
     t.datetime "updated_at", null: false
     t.index ["level_id", "locale"], name: "index_level_translations_on_level_id_and_locale", unique: true
     t.index ["level_id"], name: "index_level_translations_on_level_id"
@@ -181,11 +211,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
   create_table "levels", force: :cascade do |t|
     t.bigint "course_id", null: false
     t.datetime "created_at", null: false
+    t.text "description"
+    t.text "milestone_content"
     t.text "milestone_email_content_markdown", default: "", null: false
     t.string "milestone_email_image_url", default: "", null: false
     t.text "milestone_email_subject", default: "", null: false
+    t.text "milestone_summary"
     t.integer "position", null: false
     t.string "slug", null: false
+    t.string "title"
     t.datetime "updated_at", null: false
     t.string "uuid", null: false
     t.index ["course_id", "position"], name: "index_levels_on_course_id_and_position", unique: true
@@ -559,6 +593,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
   add_foreign_key "exercise_submission_files", "exercise_submissions"
   add_foreign_key "lesson_concepts", "concepts"
   add_foreign_key "lesson_concepts", "lessons"
+  add_foreign_key "lesson_translations", "lessons"
   add_foreign_key "lessons", "levels"
   add_foreign_key "level_translations", "levels"
   add_foreign_key "levels", "courses"

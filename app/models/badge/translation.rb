@@ -1,6 +1,10 @@
 class Badge::Translation < ApplicationRecord
   belongs_to :badge
 
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[name description fun_fact]
+
   validates :locale, presence: true
   validates :email_subject, presence: true
   validates :email_content_markdown, presence: true
