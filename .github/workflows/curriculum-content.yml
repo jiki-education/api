@@ -30,7 +30,6 @@ jobs:
         with:
           repository: jiki-education/front-end
           ref: main
-          token: ${{ secrets.FRONT_END_READ_TOKEN }}
           path: tmp/front-end
           sparse-checkout: curriculum/src
           sparse-checkout-cone-mode: false
