@@ -17,9 +17,13 @@ require 'json'
 module CurriculumContentCheck
   ROOT = File.expand_path('..', __dir__)
 
-  # Only content the front end currently authors is checked. Videos, challenges
-  # and badges have no catalogue there yet, so their copy still lives in this
-  # repo and there is nothing to cross-reference.
+  # Every domain whose copy the front end authors. Badges are enumerated from
+  # the Badges::* classes rather than a seed file, so they are passed in.
+  BADGE_SLUGS = %w[
+    beta_user early_bird first_lesson maze_navigator member
+    night_owl premium scenario_handler sidekick townsfolk
+  ].freeze
+
   module_function
 
   def call(fe_path)
@@ -31,7 +35,13 @@ module CurriculumContentCheck
       [kind, absent] if absent.any?
     end
 
-    checked = expectations.values.sum(&:size)
+    missing += keyed_expectations.filter_map do |kind, (path, slugs)|
+      keys = catalogue_keys(File.join(curriculum, path))
+      absent = slugs.reject { |slug| keys.include?(slug) }.map { |slug| [slug, path] }
+      [kind, absent] if absent.any?
+    end
+
+    checked = expectations.values.sum(&:size) + keyed_expectations.values.sum { |_, slugs| slugs.size }
     return [0, "✓ All #{checked} seeded slugs have front-end content (#{fe_path})"] if missing.empty?
 
     [1, report(missing, checked)]
@@ -55,12 +65,33 @@ module CurriculumContentCheck
       'level' => levels.map { |level| [level[:slug], "levels/#{level[:slug]}.ts"] },
       'exercise' => lessons.select { |l| l[:type] == 'exercise' }.
         map { |l| [l[:slug], "exercises/#{l[:slug]}/instructions/source.md"] },
-      'concept' => seeds('concepts.json').map { |c| [c[:slug], "concepts/#{c[:slug]}/source.md"] }
+      'concept' => seeds('concepts.json').map { |c| [c[:slug], "concepts/#{c[:slug]}/source.md"] },
+      # Challenges are exercises on the front end, reached via exercise_slug.
+      'challenge' => seeds('challenges.json').
+        map { |c| [c[:slug], "exercises/#{c[:exercise_slug]}/instructions/source.md"] }
+    }
+  end
+
+  # Video lessons and badges are keyed inside a single per-locale JSON file
+  # rather than getting a file each, so they are checked by key.
+  def keyed_expectations
+    lessons = seeds('curriculum.json')[:levels].flat_map { |level| level[:lessons] }
+
+    {
+      'video lesson' => ['video-lessons/locales/en/translation.json',
+                         lessons.select { |l| l[:type] == 'video' }.map { |l| l[:slug] }],
+      'badge' => ['badges/locales/en/translation.json', BADGE_SLUGS]
     }
   end
 
   def seeds(file)
     JSON.parse(File.read(File.join(ROOT, 'db', 'seeds', file)), symbolize_names: true)
+  end
+
+  # A missing catalogue file means every slug in it is missing, which the
+  # caller reports one by one.
+  def catalogue_keys(path)
+    File.exist?(path) ? JSON.parse(File.read(path)).keys : []
   end
 end
 
