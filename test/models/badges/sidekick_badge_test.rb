@@ -4,8 +4,7 @@ class Badges::SidekickBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('sidekick') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Sidekick', badge.name
-    assert_equal 'Sent your first message to Jiki', badge.description
+    assert_equal 'sidekick', badge.slug
     refute badge.secret
   end
 

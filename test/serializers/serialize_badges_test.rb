@@ -9,10 +9,10 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    badge_names = result.map { |b| b[:name] }
-    assert_includes badge_names, "Member"
-    assert_includes badge_names, "Maze Navigator"
-    refute_includes badge_names, "Early Bird"
+    slugs = result.map { |b| b[:slug] }
+    assert_includes slugs, "member"
+    assert_includes slugs, "maze_navigator"
+    refute_includes slugs, "early_bird"
   end
 
   test "includes acquired secret badges" do
@@ -22,8 +22,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    badge_names = result.map { |b| b[:name] }
-    assert_includes badge_names, "Early Bird"
+    assert_includes result.map { |b| b[:slug] }, "early_bird"
   end
 
   test "excludes non-acquired secret badges" do
@@ -32,8 +31,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    badge_names = result.map { |b| b[:name] }
-    refute_includes badge_names, "Early Bird"
+    refute_includes result.map { |b| b[:slug] }, "early_bird"
   end
 
   test "sets state to locked for non-acquired badges" do
@@ -42,7 +40,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    locked_badge = result.find { |b| b[:name] == "Member" }
+    locked_badge = result.find { |b| b[:slug] == "member" }
     assert_equal "locked", locked_badge[:state]
     assert_nil locked_badge[:unlocked_at]
   end
@@ -54,7 +52,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    unrevealed_badge = result.find { |b| b[:name] == "Member" }
+    unrevealed_badge = result.find { |b| b[:slug] == "member" }
     assert_equal "unrevealed", unrevealed_badge[:state]
     assert_equal acquired.created_at.iso8601, unrevealed_badge[:unlocked_at]
   end
@@ -66,7 +64,7 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    revealed_badge = result.find { |b| b[:name] == "Maze Navigator" }
+    revealed_badge = result.find { |b| b[:slug] == "maze_navigator" }
     assert_equal "revealed", revealed_badge[:state]
     assert_equal acquired.created_at.iso8601, revealed_badge[:unlocked_at]
   end
@@ -77,10 +75,22 @@ class SerializeBadgesTest < ActiveSupport::TestCase
 
     result = SerializeBadges.(user)
 
-    serialized_badge = result.find { |b| b[:name] == "Member" }
+    serialized_badge = result.find { |b| b[:slug] == "member" }
     assert_equal badge.id, serialized_badge[:id]
-    assert_equal "member", serialized_badge[:slug]
-    assert_equal "Joined Jiki", serialized_badge[:description]
+    assert_equal 0, serialized_badge[:num_awardees]
+  end
+
+  # Names, descriptions and fun facts are authored in the front-end curriculum
+  # repo (curriculum/src/badges/locales/), keyed by slug.
+  test "does not include name, description or fun_fact" do
+    user = create(:user)
+    create(:member_badge)
+
+    serialized_badge = SerializeBadges.(user).first
+
+    refute serialized_badge.key?(:name)
+    refute serialized_badge.key?(:description)
+    refute serialized_badge.key?(:fun_fact)
   end
 
   test "orders badges by id" do

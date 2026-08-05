@@ -4,8 +4,7 @@ class Badges::ScenarioHandlerBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('scenario_handler') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Scenario Handler', badge.name
-    assert_equal "Solve an Exercise with Scenarios", badge.description
+    assert_equal 'scenario_handler', badge.slug
     refute badge.secret
   end
 

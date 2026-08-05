@@ -17,8 +17,8 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index returns all challenges with pagination" do
     Prosopite.finish # Stop scan before creating test data
-    challenge1 = create(:challenge, title: "Calculator", slug: "calculator")
-    challenge2 = create(:challenge, title: "Todo App", slug: "todo-app")
+    challenge1 = create(:challenge, slug: "calculator")
+    challenge2 = create(:challenge, slug: "todo-app")
 
     Prosopite.scan # Resume scan for the actual request
     get admin_challenges_path, as: :json
@@ -34,15 +34,13 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index filters by title" do
+  test "GET index filters by query" do
     Prosopite.finish
-    challenge1 = create(:challenge)
-    challenge1.update!(title: "Calculator App")
-    challenge2 = create(:challenge)
-    challenge2.update!(title: "Todo List")
+    challenge1 = create(:challenge, slug: "calculator-app")
+    create(:challenge, slug: "todo-list")
 
     Prosopite.scan
-    get admin_challenges_path(title: "Calculator"), as: :json
+    get admin_challenges_path(query: "calculator"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -57,9 +55,9 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination" do
     Prosopite.finish
-    challenge1 = create(:challenge, title: "AAA Challenge")
-    challenge2 = create(:challenge, title: "BBB Challenge")
-    create(:challenge, title: "CCC Challenge")
+    challenge1 = create(:challenge)
+    challenge2 = create(:challenge)
+    create(:challenge)
 
     Prosopite.scan
     get admin_challenges_path(page: 1, per: 2), as: :json
@@ -91,8 +89,8 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index does not use user filtering" do
     Prosopite.finish
-    challenge_1 = create(:challenge, title: "Apple Challenge")
-    challenge_2 = create(:challenge, title: "Zebra Challenge")
+    challenge_1 = create(:challenge)
+    challenge_2 = create(:challenge)
 
     # Create a regular user and unlock a challenge
     regular_user = create(:user)
@@ -140,7 +138,7 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
   test "POST create returns validation error for invalid attributes" do
     challenge_params = {
       challenge: {
-        title: ""
+        slug: ""
       }
     }
 
@@ -151,13 +149,13 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["title"], "can't be blank"
+    assert_includes json["error"]["errors"]["slug"], "can't be blank"
   end
 
   # SHOW tests
 
   test "GET show returns challenge" do
-    challenge = create(:challenge, title: "Calculator", exercise_slug: "calculator-challenge")
+    challenge = create(:challenge, exercise_slug: "calculator-challenge")
 
     get admin_challenge_path(challenge.id), as: :json
 
@@ -176,7 +174,7 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
   # UPDATE tests
 
   test "PATCH update updates challenge with valid attributes" do
-    challenge = create(:challenge, title: "Original")
+    challenge = create(:challenge)
     update_params = {
       challenge: {
         title: "Updated"
@@ -197,7 +195,7 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
     challenge = create(:challenge)
     update_params = {
       challenge: {
-        title: ""
+        slug: ""
       }
     }
 
@@ -206,7 +204,7 @@ class Admin::ChallengesControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["title"], "can't be blank"
+    assert_includes json["error"]["errors"]["slug"], "can't be blank"
   end
 
   test "PATCH update returns 404 for non-existent challenge" do

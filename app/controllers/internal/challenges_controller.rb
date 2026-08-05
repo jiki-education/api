@@ -4,7 +4,7 @@ class Internal::ChallengesController < Internal::BaseController
 
   def index
     challenges = Challenge::Search.(
-      title: params[:title],
+      query: params[:query],
       page: params[:page],
       per: params[:per],
       user: current_user

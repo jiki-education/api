@@ -221,7 +221,7 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
   test "emits challenge_unlocked event when lesson has unlocked_challenge" do
     user = create(:user)
     level = create(:level)
-    challenge = create(:challenge, slug: "calculator", title: "Calculator")
+    challenge = create(:challenge, slug: "calculator")
     lesson = create(:lesson, :exercise, level:)
     challenge.update!(unlocked_by_lesson: lesson)
     create(:user_level, user:, level:)
@@ -233,7 +233,6 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     event = Current.events.find { |e| e[:type] == "challenge_unlocked" }
     assert event
     assert_equal "calculator", event[:data][:challenge][:slug]
-    assert_equal "Calculator", event[:data][:challenge][:title]
   end
 
   test "does not create a UserChallenge row when unlocking a challenge" do

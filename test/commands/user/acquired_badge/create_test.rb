@@ -8,7 +8,7 @@ class User::AcquiredBadge::CreateTest < ActiveSupport::TestCase
 
     assert acquired_badge.persisted?
     assert_equal user, acquired_badge.user
-    assert_equal 'Member', acquired_badge.badge.name
+    assert_equal 'member', acquired_badge.badge.slug
     refute acquired_badge.revealed?
   end
 

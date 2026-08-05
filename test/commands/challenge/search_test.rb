@@ -1,37 +1,35 @@
 require "test_helper"
 
 class Challenge::SearchTest < ActiveSupport::TestCase
-  test "no options returns all challenges paginated and ordered by title" do
-    challenge_1 = create :challenge, title: "Zebra App"
-    challenge_2 = create :challenge, title: "Apple App"
+  test "no options returns all challenges paginated and ordered by slug" do
+    challenge_b = create :challenge, slug: "bravo"
+    challenge_a = create :challenge, slug: "alpha"
 
-    result = Challenge::Search.()
-
-    assert_equal [challenge_2, challenge_1], result.to_a
+    assert_equal [challenge_a, challenge_b], Challenge::Search.().to_a
   end
 
-  test "title: search for partial title match" do
-    challenge_1 = create :challenge, title: "Calculator App"
-    challenge_2 = create :challenge, title: "Todo List"
-    challenge_3 = create :challenge, title: "Scientific Calculator"
+  test "query: search for partial slug match" do
+    challenge_1 = create :challenge, slug: "calculator"
+    challenge_2 = create :challenge, slug: "todo-list"
+    challenge_3 = create :challenge, slug: "scientific-calculator"
 
-    assert_equal [challenge_1, challenge_3, challenge_2], Challenge::Search.(title: "").to_a
-    assert_equal [challenge_1, challenge_3], Challenge::Search.(title: "Calculator").to_a
-    assert_equal [challenge_2], Challenge::Search.(title: "Todo").to_a
-    assert_empty Challenge::Search.(title: "xyz").to_a
+    assert_equal [challenge_1, challenge_3, challenge_2], Challenge::Search.(query: "").to_a
+    assert_equal [challenge_1, challenge_3], Challenge::Search.(query: "calculator").to_a
+    assert_equal [challenge_2], Challenge::Search.(query: "todo").to_a
+    assert_empty Challenge::Search.(query: "xyz").to_a
   end
 
-  test "title search is case insensitive" do
-    challenge = create :challenge, title: "Calculator App"
+  test "query search is case insensitive" do
+    challenge = create :challenge, slug: "calculator"
 
-    assert_equal [challenge], Challenge::Search.(title: "calculator").to_a
-    assert_equal [challenge], Challenge::Search.(title: "CALCULATOR").to_a
-    assert_equal [challenge], Challenge::Search.(title: "CaLcUlAtOr").to_a
+    assert_equal [challenge], Challenge::Search.(query: "calculator").to_a
+    assert_equal [challenge], Challenge::Search.(query: "CALCULATOR").to_a
+    assert_equal [challenge], Challenge::Search.(query: "CaLcUlAtOr").to_a
   end
 
   test "pagination" do
-    challenge_1 = create :challenge, title: "Apple"
-    challenge_2 = create :challenge, title: "Banana"
+    challenge_1 = create :challenge, slug: "alpha"
+    challenge_2 = create :challenge, slug: "bravo"
 
     assert_equal [challenge_1], Challenge::Search.(page: 1, per: 1).to_a
     assert_equal [challenge_2], Challenge::Search.(page: 2, per: 1).to_a
@@ -50,93 +48,79 @@ class Challenge::SearchTest < ActiveSupport::TestCase
     assert_equal 2, result.size
   end
 
-  test "sanitizes SQL wildcards in title search" do
-    challenge1 = create :challenge, title: "100% Complete"
-    create :challenge, title: "Todo List"
-    challenge3 = create :challenge, title: "String_Parser"
+  test "sanitizes SQL wildcards in query search" do
+    challenge1 = create :challenge, slug: "100%-complete"
+    create :challenge, slug: "arrays"
+    challenge3 = create :challenge, slug: "string_manipulation"
 
     # Search for "%" should match literal "%" not act as wildcard
-    result = Challenge::Search.(title: "%").to_a
-    assert_equal [challenge1], result
+    assert_equal [challenge1], Challenge::Search.(query: "%").to_a
 
     # Search for "_" should match literal "_" not act as single-character wildcard
-    result = Challenge::Search.(title: "_").to_a
-    assert_equal [challenge3], result
+    assert_equal [challenge3], Challenge::Search.(query: "_").to_a
 
     # Wildcards should not match everything
-    result = Challenge::Search.(title: "%%").to_a
-    assert_empty result
+    assert_empty Challenge::Search.(query: "%%").to_a
   end
 
-  test "user: orders unlocked challenges first, then locked challenges, all by title" do
-    challenge_zebra = create :challenge, title: "Zebra Challenge"
-    challenge_apple = create :challenge, title: "Apple Challenge"
-    challenge_middle = create :challenge, title: "Middle Challenge"
+  test "user: orders unlocked challenges first, then locked challenges, all by slug" do
+    challenge_zebra = create :challenge, slug: "zebra"
+    challenge_apple = create :challenge, slug: "apple"
+    challenge_middle = create :challenge, slug: "middle"
     user = create :user
 
-    # User unlocks Zebra and Middle
     create :user_challenge, user:, challenge: challenge_zebra
     create :user_challenge, user:, challenge: challenge_middle
 
     result = Challenge::Search.(user:).to_a
 
-    # Unlocked challenges first (Middle, Zebra), then locked (Apple)
+    # Unlocked first (middle, zebra), then locked (apple)
     assert_equal [challenge_middle, challenge_zebra, challenge_apple], result
   end
 
-  test "user: with no unlocked challenges returns all challenges ordered by title" do
-    challenge_zebra = create :challenge, title: "Zebra Challenge"
-    challenge_apple = create :challenge, title: "Apple Challenge"
+  test "user: with no unlocked challenges returns all challenges ordered by slug" do
+    challenge_zebra = create :challenge, slug: "zebra"
+    challenge_apple = create :challenge, slug: "apple"
     user = create :user
 
-    result = Challenge::Search.(user:).to_a
-
-    assert_equal [challenge_apple, challenge_zebra], result
+    assert_equal [challenge_apple, challenge_zebra], Challenge::Search.(user:).to_a
   end
 
-  test "user: with title search maintains unlocked-first ordering" do
-    challenge_calc1 = create :challenge, title: "Calculator App"
-    challenge_calc2 = create :challenge, title: "Scientific Calculator"
-    challenge_calc3 = create :challenge, title: "Basic Calculator"
+  test "user: with query search maintains unlocked-first ordering" do
+    challenge_calc1 = create :challenge, slug: "basic-calculator"
+    challenge_calc2 = create :challenge, slug: "scientific-calculator"
+    challenge_calc3 = create :challenge, slug: "graphing-calculator"
     user = create :user
 
-    # User only unlocks Scientific Calculator
     create :user_challenge, user:, challenge: challenge_calc2
 
-    result = Challenge::Search.(title: "Calculator", user:).to_a
+    result = Challenge::Search.(query: "calculator", user:).to_a
 
-    # Scientific Calculator (unlocked) first, then locked ones by title
-    assert_equal [challenge_calc2, challenge_calc3, challenge_calc1], result
+    # scientific (unlocked) first, then the locked ones by slug
+    assert_equal [challenge_calc2, challenge_calc1, challenge_calc3], result
   end
 
   test "user: returns challenges even when other users have user_challenges for them" do
-    challenge = create :challenge, title: "Shared Challenge"
+    challenge = create :challenge
     user = create :user
     other_user = create :user
 
     # Another user has started this challenge, but our user has not
     create :user_challenge, user: other_user, challenge: challenge
 
-    result = Challenge::Search.(user:).to_a
-
-    assert_equal [challenge], result
+    assert_equal [challenge], Challenge::Search.(user:).to_a
   end
 
   test "user: pagination works correctly with user filtering" do
-    challenge_1 = create :challenge, title: "Apple"
-    challenge_2 = create :challenge, title: "Banana"
-    challenge_3 = create :challenge, title: "Cherry"
+    challenge_1 = create :challenge, slug: "alpha"
+    challenge_2 = create :challenge, slug: "bravo"
+    challenge_3 = create :challenge, slug: "charlie"
     user = create :user
 
-    # User unlocks Cherry (should appear first)
+    # charlie is unlocked, so it sorts ahead of the locked alpha and bravo
     create :user_challenge, user:, challenge: challenge_3
 
-    result_page1 = Challenge::Search.(user:, page: 1, per: 2).to_a
-    result_page2 = Challenge::Search.(user:, page: 2, per: 2).to_a
-
-    # First page: Cherry (unlocked), Apple (locked)
-    assert_equal [challenge_3, challenge_1], result_page1
-    # Second page: Banana (locked)
-    assert_equal [challenge_2], result_page2
+    assert_equal [challenge_3, challenge_1], Challenge::Search.(user:, page: 1, per: 2).to_a
+    assert_equal [challenge_2], Challenge::Search.(user:, page: 2, per: 2).to_a
   end
 end

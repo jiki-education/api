@@ -210,7 +210,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     Prosopite.finish
 
     concept = create(:concept, slug: "variables")
-    challenge = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    challenge = create(:challenge, slug: "calculator")
     level = create(:level)
     lesson = create(:lesson, :exercise, level:, unlocked_concepts: [concept], unlocked_challenge: challenge)
     create(:user_level, user: @current_user, level:)

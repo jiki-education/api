@@ -1,9 +1,6 @@
 module Badges
   class NightOwlBadge < Badge
-    seed "Night Owl", "Completed a lesson in the late-night hours",
-      fun_fact: "Jeremy grew up coding late into the night. " \
-                "There's something magical about coding when the world is asleep!",
-      secret: true
+    seed secret: true
 
     def award_to?(user)
       user.user_lessons.completed.pluck(:completed_at).any? do |completed_at|

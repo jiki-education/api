@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_05_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -57,12 +57,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_120000) do
   create_table "badge_translations", force: :cascade do |t|
     t.bigint "badge_id", null: false
     t.datetime "created_at", null: false
-    t.text "description", null: false
     t.text "email_content_markdown", null: false
     t.text "email_subject", null: false
-    t.text "fun_fact", null: false
     t.string "locale", null: false
-    t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["badge_id", "locale"], name: "index_badge_translations_on_badge_id_and_locale", unique: true
     t.index ["badge_id"], name: "index_badge_translations_on_badge_id"
@@ -70,26 +67,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_05_120000) do
 
   create_table "badges", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description", null: false
     t.text "email_content_markdown", default: "", null: false
     t.string "email_image_url", default: "", null: false
     t.text "email_subject", default: "", null: false
-    t.text "fun_fact"
-    t.string "name", null: false
     t.integer "num_awardees", default: 0, null: false
     t.boolean "secret", default: false, null: false
     t.string "type", null: false
     t.datetime "updated_at", null: false
-    t.index ["name"], name: "index_badges_on_name", unique: true
     t.index ["type"], name: "index_badges_on_type", unique: true
   end
 
   create_table "challenges", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description", null: false
     t.string "exercise_slug", null: false
     t.string "slug", null: false
-    t.string "title", null: false
     t.bigint "unlocked_by_lesson_id"
     t.datetime "updated_at", null: false
     t.string "uuid", null: false

@@ -4,8 +4,7 @@ class Badges::FirstLessonBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('first_lesson') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'First Steps', badge.name
-    assert_equal 'Completed your first lesson', badge.description
+    assert_equal 'first_lesson', badge.slug
     refute badge.secret
   end
 

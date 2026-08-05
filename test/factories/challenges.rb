@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :challenge do
-    sequence(:title) { |n| "Challenge #{n}" }
-    sequence(:description) { |n| "A description for Challenge #{n}" }
-    sequence(:exercise_slug) { |n| "challenge-#{n}" }
+    # Zero-padded: challenges are ordered by slug, and an unpadded sequence
+    # would sort challenge-10 before challenge-9.
+    sequence(:slug) { |n| "challenge-#{n.to_s.rjust(4, '0')}" }
+    exercise_slug { slug }
 
     trait :with_unlocking_lesson do
       association :unlocked_by_lesson, factory: :lesson

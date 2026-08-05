@@ -28,7 +28,7 @@ class SeedsTest < ActiveSupport::TestCase
 
     # Simulate stale content that should be brought back in line with the seed data
     course.levels.first.update!(milestone_email_subject: "Stale Subject")
-    Badge.first.update!(name: "Stale Badge Name")
+    Badges::MemberBadge.first.update!(secret: true) # MemberBadge is declared non-secret
 
     # Second run: must update stale content without deleting or recreating anything
     run_seeds!
@@ -47,7 +47,7 @@ class SeedsTest < ActiveSupport::TestCase
 
     # Stale content re-synced
     refute_equal "Stale Subject", course.levels.first.reload.milestone_email_subject
-    refute_equal "Stale Badge Name", Badge.first.reload.name
+    refute Badges::MemberBadge.first.reload.secret
 
     # The admin user exists but is not an admin outside production
     admin_user = User.find_by!(email: "ihid@jiki.io")

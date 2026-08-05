@@ -5,5 +5,5 @@ class User::AcquiredBadge < ApplicationRecord
   scope :unrevealed, -> { where(revealed: false) }
   scope :revealed, -> { where(revealed: true) }
 
-  delegate :name, :slug, :description, :secret, to: :badge
+  delegate :slug, :secret, to: :badge
 end

@@ -90,25 +90,11 @@ class User::AcquiredBadgeTest < ActiveSupport::TestCase
     assert_equal [revealed], user.acquired_badges.revealed.to_a
   end
 
-  test "delegates name to badge" do
-    badge = create(:member_badge)
-    acquired_badge = create(:user_acquired_badge, badge:)
-
-    assert_equal "Member", acquired_badge.name
-  end
-
   test "delegates slug to badge" do
     badge = create(:member_badge)
     acquired_badge = create(:user_acquired_badge, badge:)
 
     assert_equal "member", acquired_badge.slug
-  end
-
-  test "delegates description to badge" do
-    badge = create(:member_badge)
-    acquired_badge = create(:user_acquired_badge, badge:)
-
-    assert_equal "Joined Jiki", acquired_badge.description
   end
 
   test "delegates secret to badge" do

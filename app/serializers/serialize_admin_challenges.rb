@@ -7,9 +7,7 @@ class SerializeAdminChallenges
     challenges.map do |challenge|
       {
         id: challenge.id,
-        title: challenge.title,
         slug: challenge.slug,
-        description: challenge.description,
         exercise_slug: challenge.exercise_slug
       }
     end

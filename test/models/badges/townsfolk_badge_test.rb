@@ -4,8 +4,7 @@ class Badges::TownsfolkBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('townsfolk') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Townsfolk', badge.name
-    assert_equal 'Joined the Jiki community forum', badge.description
+    assert_equal 'townsfolk', badge.slug
     refute badge.secret
   end
 
