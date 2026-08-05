@@ -14,9 +14,9 @@ class Internal::LevelsControllerTest < ApplicationControllerTest
   test "GET index returns all levels with nested lessons for a course" do
     level1 = create(:level, course: @course, slug: "level-1")
     level2 = create(:level, course: @course, slug: "level-2")
-    create(:lesson, :exercise, level: level1, slug: "lesson-1", data: { slug: :ex1 })
+    create(:lesson, :exercise, level: level1, slug: "lesson-1")
     create(:lesson, :video, level: level1, slug: "lesson-2")
-    create(:lesson, :exercise, level: level2, slug: "lesson-3", data: { slug: :ex3 })
+    create(:lesson, :exercise, level: level2, slug: "lesson-3")
 
     get internal_levels_path(course_slug: @course.slug), as: :json
 

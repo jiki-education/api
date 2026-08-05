@@ -121,9 +121,16 @@ class LessonTest < ActiveSupport::TestCase
   end
 
   test "exercise lesson is valid with slug in data" do
-    lesson = build(:lesson, type: 'exercise', data: { slug: 'my-exercise' })
+    lesson = build(:lesson, type: 'exercise', slug: 'my-exercise', data: { slug: 'my-exercise' })
 
     assert lesson.valid?
+  end
+
+  test "exercise lesson requires data slug to match the lesson slug" do
+    lesson = build(:lesson, type: 'exercise', slug: 'my-exercise', data: { slug: 'a-different-exercise' })
+
+    refute lesson.valid?
+    assert_includes lesson.errors[:data], 'slug must match the lesson slug'
   end
 
   test "video lesson requires sources in data" do

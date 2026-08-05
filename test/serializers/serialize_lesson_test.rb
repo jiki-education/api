@@ -75,8 +75,7 @@ class SerializeLessonTest < ActiveSupport::TestCase
   end
 
   test "excludes data by default" do
-    lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc",
-      data: { slug: "test-ex" })
+    lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc")
 
     result = SerializeLesson.(lesson, nil)
     refute result.key?(:data)
@@ -84,11 +83,10 @@ class SerializeLessonTest < ActiveSupport::TestCase
 
   test "includes data when include_data is true" do
     user = create(:user)
-    lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc",
-      data: { slug: "test-ex" })
+    lesson = create(:lesson, :exercise, slug: "intro", title: "Title", description: "Desc")
 
     result = SerializeLesson.(lesson, user, include_data: true)
-    assert_equal({ slug: "test-ex" }, result[:data])
+    assert_equal({ slug: "intro" }, result[:data])
   end
 
   test "filters sources by user's language choice" do

@@ -54,10 +54,15 @@ class Lesson < ApplicationRecord
     end
   end
 
+  # An exercise lesson's data[:slug] names the front-end curriculum exercise
+  # (curriculum/src/exercises/<slug>/). It has always matched the lesson slug,
+  # so pin that down rather than leaving two slugs free to drift apart - the FE
+  # indexes icons and localStorage keys off one and submissions off the other.
   def validate_exercise_data!
-    return if data[:slug].present?
+    return errors.add(:data, 'must contain slug for exercise lessons') if data[:slug].blank?
+    return if data[:slug] == slug
 
-    errors.add(:data, 'must contain slug for exercise lessons')
+    errors.add(:data, 'slug must match the lesson slug')
   end
 
   def validate_video_data!

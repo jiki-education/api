@@ -48,7 +48,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "New Lesson",
           description: "A great lesson",
           type: "exercise",
-          data: { slug: "test-exercise", foo: "bar" }
+          data: { slug: "new-lesson", foo: "bar" }
         }
       },
       as: :json
@@ -59,7 +59,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     assert_equal "New Lesson", json["lesson"]["title"]
     assert_equal "A great lesson", json["lesson"]["description"]
     assert_equal "exercise", json["lesson"]["type"]
-    assert_equal({ "slug" => "test-exercise", "foo" => "bar" }, json["lesson"]["data"])
+    assert_equal({ "slug" => "new-lesson", "foo" => "bar" }, json["lesson"]["data"])
     assert json["lesson"]["id"].present?
   end
 
@@ -70,7 +70,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "Hello World Lesson",
           description: "Description",
           type: "exercise",
-          data: { slug: "some-exercise", key: "value" }
+          data: { slug: "hello-world-lesson", key: "value" }
         }
       },
       as: :json
@@ -88,7 +88,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "Some Title",
           description: "Description",
           type: "exercise",
-          data: { slug: "some-exercise", key: "value" }
+          data: { slug: "custom-slug", key: "value" }
         }
       },
       as: :json
@@ -108,7 +108,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           title: "New Lesson",
           description: "Description",
           type: "exercise",
-          data: { slug: "some-exercise", key: "value" }
+          data: { slug: "new-lesson", key: "value" }
         }
       },
       as: :json
@@ -126,7 +126,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
           description: "Description",
           type: "exercise",
           position: 10,
-          data: { slug: "some-exercise", key: "value" }
+          data: { slug: "new-lesson", key: "value" }
         }
       },
       as: :json
@@ -138,7 +138,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
 
   test "POST create handles nested JSON data structure" do
     complex_data = {
-      slug: "some-exercise",
+      slug: "complex-lesson",
       nested: {
         deeply: {
           nested: {
@@ -361,7 +361,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update can update data" do
-    lesson = create(:lesson, :exercise, level: @level, data: { slug: "some-exercise", key: "old" })
+    lesson = create(:lesson, :exercise, level: @level, slug: "some-exercise", data: { slug: "some-exercise", key: "old" })
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: { lesson: { data: { slug: "some-exercise", key: "new", foo: "bar" } } },
@@ -432,7 +432,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update can handle nested JSON data structure" do
-    lesson = create(:lesson, :exercise, level: @level, data: { slug: "some-exercise", simple: "value" })
+    lesson = create(:lesson, :exercise, level: @level, slug: "some-exercise", data: { slug: "some-exercise", simple: "value" })
 
     complex_data = {
       slug: "some-exercise",

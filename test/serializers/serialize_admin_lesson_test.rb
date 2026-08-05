@@ -7,7 +7,7 @@ class SerializeAdminLessonTest < ActiveSupport::TestCase
       title: "Hello World",
       description: "Your first lesson",
       position: 1,
-      data: { slug: "some-exercise", key: "value" })
+      data: { slug: "hello-world", key: "value" })
 
     expected = {
       id: lesson.id,
@@ -16,7 +16,7 @@ class SerializeAdminLessonTest < ActiveSupport::TestCase
       description: "Your first lesson",
       type: "exercise",
       position: 1,
-      data: { slug: "some-exercise", key: "value" },
+      data: { slug: "hello-world", key: "value" },
       walkthrough_video_data: nil
     }
 
@@ -38,7 +38,7 @@ class SerializeAdminLessonTest < ActiveSupport::TestCase
   end
 
   test "serializes data with string keys" do
-    lesson = create(:lesson, :exercise, data: { slug: "test", foo: "bar" })
+    lesson = create(:lesson, :exercise, slug: "test", data: { slug: "test", foo: "bar" })
 
     result = SerializeAdminLesson.(lesson)
 

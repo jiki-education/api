@@ -7,7 +7,7 @@ FactoryBot.define do
 
     trait :exercise do
       type { "exercise" }
-      data { { slug: "basic-movement" } }
+      data { { slug: } }
     end
 
     trait :video do

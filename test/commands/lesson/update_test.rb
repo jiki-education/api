@@ -28,7 +28,7 @@ class Lesson::UpdateTest < ActiveSupport::TestCase
   end
 
   test "updates data" do
-    lesson = create :lesson, :exercise, data: { slug: "test", key: "old_value" }
+    lesson = create :lesson, :exercise, slug: "test", data: { slug: "test", key: "old_value" }
 
     updated_lesson = Lesson::Update.(lesson, { data: { slug: "test", key: "new_value", foo: "bar" } })
 
