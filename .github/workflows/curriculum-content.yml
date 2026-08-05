@@ -34,11 +34,13 @@ jobs:
           sparse-checkout: curriculum/src
           sparse-checkout-cone-mode: false
 
+      # The check is plain Ruby against the seed JSON, so it needs no bundle,
+      # no database and none of the app's native dependencies.
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: .ruby-version
-          bundler-cache: true
+          bundler-cache: false
 
       - name: Verify every seeded slug has front-end content
-        run: bin/rails "curriculum:verify_content[tmp/front-end]"
+        run: ruby lib/curriculum_content_check.rb tmp/front-end
