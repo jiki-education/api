@@ -27,8 +27,7 @@ class SeedsTest < ActiveSupport::TestCase
     user_course = UserCourse.find_by!(user:, course:)
 
     # Simulate stale content that should be brought back in line with the seed data
-    course.levels.first.update!(title: "Stale Level Title")
-    lesson.update!(title: "Stale Lesson Title")
+    course.levels.first.update!(milestone_email_subject: "Stale Subject")
     Badge.first.update!(name: "Stale Badge Name")
 
     # Second run: must update stale content without deleting or recreating anything
@@ -47,8 +46,7 @@ class SeedsTest < ActiveSupport::TestCase
     assert UserLesson.exists?(user_lesson.id)
 
     # Stale content re-synced
-    refute_equal "Stale Level Title", course.levels.first.reload.title
-    refute_equal "Stale Lesson Title", lesson.reload.title
+    refute_equal "Stale Subject", course.levels.first.reload.milestone_email_subject
     refute_equal "Stale Badge Name", Badge.first.reload.name
 
     # The admin user exists but is not an admin outside production

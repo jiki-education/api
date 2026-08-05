@@ -6,36 +6,17 @@ class SerializeAdminLevelTranslationTest < ActiveSupport::TestCase
     translation = create(:level_translation,
       level:,
       locale: "hu",
-      title: "Ruby Alapok",
-      description: "Tanuld meg a Ruby-t",
-      milestone_summary: "Nagyszerű munka!",
-      milestone_content: "# Gratulálunk!")
+      milestone_email_subject: "Gratulálunk!",
+      milestone_email_content_markdown: "Befejezted az összes leckét.")
 
     expected = {
       id: translation.id,
       level_slug: "ruby-basics",
       locale: "hu",
-      title: "Ruby Alapok",
-      description: "Tanuld meg a Ruby-t",
-      milestone_summary: "Nagyszerű munka!",
-      milestone_content: "# Gratulálunk!"
+      milestone_email_subject: "Gratulálunk!",
+      milestone_email_content_markdown: "Befejezted az összes leckét."
     }
 
     assert_equal expected, SerializeAdminLevelTranslation.(translation)
-  end
-
-  test "includes all required fields" do
-    level = create(:level)
-    translation = create(:level_translation, level:)
-
-    result = SerializeAdminLevelTranslation.(translation)
-
-    assert result.key?(:id)
-    assert result.key?(:level_slug)
-    assert result.key?(:locale)
-    assert result.key?(:title)
-    assert result.key?(:description)
-    assert result.key?(:milestone_summary)
-    assert result.key?(:milestone_content)
   end
 end

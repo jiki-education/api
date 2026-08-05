@@ -4,8 +4,6 @@ class Course < ApplicationRecord
   has_many :users, through: :user_courses
 
   validates :slug, presence: true, uniqueness: true
-  validates :title, presence: true
-  validates :description, presence: true
   validates :position, presence: true, uniqueness: true
 
   before_validation :set_position, on: :create

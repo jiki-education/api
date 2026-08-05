@@ -5,7 +5,6 @@ class Analytics::ExerciseHealth::GenerateInsightsTest < ActiveSupport::TestCase
     {
       lesson_id: 1,
       slug: "fix-wall",
-      title: "Fix the Wall",
       abandon_pct: 0.0,
       bounce_pct: 0.0,
       reach_start_pct: 100.0,
@@ -35,7 +34,6 @@ class Analytics::ExerciseHealth::GenerateInsightsTest < ActiveSupport::TestCase
     assert_equal :medium, insight[:severity]
     assert_equal 1, insight[:lesson_id]
     assert_equal "fix-wall", insight[:slug]
-    assert_equal "Fix the Wall", insight[:title]
     assert_equal 9.0, insight[:value]
     assert_includes insight[:message], "9.0% of learners attempt this exercise but give up"
     assert_includes insight[:message], "median 8 attempts"

@@ -24,22 +24,13 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
   test "POST create calls Level::Create command with correct params" do
     level = create(:level, course: @course)
     Level::Create.expects(:call).with do |params|
-      params["slug"] == "ruby-basics" &&
-        params["title"] == "Ruby Basics" &&
-        params["description"] == "Learn Ruby" &&
-        params["milestone_summary"] == "Great!" &&
-        params["milestone_content"] == "# Done!" &&
-        params[:course] == @course
+      params["slug"] == "ruby-basics" && params[:course] == @course
     end.returns(level)
 
     post admin_levels_path(course_slug: @course.slug),
       params: {
         level: {
-          slug: "ruby-basics",
-          title: "Ruby Basics",
-          description: "Learn Ruby",
-          milestone_summary: "Great!",
-          milestone_content: "# Done!"
+          slug: "ruby-basics"
         }
       },
       as: :json
@@ -51,11 +42,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     post admin_levels_path(course_slug: @course.slug),
       params: {
         level: {
-          slug: "ruby-basics",
-          title: "Ruby Basics",
-          description: "Learn the fundamentals of Ruby",
-          milestone_summary: "Great job!",
-          milestone_content: "# Congratulations!"
+          slug: "ruby-basics"
         }
       },
       as: :json
@@ -64,8 +51,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "ruby-basics", json["level"]["slug"]
-    assert_equal "Ruby Basics", json["level"]["title"]
-    assert_equal "Learn the fundamentals of Ruby", json["level"]["description"]
     assert json["level"]["position"].present?
   end
 
@@ -76,11 +61,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     post admin_levels_path(course_slug: @course.slug),
       params: {
         level: {
-          slug: "new-level",
-          title: "New Level",
-          description: "Description",
-          milestone_summary: "Great job!",
-          milestone_content: "# Congratulations!"
+          slug: "new-level"
         }
       },
       as: :json
@@ -95,10 +76,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
       params: {
         level: {
           slug: "ruby-basics",
-          title: "Ruby Basics",
-          description: "Description",
-          milestone_summary: "Great job!",
-          milestone_content: "# Congratulations!",
           position: 5
         }
       },
@@ -109,12 +86,11 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     assert_equal 5, json["level"]["position"]
   end
 
-  test "POST create returns 422 for missing slug" do
+  test "POST create returns 422 for blank slug" do
     post admin_levels_path(course_slug: @course.slug),
       params: {
         level: {
-          title: "Ruby Basics",
-          description: "Description"
+          slug: ""
         }
       },
       as: :json
@@ -125,61 +101,13 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     assert_match(/Validation failed/, json["error"]["message"])
   end
 
-  test "POST create returns 422 for missing title" do
-    post admin_levels_path(course_slug: @course.slug),
-      params: {
-        level: {
-          slug: "ruby-basics",
-          description: "Description"
-        }
-      },
-      as: :json
-
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-  end
-
-  test "POST create returns 422 for missing description" do
-    post admin_levels_path(course_slug: @course.slug),
-      params: {
-        level: {
-          slug: "ruby-basics",
-          title: "Ruby Basics"
-        }
-      },
-      as: :json
-
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-  end
-
-  test "POST create returns 422 for blank title" do
-    post admin_levels_path(course_slug: @course.slug),
-      params: {
-        level: {
-          slug: "ruby-basics",
-          title: "",
-          description: "Description"
-        }
-      },
-      as: :json
-
-    assert_response :unprocessable_entity
-    json = response.parsed_body
-    assert_equal "validation_error", json["error"]["type"]
-  end
-
   test "POST create returns 422 for duplicate slug" do
     create(:level, slug: "ruby-basics")
 
     post admin_levels_path(course_slug: @course.slug),
       params: {
         level: {
-          slug: "ruby-basics",
-          title: "Another Level",
-          description: "Description"
+          slug: "ruby-basics"
         }
       },
       as: :json
@@ -196,8 +124,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
       params: {
         level: {
           slug: "new-level",
-          title: "New Level",
-          description: "Description",
           position: 1
         }
       },
@@ -217,9 +143,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     post admin_levels_path(course_slug: @course.slug),
       params: {
         level: {
-          slug: "test",
-          title: "Test",
-          description: "Test"
+          slug: "test"
         }
       },
       as: :json
@@ -231,9 +155,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     post admin_levels_path(course_slug: "non-existent"),
       params: {
         level: {
-          slug: "test",
-          title: "Test",
-          description: "Test"
+          slug: "test"
         }
       },
       as: :json
@@ -247,9 +169,9 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
   test "GET index returns all levels for course with pagination meta" do
     Prosopite.finish
-    level_1 = create(:level, course: @course, title: "Level 1", slug: "level-1")
-    level_2 = create(:level, course: @course, title: "Level 2", slug: "level-2")
-    create(:level, title: "Other Course Level") # Different course
+    level_1 = create(:level, course: @course, slug: "level-1")
+    level_2 = create(:level, course: @course, slug: "level-2")
+    create(:level) # Different course
 
     Prosopite.scan
     get admin_levels_path(course_slug: @course.slug), as: :json
@@ -273,29 +195,15 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     Level::Search.expects(:call).with(
       course: @course,
-      title: "Ruby",
       slug: "basics",
       page: "2",
       per: nil
     ).returns(paginated_levels)
 
-    get admin_levels_path(course_slug: @course.slug, title: "Ruby", slug: "basics", page: 2),
+    get admin_levels_path(course_slug: @course.slug, slug: "basics", page: 2),
       as: :json
 
     assert_response :success
-  end
-
-  test "GET index filters by title parameter" do
-    create(:level, course: @course, title: "Ruby Basics")
-    advanced = create(:level, course: @course, title: "Ruby Advanced")
-
-    get admin_levels_path(course_slug: @course.slug, title: "Advanced"),
-      as: :json
-
-    assert_response :success
-    json = response.parsed_body
-    assert_equal 1, json["results"].length
-    assert_equal advanced.id, json["results"][0]["id"]
   end
 
   test "GET index filters by slug parameter" do
@@ -350,14 +258,13 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     level = create(:level, course: @course)
     Level::Update.expects(:call).with(
       level,
-      { "title" => "New Title", "description" => "New description" }
+      { "milestone_email_subject" => "New Subject" }
     ).returns(level)
 
     patch admin_level_path(level, course_slug: @course.slug),
       params: {
         level: {
-          title: "New Title",
-          description: "New description"
+          milestone_email_subject: "New Subject"
         }
       },
       as: :json
@@ -366,22 +273,19 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH update returns updated level" do
-    level = create(:level, course: @course, title: "Old Title")
+    level = create(:level, course: @course)
 
     patch admin_level_path(level, course_slug: @course.slug),
       params: {
         level: {
-          title: "New Title",
-          description: "New description"
+          milestone_email_subject: "New Subject"
         }
       },
       as: :json
 
     assert_response :success
 
-    json = response.parsed_body
-    assert_equal "New Title", json["level"]["title"]
-    assert_equal "New description", json["level"]["description"]
+    assert_equal "New Subject", level.reload.milestone_email_subject
   end
 
   test "PATCH update can update position" do
@@ -414,7 +318,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     patch admin_level_path(level, course_slug: @course.slug),
       params: {
         level: {
-          title: ""
+          slug: ""
         }
       },
       as: :json

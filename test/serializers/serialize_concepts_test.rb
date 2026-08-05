@@ -11,7 +11,7 @@ class SerializeConceptsTest < ActiveSupport::TestCase
 
   # Title and description are owned by the front-end curriculum catalogue.
   test "does not include title or description" do
-    concept = create(:concept, title: "Arrays", description: "Learn about arrays")
+    concept = create(:concept)
 
     result = SerializeConcepts.([concept])
 
@@ -63,8 +63,8 @@ class SerializeConceptsTest < ActiveSupport::TestCase
   end
 
   test "handles mix of locked and unlocked concepts" do
-    concept_unlocked = create(:concept, title: "Unlocked Concept")
-    concept_locked = create(:concept, title: "Locked Concept")
+    concept_unlocked = create(:concept)
+    concept_locked = create(:concept)
     user = create(:user)
     Concept::UnlockForUser.(concept_unlocked, user)
 

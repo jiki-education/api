@@ -29,7 +29,7 @@ class ProgressionMailerTest < ActionMailer::TestCase
     assert_match "Jeremy & Team", text
 
     # Preview is derived from the (English) body copy, not a locale key
-    assert_match "You&#39;ve finished all lessons in #{level.title}. Great work!", html
+    assert_match "You&#39;ve finished all lessons in #{level.slug}. Great work!", html
 
     # Shared footer chrome
     assert_match "You are receiving this email because you have an account at", html

@@ -121,7 +121,6 @@ class Analytics::ExerciseHealth::GenerateInsights
       severity:,
       lesson_id: metric[:lesson_id],
       slug: metric[:slug],
-      title: metric[:title],
       message:,
       value: value.round(2),
       sort_value:

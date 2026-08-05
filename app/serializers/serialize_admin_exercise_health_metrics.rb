@@ -12,7 +12,6 @@ class SerializeAdminExerciseHealthMetrics
     {
       lesson_id: metric[:lesson_id],
       slug: metric[:slug],
-      title: metric[:title],
       health_score: metric[:health_score],
       low_sample: metric[:low_sample],
       num_starts: metric[:num_starts],

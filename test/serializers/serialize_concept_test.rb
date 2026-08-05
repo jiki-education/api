@@ -15,7 +15,7 @@ class SerializeConceptTest < ActiveSupport::TestCase
   # (curriculum/src/concepts/<slug>/*.md), which is per-locale. The API's
   # copies were unconditionally English.
   test "does not include title or description" do
-    concept = create(:concept, title: "Loops", description: "Learn about loops")
+    concept = create(:concept)
 
     result = SerializeConcept.(concept)
 

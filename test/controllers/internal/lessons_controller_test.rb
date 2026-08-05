@@ -10,7 +10,7 @@ class Internal::LessonsControllerTest < ApplicationControllerTest
 
   test "GET show returns lesson with data" do
     level = create(:level)
-    lesson = create(:lesson, :exercise, level: level, slug: "test-lesson", data: { slug: "test-lesson", title: "Test Exercise" })
+    lesson = create(:lesson, :exercise, level: level, slug: "test-lesson", data: { slug: "test-lesson" })
 
     get internal_lesson_path(lesson_slug: "test-lesson"), as: :json
 

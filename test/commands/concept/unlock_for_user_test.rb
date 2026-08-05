@@ -66,7 +66,7 @@ class Concept::UnlockForUserTest < ActiveSupport::TestCase
 
   test "emits concept_unlocked event when concept is unlocked" do
     user = create :user
-    concept = create :concept, slug: "variables", title: "Variables"
+    concept = create :concept, slug: "variables"
 
     Current.reset
     Concept::UnlockForUser.(concept, user)

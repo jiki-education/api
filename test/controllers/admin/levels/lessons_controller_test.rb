@@ -25,14 +25,13 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
   test "POST create calls Lesson::Create command with correct params" do
     Lesson::Create.expects(:call).with(
       @level,
-      { "title" => "New Lesson", "description" => "New description", "type" => "exercise" }
+      { "slug" => "new-lesson", "type" => "exercise" }
     ).returns(create(:lesson, :exercise, level: @level))
 
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          title: "New Lesson",
-          description: "New description",
+          slug: "new-lesson",
           type: "exercise"
         }
       },
@@ -45,8 +44,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          title: "New Lesson",
-          description: "A great lesson",
+          slug: "new-lesson",
           type: "exercise",
           data: { slug: "new-lesson", foo: "bar" }
         }
@@ -56,28 +54,9 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     assert_response :created
 
     json = response.parsed_body
-    assert_equal "New Lesson", json["lesson"]["title"]
-    assert_equal "A great lesson", json["lesson"]["description"]
     assert_equal "exercise", json["lesson"]["type"]
     assert_equal({ "slug" => "new-lesson", "foo" => "bar" }, json["lesson"]["data"])
     assert json["lesson"]["id"].present?
-  end
-
-  test "POST create auto-generates slug from title when slug not provided" do
-    post admin_level_lessons_path(level_id: @level.id),
-      params: {
-        lesson: {
-          title: "Hello World Lesson",
-          description: "Description",
-          type: "exercise",
-          data: { slug: "hello-world-lesson", key: "value" }
-        }
-      },
-      as: :json
-
-    assert_response :created
-    json = response.parsed_body
-    assert_equal "hello-world-lesson", json["lesson"]["slug"]
   end
 
   test "POST create uses provided slug when given" do
@@ -85,8 +64,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       params: {
         lesson: {
           slug: "custom-slug",
-          title: "Some Title",
-          description: "Description",
           type: "exercise",
           data: { slug: "custom-slug", key: "value" }
         }
@@ -105,8 +82,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          title: "New Lesson",
-          description: "Description",
+          slug: "new-lesson",
           type: "exercise",
           data: { slug: "new-lesson", key: "value" }
         }
@@ -122,8 +98,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          title: "New Lesson",
-          description: "Description",
+          slug: "new-lesson",
           type: "exercise",
           position: 10,
           data: { slug: "new-lesson", key: "value" }
@@ -155,8 +130,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          title: "Complex Lesson",
-          description: "Description",
+          slug: "complex-lesson",
           type: "exercise",
           data: complex_data
         }
@@ -168,11 +142,10 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     assert_equal complex_data.deep_stringify_keys, json["lesson"]["data"]
   end
 
-  test "POST create returns 422 for validation errors - missing title" do
+  test "POST create returns 422 for validation errors - missing slug" do
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          description: "Description",
           type: "exercise"
         }
       },
@@ -191,8 +164,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
       params: {
         lesson: {
           slug: "duplicate-slug",
-          title: "Another Lesson",
-          description: "Description",
           type: "exercise"
         }
       },
@@ -207,8 +178,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     post admin_level_lessons_path(level_id: 99_999),
       params: {
         lesson: {
-          title: "New Lesson",
-          description: "Description",
           type: "exercise"
         }
       },
@@ -226,8 +195,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     post admin_level_lessons_path(level_id: @level.id),
       params: {
         lesson: {
-          title: "New Lesson",
-          description: "Description",
           type: "exercise"
         }
       },
@@ -302,14 +269,13 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     lesson = create(:lesson, :exercise, level: @level)
     Lesson::Update.expects(:call).with(
       lesson,
-      { "title" => "New Title", "description" => "New description" }
+      { "slug" => "new-slug" }
     ).returns(lesson)
 
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: {
         lesson: {
-          title: "New Title",
-          description: "New description"
+          slug: "new-slug"
         }
       },
       as: :json
@@ -323,17 +289,14 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: {
         lesson: {
-          title: "New Title",
-          description: "New description"
+          slug: "new-slug"
         }
       },
       as: :json
 
     assert_response :success
 
-    json = response.parsed_body
-    assert_equal "New Title", json["lesson"]["title"]
-    assert_equal "New description", json["lesson"]["description"]
+    assert_equal "new-slug", lesson.reload.slug
   end
 
   test "PATCH update can update type" do
@@ -378,7 +341,7 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     patch admin_level_lesson_path(level_id: @level.id, id: lesson.id),
       params: {
         lesson: {
-          title: ""
+          slug: ""
         }
       },
       as: :json

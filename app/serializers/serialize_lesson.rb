@@ -1,17 +1,13 @@
 class SerializeLesson
   include Mandate
 
-  initialize_with :lesson, :user, content: nil, include_data: false
+  initialize_with :lesson, :user, include_data: false
 
   def call
     raise "user is required when include_data is true" if include_data && user.nil?
 
-    content_data = content || lesson.content_for_locale(I18n.locale)
-
     output = {
       slug: lesson.slug,
-      title: content_data[:title],
-      description: content_data[:description],
       type: lesson.type,
       walkthrough_video_data: lesson.walkthrough_video_data.presence
     }

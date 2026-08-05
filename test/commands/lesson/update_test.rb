@@ -2,12 +2,11 @@ require "test_helper"
 
 class Lesson::UpdateTest < ActiveSupport::TestCase
   test "updates lesson attributes" do
-    lesson = create :lesson, :exercise, title: "Old Title", description: "Old description"
+    lesson = create :lesson, :exercise
 
-    updated_lesson = Lesson::Update.(lesson, { title: "New Title", description: "New description" })
+    updated_lesson = Lesson::Update.(lesson, { slug: "new-slug" })
 
-    assert_equal "New Title", updated_lesson.title
-    assert_equal "New description", updated_lesson.description
+    assert_equal "new-slug", updated_lesson.slug
     assert_equal lesson.id, updated_lesson.id
   end
 
@@ -28,25 +27,25 @@ class Lesson::UpdateTest < ActiveSupport::TestCase
   end
 
   test "updates data" do
-    lesson = create :lesson, :exercise, slug: "test", data: { slug: "test", key: "old_value" }
+    lesson = create :lesson, :video, data: { sources: [{ id: "old" }] }
 
-    updated_lesson = Lesson::Update.(lesson, { data: { slug: "test", key: "new_value", foo: "bar" } })
+    updated_lesson = Lesson::Update.(lesson, { data: { sources: [{ id: "new" }], foo: "bar" } })
 
-    assert_equal({ slug: "test", key: "new_value", foo: "bar" }, updated_lesson.data)
+    assert_equal({ sources: [{ id: "new" }], foo: "bar" }, updated_lesson.data)
   end
 
   test "raises error on invalid attributes" do
     lesson = create :lesson, :exercise
 
     assert_raises ActiveRecord::RecordInvalid do
-      Lesson::Update.(lesson, { title: "" })
+      Lesson::Update.(lesson, { slug: "" })
     end
   end
 
   test "returns updated lesson" do
     lesson = create :lesson, :exercise
 
-    result = Lesson::Update.(lesson, { title: "Updated" })
+    result = Lesson::Update.(lesson, { slug: "updated" })
 
     assert_instance_of Lesson, result
     assert_equal lesson.id, result.id

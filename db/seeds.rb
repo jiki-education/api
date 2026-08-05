@@ -19,11 +19,8 @@
 
 # == Course ==
 course = Course.find_or_initialize_by(slug: "coding-fundamentals")
-course.update!(
-  title: "Coding Fundamentals",
-  description: "Learn the fundamentals of programming through interactive exercises and videos."
-)
-puts "✓ Course: #{course.title}"
+course.save!
+puts "✓ Course: #{course.slug}"
 
 # == Levels and lessons ==
 # Synced from curriculum.json, matched by uuid so slug renames, moves between levels
@@ -60,8 +57,6 @@ concepts_data.each do |concept_data|
   concept.update!(
     uuid: concept_data[:uuid],
     slug: concept_data[:slug],
-    title: concept_data[:title],
-    description: concept_data[:description],
     unlocked_by_lesson: unlocking_lesson
   )
 end

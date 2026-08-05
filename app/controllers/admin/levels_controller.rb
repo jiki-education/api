@@ -5,7 +5,6 @@ class Admin::LevelsController < Admin::BaseController
   def index
     levels = Level::Search.(
       course: @course,
-      title: params[:title],
       slug: params[:slug],
       page: params[:page],
       per: params[:per]
@@ -51,6 +50,6 @@ class Admin::LevelsController < Admin::BaseController
   end
 
   def level_params
-    params.require(:level).permit(:title, :description, :position, :slug, :milestone_summary, :milestone_content)
+    params.require(:level).permit(:position, :slug, :milestone_email_subject, :milestone_email_content_markdown)
   end
 end

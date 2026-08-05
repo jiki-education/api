@@ -2,28 +2,12 @@ require "test_helper"
 
 class SerializeAdminLevelsTest < ActiveSupport::TestCase
   test "serializes multiple levels" do
-    level_1 = create(:level, slug: "level-1", title: "Level 1")
-    level_2 = create(:level, slug: "level-2", title: "Level 2")
+    level_1 = create(:level, slug: "level-1")
+    level_2 = create(:level, slug: "level-2")
 
     expected = [
-      {
-        id: level_1.id,
-        slug: "level-1",
-        title: "Level 1",
-        description: level_1.description,
-        position: level_1.position,
-        milestone_summary: level_1.milestone_summary,
-        milestone_content: level_1.milestone_content
-      },
-      {
-        id: level_2.id,
-        slug: "level-2",
-        title: "Level 2",
-        description: level_2.description,
-        position: level_2.position,
-        milestone_summary: level_2.milestone_summary,
-        milestone_content: level_2.milestone_content
-      }
+      { id: level_1.id, slug: "level-1", position: level_1.position },
+      { id: level_2.id, slug: "level-2", position: level_2.position }
     ]
 
     assert_equal expected, SerializeAdminLevels.([level_1, level_2])

@@ -12,32 +12,18 @@ class Level::TranslationTest < ActiveSupport::TestCase
     assert_includes translation.errors[:locale], "can't be blank"
   end
 
-  test "validates presence of title" do
-    translation = build(:level_translation, title: nil)
+  test "validates presence of milestone_email_subject" do
+    translation = build(:level_translation, milestone_email_subject: nil)
 
     refute translation.valid?
-    assert_includes translation.errors[:title], "can't be blank"
+    assert_includes translation.errors[:milestone_email_subject], "can't be blank"
   end
 
-  test "validates presence of description" do
-    translation = build(:level_translation, description: nil)
+  test "validates presence of milestone_email_content_markdown" do
+    translation = build(:level_translation, milestone_email_content_markdown: nil)
 
     refute translation.valid?
-    assert_includes translation.errors[:description], "can't be blank"
-  end
-
-  test "validates presence of milestone_summary" do
-    translation = build(:level_translation, milestone_summary: nil)
-
-    refute translation.valid?
-    assert_includes translation.errors[:milestone_summary], "can't be blank"
-  end
-
-  test "validates presence of milestone_content" do
-    translation = build(:level_translation, milestone_content: nil)
-
-    refute translation.valid?
-    assert_includes translation.errors[:milestone_content], "can't be blank"
+    assert_includes translation.errors[:milestone_email_content_markdown], "can't be blank"
   end
 
   test "validates uniqueness of locale scoped to level_id" do

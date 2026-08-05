@@ -2,43 +2,31 @@ require "test_helper"
 
 class SerializeAdminLessonTest < ActiveSupport::TestCase
   test "serializes lesson with all attributes" do
-    lesson = create(:lesson, :exercise,
-      slug: "hello-world",
-      title: "Hello World",
-      description: "Your first lesson",
-      position: 1,
-      data: { slug: "hello-world", key: "value" })
+    lesson = create(:lesson, :video, slug: "hello-world", position: 1,
+      data: { sources: [{ id: "abc123" }] })
 
     expected = {
       id: lesson.id,
       slug: "hello-world",
-      title: "Hello World",
-      description: "Your first lesson",
-      type: "exercise",
+      type: "video",
       position: 1,
-      data: { slug: "hello-world", key: "value" },
+      data: { sources: [{ id: "abc123" }] },
       walkthrough_video_data: nil
     }
 
     assert_equal expected, SerializeAdminLesson.(lesson)
   end
 
-  test "includes all required fields" do
-    lesson = create(:lesson, :exercise)
+  # Lesson copy is authored in the front-end curriculum repo.
+  test "does not include title or description" do
+    result = SerializeAdminLesson.(create(:lesson, :exercise))
 
-    result = SerializeAdminLesson.(lesson)
-
-    assert result.key?(:id)
-    assert result.key?(:slug)
-    assert result.key?(:title)
-    assert result.key?(:description)
-    assert result.key?(:type)
-    assert result.key?(:position)
-    assert result.key?(:data)
+    refute result.key?(:title)
+    refute result.key?(:description)
   end
 
-  test "serializes data with string keys" do
-    lesson = create(:lesson, :exercise, slug: "test", data: { slug: "test", foo: "bar" })
+  test "serializes data with symbol keys" do
+    lesson = create(:lesson, :video, data: { sources: [{ id: "abc" }], foo: "bar" })
 
     result = SerializeAdminLesson.(lesson)
 

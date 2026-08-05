@@ -3,10 +3,7 @@ require "test_helper"
 class Curriculum::AppendLessonTest < ActiveSupport::TestCase
   ATTRS = {
     slug: "brand-new-exercise",
-    title: "Brand New Exercise",
-    description: "A freshly added exercise.",
-    type: "exercise",
-    data: { slug: "brand-new-exercise" }
+    type: "exercise"
   }.freeze
 
   test "appends the lesson at the end of the level" do

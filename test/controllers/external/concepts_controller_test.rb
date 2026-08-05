@@ -3,8 +3,8 @@ require "test_helper"
 class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
   test "GET index returns all concepts without authentication" do
     Prosopite.finish
-    create(:concept, title: "Arrays")
-    create(:concept, title: "Strings")
+    create(:concept)
+    create(:concept)
 
     get external_concepts_path, as: :json
 
@@ -16,8 +16,8 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
 
   test "GET index does not filter by user unlock status" do
     Prosopite.finish
-    concept_1 = create(:concept, title: "Arrays")
-    create(:concept, title: "Strings")
+    concept_1 = create(:concept)
+    create(:concept)
 
     # Even if we had a user with unlocked concepts, external endpoint shows all
     user = create(:user)
@@ -34,7 +34,7 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET show returns any concept without authentication" do
-    concept = create(:concept, title: "Arrays", description: "Learn about arrays")
+    concept = create(:concept)
 
     get external_concept_path(concept.slug), as: :json
 
@@ -49,13 +49,13 @@ class External::ConceptsControllerTest < ActionDispatch::IntegrationTest
     assert_json_error(:not_found, error_type: :concept_not_found)
   end
 
-  test "GET index filters by title parameter" do
+  test "GET index filters by query parameter" do
     Prosopite.finish
-    create(:concept, title: "String Basics")
-    create(:concept, title: "Arrays")
-    create(:concept, title: "String Advanced")
+    create(:concept, slug: "string-basics")
+    create(:concept, slug: "arrays")
+    create(:concept, slug: "string-advanced")
 
-    get external_concepts_path(title: "String"), as: :json
+    get external_concepts_path(query: "string"), as: :json
 
     assert_response :success
 
