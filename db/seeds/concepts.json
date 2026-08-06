@@ -305,6 +305,6 @@
     "slug": "type-conversion",
     "title": "Type Conversion",
     "description": "Convert values between types, like turning a string of digits into a number with Number().",
-    "unlocked_by_lesson_slug": "for-while-loops"
+    "unlocked_by_lesson_slug": "isbn-verifier"
   }
 ]
