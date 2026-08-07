@@ -27,19 +27,19 @@ class Internal::Challenges::ExerciseSubmissionsController < Internal::BaseContro
   end
 
   def render_duplicate_filename_error(exception)
-    render_422(:duplicate_filename, message: exception.message)
+    render_422(:duplicate_filename, filenames: exception.filenames)
   end
 
   def render_file_too_large_error(exception)
-    render_422(:file_too_large, message: exception.message)
+    render_422(:file_too_large, filename: exception.filename, max_bytes: exception.max_bytes)
   end
 
   def render_too_many_files_error(exception)
-    render_422(:too_many_files, message: exception.message)
+    render_422(:too_many_files, count: exception.count, max: exception.max)
   end
 
   def render_invalid_submission_error(exception)
-    render_422(:invalid_submission, message: exception.message)
+    render_422(:invalid_submission, reason: exception.reason)
   end
 
   def render_challenge_locked_error(_exception)

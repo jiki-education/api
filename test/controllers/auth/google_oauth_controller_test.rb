@@ -154,7 +154,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal 'invalid_token', json['error']['type']
-    assert_match(/Invalid Google token/, json['error']['message'])
   end
 
   test "POST google with expired code returns unauthorized" do
@@ -170,7 +169,6 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal 'invalid_token', json['error']['type']
-    assert_match(/Token expired/, json['error']['message'])
   end
 
   test "POST google generates unique handle when email prefix is taken" do

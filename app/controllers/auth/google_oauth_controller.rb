@@ -12,18 +12,14 @@ module Auth
       end
 
       sign_in_with_2fa_guard!(user, sign_in_type: user.previously_new_record? ? :signup : :login)
-    rescue InvalidGoogleTokenError, InvalidOauthPayloadError => e
+    rescue InvalidGoogleTokenError, InvalidOauthPayloadError
       render json: {
-        error: {
-          type: :invalid_token,
-          message: e.message
-        }
+        error: { type: :invalid_token }
       }, status: :unauthorized
     rescue ActiveRecord::RecordInvalid => e
       render json: {
         error: {
           type: :validation_error,
-          message: "Could not create user account",
           errors: e.record.errors.messages
         }
       }, status: :unprocessable_entity

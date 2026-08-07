@@ -53,7 +53,7 @@ class Internal::UserVideosControllerTest < ApplicationControllerTest
 
     assert_response :not_found
     assert_json_response({
-      error: { type: "user_video_not_found", message: "User video not found" }
+      error: { type: "user_video_not_found" }
     })
   end
 

@@ -98,7 +98,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/Validation failed/, json["error"]["message"])
   end
 
   test "POST create returns 422 for duplicate slug" do
@@ -162,7 +161,7 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
 
     assert_response :not_found
     json = response.parsed_body
-    assert_equal "Course not found", json["error"]["message"]
+    assert_equal "course_not_found", json["error"]["type"]
   end
 
   # INDEX tests
@@ -326,7 +325,6 @@ class Admin::LevelsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/Validation failed/, json["error"]["message"])
   end
 
   test "PATCH update returns 404 for non-existent level" do
