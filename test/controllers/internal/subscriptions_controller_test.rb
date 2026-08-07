@@ -146,7 +146,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "invalid_interval", json["error"]["type"]
-    assert_equal "Invalid interval. Must be 'monthly' or 'annual'", json["error"]["message"]
   end
 
   test "POST checkout_session rejects missing return_url" do
@@ -157,7 +156,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "invalid_return_url", json["error"]["type"]
-    assert_match(/must be from/, json["error"]["message"])
   end
 
   test "POST checkout_session handles Stripe errors gracefully" do
@@ -197,7 +195,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "invalid_return_url", json["error"]["type"]
-    assert_match(/must be from/, json["error"]["message"])
   end
 
   test "POST checkout_session rejects subdomain bypass attempt" do
@@ -326,7 +323,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "missing_session_id", json["error"]["type"]
-    assert_equal "session_id is required", json["error"]["message"]
   end
 
   test "POST verify_checkout returns forbidden when session does not belong to user" do
@@ -425,7 +421,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "no_customer", json["error"]["type"]
-    assert_equal "No Stripe customer found", json["error"]["message"]
   end
 
   test "POST portal_session handles Stripe errors gracefully" do
@@ -538,7 +533,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "invalid_interval", json["error"]["type"]
-    assert_equal "Invalid interval. Must be 'monthly' or 'annual'", json["error"]["message"]
   end
 
   test "POST update rejects same interval" do
@@ -555,7 +549,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "same_interval", json["error"]["type"]
-    assert_equal "You are already on monthly billing", json["error"]["message"]
   end
 
   test "POST update rejects when user cannot change plan" do
@@ -687,7 +680,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "no_subscription", json["error"]["type"]
-    assert_equal "You don't have an active subscription", json["error"]["message"]
   end
 
   test "DELETE cancel returns success when subscription already canceled" do
@@ -781,7 +773,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "no_subscription", json["error"]["type"]
-    assert_equal "You don't have an active subscription", json["error"]["message"]
   end
 
   test "POST reactivate rejects when subscription is not cancelling" do
@@ -796,7 +787,6 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :bad_request
     json = response.parsed_body
     assert_equal "not_cancelling", json["error"]["type"]
-    assert_equal "Subscription is not scheduled for cancellation", json["error"]["message"]
   end
 
   test "POST reactivate handles command ArgumentError" do
@@ -813,7 +803,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "invalid_request", json["error"]["type"]
-    assert_equal "Custom error", json["error"]["message"]
+    refute json["error"].key?("message")
   end
 
   test "POST reactivate handles Stripe errors gracefully" do

@@ -21,25 +21,10 @@ class Auth::AccountDeletionsController < ApplicationController
 
     render json: {}, status: :ok
   rescue AccountDeletion::ValidateDeletionToken::InvalidTokenError
-    render json: {
-      error: {
-        type: "invalid_token",
-        message: "Invalid or expired deletion token"
-      }
-    }, status: :unprocessable_entity
+    render json: { error: { type: "invalid_token" } }, status: :unprocessable_entity
   rescue AccountDeletion::ValidateDeletionToken::TokenExpiredError
-    render json: {
-      error: {
-        type: "token_expired",
-        message: "Deletion token has expired"
-      }
-    }, status: :unprocessable_entity
+    render json: { error: { type: "token_expired" } }, status: :unprocessable_entity
   rescue StripeSubscriptionCancellationError
-    render json: {
-      error: {
-        type: "stripe_error",
-        message: "Could not cancel your subscription. Please try again or contact support."
-      }
-    }, status: :service_unavailable
+    render json: { error: { type: "stripe_error" } }, status: :service_unavailable
   end
 end

@@ -47,8 +47,7 @@ class Admin::BaseControllerTest < ApplicationControllerTest
     assert_response :forbidden
     assert_json_response({
       error: {
-        type: "forbidden",
-        message: "Admin access required"
+        type: "forbidden"
       }
     })
   end

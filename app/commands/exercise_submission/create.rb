@@ -31,19 +31,21 @@ class ExerciseSubmission::Create
   end
 
   private
+  MAX_FILES = 20
+
   def validate_files_present!
-    raise InvalidSubmissionError, "Submission must include at least one file" if files.empty?
+    raise InvalidSubmissionError, :no_files if files.empty?
   end
 
   def validate_file_count!
-    raise TooManyFilesError, "Too many files (maximum 20)" if files.length > 20
+    raise TooManyFilesError.new(files.length, MAX_FILES) if files.length > MAX_FILES
   end
 
   def validate_unique_filenames!
     filenames = files.map { |f| f[:filename] }
     duplicates = filenames.select { |fn| filenames.count(fn) > 1 }.uniq
 
-    raise DuplicateFilenameError, "Duplicate filenames: #{duplicates.join(', ')}" if duplicates.any?
+    raise DuplicateFilenameError, duplicates if duplicates.any?
   end
 
   memoize

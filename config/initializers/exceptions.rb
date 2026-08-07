@@ -1,8 +1,43 @@
 class InvalidJsonError < RuntimeError; end
-class DuplicateFilenameError < RuntimeError; end
-class FileTooLargeError < RuntimeError; end
-class TooManyFilesError < RuntimeError; end
-class InvalidSubmissionError < RuntimeError; end
+
+class DuplicateFilenameError < RuntimeError
+  attr_reader :filenames
+
+  def initialize(filenames)
+    @filenames = filenames
+    super("Duplicate filenames: #{filenames.join(', ')}")
+  end
+end
+
+class FileTooLargeError < RuntimeError
+  attr_reader :filename, :max_bytes
+
+  def initialize(filename, max_bytes)
+    @filename = filename
+    @max_bytes = max_bytes
+    super("File '#{filename}' is too large (maximum #{max_bytes} bytes)")
+  end
+end
+
+class TooManyFilesError < RuntimeError
+  attr_reader :count, :max
+
+  def initialize(count, max)
+    @count = count
+    @max = max
+    super("Too many files (maximum #{max})")
+  end
+end
+
+class InvalidSubmissionError < RuntimeError
+  attr_reader :reason
+
+  def initialize(reason)
+    @reason = reason
+    super(reason.to_s.tr("_", " "))
+  end
+end
+
 class InvalidHMACSignatureError < RuntimeError; end
 class InvalidSNSSignatureError < RuntimeError; end
 class InvalidPolymorphicRecordType < RuntimeError; end

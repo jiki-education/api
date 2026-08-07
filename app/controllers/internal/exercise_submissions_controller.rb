@@ -45,54 +45,23 @@ class Internal::ExerciseSubmissionsController < Internal::BaseController
   end
 
   def render_duplicate_filename_error(exception)
-    render_422(:duplicate_filename, message: exception.message)
+    render_422(:duplicate_filename, filenames: exception.filenames)
   end
 
   def render_file_too_large_error(exception)
-    render_422(:file_too_large, message: exception.message)
+    render_422(:file_too_large, filename: exception.filename, max_bytes: exception.max_bytes)
   end
 
   def render_too_many_files_error(exception)
-    render_422(:too_many_files, message: exception.message)
+    render_422(:too_many_files, count: exception.count, max: exception.max)
   end
 
   def render_invalid_submission_error(exception)
-    render_422(:invalid_submission, message: exception.message)
+    render_422(:invalid_submission, reason: exception.reason)
   end
 
-  def render_level_not_found_error(exception)
-    render json: {
-      error: {
-        type: "level_not_found",
-        message: exception.message
-      }
-    }, status: :forbidden
-  end
-
-  def render_lesson_in_progress_error(exception)
-    render json: {
-      error: {
-        type: "lesson_in_progress",
-        message: exception.message
-      }
-    }, status: :forbidden
-  end
-
-  def render_lesson_not_unlocked_error(exception)
-    render json: {
-      error: {
-        type: "lesson_not_unlocked",
-        message: exception.message
-      }
-    }, status: :forbidden
-  end
-
-  def render_level_not_completed_error(exception)
-    render json: {
-      error: {
-        type: "level_not_completed",
-        message: exception.message
-      }
-    }, status: :forbidden
-  end
+  def render_level_not_found_error(_exception) = render_error(:forbidden, "level_not_found", {}, report: false)
+  def render_lesson_in_progress_error(_exception) = render_error(:forbidden, "lesson_in_progress", {}, report: false)
+  def render_lesson_not_unlocked_error(_exception) = render_error(:forbidden, "lesson_not_unlocked", {}, report: false)
+  def render_level_not_completed_error(_exception) = render_error(:forbidden, "level_not_completed", {}, report: false)
 end

@@ -87,7 +87,7 @@ class Auth::DiscourseControllerTest < ApplicationControllerTest
     get auth_discourse_sso_path, params: { sso: "not-valid-base64!!!", sig: "bogus" }
 
     assert_response :bad_request
-    assert_json_response({ error: { type: "invalid_signature", message: I18n.t("api_errors.invalid_signature") } })
+    assert_json_response({ error: { type: "invalid_signature" } })
   end
 
   test "GET sso preserves original SSO params in return_to URL for unauthenticated users" do
