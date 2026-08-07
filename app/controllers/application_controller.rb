@@ -150,7 +150,7 @@ class ApplicationController < ActionController::API
 
   def render_error(status_code, error_type, extra = {}, report: true)
     render json: {
-      error: { type: error_type.to_s, message: I18n.t("api_errors.#{error_type}") }.merge(extra)
+      error: { type: error_type.to_s }.merge(extra)
     }, status: status_code
 
     report_error_to_sentry(error_type) if report && SENTRY_REPORTED_ERROR_STATUSES.include?(status_code)
@@ -173,8 +173,8 @@ class ApplicationController < ActionController::API
     )
   end
 
-  def render_success(message_type, status: :ok, **interpolations)
-    render json: { message: I18n.t("api_messages.#{message_type}", **interpolations) }, status: status
+  def render_success(message_type, status: :ok, **extra)
+    render json: { type: message_type.to_s }.merge(extra), status: status
   end
 
   def signup_attribution_params

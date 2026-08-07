@@ -94,7 +94,7 @@ class ExerciseSubmission::File::CreateTest < ActiveSupport::TestCase
       ExerciseSubmission::File::Create.(submission, "", "code")
     end
 
-    assert_equal "filename is required", error.message
+    assert_equal :filename_required, error.reason
   end
 
   test "raises InvalidSubmissionError for nil filename" do
@@ -104,7 +104,7 @@ class ExerciseSubmission::File::CreateTest < ActiveSupport::TestCase
       ExerciseSubmission::File::Create.(submission, nil, "code")
     end
 
-    assert_equal "filename is required", error.message
+    assert_equal :filename_required, error.reason
   end
 
   test "raises InvalidSubmissionError for nil content" do
@@ -114,7 +114,7 @@ class ExerciseSubmission::File::CreateTest < ActiveSupport::TestCase
       ExerciseSubmission::File::Create.(submission, "test.rb", nil)
     end
 
-    assert_equal "code is required", error.message
+    assert_equal :code_required, error.reason
   end
 
   test "allows empty string content" do

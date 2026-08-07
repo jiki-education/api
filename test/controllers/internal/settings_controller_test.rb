@@ -213,12 +213,12 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   test "PATCH streaks returns 422 when enabled is missing" do
     patch streaks_internal_settings_path, params: {}, as: :json
 
-    assert_json_error(:unprocessable_entity, error_type: :streaks_update_failed, errors: { enabled: [I18n.t("validations.boolean_required")] })
+    assert_json_error(:unprocessable_entity, error_type: :streaks_update_failed, errors: { enabled: ["boolean_required"] })
   end
 
   test "PATCH streaks returns 422 when enabled is null" do
     patch streaks_internal_settings_path, params: { enabled: nil }, as: :json
 
-    assert_json_error(:unprocessable_entity, error_type: :streaks_update_failed, errors: { enabled: [I18n.t("validations.boolean_required")] })
+    assert_json_error(:unprocessable_entity, error_type: :streaks_update_failed, errors: { enabled: ["boolean_required"] })
   end
 end
