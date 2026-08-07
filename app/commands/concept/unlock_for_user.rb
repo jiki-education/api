@@ -17,8 +17,6 @@ class Concept::UnlockForUser
 
   private
   def add_event!
-    Current.add_event(:concept_unlocked, {
-      concept: SerializeConcept.(concept)
-    })
+    Current.add_event(:concept_unlocked, { concept_slug: concept.slug })
   end
 end

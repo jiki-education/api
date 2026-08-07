@@ -11,17 +11,6 @@ class Level::SearchTest < ActiveSupport::TestCase
     assert_equal [level_1, level_2], result.to_a
   end
 
-  test "title: search for partial title match" do
-    level_1 = create :level, title: "Introduction to Ruby"
-    level_2 = create :level, title: "Advanced Ruby"
-    level_3 = create :level, title: "Introduction to Python"
-
-    assert_equal [level_1, level_2, level_3].sort_by(&:id), Level::Search.(title: "").to_a.sort_by(&:id)
-    assert_equal [level_1, level_3].sort_by(&:id), Level::Search.(title: "Introduction").to_a.sort_by(&:id)
-    assert_equal [level_1, level_2].sort_by(&:id), Level::Search.(title: "Ruby").to_a.sort_by(&:id)
-    assert_empty Level::Search.(title: "xyz").to_a
-  end
-
   test "slug: search for partial slug match" do
     level_1 = create :level, slug: "ruby-basics"
     level_2 = create :level, slug: "ruby-advanced"
@@ -55,12 +44,13 @@ class Level::SearchTest < ActiveSupport::TestCase
     assert_equal 2, result.size
   end
 
-  test "combines multiple filters" do
-    level_1 = create :level, title: "Ruby Basics", slug: "ruby-basics"
-    create :level, title: "Ruby Advanced", slug: "ruby-advanced"
-    create :level, title: "Python Basics", slug: "python-basics"
+  test "combines course and slug filters" do
+    course = create :course
+    level_1 = create :level, course:, slug: "ruby-basics"
+    create :level, course:, slug: "ruby-advanced"
+    create :level, slug: "python-basics"
 
-    result = Level::Search.(title: "Ruby", slug: "basics")
+    result = Level::Search.(course:, slug: "basics")
 
     assert_equal [level_1], result.to_a
   end

@@ -9,15 +9,16 @@ class Level < ApplicationRecord
   has_many :users, through: :user_levels
   has_many :translations, class_name: 'Level::Translation', dependent: :destroy
 
-  self.translatable_fields = %i[title description milestone_summary milestone_content milestone_email_subject
-                                milestone_email_content_markdown]
+  # Email copy only - everything a screen renders is authored in the front-end
+  # curriculum repo.
+  self.translatable_fields = %i[milestone_email_subject milestone_email_content_markdown]
+
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description milestone_summary milestone_content]
 
   validates :uuid, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
-  validates :title, presence: true
-  validates :description, presence: true
-  validates :milestone_summary, presence: true
-  validates :milestone_content, presence: true
   validates :position, presence: true, uniqueness: { scope: :course_id }
 
   before_validation :generate_uuid, on: :create

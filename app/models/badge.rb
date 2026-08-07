@@ -1,4 +1,7 @@
 class Badge < ApplicationRecord
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[name description fun_fact]
   include Translatable
 
   has_many :acquired_badges, class_name: "User::AcquiredBadge", dependent: :destroy
@@ -6,23 +9,20 @@ class Badge < ApplicationRecord
 
   scope :secret, -> { where(secret: true) }
 
-  self.translatable_fields = %i[name description fun_fact email_subject email_content_markdown]
+  # Email copy only - names, descriptions and fun facts are authored in the
+  # front-end curriculum repo (curriculum/src/badges/locales/).
+  self.translatable_fields = %i[email_subject email_content_markdown]
 
-  # Class method to store badge metadata
-  def self.seed(name, description, fun_fact: nil, secret: false)
-    @seed_data = {
-      name:,
-      description:,
-      fun_fact:,
-      secret:
-    }
+  # Class method to store badge metadata. Copy lives in the front-end
+  # curriculum repo, so all a badge declares here is whether it is secret.
+  def self.seed(secret: false)
+    @seed_data = { secret: }
   end
 
-  # Badge attributes defined by the subclass's `seed` call.
-  # Used by before_create and by db/seeds.rb to keep records in sync.
-  class << self
-    attr_reader :seed_data
-  end
+  # Badge attributes defined by the subclass's `seed` call. Subclasses that
+  # don't call `seed` are non-secret. Never nil, so db/seeds.rb always persists
+  # and re-syncs every badge.
+  def self.seed_data = @seed_data || { secret: false }
 
   # Find badge by slug and create on-demand
   def self.find_by_slug!(slug)
@@ -42,13 +42,7 @@ class Badge < ApplicationRecord
 
   # Set attributes from seed data before creation
   before_create do
-    seed_data = self.class.instance_variable_get("@seed_data")
-    next unless seed_data
-
-    self.name = seed_data[:name]
-    self.description = seed_data[:description]
-    self.fun_fact = seed_data[:fun_fact]
-    self.secret = seed_data[:secret]
+    self.secret = self.class.seed_data[:secret]
   end
 
   # Abstract method - must be implemented by subclasses

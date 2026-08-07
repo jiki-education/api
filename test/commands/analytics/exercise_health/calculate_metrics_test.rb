@@ -6,7 +6,7 @@ class Analytics::ExerciseHealth::CalculateMetricsTest < ActiveSupport::TestCase
 
     level = create(:level)
     video = create(:lesson, :video, level:)
-    exercise = create(:lesson, :exercise, level:, title: "Fix the Wall")
+    exercise = create(:lesson, :exercise, level:)
 
     # Completed: 3 attempts over 30 minutes, rated.
     completer = create(:user)
@@ -46,7 +46,6 @@ class Analytics::ExerciseHealth::CalculateMetricsTest < ActiveSupport::TestCase
 
     assert_equal exercise.id, m[:lesson_id]
     assert_equal exercise.slug, m[:slug]
-    assert_equal "Fix the Wall", m[:title]
 
     assert_equal 4, m[:num_starts]
     assert_equal 1, m[:num_in_progress]

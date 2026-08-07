@@ -7,7 +7,6 @@ class SerializeAdminExerciseHealthInsightsTest < ActiveSupport::TestCase
       severity: :high,
       lesson_id: 5,
       slug: "fix-wall",
-      title: "Fix the Wall",
       message: "Learners give up here.",
       value: 13.2
     }]
@@ -17,7 +16,6 @@ class SerializeAdminExerciseHealthInsightsTest < ActiveSupport::TestCase
       severity: :high,
       lesson_id: 5,
       slug: "fix-wall",
-      title: "Fix the Wall",
       message: "Learners give up here.",
       value: 13.2
     }]

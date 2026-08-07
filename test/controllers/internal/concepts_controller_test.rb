@@ -13,9 +13,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
   # GET /v1/concepts (index) tests
   test "GET index returns all concepts ordered by unlocked first" do
     Prosopite.finish
-    concept_arrays = create(:concept, title: "Arrays")
-    concept_strings = create(:concept, title: "Strings")
-    concept_hashes = create(:concept, title: "Hashes")
+    concept_arrays = create(:concept)
+    concept_strings = create(:concept)
+    concept_hashes = create(:concept)
 
     Concept::UnlockForUser.(concept_arrays, @current_user)
     Concept::UnlockForUser.(concept_hashes, @current_user)
@@ -36,19 +36,19 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index filters by title parameter" do
+  test "GET index filters by query parameter" do
     Prosopite.finish
-    concept_basics = create(:concept, title: "String Basics")
-    create(:concept, title: "Arrays")
-    concept_advanced = create(:concept, title: "String Advanced")
+    concept_basics = create(:concept, slug: "string-basics")
+    create(:concept, slug: "arrays")
+    concept_advanced = create(:concept, slug: "string-advanced")
 
     Concept::UnlockForUser.(concept_basics, @current_user)
     Concept::UnlockForUser.(concept_advanced, @current_user)
 
-    get internal_concepts_path(title: "String"), as: :json
+    get internal_concepts_path(query: "string"), as: :json
 
     assert_response :success
-    # All unlocked, ordered alphabetically by title
+    # All unlocked, ordered alphabetically by slug
     assert_json_response({
       results: SerializeConcepts.([concept_advanced, concept_basics], for_user: @current_user),
       meta: {
@@ -63,8 +63,8 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index title filter returns all matching with unlocked-first ordering" do
     Prosopite.finish
-    concept_basics = create(:concept, title: "String Basics")
-    concept_advanced = create(:concept, title: "String Advanced")
+    concept_basics = create(:concept)
+    concept_advanced = create(:concept)
 
     Concept::UnlockForUser.(concept_basics, @current_user)
     # concept_advanced is locked
@@ -87,9 +87,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index filters by slugs parameter" do
     Prosopite.finish
-    concept_arrays = create(:concept, title: "Arrays", slug: "arrays")
-    concept_hashes = create(:concept, title: "Hashes", slug: "hashes")
-    create(:concept, title: "Strings", slug: "strings")
+    concept_arrays = create(:concept, slug: "arrays")
+    concept_hashes = create(:concept, slug: "hashes")
+    create(:concept, slug: "strings")
 
     Concept::UnlockForUser.(concept_arrays, @current_user)
     Concept::UnlockForUser.(concept_hashes, @current_user)
@@ -111,8 +111,8 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index slugs filter returns all matching with unlocked-first ordering" do
     Prosopite.finish
-    concept_arrays = create(:concept, title: "Arrays", slug: "arrays")
-    concept_hashes = create(:concept, title: "Hashes", slug: "hashes")
+    concept_arrays = create(:concept, slug: "arrays")
+    concept_hashes = create(:concept, slug: "hashes")
 
     Concept::UnlockForUser.(concept_arrays, @current_user)
     # concept_hashes is locked
@@ -135,9 +135,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
-    concept_a = create(:concept, title: "Concept A")
-    concept_b = create(:concept, title: "Concept B")
-    concept_c = create(:concept, title: "Concept C")
+    concept_a = create(:concept)
+    concept_b = create(:concept)
+    concept_c = create(:concept)
 
     Concept::UnlockForUser.(concept_a, @current_user)
     Concept::UnlockForUser.(concept_b, @current_user)
@@ -161,7 +161,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with per parameter" do
     Prosopite.finish
-    concepts = Array.new(5) { |i| create(:concept, title: "Concept #{i}").tap { |c| Concept::UnlockForUser.(c, @current_user) } }
+    concepts = Array.new(5) { |_i| create(:concept).tap { |c| Concept::UnlockForUser.(c, @current_user) } }
 
     get internal_concepts_path(per: 3), as: :json
 
@@ -181,8 +181,8 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index returns all concepts when user has no unlocked concepts" do
     Prosopite.finish
-    concept_arrays = create(:concept, title: "Arrays")
-    concept_strings = create(:concept, title: "Strings")
+    concept_arrays = create(:concept)
+    concept_strings = create(:concept)
 
     get internal_concepts_path, as: :json
 
@@ -202,7 +202,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   # GET /v1/concepts/:slug (show) tests
   test "GET show returns unlocked concept with full details" do
-    concept = create(:concept, title: "Arrays")
+    concept = create(:concept)
     Concept::UnlockForUser.(concept, @current_user)
 
     get internal_concept_path(concept_slug: concept.slug, as: :json), as: :json
@@ -214,7 +214,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
   end
 
   test "GET show returns 403 for locked concept" do
-    concept = create(:concept, title: "Arrays")
+    concept = create(:concept)
     # Not unlocked for user
 
     get internal_concept_path(concept_slug: concept.slug, as: :json), as: :json
@@ -257,9 +257,9 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
 
   # GET /internal/concepts/unlocked tests
   test "GET unlocked returns slugs of unlocked concepts" do
-    concept_arrays = create(:concept, title: "Arrays", slug: "arrays")
-    concept_strings = create(:concept, title: "Strings", slug: "strings")
-    create(:concept, title: "Hashes", slug: "hashes")
+    concept_arrays = create(:concept, slug: "arrays")
+    concept_strings = create(:concept, slug: "strings")
+    create(:concept, slug: "hashes")
 
     Concept::UnlockForUser.(concept_arrays, @current_user)
     Concept::UnlockForUser.(concept_strings, @current_user)
@@ -272,7 +272,7 @@ class Internal::ConceptsControllerTest < ApplicationControllerTest
   end
 
   test "GET unlocked returns empty array when no concepts unlocked" do
-    create(:concept, title: "Arrays", slug: "arrays")
+    create(:concept, slug: "arrays")
 
     get unlocked_internal_concepts_path, as: :json
 

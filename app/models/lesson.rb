@@ -1,5 +1,4 @@
 class Lesson < ApplicationRecord
-  include Translatable
   include HasVideoData
 
   disable_sti!
@@ -9,22 +8,19 @@ class Lesson < ApplicationRecord
   has_many :users, through: :user_lessons
   has_many :unlocked_concepts, class_name: 'Concept', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
   has_one :unlocked_challenge, class_name: 'Challenge', foreign_key: :unlocked_by_lesson_id, inverse_of: :unlocked_by_lesson
-  has_many :translations, class_name: 'Lesson::Translation', dependent: :destroy
-
-  self.translatable_fields = %i[title description]
-
   has_video_data :walkthrough_video_data
 
   serialize :data, coder: JSONWithIndifferentAccess
 
   def data = super || {}
 
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description]
+
   validates :uuid, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
-  validates :title, presence: true
-  validates :description, presence: true
   validates :type, presence: true
-  validates :data, presence: true
   validates :position, presence: true, uniqueness: { scope: :level_id }
   validate :validate_data!
 
@@ -46,18 +42,13 @@ class Lesson < ApplicationRecord
     self.position = (level.lessons.maximum(:position) || 0) + 1 if level
   end
 
+  # Exercise lessons carry no data - the lesson slug alone identifies the
+  # front-end curriculum exercise at curriculum/src/exercises/<slug>/.
   def validate_data!
     case type
-    when 'exercise' then validate_exercise_data!
     when 'video' then validate_video_data!
     when 'choose_language' then validate_choose_language_data!
     end
-  end
-
-  def validate_exercise_data!
-    return if data[:slug].present?
-
-    errors.add(:data, 'must contain slug for exercise lessons')
   end
 
   def validate_video_data!

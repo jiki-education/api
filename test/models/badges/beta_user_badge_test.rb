@@ -4,8 +4,7 @@ class Badges::BetaUserBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('beta_user') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Beta User', badge.name
-    assert_equal 'Joined Jiki during the beta', badge.description
+    assert_equal 'beta_user', badge.slug
     assert badge.secret
   end
 

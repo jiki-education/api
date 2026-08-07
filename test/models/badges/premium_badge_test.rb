@@ -4,8 +4,7 @@ class Badges::PremiumBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('premium') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Premium', badge.name
-    assert_equal 'Became a Premium member', badge.description
+    assert_equal 'premium', badge.slug
     refute badge.secret
   end
 

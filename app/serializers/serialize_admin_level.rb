@@ -7,11 +7,7 @@ class SerializeAdminLevel
     {
       id: level.id,
       slug: level.slug,
-      title: level.title,
-      description: level.description,
-      position: level.position,
-      milestone_summary: level.milestone_summary,
-      milestone_content: level.milestone_content
+      position: level.position
     }
   end
 end

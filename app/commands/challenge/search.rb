@@ -8,8 +8,8 @@ class Challenge::Search
     DEFAULT_PER
   end
 
-  def initialize(title: nil, page: nil, per: nil, user: nil)
-    @title = title
+  def initialize(query: nil, page: nil, per: nil, user: nil)
+    @query = query
     @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
     @per = per.present? && per.to_i.positive? ? per.to_i : self.class.default_per
     @user = user
@@ -17,25 +17,25 @@ class Challenge::Search
 
   def call
     @challenges = Challenge.all
-    apply_title_filter!
+    apply_query_filter!
     apply_ordering!
     @challenges.page(page).per(per)
   end
 
   private
-  attr_reader :title, :page, :per, :user
+  attr_reader :query, :page, :per, :user
 
-  def apply_title_filter!
-    return if title.blank?
+  def apply_query_filter!
+    return if query.blank?
 
     @challenges = @challenges.where(
-      "title ILIKE ?",
-      "%#{ActiveRecord::Base.sanitize_sql_like(title)}%"
+      "slug ILIKE ?",
+      "%#{ActiveRecord::Base.sanitize_sql_like(query)}%"
     )
   end
 
   def apply_ordering!
-    return @challenges = @challenges.order(:title) unless user
+    return @challenges = @challenges.order(:slug) unless user
 
     # Scope the join to the current user so other users' user_challenges don't filter challenges out.
     @challenges = @challenges.
@@ -46,7 +46,7 @@ class Challenge::Search
         ]
       )).
       select("challenges.*, CASE WHEN user_challenges.user_id IS NOT NULL THEN 0 ELSE 1 END as lock_order").
-      order("lock_order ASC, challenges.title ASC")
+      order("lock_order ASC, challenges.slug ASC")
   end
 
   def sanitize_sql_array(array)

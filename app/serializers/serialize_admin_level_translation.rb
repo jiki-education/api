@@ -8,10 +8,8 @@ class SerializeAdminLevelTranslation
       id: translation.id,
       level_slug: translation.level.slug,
       locale: translation.locale,
-      title: translation.title,
-      description: translation.description,
-      milestone_summary: translation.milestone_summary,
-      milestone_content: translation.milestone_content
+      milestone_email_subject: translation.milestone_email_subject,
+      milestone_email_content_markdown: translation.milestone_email_content_markdown
     }
   end
 end

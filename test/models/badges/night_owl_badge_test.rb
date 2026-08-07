@@ -4,8 +4,7 @@ class Badges::NightOwlBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('night_owl') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Night Owl', badge.name
-    assert_equal 'Completed a lesson in the late-night hours', badge.description
+    assert_equal 'night_owl', badge.slug
     assert badge.secret
   end
 

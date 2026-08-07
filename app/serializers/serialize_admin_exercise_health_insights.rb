@@ -10,7 +10,6 @@ class SerializeAdminExerciseHealthInsights
         severity: insight[:severity],
         lesson_id: insight[:lesson_id],
         slug: insight[:slug],
-        title: insight[:title],
         message: insight[:message],
         value: insight[:value]
       }

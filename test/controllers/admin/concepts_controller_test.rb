@@ -17,8 +17,8 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index returns all concepts with pagination" do
     Prosopite.finish # Stop scan before creating test data
-    concept1 = create(:concept, title: "Strings", slug: "strings")
-    concept2 = create(:concept, title: "Arrays", slug: "arrays")
+    concept1 = create(:concept, slug: "strings")
+    concept2 = create(:concept, slug: "arrays")
 
     Prosopite.scan # Resume scan for the actual request
     get admin_concepts_path, as: :json
@@ -34,15 +34,13 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index filters by title" do
+  test "GET index filters by query" do
     Prosopite.finish
-    concept1 = create(:concept)
-    concept1.update!(title: "Strings and Text")
-    concept2 = create(:concept)
-    concept2.update!(title: "Arrays")
+    concept1 = create(:concept, slug: "strings-and-text")
+    create(:concept, slug: "arrays")
 
     Prosopite.scan
-    get admin_concepts_path(title: "String"), as: :json
+    get admin_concepts_path(query: "string"), as: :json
 
     assert_response :success
     assert_json_response({
@@ -57,15 +55,17 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination" do
     Prosopite.finish
-    concept1 = create(:concept, title: "Concept 1")
-    concept2 = create(:concept, title: "Concept 2")
-    create(:concept, title: "Concept 3")
+    # Explicit slugs: results are ordered by slug, and the factory's sequence
+    # would put concept-10 before concept-9.
+    concept1 = create(:concept, slug: "alpha")
+    concept2 = create(:concept, slug: "bravo")
+    create(:concept, slug: "charlie")
 
     Prosopite.scan
     get admin_concepts_path(page: 1, per: 2), as: :json
 
     assert_response :success
-    # Ordered alphabetically by title
+    # Ordered alphabetically by slug
     assert_json_response({
       results: SerializeAdminConcepts.([concept1, concept2]),
       meta: {
@@ -124,7 +124,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   test "POST create returns validation error for invalid attributes" do
     concept_params = {
       concept: {
-        title: ""
+        slug: ""
       }
     }
 
@@ -135,13 +135,13 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["title"], "can't be blank"
+    assert_includes json["error"]["errors"]["slug"], "can't be blank"
   end
 
   # SHOW tests
 
   test "GET show returns concept" do
-    concept = create(:concept, title: "Strings")
+    concept = create(:concept)
 
     get admin_concept_path(concept.id), as: :json
 
@@ -160,7 +160,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
   # UPDATE tests
 
   test "PATCH update updates concept with valid attributes" do
-    concept = create(:concept, title: "Original")
+    concept = create(:concept)
     update_params = {
       concept: {
         title: "Updated"
@@ -181,7 +181,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     concept = create(:concept)
     update_params = {
       concept: {
-        title: ""
+        slug: ""
       }
     }
 
@@ -190,7 +190,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["title"], "can't be blank"
+    assert_includes json["error"]["errors"]["slug"], "can't be blank"
   end
 
   test "PATCH update returns 404 for non-existent concept" do

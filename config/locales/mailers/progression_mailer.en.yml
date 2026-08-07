@@ -1,7 +1,6 @@
 en:
   progression_mailer:
     level_completed:
-      preview: "You've completed %{level_title}!"
       greeting: "Hi there,"
       signoff: "Cheers,"
       team: "Jeremy & Team"

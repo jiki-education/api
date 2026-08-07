@@ -3,7 +3,7 @@ class Admin::ChallengesController < Admin::BaseController
 
   def index
     challenges = Challenge::Search.(
-      title: params[:title],
+      query: params[:query],
       page: params[:page],
       per: params[:per]
     )
@@ -52,9 +52,7 @@ class Admin::ChallengesController < Admin::BaseController
 
   def challenge_params
     params.require(:challenge).permit(
-      :title,
       :slug,
-      :description,
       :exercise_slug,
       :unlocked_by_lesson_id
     )

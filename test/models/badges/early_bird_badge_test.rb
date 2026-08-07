@@ -4,8 +4,7 @@ class Badges::EarlyBirdBadgeTest < ActiveSupport::TestCase
   test "has correct seed data" do
     badge = Badge.find_by_slug!('early_bird') # rubocop:disable Rails/DynamicFindBy
 
-    assert_equal 'Early Bird', badge.name
-    assert_equal 'Completed a lesson in the early-morning hours', badge.description
+    assert_equal 'early_bird', badge.slug
     assert badge.secret
   end
 

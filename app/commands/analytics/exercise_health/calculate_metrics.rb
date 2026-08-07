@@ -19,14 +19,14 @@ class Analytics::ExerciseHealth::CalculateMetrics
   MIN_SAMPLE_SIZE = 30
 
   def call
-    exercise_lessons.map { |lesson_id, slug, title, _, _| metrics_for(lesson_id, slug, title) }
+    exercise_lessons.map { |lesson_id, slug, _, _| metrics_for(lesson_id, slug) }
   end
 
   private
   memoize
   def cutoff = INACTIVITY_CUTOFF.ago
 
-  def metrics_for(lesson_id, slug, title)
+  def metrics_for(lesson_id, slug)
     stats = session_stats[lesson_id] || EMPTY_SESSION_STATS
     classifiable = stats["num_completed"] + stats["num_bounced"] + stats["num_abandoned"]
     completer_median = stats["completer_median_attempts"]
@@ -35,7 +35,6 @@ class Analytics::ExerciseHealth::CalculateMetrics
     {
       lesson_id:,
       slug:,
-      title:,
       num_starts: stats["num_starts"],
       num_in_progress: stats["num_in_progress"],
       num_classifiable: classifiable,
@@ -99,11 +98,11 @@ class Analytics::ExerciseHealth::CalculateMetrics
   def ordered_lessons
     Lesson.joins(:level).
       reorder("levels.course_id, levels.position, lessons.position").
-      pluck("lessons.id", :slug, :title, :type, "levels.course_id")
+      pluck("lessons.id", :slug, :type, "levels.course_id")
   end
 
   memoize
-  def exercise_lessons = ordered_lessons.select { |_, _, _, type, _| type == "exercise" }
+  def exercise_lessons = ordered_lessons.select { |_, _, type, _| type == "exercise" }
 
   memoize
   def exercise_lesson_ids = exercise_lessons.map(&:first)

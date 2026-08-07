@@ -6,8 +6,11 @@ class Concept::Search
 
   def self.default_per = DEFAULT_PER
 
-  def initialize(title: nil, slugs: nil, page: nil, per: nil, user: nil)
-    @title = title
+  # Concepts carry no copy here any more, so `query` matches on slug. Callers
+  # wanting to search human-readable titles should filter the front-end
+  # catalogue, which is where those titles live (and are translated).
+  def initialize(query: nil, slugs: nil, page: nil, per: nil, user: nil)
+    @query = query
     @slugs = slugs
     @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
     @per = per.present? && per.to_i.positive? ? per.to_i : self.class.default_per
@@ -15,9 +18,9 @@ class Concept::Search
   end
 
   def call
-    @concepts = Concept.includes(:unlocked_by_lesson).order(:title)
+    @concepts = Concept.includes(:unlocked_by_lesson).order(:slug)
 
-    apply_title_filter!
+    apply_query_filter!
     apply_slugs_filter!
     apply_user_specific_ordering!
 
@@ -25,12 +28,12 @@ class Concept::Search
   end
 
   private
-  attr_reader :title, :slugs, :page, :per, :user
+  attr_reader :query, :slugs, :page, :per, :user
 
-  def apply_title_filter!
-    return if title.blank?
+  def apply_query_filter!
+    return if query.blank?
 
-    @concepts = @concepts.where("title ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(title)}%")
+    @concepts = @concepts.where("slug ILIKE ?", "%#{ActiveRecord::Base.sanitize_sql_like(query)}%")
   end
 
   def apply_slugs_filter!
@@ -50,6 +53,6 @@ class Concept::Search
 
     @concepts = @concepts.
       select(Arel.sql(sanitized)).
-      reorder(Arel.sql("lock_order ASC, concepts.title ASC"))
+      reorder(Arel.sql("lock_order ASC, concepts.slug ASC"))
   end
 end

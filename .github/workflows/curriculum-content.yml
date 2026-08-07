@@ -1,0 +1,46 @@
+name: Curriculum content
+
+# The front-end repo authors all screen-rendered curriculum copy; this repo
+# only stores slugs. Nothing couples them at runtime, so a slug seeded here
+# with no content there fails silently as a blank title. This job is the only
+# thing that catches that, and it runs against front-end@main.
+on:
+  pull_request:
+    paths:
+      - 'db/seeds/**'
+      - 'lib/tasks/curriculum.rake'
+      - '.github/workflows/curriculum-content.yml'
+  push:
+    branches: [ main ]
+  # Front-end content can drift without anything changing here, so also check
+  # on a schedule rather than only on our own commits.
+  schedule:
+    - cron: '0 7 * * 1'
+
+jobs:
+  verify_content:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout API
+        uses: actions/checkout@v7
+
+      - name: Checkout front-end
+        uses: actions/checkout@v7
+        with:
+          repository: jiki-education/front-end
+          ref: main
+          path: tmp/front-end
+          sparse-checkout: curriculum/src
+          sparse-checkout-cone-mode: false
+
+      # The check is plain Ruby against the seed JSON, so it needs no bundle,
+      # no database and none of the app's native dependencies.
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: false
+
+      - name: Verify every seeded slug has front-end content
+        run: ruby lib/curriculum_content_check.rb tmp/front-end

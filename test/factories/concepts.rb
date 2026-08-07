@@ -1,6 +1,7 @@
 FactoryBot.define do
   factory :concept do
-    sequence(:title) { |n| "Concept #{n}" }
-    sequence(:description) { |n| "A brief description of Concept #{n}" }
+    # Zero-padded: concepts are ordered by slug, and an unpadded sequence would
+    # sort concept-10 before concept-9.
+    sequence(:slug) { |n| "concept-#{n.to_s.rjust(4, '0')}" }
   end
 end

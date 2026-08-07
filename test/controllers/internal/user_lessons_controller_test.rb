@@ -209,8 +209,8 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   test "PATCH complete emits events for unlocked concept and challenge" do
     Prosopite.finish
 
-    concept = create(:concept, slug: "variables", title: "Variables")
-    challenge = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    concept = create(:concept, slug: "variables")
+    challenge = create(:challenge, slug: "calculator")
     level = create(:level)
     lesson = create(:lesson, :exercise, level:, unlocked_concepts: [concept], unlocked_challenge: challenge)
     create(:user_level, user: @current_user, level:)
@@ -226,7 +226,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
           {
             type: "concept_unlocked",
             data: {
-              concept: SerializeConcept.(concept)
+              concept_slug: concept.slug
             }
           },
           {

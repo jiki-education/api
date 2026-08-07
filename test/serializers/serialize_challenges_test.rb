@@ -2,29 +2,27 @@ require "test_helper"
 
 class SerializeChallengesTest < ActiveSupport::TestCase
   test "serializes challenges without user (status is nil)" do
-    challenge1 = create :challenge, slug: "calculator", title: "Calculator", description: "Build a calculator"
-    challenge2 = create :challenge, slug: "todo", title: "Todo App", description: "Build a todo app"
+    challenge1 = create :challenge, slug: "calculator"
+    challenge2 = create :challenge, slug: "todo"
 
     result = SerializeChallenges.([challenge1, challenge2])
 
     assert_equal 2, result.length
     assert_equal({
       slug: "calculator",
-      title: "Calculator",
-      description: "Build a calculator",
+      exercise_slug: "calculator",
       status: nil
     }, result[0])
     assert_equal({
       slug: "todo",
-      title: "Todo App",
-      description: "Build a todo app",
+      exercise_slug: "todo",
       status: nil
     }, result[1])
   end
 
   test "locked when the unlocking lesson has not been completed" do
     lesson = create :lesson, :exercise
-    challenge = create :challenge, slug: "calculator", title: "Calculator", description: "Build a calculator",
+    challenge = create :challenge, slug: "calculator",
       unlocked_by_lesson: lesson
     user = create :user
 
@@ -75,11 +73,11 @@ class SerializeChallengesTest < ActiveSupport::TestCase
 
   test "serializes mixed challenge statuses efficiently" do
     locked_lesson = create :lesson, :exercise
-    challenge_locked = create :challenge, slug: "locked", title: "Locked", description: "Locked",
+    challenge_locked = create :challenge, slug: "locked",
       unlocked_by_lesson: locked_lesson
-    challenge_unlocked = create :challenge, slug: "unlocked", title: "Unlocked", description: "Unlocked"
-    challenge_started = create :challenge, slug: "started", title: "Started", description: "Started"
-    challenge_completed = create :challenge, slug: "completed", title: "Completed", description: "Completed"
+    challenge_unlocked = create :challenge, slug: "unlocked"
+    challenge_started = create :challenge, slug: "started"
+    challenge_completed = create :challenge, slug: "completed"
     user = create :user
 
     create :user_challenge, user:, challenge: challenge_started, started_at: 2.days.ago, completed_at: nil

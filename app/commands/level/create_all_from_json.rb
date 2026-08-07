@@ -64,10 +64,6 @@ class Level::CreateAllFromJson
       uuid: level_data["uuid"],
       slug: level_data["slug"],
       position:,
-      title: level_data["title"],
-      description: level_data["description"],
-      milestone_summary: level_data["milestone_summary"],
-      milestone_content: level_data["milestone_content"],
       milestone_email_subject: level_data["milestone_email_subject"].to_s,
       milestone_email_content_markdown: level_data["milestone_email_content_markdown"].to_s
     )
@@ -87,8 +83,6 @@ class Level::CreateAllFromJson
       slug: lesson_data["slug"],
       level:,
       position:,
-      title: lesson_data["title"],
-      description: lesson_data["description"] || "",
       type: lesson_data["type"],
       data: lesson_data["data"] || {},
       walkthrough_video_data: lesson_data["walkthrough_video_data"]
@@ -108,16 +102,11 @@ class Level::CreateAllFromJson
   def validate_level_data!(data)
     raise InvalidJsonError, "Level missing required 'uuid' field" unless data["uuid"].present?
     raise InvalidJsonError, "Level missing required 'slug' field" unless data["slug"].present?
-    raise InvalidJsonError, "Level missing required 'title' field" unless data["title"].present?
-    raise InvalidJsonError, "Level missing required 'description' field" unless data["description"].present?
-    raise InvalidJsonError, "Level missing required 'milestone_summary' field" unless data["milestone_summary"].present?
-    raise InvalidJsonError, "Level missing required 'milestone_content' field" unless data["milestone_content"].present?
   end
 
   def validate_lesson_data!(data)
     raise InvalidJsonError, "Lesson missing required 'uuid' field" unless data["uuid"].present?
     raise InvalidJsonError, "Lesson missing required 'slug' field" unless data["slug"].present?
-    raise InvalidJsonError, "Lesson missing required 'title' field" unless data["title"].present?
     raise InvalidJsonError, "Lesson missing required 'type' field" unless data["type"].present?
   end
 end

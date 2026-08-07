@@ -6,25 +6,19 @@ class Concept < ApplicationRecord
 
   belongs_to :unlocked_by_lesson, class_name: 'Lesson', optional: true
 
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description]
+
   validates :uuid, presence: true, uniqueness: true
-  validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
-  validates :description, presence: true
 
   before_validation :generate_uuid, on: :create
-  before_validation :generate_slug, on: :create
 
   def to_param = slug
 
   private
   def generate_uuid
     self.uuid ||= SecureRandom.uuid
-  end
-
-  def generate_slug
-    return if slug.present?
-    return if title.blank?
-
-    self.slug = title.parameterize
   end
 end

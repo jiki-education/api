@@ -13,23 +13,20 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     # Verify levels were created
     using_functions = Level.find_by(slug: "using-functions")
     assert using_functions
-    assert_equal "Using Functions", using_functions.title
     assert_equal 1, using_functions.position
     assert_equal course, using_functions.course
     assert using_functions.uuid.present?
 
     strings_and_colors = Level.find_by(slug: "strings-and-colors")
     assert strings_and_colors
-    assert_equal "Strings and Colors", strings_and_colors.title
     assert_equal 2, strings_and_colors.position
 
     # Verify lessons were created
     assert_equal 8, using_functions.lessons.count
     first_lesson = using_functions.lessons.find_by(slug: "maze-solve-basic")
     assert first_lesson
-    assert_equal "Solve the Maze", first_lesson.title
     assert_equal "exercise", first_lesson.type
-    assert_equal({ slug: "maze-solve-basic" }, first_lesson.data)
+    assert_empty first_lesson.data
     assert_equal 2, first_lesson.position
     assert first_lesson.uuid.present?
   end
@@ -215,10 +212,10 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     course = create(:course)
 
     error = assert_raises InvalidJsonError do
-      sync!(course, [level_json(uuid: "level-1", slug: "valid").except("title")])
+      sync!(course, [level_json(uuid: "level-1", slug: "valid").except("slug")])
     end
 
-    assert_match(/missing required 'title' field/, error.message)
+    assert_match(/missing required 'slug' field/, error.message)
   end
 
   test "raises error for lesson missing uuid" do
@@ -237,12 +234,12 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
 
   test "wraps everything in transaction - rolls back on error" do
     course = create(:course)
-    create(:level, course:, slug: "existing", title: "Existing")
+    create(:level, course:, slug: "existing")
 
     assert_raises InvalidJsonError do
       sync!(course, [
               level_json(uuid: "level-1", slug: "valid-level"),
-              { "uuid" => "level-2", "slug" => "invalid-level" }
+              { "uuid" => "level-2" }
             ])
     end
 
@@ -252,23 +249,21 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     assert Level.exists?(slug: "existing")
   end
 
-  test "updates title and description on existing records" do
+  test "updates email copy on existing records" do
     course = create(:course)
-    level = create(:level, course:, slug: "fundamentals", title: "Old Title", description: "Old description")
+    level = create(:level, course:, slug: "fundamentals")
 
     sync!(course, [
-            level_json(uuid: "level-1", slug: "fundamentals").merge("title" => "New Title", "description" => "New description")
+            level_json(uuid: "level-1", slug: "fundamentals").merge("milestone_email_subject" => "New Subject")
           ])
 
-    level.reload
-    assert_equal "New Title", level.title
-    assert_equal "New description", level.description
+    assert_equal "New Subject", level.reload.milestone_email_subject
   end
 
   test "preserves existing records not in JSON" do
     course = create(:course)
-    existing_level1 = create(:level, course:, slug: "existing-1", title: "Existing 1")
-    existing_level2 = create(:level, course:, slug: "existing-2", title: "Existing 2")
+    existing_level1 = create(:level, course:, slug: "existing-1")
+    existing_level2 = create(:level, course:, slug: "existing-2")
 
     sync!(course, [level_json(uuid: "level-1", slug: "new-level")])
 
@@ -294,10 +289,8 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     {
       "uuid" => uuid,
       "slug" => slug,
-      "title" => slug.titleize,
-      "description" => "Description for #{slug}",
-      "milestone_summary" => "Summary for #{slug}",
-      "milestone_content" => "# Content for #{slug}",
+      "milestone_email_subject" => "Subject for #{slug}",
+      "milestone_email_content_markdown" => "Body for #{slug}",
       "lessons" => lessons
     }
   end
@@ -306,10 +299,7 @@ class Level::CreateAllFromJsonTest < ActiveSupport::TestCase
     {
       "uuid" => uuid,
       "slug" => slug,
-      "title" => slug.titleize,
-      "description" => "Description for #{slug}",
-      "type" => "exercise",
-      "data" => { "slug" => slug }
+      "type" => "exercise"
     }
   end
 end

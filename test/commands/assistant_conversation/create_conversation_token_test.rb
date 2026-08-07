@@ -4,7 +4,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
   test "creates conversation token for premium user" do
     user = create(:user)
     make_premium(user)
-    lesson = create(:lesson, :exercise, slug: "test-lesson", data: { slug: 'jiki/intro/test' })
+    lesson = create(:lesson, :exercise, slug: "test-lesson")
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
 
@@ -14,7 +14,7 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
     payload = JWT.decode(token, Jiki.secrets.jwt_secret, true, { algorithm: 'HS256' }).first
     assert_equal user.id, payload['sub']
     assert_equal "test-lesson", payload['lesson_slug']
-    assert_equal "jiki/intro/test", payload['exercise_slug']
+    assert_equal "test-lesson", payload['exercise_slug']
     assert payload['exp'].present?
     assert payload['iat'].present?
   end
@@ -70,10 +70,10 @@ class AssistantConversation::CreateConversationTokenTest < ActiveSupport::TestCa
     end
   end
 
-  test "uses slug from lesson data for exercise_slug" do
+  test "uses the lesson slug for exercise_slug" do
     user = create(:user)
     make_premium(user)
-    lesson = create(:lesson, :exercise, data: { slug: "my-exercise-slug" })
+    lesson = create(:lesson, :exercise, slug: "my-exercise-slug")
 
     token = AssistantConversation::CreateConversationToken.(user, lesson)
 

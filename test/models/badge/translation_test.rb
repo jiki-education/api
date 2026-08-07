@@ -12,27 +12,6 @@ class Badge::TranslationTest < ActiveSupport::TestCase
     assert_includes translation.errors[:locale], "can't be blank"
   end
 
-  test "validates presence of name" do
-    translation = build(:badge_translation, name: nil)
-
-    refute translation.valid?
-    assert_includes translation.errors[:name], "can't be blank"
-  end
-
-  test "validates presence of description" do
-    translation = build(:badge_translation, description: nil)
-
-    refute translation.valid?
-    assert_includes translation.errors[:description], "can't be blank"
-  end
-
-  test "validates presence of fun_fact" do
-    translation = build(:badge_translation, fun_fact: nil)
-
-    refute translation.valid?
-    assert_includes translation.errors[:fun_fact], "can't be blank"
-  end
-
   test "validates uniqueness of locale scoped to badge_id" do
     badge = create(:member_badge)
     create(:badge_translation, badge:, locale: "hu")

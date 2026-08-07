@@ -17,9 +17,6 @@ class Badge::Translation::TranslateToLocale
     target_translation = Badge::Translation.create!(
       badge:,
       locale: target_locale,
-      name: translated[:name],
-      description: translated[:description],
-      fun_fact: translated[:fun_fact],
       email_subject: translated[:email_subject],
       email_content_markdown: translated[:email_content_markdown]
     )
@@ -53,13 +50,10 @@ class Badge::Translation::TranslateToLocale
     {
       type: "object",
       properties: {
-        name: { type: "string" },
-        description: { type: "string" },
-        fun_fact: { type: "string" },
         email_subject: { type: "string" },
         email_content_markdown: { type: "string" }
       },
-      required: %w[name description fun_fact email_subject email_content_markdown]
+      required: %w[email_subject email_content_markdown]
     }
   end
 
@@ -71,27 +65,18 @@ class Badge::Translation::TranslateToLocale
       Task: Translate badge content from English to #{locale_display_name} (#{target_locale}).
 
       Context:
-      - Badge: #{badge.name} (#{badge.slug})
+      - Badge: #{badge.slug}
       - Target Language: #{locale_display_name} (#{target_locale})
 
       Translation Rules:
       1. Maintain the original meaning, tone, and celebratory intent
       2. Use natural, native-sounding language for #{locale_display_name}
       3. Maintain an encouraging, positive tone appropriate for achievement badges
-      4. Keep the name concise (2-4 words typically)
-      5. Keep the description clear and brief
-      6. The fun_fact should be engaging and educational
+      4. This copy names the badge it congratulates the learner on. Inflect that
+         name naturally for #{locale_display_name} rather than transliterating it -
+         nothing interpolates it, so the grammar is yours to get right.
 
       Source Content to Translate:
-
-      Name:
-      #{badge.name}
-
-      Description:
-      #{badge.description}
-
-      Fun Fact:
-      #{badge.fun_fact}
 
       Email Subject:
       #{badge.email_subject}
@@ -100,11 +85,8 @@ class Badge::Translation::TranslateToLocale
       #{badge.email_content_markdown}
 
       Required Output:
-      Return ONLY a valid JSON object with these five fields (no additional text or markdown):
+      Return ONLY a valid JSON object with these two fields (no additional text or markdown):
       {
-        "name": "translated name",
-        "description": "translated description",
-        "fun_fact": "translated fun fact",
         "email_subject": "translated email subject",
         "email_content_markdown": "translated email content"
       }

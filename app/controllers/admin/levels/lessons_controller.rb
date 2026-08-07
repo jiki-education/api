@@ -42,6 +42,6 @@ class Admin::Levels::LessonsController < Admin::BaseController
   end
 
   def lesson_params
-    params.require(:lesson).permit(:slug, :title, :description, :type, :position, data: {})
+    params.require(:lesson).permit(:slug, :type, :position, data: {})
   end
 end

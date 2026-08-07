@@ -21,71 +21,42 @@ class LevelTest < ActiveSupport::TestCase
     refute duplicate.valid?
   end
 
-  test "validates presence of milestone_summary" do
-    level = build(:level, milestone_summary: nil)
-
-    refute level.valid?
-    assert_includes level.errors[:milestone_summary], "can't be blank"
-  end
-
-  test "validates presence of milestone_content" do
-    level = build(:level, milestone_content: nil)
-
-    refute level.valid?
-    assert_includes level.errors[:milestone_content], "can't be blank"
-  end
-
-  test "#content_for_locale returns English content from main model" do
+  # Only email copy is translated here - everything a screen renders is
+  # authored in the front-end curriculum repo.
+  test "#content_for_locale returns English email copy from main model" do
     level = create(:level,
-      title: "Ruby Basics",
-      description: "Learn Ruby",
-      milestone_summary: "Great!",
-      milestone_content: "# Done!")
+      milestone_email_subject: "Nice one!",
+      milestone_email_content_markdown: "You finished it.")
 
     content = level.content_for_locale("en")
 
-    assert_equal "Ruby Basics", content[:title]
-    assert_equal "Learn Ruby", content[:description]
-    assert_equal "Great!", content[:milestone_summary]
-    assert_equal "# Done!", content[:milestone_content]
+    assert_equal "Nice one!", content[:milestone_email_subject]
+    assert_equal "You finished it.", content[:milestone_email_content_markdown]
   end
 
-  test "#content_for_locale returns translated content when available" do
-    level = create(:level,
-      title: "Ruby Basics",
-      description: "Learn Ruby",
-      milestone_summary: "Great!",
-      milestone_content: "# Done!")
-
+  test "#content_for_locale returns translated email copy when available" do
+    level = create(:level)
     create(:level_translation,
       level:,
       locale: "hu",
-      title: "Ruby Alapok",
-      description: "Tanuld meg",
-      milestone_summary: "Szuper!",
-      milestone_content: "# Kész!")
+      milestone_email_subject: "Gratulálunk!",
+      milestone_email_content_markdown: "Befejezted az összes leckét.")
 
     content = level.content_for_locale("hu")
 
-    assert_equal "Ruby Alapok", content[:title]
-    assert_equal "Tanuld meg", content[:description]
-    assert_equal "Szuper!", content[:milestone_summary]
-    assert_equal "# Kész!", content[:milestone_content]
+    assert_equal "Gratulálunk!", content[:milestone_email_subject]
+    assert_equal "Befejezted az összes leckét.", content[:milestone_email_content_markdown]
   end
 
   test "#content_for_locale falls back to English when translation missing" do
     level = create(:level,
-      title: "Ruby Basics",
-      description: "Learn Ruby",
-      milestone_summary: "Great!",
-      milestone_content: "# Done!")
+      milestone_email_subject: "Nice one!",
+      milestone_email_content_markdown: "You finished it.")
 
     content = level.content_for_locale("fr")
 
-    assert_equal "Ruby Basics", content[:title]
-    assert_equal "Learn Ruby", content[:description]
-    assert_equal "Great!", content[:milestone_summary]
-    assert_equal "# Done!", content[:milestone_content]
+    assert_equal "Nice one!", content[:milestone_email_subject]
+    assert_equal "You finished it.", content[:milestone_email_content_markdown]
   end
 
   test "#translation_for returns nil for English" do

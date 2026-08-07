@@ -1,11 +1,13 @@
 class Level::Translation < ApplicationRecord
   belongs_to :level
 
+  # Dropped in a follow-up migration; ignored here so this code never selects
+  # them and the drop is safe once this deploy has rolled out.
+  self.ignored_columns += %w[title description milestone_summary milestone_content]
+
   validates :locale, presence: true
-  validates :title, presence: true
-  validates :description, presence: true
-  validates :milestone_summary, presence: true
-  validates :milestone_content, presence: true
+  validates :milestone_email_subject, presence: true
+  validates :milestone_email_content_markdown, presence: true
   validates :locale, uniqueness: { scope: :level_id }
   validates :locale, exclusion: { in: ['en'], message: "English content belongs on Level model" }
   validates :locale, inclusion: {

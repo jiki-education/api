@@ -2,42 +2,38 @@ require "test_helper"
 
 class Concept::SearchTest < ActiveSupport::TestCase
   test "no options returns all concepts paginated" do
-    # Use explicit titles to ensure deterministic alphabetical ordering
-    concept_b = create :concept, title: "Bravo"
-    concept_a = create :concept, title: "Alpha"
+    concept_b = create :concept, slug: "bravo"
+    concept_a = create :concept, slug: "alpha"
 
     result = Concept::Search.()
 
-    # Results ordered alphabetically by title
+    # Results ordered alphabetically by slug
     assert_equal [concept_a, concept_b], result.to_a
   end
 
-  test "title: search for partial title match" do
-    concept_1 = create :concept, title: "Strings and Text"
-    concept_2 = create :concept, title: "Arrays"
-    concept_3 = create :concept, title: "String Manipulation"
+  test "query: search for partial slug match" do
+    concept_1 = create :concept, slug: "strings-and-text"
+    concept_2 = create :concept, slug: "arrays"
+    concept_3 = create :concept, slug: "string-manipulation"
 
-    # Results ordered alphabetically by title
-    assert_equal [concept_2, concept_3, concept_1], Concept::Search.(title: "").to_a
-    assert_equal [concept_3, concept_1], Concept::Search.(title: "String").to_a
-    assert_equal [concept_2], Concept::Search.(title: "Arrays").to_a
-    assert_empty Concept::Search.(title: "xyz").to_a
+    assert_equal [concept_2, concept_3, concept_1], Concept::Search.(query: "").to_a
+    assert_equal [concept_3, concept_1], Concept::Search.(query: "string").to_a
+    assert_equal [concept_2], Concept::Search.(query: "arrays").to_a
+    assert_empty Concept::Search.(query: "xyz").to_a
   end
 
-  test "title search is case insensitive" do
-    concept = create :concept, title: "Strings and Text"
+  test "query search is case insensitive" do
+    concept = create :concept, slug: "strings-and-text"
 
-    assert_equal [concept], Concept::Search.(title: "strings").to_a
-    assert_equal [concept], Concept::Search.(title: "STRINGS").to_a
-    assert_equal [concept], Concept::Search.(title: "StRiNgS").to_a
+    assert_equal [concept], Concept::Search.(query: "strings").to_a
+    assert_equal [concept], Concept::Search.(query: "STRINGS").to_a
+    assert_equal [concept], Concept::Search.(query: "StRiNgS").to_a
   end
 
   test "pagination" do
-    # Use explicit titles to ensure deterministic alphabetical ordering
-    concept_b = create :concept, title: "Bravo"
-    concept_a = create :concept, title: "Alpha"
+    concept_b = create :concept, slug: "bravo"
+    concept_a = create :concept, slug: "alpha"
 
-    # Results ordered alphabetically by title
     assert_equal [concept_a], Concept::Search.(page: 1, per: 1).to_a
     assert_equal [concept_b], Concept::Search.(page: 2, per: 1).to_a
   end
@@ -54,130 +50,122 @@ class Concept::SearchTest < ActiveSupport::TestCase
     assert_equal 2, result.size
   end
 
-  test "sanitizes SQL wildcards in title search" do
-    concept1 = create :concept, title: "100% Complete"
-    create :concept, title: "Arrays"
-    concept3 = create :concept, title: "String_Manipulation"
+  test "sanitizes SQL wildcards in query search" do
+    concept1 = create :concept, slug: "100%-complete"
+    create :concept, slug: "arrays"
+    concept3 = create :concept, slug: "string_manipulation"
 
     # Search for "%" should match literal "%" not act as wildcard
-    result = Concept::Search.(title: "%").to_a
-    assert_equal [concept1], result
+    assert_equal [concept1], Concept::Search.(query: "%").to_a
 
     # Search for "_" should match literal "_" not act as single-character wildcard
-    result = Concept::Search.(title: "_").to_a
-    assert_equal [concept3], result
+    assert_equal [concept3], Concept::Search.(query: "_").to_a
 
     # Wildcards should not match everything
-    result = Concept::Search.(title: "%%").to_a
-    assert_empty result
+    assert_empty Concept::Search.(query: "%%").to_a
   end
 
   test "user: returns all concepts ordered by unlocked first then alphabetically" do
-    concept_zebra = create :concept, title: "Zebra"
-    concept_middle = create :concept, title: "Middle"
-    concept_apple = create :concept, title: "Apple"
+    concept_zebra = create :concept, slug: "zebra"
+    concept_middle = create :concept, slug: "middle"
+    concept_apple = create :concept, slug: "apple"
     user = create :user
 
     Concept::UnlockForUser.(concept_zebra, user)
     Concept::UnlockForUser.(concept_apple, user)
 
     result = Concept::Search.(user:).to_a
-    # Unlocked first (Apple, Zebra alphabetically), then locked (Middle)
+    # Unlocked first (apple, zebra alphabetically), then locked (middle)
     assert_equal [concept_apple, concept_zebra, concept_middle], result
   end
 
   test "user: nil returns all concepts" do
-    # Use explicit titles to ensure deterministic alphabetical ordering
-    concept_b = create :concept, title: "Bravo"
-    concept_a = create :concept, title: "Alpha"
+    concept_b = create :concept, slug: "bravo"
+    concept_a = create :concept, slug: "alpha"
     user = create :user
 
     Concept::UnlockForUser.(concept_a, user)
 
-    result = Concept::Search.(user: nil).to_a
-    # Results ordered alphabetically by title
-    assert_equal [concept_a, concept_b], result
+    assert_equal [concept_a, concept_b], Concept::Search.(user: nil).to_a
   end
 
-  test "user: with title filter returns all matching concepts with unlocked-first ordering" do
-    concept_strings = create :concept, title: "Strings"
-    concept_string_arrays = create :concept, title: "String Arrays"
-    create :concept, title: "Arrays"
+  test "user: with query filter returns all matching concepts with unlocked-first ordering" do
+    concept_strings = create :concept, slug: "strings"
+    concept_string_arrays = create :concept, slug: "string-arrays"
+    create :concept, slug: "arrays"
     user = create :user
 
     Concept::UnlockForUser.(concept_strings, user)
     # concept_string_arrays is locked
 
-    result = Concept::Search.(user:, title: "String").to_a
-    # Unlocked first (Strings), then locked (String Arrays)
+    result = Concept::Search.(user:, query: "string").to_a
+    # Unlocked first (strings), then locked (string-arrays)
     assert_equal [concept_strings, concept_string_arrays], result
   end
 
   test "user: respects pagination with unlocked-first ordering" do
-    concept_alpha = create :concept, title: "Alpha"
-    concept_bravo = create :concept, title: "Bravo"
-    concept_charlie = create :concept, title: "Charlie"
+    concept_alpha = create :concept, slug: "alpha"
+    concept_bravo = create :concept, slug: "bravo"
+    concept_charlie = create :concept, slug: "charlie"
     user = create :user
 
-    # Only unlock Charlie (should appear first)
+    # Only unlock charlie (should appear first)
     Concept::UnlockForUser.(concept_charlie, user)
 
     result = Concept::Search.(user:, page: 1, per: 2).to_a
-    # First page: Charlie (unlocked), then Alpha (locked, alphabetically first)
+    # First page: charlie (unlocked), then alpha (locked, alphabetically first)
     assert_equal [concept_charlie, concept_alpha], result
 
     result = Concept::Search.(user:, page: 2, per: 2).to_a
-    # Second page: Bravo (locked)
+    # Second page: bravo (locked)
     assert_equal [concept_bravo], result
   end
 
-  test "orders concepts by title alphabetically" do
-    concept_z = create :concept, title: "Zulu"
-    concept_a = create :concept, title: "Alpha"
-    concept_m = create :concept, title: "Mike"
-    concept_b = create :concept, title: "Bravo"
+  test "orders concepts by slug alphabetically" do
+    concept_z = create :concept, slug: "zulu"
+    concept_a = create :concept, slug: "alpha"
+    concept_m = create :concept, slug: "mike"
+    concept_b = create :concept, slug: "bravo"
 
     result = Concept::Search.().to_a
 
     assert_equal [concept_a, concept_b, concept_m, concept_z], result
-    assert_equal %w[Alpha Bravo Mike Zulu], result.map(&:title)
+    assert_equal %w[alpha bravo mike zulu], result.map(&:slug)
   end
 
   test "slugs: filters by single slug" do
-    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
-    create :concept, title: "Bravo", slug: "bravo-concept"
+    concept_1 = create :concept, slug: "alpha-concept"
+    create :concept, slug: "bravo-concept"
 
-    result = Concept::Search.(slugs: "alpha-concept").to_a
-    assert_equal [concept_1], result
+    assert_equal [concept_1], Concept::Search.(slugs: "alpha-concept").to_a
   end
 
   test "slugs: filters by multiple slugs (comma-separated)" do
-    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
-    create :concept, title: "Bravo", slug: "bravo-concept"
-    concept_3 = create :concept, title: "Charlie", slug: "charlie-concept"
+    concept_1 = create :concept, slug: "alpha-concept"
+    create :concept, slug: "bravo-concept"
+    concept_3 = create :concept, slug: "charlie-concept"
 
     result = Concept::Search.(slugs: "alpha-concept,charlie-concept").to_a
     assert_equal [concept_1, concept_3], result
   end
 
   test "slugs: handles whitespace around slugs" do
-    concept_1 = create :concept, title: "Alpha", slug: "alpha-concept"
-    concept_2 = create :concept, title: "Bravo", slug: "bravo-concept"
+    concept_1 = create :concept, slug: "alpha-concept"
+    concept_2 = create :concept, slug: "bravo-concept"
 
     result = Concept::Search.(slugs: " alpha-concept , bravo-concept ").to_a
     assert_equal [concept_1, concept_2], result
   end
 
   test "slugs: returns empty for non-existent slugs" do
-    create :concept, title: "Alpha", slug: "alpha-concept"
+    create :concept, slug: "alpha-concept"
 
-    result = Concept::Search.(slugs: "non-existent").to_a
-    assert_empty result
+    assert_empty Concept::Search.(slugs: "non-existent").to_a
   end
 
   test "slugs: combined with user returns all matching with unlocked-first ordering" do
-    concept_alpha = create :concept, title: "Alpha", slug: "alpha-concept"
-    concept_bravo = create :concept, title: "Bravo", slug: "bravo-concept"
+    concept_alpha = create :concept, slug: "alpha-concept"
+    concept_bravo = create :concept, slug: "bravo-concept"
     user = create :user
 
     Concept::UnlockForUser.(concept_alpha, user)
@@ -188,13 +176,13 @@ class Concept::SearchTest < ActiveSupport::TestCase
     assert_equal [concept_alpha, concept_bravo], result
   end
 
-  test "slugs: combined with title filter" do
-    concept_1 = create :concept, title: "String Basics", slug: "string-basics"
-    create :concept, title: "Array Basics", slug: "array-basics"
-    create :concept, title: "String Advanced", slug: "string-advanced"
+  test "slugs: combined with query filter" do
+    concept_1 = create :concept, slug: "string-basics"
+    create :concept, slug: "array-basics"
+    create :concept, slug: "string-advanced"
 
-    # Filter by slugs AND title - only string-basics matches both
-    result = Concept::Search.(slugs: "string-basics,array-basics", title: "String").to_a
+    # Filter by slugs AND query - only string-basics matches both
+    result = Concept::Search.(slugs: "string-basics,array-basics", query: "string").to_a
     assert_equal [concept_1], result
   end
 end

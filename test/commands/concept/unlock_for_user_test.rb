@@ -66,7 +66,7 @@ class Concept::UnlockForUserTest < ActiveSupport::TestCase
 
   test "emits concept_unlocked event when concept is unlocked" do
     user = create :user
-    concept = create :concept, slug: "variables", title: "Variables"
+    concept = create :concept, slug: "variables"
 
     Current.reset
     Concept::UnlockForUser.(concept, user)
@@ -76,8 +76,7 @@ class Concept::UnlockForUserTest < ActiveSupport::TestCase
 
     event = events.first
     assert_equal "concept_unlocked", event[:type]
-    assert_equal "variables", event[:data][:concept][:slug]
-    assert_equal "Variables", event[:data][:concept][:title]
+    assert_equal({ concept_slug: "variables" }, event[:data])
   end
 
   test "does not emit event when concept already unlocked (idempotent)" do

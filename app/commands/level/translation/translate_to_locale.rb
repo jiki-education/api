@@ -17,10 +17,6 @@ class Level::Translation::TranslateToLocale
     target_translation = Level::Translation.create!(
       level:,
       locale: target_locale,
-      title: translated[:title],
-      description: translated[:description],
-      milestone_summary: translated[:milestone_summary],
-      milestone_content: translated[:milestone_content],
       milestone_email_subject: translated[:milestone_email_subject],
       milestone_email_content_markdown: translated[:milestone_email_content_markdown]
     )
@@ -54,14 +50,10 @@ class Level::Translation::TranslateToLocale
     {
       type: "object",
       properties: {
-        title: { type: "string" },
-        description: { type: "string" },
-        milestone_summary: { type: "string" },
-        milestone_content: { type: "string" },
         milestone_email_subject: { type: "string" },
         milestone_email_content_markdown: { type: "string" }
       },
-      required: %w[title description milestone_summary milestone_content milestone_email_subject milestone_email_content_markdown]
+      required: %w[milestone_email_subject milestone_email_content_markdown]
     }
   end
 
@@ -73,31 +65,20 @@ class Level::Translation::TranslateToLocale
       Task: Translate level content from English to #{locale_display_name} (#{target_locale}).
 
       Context:
-      - Level: #{level.title} (#{level.slug})
+      - Level: #{level.slug}
       - Target Language: #{locale_display_name} (#{target_locale})
 
       Translation Rules:
       1. Maintain the original meaning, tone, and motivational intent
-      2. Keep the milestone_summary concise (2-3 sentences maximum)
-      3. The milestone_content can be longer and more detailed
-      4. Preserve any markdown formatting (**, *, lists, etc.)
-      5. Use natural, native-sounding language for #{locale_display_name}
-      6. Maintain an encouraging, educational tone appropriate for coding learners
-      7. Do not translate code examples, variable names, or technical terms that are universally English
+      2. Preserve any markdown formatting (**, *, lists, etc.)
+      3. Use natural, native-sounding language for #{locale_display_name}
+      4. Maintain an encouraging, educational tone appropriate for coding learners
+      5. Do not translate code examples, variable names, or technical terms that are universally English
+      6. This copy names the level it congratulates the learner on. Inflect that
+         name naturally for #{locale_display_name} rather than transliterating it -
+         nothing interpolates it, so the grammar is yours to get right.
 
       Source Content to Translate:
-
-      Title:
-      #{level.title}
-
-      Description:
-      #{level.description}
-
-      Milestone Summary (short, shown after completion):
-      #{level.milestone_summary}
-
-      Milestone Content (longer, shown in modal):
-      #{level.milestone_content}
 
       Milestone Email Subject:
       #{level.milestone_email_subject}
@@ -106,12 +87,8 @@ class Level::Translation::TranslateToLocale
       #{level.milestone_email_content_markdown}
 
       Required Output:
-      Return ONLY a valid JSON object with these six fields (no additional text or markdown):
+      Return ONLY a valid JSON object with these two fields (no additional text or markdown):
       {
-        "title": "translated title",
-        "description": "translated description",
-        "milestone_summary": "translated summary text",
-        "milestone_content": "translated content text",
         "milestone_email_subject": "translated email subject",
         "milestone_email_content_markdown": "translated email content"
       }

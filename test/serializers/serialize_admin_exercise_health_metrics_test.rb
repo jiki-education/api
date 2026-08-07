@@ -5,7 +5,6 @@ class SerializeAdminExerciseHealthMetricsTest < ActiveSupport::TestCase
     metrics = [{
       lesson_id: 5,
       slug: "fix-wall",
-      title: "Fix the Wall",
       health_score: 72,
       low_sample: false,
       num_starts: 100,
@@ -32,7 +31,6 @@ class SerializeAdminExerciseHealthMetricsTest < ActiveSupport::TestCase
     expected = [{
       lesson_id: 5,
       slug: "fix-wall",
-      title: "Fix the Wall",
       health_score: 72,
       low_sample: false,
       num_starts: 100,

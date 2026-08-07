@@ -8,9 +8,8 @@ class Level::Search
     DEFAULT_PER
   end
 
-  def initialize(course: nil, title: nil, slug: nil, page: nil, per: nil)
+  def initialize(course: nil, slug: nil, page: nil, per: nil)
     @course = course
-    @title = title
     @slug = slug
     @page = page.present? && page.to_i.positive? ? page.to_i : DEFAULT_PAGE
     @per = per.present? && per.to_i.positive? ? per.to_i : self.class.default_per
@@ -19,20 +18,13 @@ class Level::Search
   def call
     @levels = course ? course.levels : Level.all
 
-    filter_title!
     filter_slug!
 
     @levels.page(page).per(per)
   end
 
   private
-  attr_reader :course, :title, :slug, :page, :per
-
-  def filter_title!
-    return if title.blank?
-
-    @levels = @levels.where("title LIKE ?", "%#{Level.sanitize_sql_like(title)}%")
-  end
+  attr_reader :course, :slug, :page, :per
 
   def filter_slug!
     return if slug.blank?

@@ -19,11 +19,8 @@
 
 # == Course ==
 course = Course.find_or_initialize_by(slug: "coding-fundamentals")
-course.update!(
-  title: "Coding Fundamentals",
-  description: "Learn the fundamentals of programming through interactive exercises and videos."
-)
-puts "✓ Course: #{course.title}"
+course.save!
+puts "✓ Course: #{course.slug}"
 
 # == Levels and lessons ==
 # Synced from curriculum.json, matched by uuid so slug renames, moves between levels
@@ -60,8 +57,6 @@ concepts_data.each do |concept_data|
   concept.update!(
     uuid: concept_data[:uuid],
     slug: concept_data[:slug],
-    title: concept_data[:title],
-    description: concept_data[:description],
     unlocked_by_lesson: unlocking_lesson
   )
 end
@@ -95,8 +90,6 @@ challenges_data.each do |challenge_data|
   challenge.update!(
     uuid: challenge_data[:uuid],
     slug: challenge_data[:slug],
-    title: challenge_data[:title],
-    description: challenge_data[:description],
     exercise_slug: challenge_data[:exercise_slug],
     unlocked_by_lesson: unlocking_lesson
   )
@@ -104,12 +97,12 @@ end
 puts "✓ Challenges: #{challenges_data.size}"
 
 # == Badges ==
-# Each Badges::* class defines its copy via `seed`. Create any missing badges and
-# keep existing ones in sync with the class definitions.
+# Each Badges::* class declares only whether it is secret; its copy lives in the
+# front-end curriculum repo. Create any missing badges and keep the flag in sync.
 Rails.application.eager_load!
 Badge.subclasses.sort_by(&:name).each do |badge_class|
   badge = badge_class.first_or_initialize
-  badge.update!(badge_class.seed_data) if badge_class.seed_data
+  badge.update!(badge_class.seed_data)
 end
 puts "✓ Badges: #{Badge.subclasses.size}"
 

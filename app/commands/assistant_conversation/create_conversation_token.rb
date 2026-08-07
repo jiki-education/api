@@ -37,7 +37,7 @@ class AssistantConversation::CreateConversationToken
 
   def exercise_slug
     case context
-    when Lesson then context.data[:slug]
+    when Lesson then context.slug
     when Challenge then context.exercise_slug
     end
   end

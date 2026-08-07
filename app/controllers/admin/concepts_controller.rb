@@ -3,7 +3,7 @@ class Admin::ConceptsController < Admin::BaseController
 
   def index
     concepts = Concept::Search.(
-      title: params[:title],
+      query: params[:query],
       page: params[:page],
       per: params[:per]
     )
@@ -51,10 +51,6 @@ class Admin::ConceptsController < Admin::BaseController
   end
 
   def concept_params
-    params.require(:concept).permit(
-      :title,
-      :slug,
-      :description
-    )
+    params.require(:concept).permit(:slug)
   end
 end

@@ -13,9 +13,9 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
   # GET /v1/challenges (index) tests
   test "GET index returns challenges with unlocked first, then locked" do
     Prosopite.finish
-    challenge_zebra = create(:challenge, title: "Zebra Challenge")
-    challenge_apple = create(:challenge, title: "Apple Challenge")
-    challenge_middle = create(:challenge, title: "Middle Challenge")
+    challenge_zebra = create(:challenge, slug: "zebra")
+    challenge_apple = create(:challenge, slug: "apple")
+    challenge_middle = create(:challenge, slug: "middle")
 
     # Unlock Zebra and Middle for current user
     create(:user_challenge, user: @current_user, challenge: challenge_zebra)
@@ -38,8 +38,8 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index returns all challenges when user has none unlocked" do
     Prosopite.finish
-    challenge_apple = create(:challenge, title: "Apple Challenge")
-    challenge_banana = create(:challenge, title: "Banana Challenge")
+    challenge_apple = create(:challenge)
+    challenge_banana = create(:challenge)
 
     get internal_challenges_path, as: :json
 
@@ -58,7 +58,7 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index shows started status" do
     Prosopite.finish
-    challenge = create(:challenge, title: "Calculator")
+    challenge = create(:challenge)
     create(:user_challenge, user: @current_user, challenge:, started_at: Time.current, completed_at: nil)
 
     get internal_challenges_path, as: :json
@@ -77,7 +77,7 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index shows completed status" do
     Prosopite.finish
-    challenge = create(:challenge, title: "Calculator")
+    challenge = create(:challenge)
     create(:user_challenge, user: @current_user, challenge:, started_at: 2.days.ago, completed_at: Time.current)
 
     get internal_challenges_path, as: :json
@@ -94,15 +94,15 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
     })
   end
 
-  test "GET index filters by title parameter" do
+  test "GET index filters by query parameter" do
     Prosopite.finish
-    challenge_calc_app = create(:challenge, title: "Calculator App")
-    create(:challenge, title: "Todo List")
-    challenge_sci_calc = create(:challenge, title: "Scientific Calculator")
+    challenge_calc_app = create(:challenge, slug: "calculator-app")
+    create(:challenge, slug: "todo-list")
+    challenge_sci_calc = create(:challenge, slug: "scientific-calculator")
 
     create(:user_challenge, user: @current_user, challenge: challenge_sci_calc)
 
-    get internal_challenges_path(title: "Calculator"), as: :json
+    get internal_challenges_path(query: "calculator"), as: :json
 
     assert_response :success
     # Scientific Calculator (unlocked) first, then Calculator App (locked)
@@ -119,9 +119,9 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with page parameter" do
     Prosopite.finish
-    challenge_apple = create(:challenge, title: "Apple")
-    create(:challenge, title: "Banana")
-    challenge_cherry = create(:challenge, title: "Cherry")
+    challenge_apple = create(:challenge)
+    create(:challenge)
+    challenge_cherry = create(:challenge)
 
     create(:user_challenge, user: @current_user, challenge: challenge_cherry)
 
@@ -141,7 +141,7 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index supports pagination with per parameter" do
     Prosopite.finish
-    challenges = Array.new(5) { |i| create(:challenge, title: "Challenge #{i}") }
+    challenges = Array.new(5) { |_i| create(:challenge) }
 
     get internal_challenges_path(per: 3), as: :json
 
@@ -159,7 +159,7 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
 
   test "GET index returns correct fields" do
     Prosopite.finish
-    challenge = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    challenge = create(:challenge, slug: "calculator")
 
     get internal_challenges_path, as: :json
 
@@ -178,7 +178,7 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
   test "GET index is accessible to non-premium users" do
     Prosopite.finish
     make_non_premium(@current_user)
-    challenge = create(:challenge, title: "Calculator")
+    challenge = create(:challenge)
 
     get internal_challenges_path, as: :json
 
@@ -197,7 +197,7 @@ class Internal::ChallengesControllerTest < ApplicationControllerTest
   # GET /v1/challenges/:slug (show) tests
   test "GET show returns challenge by slug" do
     Prosopite.finish
-    challenge = create(:challenge, slug: "calculator", title: "Calculator", description: "Build a calculator")
+    challenge = create(:challenge, slug: "calculator")
 
     get internal_challenge_path(challenge_slug: challenge.slug), as: :json
 
