@@ -99,7 +99,7 @@ class Internal::SubscriptionsController < Internal::BaseController
       interval: result[:interval],
       payment_status: result[:payment_status],
       payment_state: result[:payment_state],
-      decline_reason: result[:decline_reason],
+      decline_code: result[:decline_code],
       subscription_status: result[:subscription_status]
     }
   rescue SecurityError => e
@@ -109,11 +109,11 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue StripeCheckoutSessionIncompleteError => e
     # Expected user-driven outcome (declined/abandoned payment), not a bug -
     # log only, don't report to Sentry.
-    Rails.logger.info("Checkout session incomplete: #{e.decline_reason || 'no reason given'}")
+    Rails.logger.info("Checkout session incomplete: #{e.decline_code || 'no reason given'}")
     render json: {
       error: {
         type: "checkout_payment_incomplete",
-        decline_reason: e.decline_reason,
+        decline_code: e.decline_code,
         interval: e.interval,
         currency: e.currency
       }

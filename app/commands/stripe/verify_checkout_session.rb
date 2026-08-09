@@ -7,11 +7,11 @@ class Stripe::VerifyCheckoutSession
     verify_ownership!
 
     # An incomplete session is an expected outcome (declined/abandoned/expired payment),
-    # not a bug. Surface the decline reason and the attempted plan (interval + currency,
+    # not a bug. Surface the decline code and the attempted plan (interval + currency,
     # which Jiki prices vary by) so the UI can offer a precise "retry" CTA.
     unless session.status == "complete"
       raise StripeCheckoutSessionIncompleteError.new(
-        decline_reason:, interval: attempted_interval, currency: session.currency
+        decline_code:, interval: attempted_interval, currency: session.currency
       )
     end
     raise ArgumentError, "Checkout session has no subscription" unless session.subscription.present?
@@ -35,7 +35,7 @@ class Stripe::VerifyCheckoutSession
       interval: interval,
       payment_status: session.payment_status,
       payment_state: payment_state,
-      decline_reason: payment_state == "failed" ? first_invoice_payment_intent&.last_payment_error&.message : nil,
+      decline_code: payment_state == "failed" ? decline_code_for(first_invoice_payment_intent) : nil,
       subscription_status: status
     }
   end
@@ -119,11 +119,29 @@ class Stripe::VerifyCheckoutSession
   # Best-effort customer-facing decline reason for an incomplete (status != complete)
   # checkout. Returns nil for abandoned/expired sessions with no payment attempt, and
   # never raises - a missing reason degrades to the generic "payment wasn't completed".
-  def decline_reason
-    declined_payment_intent&.last_payment_error&.message
+  def decline_code
+    decline_code_for(declined_payment_intent)
   rescue ::Stripe::StripeError => e
     Rails.logger.warn("Could not determine checkout decline reason for #{session_id}: #{e.message}")
     nil
+  end
+
+  # Stripe's own English message text is never returned to the client - only the
+  # stable decline_code/code, so the front-end can map it to localized copy (see
+  # https://docs.stripe.com/declines/codes). A handful of codes are collapsed to
+  # the generic "card_declined" per Stripe's own guidance: don't tell a customer
+  # their card was reported fraudulent/stolen/lost, since that tips off an
+  # attacker who's testing stolen numbers to try a different card instead.
+  SENSITIVE_DECLINE_CODES = %w[fraudulent stolen_card lost_card merchant_blacklist pickup_card restricted_card].freeze
+
+  def decline_code_for(payment_intent)
+    error = payment_intent&.last_payment_error
+    return nil unless error
+
+    code = error.decline_code.presence || error.code
+    return nil if code.blank?
+
+    SENSITIVE_DECLINE_CODES.include?(code) ? "card_declined" : code
   end
 
   def declined_payment_intent

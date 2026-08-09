@@ -118,7 +118,7 @@ copy included as a starting point for the front-end catalogue.
 - `cancel_failed` - "Cancellation failed"
 - `not_cancelling` - "Subscription is not scheduled for cancellation"
 - `reactivate_failed` - "Reactivation failed"
-- `checkout_payment_incomplete` - was "Your payment wasn't completed. Please try again." (extra: `decline_reason`, `interval`, `currency`)
+- `checkout_payment_incomplete` - was "Your payment wasn't completed. Please try again." (extra: `decline_code`, `interval`, `currency`). `decline_code` is a stable key (e.g. `insufficient_funds`, `expired_card`, `card_declined`), not free text - map it to your own localized copy rather than displaying it directly, same pattern as `error.type` elsewhere in the API.
 - `unauthorized` (subscriptions-specific) - was "Checkout session does not belong to current user"
 
 ### External services

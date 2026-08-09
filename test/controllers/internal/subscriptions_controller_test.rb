@@ -250,7 +250,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       interval: "monthly",
       payment_status: "paid",
       payment_state: "paid",
-      decline_reason: nil,
+      decline_code: nil,
       subscription_status: "active"
     })
 
@@ -264,11 +264,11 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "monthly", json["interval"]
     assert_equal "paid", json["payment_status"]
     assert_equal "paid", json["payment_state"]
-    assert_nil json["decline_reason"]
+    assert_nil json["decline_code"]
     assert_equal "active", json["subscription_status"]
   end
 
-  test "POST verify_checkout passes through payment_state and decline_reason for a failed async payment" do
+  test "POST verify_checkout passes through payment_state and decline_code for a failed async payment" do
     session_id = "cs_test_123"
 
     Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
@@ -276,7 +276,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       interval: "monthly",
       payment_status: "unpaid",
       payment_state: "failed",
-      decline_reason: "Your card has insufficient funds.",
+      decline_code: "insufficient_funds",
       subscription_status: "incomplete"
     })
 
@@ -287,7 +287,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :success
     json = response.parsed_body
     assert_equal "failed", json["payment_state"]
-    assert_equal "Your card has insufficient funds.", json["decline_reason"]
+    assert_equal "insufficient_funds", json["decline_code"]
   end
 
   test "POST verify_checkout returns incomplete status for async payments" do
@@ -298,7 +298,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
       interval: "monthly",
       payment_status: "unpaid",
       payment_state: "processing",
-      decline_reason: nil,
+      decline_code: nil,
       subscription_status: "incomplete"
     })
 
@@ -357,13 +357,13 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_equal "invalid_session", json["error"]["type"]
   end
 
-  test "POST verify_checkout returns checkout_payment_incomplete with decline reason and attempted plan" do
+  test "POST verify_checkout returns checkout_payment_incomplete with decline code and attempted plan" do
     session_id = "cs_test_123"
 
     Stripe::VerifyCheckoutSession.expects(:call).
       with(@user, session_id).
       raises(StripeCheckoutSessionIncompleteError.new(
-        decline_reason: "Your card has insufficient funds.", interval: "monthly", currency: "gbp"
+        decline_code: "insufficient_funds", interval: "monthly", currency: "gbp"
       ))
 
     post internal_subscriptions_verify_checkout_path,
@@ -373,7 +373,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "checkout_payment_incomplete", json["error"]["type"]
-    assert_equal "Your card has insufficient funds.", json["error"]["decline_reason"]
+    assert_equal "insufficient_funds", json["error"]["decline_code"]
     assert_equal "monthly", json["error"]["interval"]
     assert_equal "gbp", json["error"]["currency"]
   end

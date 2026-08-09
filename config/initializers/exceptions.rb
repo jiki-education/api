@@ -101,12 +101,12 @@ class MailshotUnknownSegmentError < RuntimeError; end
 class MailshotBlankBodyError < RuntimeError; end
 
 class StripeCheckoutSessionIncompleteError < RuntimeError
-  attr_reader :decline_reason, :interval, :currency
+  attr_reader :decline_code, :interval, :currency
 
-  def initialize(decline_reason: nil, interval: nil, currency: nil)
-    @decline_reason = decline_reason
+  def initialize(decline_code: nil, interval: nil, currency: nil)
+    @decline_code = decline_code
     @interval = interval
     @currency = currency
-    super(decline_reason || "Checkout session is not complete")
+    super(decline_code || "Checkout session is not complete")
   end
 end
