@@ -24,7 +24,7 @@ The local server is started via `./bin/dev`. This is nearly always running - you
 - **Membership tiers**: `standard` (free), `premium`. Check access via `user.premium?`.
 - **Subscriptions**: Stripe for payments. Status tracked in `User::Data` with webhooks handling state changes.
 - **Learning content**: Courses contain Levels, Levels contain Lessons. Lessons can unlock Concepts. Users progress linearly.
-- **i18n**: Database-backed translations via `*::Translation` models. LLM translation via Gemini API.
+- **i18n**: See `docs/i18n.md` for what's translated here, how (YAML catalogs vs DB-backed `*::Translation` models), and how it's validated - read it before doing any i18n work.
 
 ### Nomenclature
 
