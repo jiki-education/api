@@ -172,9 +172,6 @@ GEM
       railties (>= 7.0)
       responders
       warden (~> 1.2.3)
-    devise-i18n (1.16.0)
-      devise (>= 5.0.0)
-      rails-i18n
     discourse_api (2.1.0)
       faraday (~> 2.7)
       faraday-follow_redirects
@@ -558,7 +555,6 @@ DEPENDENCIES
   commonmarker
   debug
   devise (~> 5.0)
-  devise-i18n
   discourse_api
   factory_bot_rails
   faker
