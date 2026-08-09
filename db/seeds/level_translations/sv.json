@@ -1,0 +1,97 @@
+[
+  {
+    "level_uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
+    "milestone_email_subject": "Grattis till din första milstolpe",
+    "milestone_email_content_markdown": "Bra jobbat med att slutföra den första nivån i Jikis kurs Programmeringsgrunder.\n\nDet kanske inte känns som att du gör särskilt mycket \"riktig\" programmering än, men du har just lärt dig en av de viktigaste färdigheterna inom programmering. Från och med nu kommer du att använda funktioner hundratals gånger om dagen, så det här är verkligen grunden för allt annat.\n\nHärnäst ska vi titta på hur du använder färger för att rita, och sedan kommer vi att börja blanda in lite logik i processen. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
+    "milestone_email_subject": "Tyckte du om att rita?",
+    "milestone_email_content_markdown": "Bra jobbat på den här nivån, och med din första riktiga teckning.\n\nDu har nu lagt till strängar och färger i din verktygslåda, vilket innebär att dina program kan börja hantera text och skapa saker som faktiskt ser bra ut på skärmen.\n\nUnder de kommande lektionerna kommer vi att introducera lite logik, så att du kan gå bortom linjära instruktioner och lägga till variation och intelligens i dina program. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
+    "milestone_email_subject": "Känner du dig snurrig efter allt loopande?",
+    "milestone_email_content_markdown": "Bra jobbat på den här nivån. Loopar är en grundläggande byggsten inom programmering, och förhoppningsvis börjar de kännas ganska bekväma nu.\n\nDet finns andra typer av loopar som vi kommer att titta på senare i kursen, men `repeat`-loopen kommer att vara din följeslagare under de kommande lektionerna.\n\nHärnäst kommer variabler – idén att lagra och hämta värden medan ditt program körs. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
+    "milestone_email_subject": "Variabler i bagaget",
+    "milestone_email_content_markdown": "Bra jobbat med att få koll på variabler.\n\nVariabler är en av de där idéerna som är ganska enkla på ytan, men som kommer att ligga till grund för nästan allt du skriver från och med nu. Möjligheten att lagra ett värde, ge det ett namn och använda det senare är det som gör att kod från en fast lista med instruktioner blir till något genuint flexibelt.\n\nHärnäst ska vi titta på hur variabler förändras över tid, vilket programmerare kallar \"tillstånd\". Ha det så roligt!"
+  },
+  {
+    "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
+    "milestone_email_subject": "Här är läget",
+    "milestone_email_content_markdown": "Bra jobbat på den här. Du kan nu följa värden som ändras medan ditt program körs, vilket är ett stort steg framåt jämfört med var du var för några nivåer sedan.\n\nIdén om tillstånd kommer att återkomma genom hela kursen, och den blir mer intressant varje gång vi kombinerar den med något nytt.\n\nNästa nivå är rejäl. Vi kommer att titta på funktioner som returnerar värden, och sedan utforska färger, slumpmässighet, animation, scope och nästlade loopar på vägen. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
+    "milestone_email_subject": "Vilken fångst",
+    "milestone_email_content_markdown": "Strålande arbete på en fullpackad nivå. Funktioner som returnerar värden, HSL- och RGB-färger, animation, slumptal, scope, scenarier och loopar inuti loopar. Det är en hel del nya idéer att lägga till i din verktygslåda på en gång.\n\nOroa dig inte om några av dem fortfarande känns lite suddiga. De kommer alla att dyka upp igen i olika sammanhang senare i kursen, och varje gång blir de mer bekanta.\n\nHärnäst ska vi börja fatta beslut i kod med hjälp av `if`-satser. Det är nu dina program verkligen börjar kännas intelligenta. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
+    "milestone_email_subject": "Om, så, vad?",
+    "milestone_email_content_markdown": "Snyggt jobbat på nivån om villkor. Förhoppningsvis börjar `if` och `else` kännas ganska naturliga.\n\nVillkor är en av de viktigaste idéerna inom programmering. Nästan alla intressanta program måste fatta beslut baserat på vad som är sant för tillfället, och du har nu de grundläggande verktygen för att göra det.\n\nHärnäst ska vi titta på kraftfullare sätt att skriva villkor, genom att kombinera dem med och/eller, plus några relaterade idéer som modulo. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
+    "milestone_email_subject": "Logiska nästa steg",
+    "milestone_email_content_markdown": "Bra jobbat på en klurig nivå. Du har nu fått kläm på och/eller, modulo och loopande utan räkning.\n\nDet här är den typen av verktyg som låter dig skriva villkor som faktiskt motsvarar verklig logik, istället för att behöva bryta ner allt i små separata kontroller.\n\nHärnäst ska vi kombinera villkor med tillstånd, vilket är där dina program börjar kunna reagera på vad som händer medan de körs. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
+    "milestone_email_subject": "Program som reagerar",
+    "milestone_email_content_markdown": "Bra jobbat. Att kombinera villkor med tillstånd är där dina program verkligen börjar kännas levande, genom att reagera på vad som händer snarare än att bara följa ett fast manus.\n\nDet här är ungefär den komplexitetsnivå du kommer att skriva på under resten av kursen, så allt du har övat på här kommer att återkomma.\n\nHärnäst kommer en stor en: att skriva dina egna funktioner. Fram till nu har du använt funktioner som någon annan har skrivit. Från och med nu kommer du att skriva dina egna. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
+    "milestone_email_subject": "Nu är det du som styr",
+    "milestone_email_content_markdown": "Strålande arbete. Att skriva dina egna funktioner är ett verkligt skifte. Du använder inte längre bara verktygen på hyllan, du bygger nya.\n\nDet här är en av de viktigaste färdigheterna inom all programmering. Bra kod handlar till stor del om att bryta ner problem i små, väl namngivna funktioner, och du har nu allt du behöver för att börja göra det.\n\nHärnäst ska vi återgå till strängar och titta på hur man sätter ihop dem och sätter in värden i dem. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
+    "milestone_email_subject": "Strängar, sammanfogade",
+    "milestone_email_content_markdown": "Snyggt jobbat på den här. Sammanfogning och mallar är ganska enkla idéer, men de dyker upp ständigt, särskilt överallt där du producerar utdata som en person ska läsa.\n\nDu kommer att använda de här teknikerna i i stort sett alla program du skriver från och med nu.\n\nHärnäst ska vi titta på hur man gräver ner sig i strängar tecken för tecken, och hur man loopar genom deras innehåll. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
+    "milestone_email_subject": "Bokstav för bokstav",
+    "milestone_email_content_markdown": "Bra jobbat. Förhoppningsvis börjar indexering och loopande genom strängar att kännas vettigt.\n\nAtt kunna titta på enskilda tecken och systematiskt gå igenom text öppnar upp en enorm mängd problem som du nu kan lösa. En stor del av verklig programmering handlar om precis den här typen av arbete.\n\nHärnäst ska vi titta på hur man kombinerar flera funktioner för att ta sig an mer komplexa uppgifter. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
+    "milestone_email_subject": "Bättre tillsammans",
+    "milestone_email_content_markdown": "Bra jobbat på den här nivån. Att kombinera funktioner för att lösa större problem är precis så professionell programmering ser ut i vardagen. Du bryter ner ett problem i delar, skriver en liten funktion för varje del och sätter sedan ihop dem.\n\nNu gör du detta på riktigt.\n\nHärnäst ska vi titta på metoder och egenskaper, vilket är ett lite annorlunda sätt att arbeta med värden. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
+    "milestone_email_subject": "Metoder bakom vansinnet",
+    "milestone_email_content_markdown": "Snyggt jobbat. Metoder och egenskaper är en lite annorlunda stil jämfört med vad du har sett hittills. Istället för att skicka in ett värde i en funktion anropar du en funktion på själva värdet. Tanken tar lite tid att vänja sig vid, men den används överallt, så den kommer att kännas naturlig ganska snart.\n\nHärnäst ska vi titta på några kraftfullare typer av loopar: `for`-loopar, `while`-loopar, `break` och `continue`. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
+    "milestone_email_subject": "Mer än bara `repeat`",
+    "milestone_email_content_markdown": "Bra jobbat. Du har nu fått kläm på `for`-loopar, `while`-loopar, `break` och `continue`. Det här är de loopar du kommer att använda oftast utanför den här kursen, så de är väl värda tiden du har lagt ner.\n\nVar och en har ett lite annorlunda jobb, och att få en känsla för vilken du ska använda kommer med övning.\n\nHärnäst ska vi titta på arrayer, vilket är hur program lagrar och arbetar med samlingar av saker. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
+    "milestone_email_subject": "Vilken samling",
+    "milestone_email_content_markdown": "Strålande arbete. Arrayer (eller listor, som vissa kallar dem) är ett av de mest användbara verktygen i alla språk. Så gott som varje gång du hanterar mer än ett av något kommer du att använda en array.\n\nDu har nu fått ett bra grepp om hur du läser från dem och arbetar genom deras innehåll.\n\nHärnäst ska vi titta på hur man bygger upp arrayer från grunden, bit för bit. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
+    "milestone_email_subject": "Bygga upp bit för bit",
+    "milestone_email_content_markdown": "Snyggt jobbat! Att läsa från arrayer är praktiskt, men att kunna bygga upp dem bit för bit är där de verkligen kommer till sin rätt. Loopa över något, samla ihop de bitar du bryr dig om i en ny array och lämna tillbaka den – det är ett mönster du kommer att använda om och om igen.\n\nHärnäst: uppslagstabeller. Dessa låter dig lagra värden mot namngivna nycklar istället för bara positioner. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
+    "milestone_email_subject": "Namngivna av en anledning",
+    "milestone_email_content_markdown": "Bra jobbat. Uppslagstabeller låter dig lagra värden mot namngivna nycklar istället för bara positioner, vilket gör det snabbt och läsbart att slå upp saker.\n\nHärnäst, och slutligen, ska vi titta på att ändra uppslagstabeller – lägga till, uppdatera och ta bort poster allt eftersom. Ha det så roligt!"
+  },
+  {
+    "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
+    "milestone_email_subject": "Det var allt",
+    "milestone_email_content_markdown": "Och det var den sista nivån i Programmeringsgrunder. Förhoppningsvis känns uppslagstabeller som ett användbart verktyg att lägga till i mixen bredvid arrayer.\n\nDet här är en verklig prestation. Du har nu täckt alla grundläggande byggstenar inom programmering: funktioner, variabler, tillstånd, villkor, loopar, strängar, arrayer och uppslagstabeller. Allt annat härifrån är kombinationer och förfiningar av vad du redan kan.\n\nVi är riktigt stolta över dig för att du har kommit så här långt. Ha det så roligt!"
+  }
+]

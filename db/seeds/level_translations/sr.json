@@ -1,0 +1,97 @@
+[
+  {
+    "level_uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
+    "milestone_email_subject": "Čestitamo na prvoj etapi!",
+    "milestone_email_content_markdown": "Odličan posao na prvom nivou kursa Jikijevih Osnova programiranja!\n\nMožda ti se čini da još uvek ne radiš mnogo „pravog“ programiranja, ali upravo si savladao/savladala jednu od najvažnijih veština u programiranju. Od sada ćeš koristiti funkcije stotine puta dnevno, tako da je ovo zaista temelj za sve ostalo.\n\nSledeće ćemo pogledati kako da koristimo boje za crtanje, a zatim ćemo početi da uvodimo malo logike u proces. Zabavi se!"
+  },
+  {
+    "level_uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
+    "milestone_email_subject": "Je li ti se svidelo crtanje?",
+    "milestone_email_content_markdown": "Odličan posao na ovom nivou, i na tvom prvom pravom crtežu.\n\nSada si svom alatu dodao/dodala stringove i boje, što znači da tvoji programi mogu početi da rukuju tekstom i da stvaraju stvari koje zaista izgledaju dobro na ekranu.\n\nU narednih nekoliko lekcija počećemo da uvodimo malo logike, tako da možeš da ideš dalje od linearnih instrukcija i dodaš malo raznolikosti i inteligencije u svoje programe. Zabavi se!"
+  },
+  {
+    "level_uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
+    "milestone_email_subject": "Zapetljani od petlji?",
+    "milestone_email_content_markdown": "Odličan posao na ovom nivou. Petlje su osnovni gradivni blok programiranja, i nadamo se da ti postaju prilično prirodne.\n\nPostoje i druge vrste petlji koje ćemo pogledati kasnije na kursu, ali `repeat` petlja će ti biti saputnik u narednih nekoliko lekcija.\n\nSledeće slede promenljive, što je ideja skladištenja i preuzimanja vrednosti dok tvoj program radi. Zabavi se!"
+  },
+  {
+    "level_uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
+    "milestone_email_subject": "Promenljive su tvoje!",
+    "milestone_email_content_markdown": "Odličan posao, promenljive su ti pod pojasom.\n\nPromenljive su jedna od onih ideja koje su na površini prilično jednostavne, ali će od sada podupirati skoro sve što budeš napisao/napisala. Sposobnost da skladištiš vrednost, daš joj ime i kasnije je koristiš je ono što pretvara kod iz fiksne liste instrukcija u nešto zaista fleksibilno.\n\nSledeće ćemo pogledati kako se promenljive menjaju tokom vremena, što programeri nazivaju stanje. Zabavi se!"
+  },
+  {
+    "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
+    "milestone_email_subject": "Stanje stvari",
+    "milestone_email_content_markdown": "Odličan posao na ovom. Sada možeš da pratiš vrednosti koje se menjaju dok tvoj program radi, što je zaista korak napred u odnosu na stanje od pre nekoliko nivoa.\n\nOva ideja stanja će se stalno vraćati tokom kursa, i postaje sve zanimljivija svaki put kad je kombinujemo sa nečim novim.\n\nSledeći je obilan nivo. Pogledaćemo funkcije koje vraćaju vrednosti, a zatim ćemo usput istražiti boje, slučajnost, animaciju, opseg i ugnežđene petlje. Zabavi se!"
+  },
+  {
+    "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
+    "milestone_email_subject": "Bogat ulov!",
+    "milestone_email_content_markdown": "Sjajan posao na prepunom nivou. Funkcije koje vraćaju vrednosti, HSL i RGB boje, animacija, slučajni brojevi, opseg, scenariji i petlje u petljama. To je mnogo novih ideja koje odjednom dodaješ svom alatu.\n\nNe brini ako ti neke od njih još deluju malo maglovito. Sve će se one vratiti u različitim kontekstima kasnije na kursu, i svaki put će biti sve poznatije.\n\nSledeće ćemo početi da donosimo odluke u kodu koristeći `if` naredbe. Ovo je trenutak kada tvoji programi zaista počinju da deluju inteligentno. Zabavi se!"
+  },
+  {
+    "level_uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
+    "milestone_email_subject": "Ako, onda, šta?",
+    "milestone_email_content_markdown": "Lep posao na nivou uslovnih naredbi. Nadamo se da ti `if` i `else` postaju prilično prirodni.\n\nUslovne naredbe su jedna od najvažnijih ideja u programiranju. Skoro svaki zanimljiv program mora da donosi odluke na osnovu onoga što je u tom trenutku tačno, i sada imaš osnovne alate da to uradiš.\n\nSledeće ćemo pogledati moćnije načine za pisanje uslova, kombinujući ih zajedno sa `and`/`or`, plus nekoliko srodnih ideja poput ostatka pri deljenju. Zabavi se!"
+  },
+  {
+    "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
+    "milestone_email_subject": "Logični sledeći koraci",
+    "milestone_email_content_markdown": "Odličan posao na škakljivom nivou. Sada su ti `and`/`or`, ostatak pri deljenju i petlje bez brojanja pod pojasom.\n\nOvo su vrste alata koje ti omogućavaju da pišeš uslove koji zaista odgovaraju logici stvarnog sveta, umesto da moraš sve da razbijaš na sitne, odvojene provere.\n\nSledeće ćemo kombinovati uslovne naredbe sa stanjem, što je trenutak kada tvoji programi počinju da mogu da reaguju na ono što se dešava dok se izvršavaju. Zabavi se!"
+  },
+  {
+    "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
+    "milestone_email_subject": "Programi koji reaguju",
+    "milestone_email_content_markdown": "Odličan posao. Kombinovanje uslovnih naredbi sa stanjem je ono gde tvoji programi zaista počinju da deluju živo, reagujući na ono što se dešava umesto da samo prate fiksni scenario.\n\nOvo je otprilike nivo složenosti na kom ćeš pisati do kraja kursa, tako da će se sve što si ovde vežbao/vežbala stalno vraćati.\n\nSledeće je velika stvar: pisanje sopstvenih funkcija. Do sada si koristio/koristila funkcije koje je neko drugi napisao. Od sada ćeš pisati svoje. Zabavi se!"
+  },
+  {
+    "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
+    "milestone_email_subject": "Sada si ti na čelu",
+    "milestone_email_content_markdown": "Sjajan posao. Pisanje sopstvenih funkcija je pravi pomak. Više ne koristiš samo alate sa police, već gradiš nove.\n\nOvo je jedna od najvažnijih veština u celom programiranju. Dobar kod se uglavnom svodi na razbijanje problema na male, dobro imenovane funkcije, i sada imaš sve što ti treba da počneš to da radiš.\n\nSledeće ćemo se vratiti stringovima i pogledati kako da ih spajamo i ubacujemo vrednosti u njih. Zabavi se!"
+  },
+  {
+    "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
+    "milestone_email_subject": "Stringovi, zakačeni",
+    "milestone_email_content_markdown": "Lep posao na ovom. Spajanje i šabloni su prilično jednostavne ideje, ali se stalno pojavljuju, posebno svuda gde proizvodiš izlaz koji će neko čitati.\n\nKoristićeš ove tehnike u gotovo svakom programu koji od sada napišeš.\n\nSledeće ćemo pogledati kako da kopamo po stringovima karakter po karakter, i kako da petljamo kroz njihov sadržaj. Zabavi se!"
+  },
+  {
+    "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
+    "milestone_email_subject": "Slovo po slovo",
+    "milestone_email_content_markdown": "Odličan posao. Nadamo se da ti indeksiranje i petljanje kroz stringove počinje da ima smisla.\n\nSposobnost da posmatraš pojedinačne karaktere i sistematski prolaziš kroz tekst otvara ogroman spektar problema koje sada možeš da rešiš. Mnogo stvarnog programiranja se svodi upravo na ovakvu vrstu posla.\n\nSledeće ćemo pogledati kako da kombinujemo više funkcija zajedno da bismo se uhvatili u koštac sa složenijim zadacima. Zabavi se!"
+  },
+  {
+    "level_uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
+    "milestone_email_subject": "Zajedno je bolje",
+    "milestone_email_content_markdown": "Odličan posao na ovom nivou. Kombinovanje funkcija za rešavanje većih problema je ono kako profesionalno programiranje izgleda iz dana u dan. Razbiješ problem na delove, napišeš malu funkciju za svaki deo, a zatim ih spojiš.\n\nSada to radiš zaista.\n\nSledeće ćemo pogledati metode i svojstva, što je malo drugačiji način rada sa vrednostima. Zabavi se!"
+  },
+  {
+    "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
+    "milestone_email_subject": "Red u haosu",
+    "milestone_email_content_markdown": "Lep posao. Metode i svojstva su malo drugačiji stil u odnosu na ono što si do sada video/videla. Umesto da proslediš vrednost funkciji, pozivaš funkciju na samoj vrednosti.\n\nPotrebno je malo vremena da se navikneš na ovu ideju, ali se koristi svuda, tako da će brzo početi da ti deluje prirodno.\n\nSledeće ćemo pogledati neke moćnije vrste petlji: `for` petlje, `while` petlje, `break` i `continue`. Zabavi se!"
+  },
+  {
+    "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
+    "milestone_email_subject": "Više od samog ponavljanja",
+    "milestone_email_content_markdown": "Odličan posao. Sada su ti `for` petlje, `while` petlje, `break` i `continue` pod pojasom. Ovo su petlje za kojima ćeš najčešće posezati van ovog kursa, tako da su zaista vredne vremena koje si uložio/uložila.\n\nSvaka od njih ima malo drugačiju ulogu, a osećaj za to koju odabrati doći će s vežbom.\n\nSledeće ćemo pogledati nizove, što je način na koji programi skladište i rade sa kolekcijama stvari. Zabavi se!"
+  },
+  {
+    "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
+    "milestone_email_subject": "Prava kolekcija",
+    "milestone_email_content_markdown": "Sjajan posao. Nizovi (ili liste, kako ih neki zovu) su jedan od najkorisnijih alata u bilo kom jeziku. Skoro uvek kada radiš sa više od jedne stvari, posegnućeš za nizom.\n\nSada dobro razumeš kako da čitaš iz njih i prolaziš kroz njihov sadržaj.\n\nSledeće ćemo pogledati kako da gradimo nizove od nule, deo po deo. Zabavi se!"
+  },
+  {
+    "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
+    "milestone_email_subject": "Gradimo stvari",
+    "milestone_email_content_markdown": "Lep posao! Čitanje iz nizova je korisno, ali mogućnost da ih gradiš deo po deo je ono gde oni zaista dolaze do izražaja. Prođeš kroz nešto petljom, sakupiš delove do kojih ti je stalo u novi niz, i vratiš ga nazad — to je šablon za kojim ćeš posezati iznova i iznova.\n\nSledeće: rečnici. Oni ti omogućavaju da skladištiš vrednosti pod imenovanim ključevima, a ne samo po pozicijama. Zabavi se!"
+  },
+  {
+    "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
+    "milestone_email_subject": "Imenovani s razlogom",
+    "milestone_email_content_markdown": "Sjajno. Rečnici ti omogućavaju da skladištiš vrednosti pod imenovanim ključevima, a ne samo po pozicijama, što čini pretragu brzom i čitljivom.\n\nSledeće, i poslednje, pogledaćemo menjanje rečnika — dodavanje, ažuriranje i uklanjanje unosa u hodu. Zabavi se!"
+  },
+  {
+    "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
+    "milestone_email_subject": "To je to!",
+    "milestone_email_content_markdown": "I to je poslednji nivo Osnova programiranja. Nadamo se da ti rečnici deluju kao koristan alat koji treba dodati u mešavinu pored nizova.\n\nOvo je zaista postignuće. Sada si pokrio/pokrila svaki osnovni gradivni blok programiranja: funkcije, promenljive, stanje, uslovne naredbe, petlje, stringove, nizove i rečnike. Sve ostalo odavde su kombinacije i usavršavanja onoga što već znaš.\n\nZaista smo ponosni na tebe što si stigao/stigla ovako daleko. Zabavi se!"
+  }
+]
