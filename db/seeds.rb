@@ -35,6 +35,12 @@ if sync_result[:orphaned_levels].any? || sync_result[:orphaned_lessons].any?
   sync_result[:orphaned_lessons].each { |slug| puts "   - lesson: #{slug}" }
 end
 
+# == Level milestone email translations ==
+# Synced from level_translations.json, matched by level uuid + locale. See
+# docs/i18n.md for where this fits alongside the rest of the app's i18n content.
+Level::Translation::CreateAllFromJson.(Rails.root.join("db", "seeds", "level_translations.json").to_s)
+puts "✓ Level translations: #{Level::Translation.count}"
+
 # == Concepts ==
 concepts_file = Rails.root.join("db", "seeds", "concepts.json")
 raise "Missing concepts seed file at #{concepts_file}" unless File.exist?(concepts_file)
