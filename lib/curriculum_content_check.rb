@@ -64,23 +64,23 @@ module CurriculumContentCheck
     {
       'level' => levels.map { |level| [level[:slug], "levels/#{level[:slug]}.ts"] },
       'exercise' => lessons.select { |l| l[:type] == 'exercise' }.
-        map { |l| [l[:slug], "exercises/#{l[:slug]}/instructions/source.md"] },
+        map { |l| [l[:slug], "exercises/#{l[:slug]}/instructions.md"] },
       'concept' => seeds('concepts.json').map { |c| [c[:slug], "concepts/#{c[:slug]}/source.md"] },
       # Challenges are exercises on the front end, reached via exercise_slug.
       'challenge' => seeds('challenges.json').
-        map { |c| [c[:slug], "exercises/#{c[:exercise_slug]}/instructions/source.md"] }
+        map { |c| [c[:slug], "exercises/#{c[:exercise_slug]}/instructions.md"] }
     }
   end
 
-  # Video lessons and badges are keyed inside a single per-locale JSON file
+  # Video lessons and badges are keyed inside a single English source catalogue
   # rather than getting a file each, so they are checked by key.
   def keyed_expectations
     lessons = seeds('curriculum.json')[:levels].flat_map { |level| level[:lessons] }
 
     {
-      'video lesson' => ['video-lessons/locales/en/translation.json',
+      'video lesson' => ['video-lessons/messages.json',
                          lessons.select { |l| l[:type] == 'video' }.map { |l| l[:slug] }],
-      'badge' => ['badges/locales/en/translation.json', BADGE_SLUGS]
+      'badge' => ['badges/messages.json', BADGE_SLUGS]
     }
   end
 
