@@ -1,0 +1,35 @@
+name: Locale completeness
+
+# A locale in PRODUCTION_LOCALES is being served to users, so every key English
+# has must be present and non-empty in it. The i18n parity test reports the same
+# drift for work-in-progress locales, but only as a warning - deliberately, since
+# a half-translated WIP locale must not block anyone. This is the hard gate, and
+# it arms the moment a locale is promoted.
+on:
+  pull_request:
+    paths:
+      - 'config/locales/**'
+      - 'config/initializers/i18n.rb'
+      - 'lib/locale_completeness_check.rb'
+      - '.github/workflows/locale-completeness.yml'
+  push:
+    branches: [ main ]
+
+jobs:
+  verify_locales:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout API
+        uses: actions/checkout@v7
+
+      # The check is plain Ruby against the locale YAML, so it needs no bundle,
+      # no database and none of the app's native dependencies.
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: false
+
+      - name: Verify every production locale is complete
+        run: ruby lib/locale_completeness_check.rb
