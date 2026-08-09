@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (tr.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+tr:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Onaylama talimatları
+        preview: 'E-postanızı aşağıdaki bağlantıyı takip ederek onaylayabilirsiniz:'
+        greeting: Hoşgeldiniz %{name}!
+        body_markdown: 'E-postanızı aşağıdaki bağlantıyı takip ederek onaylayabilirsiniz:'
+        cta: Hesabımı onayla
+      reset_password_instructions:
+        subject: Parola sıfırlama talimatları
+        preview: Birisi parolanızı değiştirmek için bir istek gönderdi, aşağıdaki bağlantıyı kullanarak bunu yapabilirsiniz.
+        greeting: Merhaba %{name}!
+        body_markdown: Birisi parolanızı değiştirmek için bir istek gönderdi, aşağıdaki bağlantıyı kullanarak bunu yapabilirsiniz.
+        cta: Parolamı değiştir
+        footer: Eğer bu isteği siz yapmadıysanız, bu e-postayı görmezden gelebilirsiniz. Parolanız yukarıdaki bağlantıyı kullanıp, yeni bir parola oluşturmadığınız sürece değişmeyecektir.

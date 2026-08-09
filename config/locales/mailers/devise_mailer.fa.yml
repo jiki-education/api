@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (fa.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+fa:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: راهنمای تایید
+        preview: 'شما می توانید ایمیل حساب کاربری خود را از طریق لینک زیر تایید کنید:'
+        greeting: خوش آمدید %{name}!
+        body_markdown: 'شما می توانید ایمیل حساب کاربری خود را از طریق لینک زیر تایید کنید:'
+        cta: حساب مرا تایید کن
+      reset_password_instructions:
+        subject: راهنمای بازنشانی رمز عبور
+        preview: شخصی درخواست تغییر رمز عبور شما را داده و شما می توانید این کار را از طریق لینک زیر انجام دهید.
+        greeting: سلام %{name}!
+        body_markdown: شخصی درخواست تغییر رمز عبور شما را داده و شما می توانید این کار را از طریق لینک زیر انجام دهید.
+        cta: رمز عبور مرا تغییر بده
+        footer: اگر شما این درخواست را ارسال نکرده اید لطفا این ایمیل را نادیده بگیرید. رمز عبور شما تا زمانی که به لینک بالا مراجعه نکنید و رمز عبور جدید نسازید تغییر نخواهد کرد

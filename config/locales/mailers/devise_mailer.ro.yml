@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (ro.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+ro:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Instrucţiuni de confirmare
+        preview: 'Vă puteți confirma emailul prin link-ul de mai jos:'
+        greeting: Bine ați venit %{name}!
+        body_markdown: 'Vă puteți confirma emailul prin link-ul de mai jos:'
+        cta: Confirmă accontul meu
+      reset_password_instructions:
+        subject: Instrucțiuni pentru resetarea parolei
+        preview: Cineva a cerut un link pentru a schimba parola, puteți să faceți acest lucru prin link-ul de mai jos.
+        greeting: Bună %{name}!
+        body_markdown: Cineva a cerut un link pentru a schimba parola, puteți să faceți acest lucru prin link-ul de mai jos.
+        cta: Schimbă parola
+        footer: Dacă nu ați cerut acest lucru, vă rugăm să ignorați acest email. Parola dvs. nu se v-a schimba până când nu accesați link-ul de mai sus și setați una nouă.

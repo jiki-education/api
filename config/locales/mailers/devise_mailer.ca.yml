@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (ca.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+ca:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Instruccions de confirmació
+        preview: 'Pots confirmar el correu electrònic del teu compte a través d''aquest enllaç:'
+        greeting: Benvingut %{name}!
+        body_markdown: 'Pots confirmar el correu electrònic del teu compte a través d''aquest enllaç:'
+        cta: Confirmar el meu compte
+      reset_password_instructions:
+        subject: Instruccions de regeneració de contrasenya
+        preview: Algú ha sol·licitat un enllaç per a canviar la teva contrasenya, pots fer-ho amb el següent enllaç.
+        greeting: Hola %{name}!
+        body_markdown: Algú ha sol·licitat un enllaç per a canviar la teva contrasenya, pots fer-ho amb el següent enllaç.
+        cta: Canviar la meva contrasenya
+        footer: Si tu no ho has sol·licitat, si us plau ignora aquest email. La teva contrasenya no serà canviada fins que accedeixis a l'enllaç i en creïs una nova.

@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (bn.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+bn:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: নিশ্চিতকরণ নির্দেশাবলী
+        preview: 'আপনার ইমেল ঠিকানা নিশ্চিত করার জন্য নিম্নলিখিত লিঙ্কটি ক্লিক করুন:'
+        greeting: স্বাগতম %{name}!
+        body_markdown: 'আপনার ইমেল ঠিকানা নিশ্চিত করার জন্য নিম্নলিখিত লিঙ্কটি ক্লিক করুন:'
+        cta: নিশ্চিতকরণ নির্দেশাবলী পাঠান
+      reset_password_instructions:
+        subject: পাসওয়ার্ড রিসেট করার নির্দেশাবলী
+        preview: 'আপনার পাসওয়ার্ড পুনরুদ্ধার করার জন্য নিম্নলিখিত লিঙ্কটি ক্লিক করুন:'
+        greeting: স্বাগতম %{name}!
+        body_markdown: 'আপনার পাসওয়ার্ড পুনরুদ্ধার করার জন্য নিম্নলিখিত লিঙ্কটি ক্লিক করুন:'
+        cta: আমার পাসওয়ার্ড পুনরুদ্ধার করুন
+        footer: আপনি যদি পাসওয়ার্ড পুনরুদ্ধার করার অনুরোধ না করে থাকেন, তবে আর কিছু করার দরকার নেই। আপনার পাসওয়ার্ড পরিবর্তন কেবল লিংকে ক্লিক করে তা পরিবর্তনের মাধ্যমে সম্পন্ন হবে।

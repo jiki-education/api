@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (pl.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+pl:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Instrukcja aktywacji konta
+        preview: 'Możesz potwierdzić swoje konto przy pomocy poniższego linku:'
+        greeting: Witaj %{name}!
+        body_markdown: 'Możesz potwierdzić swoje konto przy pomocy poniższego linku:'
+        cta: Potwierdź swoje konto
+      reset_password_instructions:
+        subject: Instrukcja ustawienia nowego hasła
+        preview: Ktoś zażądał zmiany hasła do Twojego konta. Hasło możesz zmienić wchodząc na poniższy link.
+        greeting: Cześć %{name}!
+        body_markdown: Ktoś zażądał zmiany hasła do Twojego konta. Hasło możesz zmienić wchodząc na poniższy link.
+        cta: Zmień swoje hasło
+        footer: Jeśli to nie Ty zażądałeś zmiany hasła, proszę zignoruj tę wiadomość. Twoje hasło nie ulegnie zmianie dopóki nie wejdziesz na poniższy link i nie ustawisz nowego.

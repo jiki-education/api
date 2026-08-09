@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (de.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+de:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Anleitung zur Konto-Bestätigung
+        preview: 'Klicken Sie auf den folgenden Link, um Ihr Konto zu bestätigen:'
+        greeting: Willkommen %{name}!
+        body_markdown: 'Klicken Sie auf den folgenden Link, um Ihr Konto zu bestätigen:'
+        cta: Mein Konto bestätigen
+      reset_password_instructions:
+        subject: Anweisungen zum Zurücksetzen Ihres Passworts
+        preview: Jemand hat einen Link zum Ändern Ihres Passworts angefordert. Klicken Sie auf den folgenden Link, um Ihr Passwort zu ändern.
+        greeting: Hallo %{name}!
+        body_markdown: Jemand hat einen Link zum Ändern Ihres Passworts angefordert. Klicken Sie auf den folgenden Link, um Ihr Passwort zu ändern.
+        cta: Passwort ändern
+        footer: Ignorieren Sie diese E-Mail, wenn Sie kein neues Passwort angefordert haben. Ihr Passwort wird erst geändert, wenn Sie den obigen Link nutzen und ein neues Passwort festlegen.

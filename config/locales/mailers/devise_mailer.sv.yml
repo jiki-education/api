@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (sv.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+sv:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Instruktioner för bekräftning av konto
+        preview: 'Du kan bekräfta ditt konto med länken nedan:'
+        greeting: Välkommen %{name}!
+        body_markdown: 'Du kan bekräfta ditt konto med länken nedan:'
+        cta: Bekräfta mitt konto
+      reset_password_instructions:
+        subject: Instruktioner för återställning av lösenord
+        preview: Någon har begärt att ändra ditt lösenord. Du kan göra det genom länken nedan.
+        greeting: Hej %{name}!
+        body_markdown: Någon har begärt att ändra ditt lösenord. Du kan göra det genom länken nedan.
+        cta: Byt lösenord
+        footer: Om ändringen inte begärdes utav dig, var snäll att ignorera detta email. Ditt lösenord ändras ej förrän du följer länken ovan och skapar ett nytt lösenord.

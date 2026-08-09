@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (fr.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+fr:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Instructions de confirmation
+        preview: 'Vous pouvez confirmer votre email grâce au lien ci-dessous :'
+        greeting: Bienvenue %{name} !
+        body_markdown: 'Vous pouvez confirmer votre email grâce au lien ci-dessous :'
+        cta: Confirmer mon email
+      reset_password_instructions:
+        subject: Instructions pour changer le mot de passe
+        preview: 'Quelqu''un a demandé un lien pour changer votre mot de passe, le voici :'
+        greeting: Bonjour %{name} !
+        body_markdown: 'Quelqu''un a demandé un lien pour changer votre mot de passe, le voici :'
+        cta: Changer mon mot de passe
+        footer: Si vous n'avez pas émis cette demande, merci d'ignorer cet email. Votre mot de passe ne changera pas tant que vous n'aurez pas cliqué sur ce lien et renseigné un nouveau mot de passe.
