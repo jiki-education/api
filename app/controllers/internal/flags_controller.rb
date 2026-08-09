@@ -7,7 +7,7 @@ class Internal::FlagsController < Internal::BaseController
     User::Flag::Mark.(current_user, namespaced_key)
     render json: { flagged: true }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:flag_invalid, errors: e.record.errors.as_json)
+    render_422(:flag_invalid, errors: e.record.errors.details)
   end
 
   private

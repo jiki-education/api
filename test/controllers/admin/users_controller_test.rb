@@ -251,7 +251,7 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["email"], "has already been taken"
+    assert_equal "taken", json["error"]["errors"]["email"].first["error"]
   end
 
   test "PATCH update ignores non-email fields" do

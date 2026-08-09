@@ -29,9 +29,10 @@ class I18nRenderingTest < ActionDispatch::IntegrationTest
     refute body["error"].key?("message")
   end
 
-  # A 422 ActiveRecord validation error: the top-level type is locale-independent,
-  # but the errors.as_json field messages (rails-i18n hu defaults) still resolve in hu.
-  test "422 validation error field messages render in Hungarian" do
+  # A 422 ActiveRecord validation error: errors.details is locale-independent
+  # by construction (Rails validator error keys, not translated prose), so the
+  # field-level errors are identical regardless of the request's locale.
+  test "422 validation error field details are locale-independent" do
     user = create(:user, locale: "hu")
     sign_in_user(user)
 
@@ -41,9 +42,7 @@ class I18nRenderingTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert_equal "email_update_failed", body.dig("error", "type")
     refute body["error"].key?("message")
-
-    hu_invalid = I18n.with_locale(:hu) { I18n.t("errors.messages.invalid") }
-    assert_equal [hu_invalid], body.dig("error", "errors", "email")
+    assert_equal [{ "error" => "invalid", "value" => "not-an-email" }], body.dig("error", "errors", "email")
   end
 
   # An unsupported ?locale param must be ignored, not raise I18n::InvalidLocale

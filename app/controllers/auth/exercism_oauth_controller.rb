@@ -26,7 +26,7 @@ module Auth
       render json: {
         error: {
           type: :validation_error,
-          errors: e.record.errors.messages
+          errors: e.record.errors.details
         }
       }, status: :unprocessable_entity
     end

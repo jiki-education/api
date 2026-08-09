@@ -57,7 +57,7 @@ copy included as a starting point for the front-end catalogue.
 - `unknown_segment` - "Unknown audience segment"
 - `mailshot_body_blank` - "Add content before sending this mailshot"
 - `mailshot_already_sent` - "This mailshot has already been sent and can't be deleted"
-- `validation_error` - "Validation failed" (extra: `errors` - an ActiveRecord `errors.messages` hash, e.g. `{ "email" => ["is invalid"] }`; the front-end must map those Rails error-detail strings too, not just the top-level type)
+- `validation_error` - "Validation failed" (extra: `errors` - an ActiveRecord `errors.details` hash keyed by field, e.g. `{ "email" => [{ "error" => "invalid", "value" => "bad" }], "password" => [{ "error" => "too_short", "count" => 6 }] }`. Like `error.type`, `error` here is a stable, locale-independent key (Rails' built-in validator error keys - `blank`, `invalid`, `taken`, `too_short`/`too_long` with `count`, `inclusion`, etc.) - map it to your own localized copy per field. Some entries also carry the submitted `value` (present for format/inclusion-style validators, not length/presence) - only ever the user's own input echoed back, nothing else)
 - `invalid_event` - "Unknown analytics event"
 
 ### File submission
@@ -110,7 +110,6 @@ copy included as a starting point for the front-end catalogue.
 - `invalid_session` - "Invalid session"
 - `verification_failed` - "Verification failed"
 - `no_subscription` - "No active subscription"
-- `same_tier` - "Already on this tier" (note: the live `update` action actually raises `same_interval`, not `same_tier` - the YAML key was already stale before this change)
 - `same_interval` - was "You are already on {interval} billing" - front-end already has `interval` from its own request, no extra needed
 - `update_failed` - "Subscription update failed"
 - `invalid_request` - "Invalid request"
