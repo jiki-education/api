@@ -36,9 +36,12 @@ if sync_result[:orphaned_levels].any? || sync_result[:orphaned_lessons].any?
 end
 
 # == Level milestone email translations ==
-# Synced from level_translations.json, matched by level uuid + locale. See
-# docs/i18n.md for where this fits alongside the rest of the app's i18n content.
-Level::Translation::CreateAllFromJson.(Rails.root.join("db", "seeds", "level_translations.json").to_s)
+# One file per locale under level_translations/ (e.g. hu.json), matched by
+# level uuid. See docs/i18n.md for where this fits alongside the rest of the
+# app's i18n content.
+Dir.glob(Rails.root.join("db", "seeds", "level_translations", "*.json")).sort.each do |file_path|
+  Level::Translation::CreateAllFromJson.(file_path)
+end
 puts "✓ Level translations: #{Level::Translation.count}"
 
 # == Concepts ==
