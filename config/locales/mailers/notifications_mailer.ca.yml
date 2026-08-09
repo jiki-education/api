@@ -1,0 +1,6 @@
+ca:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Hola,"
+      signoff: "Salutacions,"
+      team: "Jeremy i l'equip"

@@ -1,0 +1,6 @@
+"zh-CN":
+  notifications_mailer:
+    badge_earned:
+      greeting: "您好，"
+      signoff: "祝好，"
+      team: "Jeremy 和团队"

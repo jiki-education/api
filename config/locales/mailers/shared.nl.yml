@@ -1,0 +1,9 @@
+nl:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Je ontvangt deze e-mail omdat je een account hebt bij %{jiki_link}."
+        manage_preferences_only_html: "Wil je aanpassen hoe je deze e-mails ontvangt? Je kunt %{preferences_link}"
+        manage_with_unsubscribe_html: "Wil je aanpassen hoe je deze e-mails ontvangt? Je kunt %{preferences_link} of %{unsubscribe_link} voor deze lijst."
+        update_preferences: "je voorkeuren aanpassen"
+        unsubscribe: "je afmelden"

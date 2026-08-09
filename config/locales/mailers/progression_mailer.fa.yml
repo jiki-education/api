@@ -1,0 +1,6 @@
+fa:
+  progression_mailer:
+    level_completed:
+      greeting: "سلام،"
+      signoff: "با احترام،"
+      team: "جرمی و تیم"

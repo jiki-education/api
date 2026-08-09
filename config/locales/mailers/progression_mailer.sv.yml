@@ -1,0 +1,6 @@
+sv:
+  progression_mailer:
+    level_completed:
+      greeting: "Hej,"
+      signoff: "Vänliga hälsningar,"
+      team: "Jeremy & teamet"

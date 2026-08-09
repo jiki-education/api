@@ -1,0 +1,6 @@
+ro:
+  progression_mailer:
+    level_completed:
+      greeting: "Salut,"
+      signoff: "Cu drag,"
+      team: "Jeremy și echipa"

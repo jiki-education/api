@@ -1,0 +1,9 @@
+tr:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Bu e-postayı %{jiki_link} üzerinde bir hesabın olduğu için alıyorsun."
+        manage_preferences_only_html: "Bu e-postaları nasıl aldığını değiştirmek ister misin? %{preferences_link}."
+        manage_with_unsubscribe_html: "Bu e-postaları nasıl aldığını değiştirmek ister misin? %{preferences_link} ya da bu listeden %{unsubscribe_link}."
+        update_preferences: "tercihlerini güncelleyebilirsin"
+        unsubscribe: "abonelikten çıkabilirsin"

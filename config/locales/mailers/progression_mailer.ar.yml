@@ -1,0 +1,6 @@
+ar:
+  progression_mailer:
+    level_completed:
+      greeting: "مرحبًا،"
+      signoff: "مع التحية،"
+      team: "جيريمي والفريق"

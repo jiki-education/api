@@ -1,0 +1,6 @@
+"pt-PT":
+  notifications_mailer:
+    badge_earned:
+      greeting: "Olá,"
+      signoff: "Cumprimentos,"
+      team: "Jeremy e a equipa"

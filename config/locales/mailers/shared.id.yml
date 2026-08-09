@@ -1,0 +1,9 @@
+id:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Kamu menerima email ini karena kamu memiliki akun di %{jiki_link}."
+        manage_preferences_only_html: "Ingin mengubah cara kamu menerima email ini? Kamu bisa %{preferences_link}"
+        manage_with_unsubscribe_html: "Ingin mengubah cara kamu menerima email ini? Kamu bisa %{preferences_link} atau %{unsubscribe_link} dari daftar ini."
+        update_preferences: "memperbarui preferensimu"
+        unsubscribe: "berhenti berlangganan"

@@ -1,0 +1,6 @@
+ru:
+  progression_mailer:
+    level_completed:
+      greeting: "Здравствуйте,"
+      signoff: "С уважением,"
+      team: "Джереми и команда"

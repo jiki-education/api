@@ -1,0 +1,6 @@
+it:
+  progression_mailer:
+    level_completed:
+      greeting: "Ciao,"
+      signoff: "A presto,"
+      team: "Jeremy e il team"

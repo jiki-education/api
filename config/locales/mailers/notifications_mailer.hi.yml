@@ -1,0 +1,6 @@
+hi:
+  notifications_mailer:
+    badge_earned:
+      greeting: "नमस्ते,"
+      signoff: "शुभकामनाएँ,"
+      team: "जेरेमी और टीम"

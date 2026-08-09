@@ -1,0 +1,6 @@
+vi:
+  progression_mailer:
+    level_completed:
+      greeting: "Xin chào,"
+      signoff: "Thân mến,"
+      team: "Jeremy và nhóm"

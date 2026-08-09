@@ -1,0 +1,9 @@
+"zh-CN":
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "您收到这封邮件，是因为您在 %{jiki_link} 拥有账号。"
+        manage_preferences_only_html: "想更改接收这些邮件的方式吗？您可以%{preferences_link}。"
+        manage_with_unsubscribe_html: "想更改接收这些邮件的方式吗？您可以%{preferences_link}，或%{unsubscribe_link}此列表。"
+        update_preferences: "更新您的偏好设置"
+        unsubscribe: "退订"

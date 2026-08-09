@@ -1,0 +1,6 @@
+sw:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Habari,"
+      signoff: "Asante,"
+      team: "Jeremy na Timu"

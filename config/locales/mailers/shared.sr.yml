@@ -1,0 +1,9 @@
+sr:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Primaš ovaj imejl jer imaš nalog na %{jiki_link}."
+        manage_preferences_only_html: "Želiš da promeniš način na koji primaš ove imejlove? Možeš %{preferences_link}"
+        manage_with_unsubscribe_html: "Želiš da promeniš način na koji primaš ove imejlove? Možeš %{preferences_link} ili %{unsubscribe_link} sa ove liste."
+        update_preferences: "da ažuriraš svoja podešavanja"
+        unsubscribe: "da se odjaviš"

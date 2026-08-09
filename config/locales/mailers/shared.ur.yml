@@ -1,0 +1,9 @@
+ur:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "آپ کو یہ ای میل اس لیے موصول ہوئی ہے کیونکہ %{jiki_link} پر آپ کا اکاؤنٹ ہے۔"
+        manage_preferences_only_html: "کیا آپ یہ ای میلز موصول کرنے کا طریقہ بدلنا چاہتے ہیں؟ آپ %{preferences_link}"
+        manage_with_unsubscribe_html: "کیا آپ یہ ای میلز موصول کرنے کا طریقہ بدلنا چاہتے ہیں؟ آپ %{preferences_link} یا اس فہرست سے %{unsubscribe_link}۔"
+        update_preferences: "اپنی ترجیحات اپ ڈیٹ کر سکتے ہیں"
+        unsubscribe: "سبسکرپشن منسوخ کر سکتے ہیں"

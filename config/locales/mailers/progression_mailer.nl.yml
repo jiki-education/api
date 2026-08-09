@@ -1,0 +1,6 @@
+nl:
+  progression_mailer:
+    level_completed:
+      greeting: "Hoi,"
+      signoff: "Groeten,"
+      team: "Jeremy & het team"

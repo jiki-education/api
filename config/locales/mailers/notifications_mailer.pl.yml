@@ -1,0 +1,6 @@
+pl:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Cześć,"
+      signoff: "Pozdrawiamy,"
+      team: "Jeremy i zespół"

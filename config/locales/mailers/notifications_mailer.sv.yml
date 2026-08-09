@@ -1,0 +1,6 @@
+sv:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Hej,"
+      signoff: "Vänliga hälsningar,"
+      team: "Jeremy & teamet"

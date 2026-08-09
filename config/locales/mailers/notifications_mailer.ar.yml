@@ -1,0 +1,6 @@
+ar:
+  notifications_mailer:
+    badge_earned:
+      greeting: "مرحبًا،"
+      signoff: "مع التحية،"
+      team: "جيريمي والفريق"

@@ -1,0 +1,6 @@
+el:
+  progression_mailer:
+    level_completed:
+      greeting: "Γεια σου,"
+      signoff: "Με εκτίμηση,"
+      team: "Ο Jeremy και η ομάδα"

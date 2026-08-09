@@ -1,0 +1,6 @@
+id:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Halo,"
+      signoff: "Salam,"
+      team: "Jeremy & Tim"

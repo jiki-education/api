@@ -1,0 +1,6 @@
+sr:
+  progression_mailer:
+    level_completed:
+      greeting: "Zdravo,"
+      signoff: "Pozdrav,"
+      team: "Jeremy i tim"

@@ -1,0 +1,6 @@
+it:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Ciao,"
+      signoff: "A presto,"
+      team: "Jeremy e il team"

@@ -1,0 +1,6 @@
+sr:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Zdravo,"
+      signoff: "Pozdrav,"
+      team: "Jeremy i tim"

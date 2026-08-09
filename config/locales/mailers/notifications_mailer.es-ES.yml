@@ -1,0 +1,6 @@
+"es-ES":
+  notifications_mailer:
+    badge_earned:
+      greeting: "Hola,"
+      signoff: "Un saludo,"
+      team: "Jeremy y el equipo"

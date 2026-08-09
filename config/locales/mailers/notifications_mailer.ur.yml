@@ -1,0 +1,6 @@
+ur:
+  notifications_mailer:
+    badge_earned:
+      greeting: "سلام،"
+      signoff: "نیک تمناؤں کے ساتھ،"
+      team: "جیریمی اور ٹیم"

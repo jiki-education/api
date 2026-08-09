@@ -1,0 +1,9 @@
+ca:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Reps aquest correu perquè tens un compte a %{jiki_link}."
+        manage_preferences_only_html: "Vols canviar com reps aquests correus? Pots %{preferences_link}"
+        manage_with_unsubscribe_html: "Vols canviar com reps aquests correus? Pots %{preferences_link} o %{unsubscribe_link} d'aquesta llista."
+        update_preferences: "actualitzar les teves preferències"
+        unsubscribe: "donar-te de baixa"

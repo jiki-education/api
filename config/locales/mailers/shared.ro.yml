@@ -1,0 +1,9 @@
+ro:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Primești acest e-mail deoarece ai un cont pe %{jiki_link}."
+        manage_preferences_only_html: "Vrei să schimbi modul în care primești aceste e-mailuri? Poți %{preferences_link}"
+        manage_with_unsubscribe_html: "Vrei să schimbi modul în care primești aceste e-mailuri? Poți %{preferences_link} sau %{unsubscribe_link} de la această listă."
+        update_preferences: "să îți actualizezi preferințele"
+        unsubscribe: "să te dezabonezi"

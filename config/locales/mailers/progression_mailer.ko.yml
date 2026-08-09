@@ -1,0 +1,6 @@
+ko:
+  progression_mailer:
+    level_completed:
+      greeting: "안녕하세요,"
+      signoff: "감사합니다,"
+      team: "Jeremy와 팀 일동"

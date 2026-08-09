@@ -1,0 +1,6 @@
+"zh-CN":
+  progression_mailer:
+    level_completed:
+      greeting: "您好，"
+      signoff: "祝好，"
+      team: "Jeremy 和团队"

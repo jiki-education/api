@@ -1,0 +1,6 @@
+bn:
+  progression_mailer:
+    level_completed:
+      greeting: "হ্যালো,"
+      signoff: "শুভেচ্ছান্তে,"
+      team: "জেরেমি ও টিম"

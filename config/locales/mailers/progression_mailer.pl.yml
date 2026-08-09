@@ -1,0 +1,6 @@
+pl:
+  progression_mailer:
+    level_completed:
+      greeting: "Cześć,"
+      signoff: "Pozdrawiamy,"
+      team: "Jeremy i zespół"
