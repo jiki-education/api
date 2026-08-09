@@ -10,35 +10,35 @@ class Internal::SettingsController < Internal::BaseController
     User::UpdateName.(current_user, params[:value])
     render json: { settings: SerializeSettings.(current_user) }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:name_update_failed, errors: e.record.errors.as_json)
+    render_422(:name_update_failed, errors: e.record.errors.details)
   end
 
   def email
     User::UpdateEmail.(current_user, params[:value])
     render json: { settings: SerializeSettings.(current_user) }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:email_update_failed, errors: e.record.errors.as_json)
+    render_422(:email_update_failed, errors: e.record.errors.details)
   end
 
   def password
     User::UpdatePassword.(current_user, params[:value])
     render json: { settings: SerializeSettings.(current_user) }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:password_update_failed, errors: e.record.errors.as_json)
+    render_422(:password_update_failed, errors: e.record.errors.details)
   end
 
   def locale
     User::UpdateLocale.(current_user, params[:value])
     render json: { settings: SerializeSettings.(current_user) }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:locale_update_failed, errors: e.record.errors.as_json)
+    render_422(:locale_update_failed, errors: e.record.errors.details)
   end
 
   def handle
     User::UpdateHandle.(current_user, params[:value])
     render json: { settings: SerializeSettings.(current_user) }
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:handle_update_failed, errors: e.record.errors.as_json)
+    render_422(:handle_update_failed, errors: e.record.errors.details)
   end
 
   def notification
@@ -47,15 +47,15 @@ class Internal::SettingsController < Internal::BaseController
   rescue InvalidNotificationSlugError
     render_404(:not_found)
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:notification_update_failed, errors: e.record.errors.as_json)
+    render_422(:notification_update_failed, errors: e.record.errors.details)
   end
 
   def streaks
     User::UpdateStreaksEnabled.(current_user, params[:enabled])
     render json: { settings: SerializeSettings.(current_user) }
   rescue InvalidBooleanError
-    render_422(:streaks_update_failed, errors: { enabled: [I18n.t("validations.boolean_required")] })
+    render_422(:streaks_update_failed, errors: { enabled: [{ error: :boolean_required }] })
   rescue ActiveRecord::RecordInvalid => e
-    render_422(:streaks_update_failed, errors: e.record.errors.as_json)
+    render_422(:streaks_update_failed, errors: e.record.errors.details)
   end
 end

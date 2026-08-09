@@ -18,7 +18,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "monthly", result[:interval]
     assert_equal "paid", result[:payment_status]
     assert_equal "paid", result[:payment_state]
-    assert_nil result[:decline_reason]
+    assert_nil result[:decline_code]
     assert_equal "active", result[:subscription_status]
 
     user.data.reload
@@ -77,7 +77,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     stripe_session.stubs(:currency).returns("gbp")
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
-    payment_intent = stub(last_payment_error: stub(message: "Your card has insufficient funds."))
+    payment_intent = stub(last_payment_error: stub(code: "insufficient_funds", decline_code: nil))
     detailed = stub(payment_intent:)
     ::Stripe::Checkout::Session.expects(:retrieve).
       with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
@@ -86,9 +86,32 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
-    assert_equal "Your card has insufficient funds.", error.decline_reason
+    assert_equal "insufficient_funds", error.decline_code
     assert_equal "monthly", error.interval
     assert_equal "gbp", error.currency
+  end
+
+  test "collapses sensitive decline codes to the generic card_declined rather than exposing the real reason" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_123")
+
+    stripe_session = mock
+    stripe_session.stubs(:metadata).returns("price_id" => Jiki.config.stripe_premium_monthly_price_id)
+    stripe_session.stubs(:customer).returns("cus_123")
+    stripe_session.stubs(:status).returns("open")
+    stripe_session.stubs(:currency).returns("gbp")
+    ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
+
+    payment_intent = stub(last_payment_error: stub(decline_code: "stolen_card"))
+    detailed = stub(payment_intent:)
+    ::Stripe::Checkout::Session.expects(:retrieve).
+      with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
+      returns(detailed)
+
+    error = assert_raises(StripeCheckoutSessionIncompleteError) do
+      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    end
+    assert_equal "card_declined", error.decline_code
   end
 
   test "derives the decline reason from the subscription invoice in subscription mode" do
@@ -109,13 +132,13 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       with(id: "cs_test_123", expand: ["payment_intent", "subscription.latest_invoice.payments"]).
       returns(detailed)
 
-    payment_intent = stub(last_payment_error: stub(message: "Your card was declined."))
+    payment_intent = stub(last_payment_error: stub(decline_code: "generic_decline"))
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(payment_intent)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
-    assert_equal "Your card was declined.", error.decline_reason
+    assert_equal "generic_decline", error.decline_code
   end
 
   test "raises StripeCheckoutSessionIncompleteError with nil reason when no payment was attempted" do
@@ -137,7 +160,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
-    assert_nil error.decline_reason
+    assert_nil error.decline_code
   end
 
   test "swallows Stripe errors while fetching the decline reason" do
@@ -157,7 +180,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
       Stripe::VerifyCheckoutSession.(user, "cs_test_123")
     end
-    assert_nil error.decline_reason
+    assert_nil error.decline_code
   end
 
   test "does not adopt the customer id when the checkout is incomplete" do
@@ -287,7 +310,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     assert_equal "monthly", result[:interval]
     assert_equal "unpaid", result[:payment_status]
     assert_equal "processing", result[:payment_state]
-    assert_nil result[:decline_reason]
+    assert_nil result[:decline_code]
     assert_equal "incomplete", result[:subscription_status]
 
     user.data.reload
@@ -313,7 +336,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
 
     assert_equal "processing", result[:payment_state]
-    assert_nil result[:decline_reason]
+    assert_nil result[:decline_code]
   end
 
   test "reports payment_state failed with the decline reason when the first payment is declined" do
@@ -334,14 +357,14 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Invoice.expects(:retrieve).with(id: "in_1", expand: ["payments"]).returns(invoice)
     payment_intent = stub(
       status: "requires_payment_method",
-      last_payment_error: stub(message: "Your card has insufficient funds.")
+      last_payment_error: stub(code: "insufficient_funds", decline_code: nil)
     )
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(payment_intent)
 
     result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
 
     assert_equal "failed", result[:payment_state]
-    assert_equal "Your card has insufficient funds.", result[:decline_reason]
+    assert_equal "insufficient_funds", result[:decline_code]
   end
 
   private

@@ -114,7 +114,7 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
     assert_json_response({
       error: {
         type: "duplicate_filename",
-        message: "Duplicate filenames: main.rb"
+        filenames: ["main.rb"]
       }
     })
   end
@@ -130,7 +130,8 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
     assert_json_response({
       error: {
         type: "too_many_files",
-        message: "Too many files (maximum 20)"
+        count: 21,
+        max: 20
       }
     })
   end
@@ -148,7 +149,8 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
     assert_json_response({
       error: {
         type: "file_too_large",
-        message: /File 'large.rb' is too large/
+        filename: "large.rb",
+        max_bytes: 100_000
       }
     })
   end
@@ -173,7 +175,7 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
     assert_json_response({
       error: {
         type: "invalid_submission",
-        message: /at least one file/i
+        reason: "no_files"
       }
     })
   end

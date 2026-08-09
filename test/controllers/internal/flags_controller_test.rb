@@ -72,7 +72,7 @@ class Internal::FlagsControllerTest < ApplicationControllerTest
     post internal_flag_path(long_key), as: :json
 
     assert_json_error(:unprocessable_entity, error_type: :flag_invalid,
-      errors: { key: ["is too long (maximum is 100 characters)"] })
+      errors: { key: [{ error: "too_long", count: 100 }] })
   end
 
   test "GET cannot read server-controlled flags" do

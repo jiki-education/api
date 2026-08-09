@@ -23,14 +23,14 @@ class ExerciseSubmission::File::Create
 
   private
   def validate_required_fields!
-    raise InvalidSubmissionError, "filename is required" if filename.blank?
-    raise InvalidSubmissionError, "code is required" if content.nil?
+    raise InvalidSubmissionError, :filename_required if filename.blank?
+    raise InvalidSubmissionError, :code_required if content.nil?
   end
 
   def validate_file_size!
     return if content.bytesize <= MAX_FILE_SIZE
 
-    raise FileTooLargeError, "File '#{filename}' is too large (maximum #{MAX_FILE_SIZE} bytes)"
+    raise FileTooLargeError.new(filename, MAX_FILE_SIZE)
   end
 
   memoize

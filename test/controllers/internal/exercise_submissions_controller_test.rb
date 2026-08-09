@@ -142,7 +142,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     assert_json_response({
       error: {
         type: "duplicate_filename",
-        message: "Duplicate filenames: main.rb"
+        filenames: ["main.rb"]
       }
     })
   end
@@ -158,7 +158,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     assert_json_response({
       error: {
         type: "too_many_files",
-        message: "Too many files (maximum 20)"
+        count: 21,
+        max: 20
       }
     })
   end
@@ -176,7 +177,8 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     json_response = response.parsed_body
     assert_equal "file_too_large", json_response["error"]["type"]
-    assert_match(/File 'large.rb' is too large/, json_response["error"]["message"])
+    assert_equal "large.rb", json_response["error"]["filename"]
+    assert_equal 100_000, json_response["error"]["max_bytes"]
   end
 
   test "POST create reports 422 to Sentry" do
@@ -203,7 +205,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_match(/at least one file/i, json_response["error"]["message"])
+    assert_equal "no_files", json_response["error"]["reason"]
   end
 
   test "POST create returns 422 for missing filename" do
@@ -217,7 +219,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_match(/filename.*required/i, json_response["error"]["message"])
+    assert_equal "filename_required", json_response["error"]["reason"]
   end
 
   test "POST create returns 422 for null filename" do
@@ -231,7 +233,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_match(/filename.*required/i, json_response["error"]["message"])
+    assert_equal "filename_required", json_response["error"]["reason"]
   end
 
   test "POST create returns 422 for missing code" do
@@ -245,7 +247,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_match(/code.*required/i, json_response["error"]["message"])
+    assert_equal "code_required", json_response["error"]["reason"]
   end
 
   test "POST create returns 422 for null code" do
@@ -259,7 +261,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
     json_response = response.parsed_body
     assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_match(/code.*required/i, json_response["error"]["message"])
+    assert_equal "code_required", json_response["error"]["reason"]
   end
 
   test "POST create returns 403 when the lesson is not unlocked" do

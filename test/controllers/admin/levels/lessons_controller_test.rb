@@ -154,7 +154,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/Validation failed/, json["error"]["message"])
   end
 
   test "POST create returns 422 for validation errors - duplicate slug" do
@@ -349,7 +348,6 @@ class Admin::Levels::LessonsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_match(/Validation failed/, json["error"]["message"])
   end
 
   test "PATCH update returns 404 for non-existent level" do

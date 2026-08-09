@@ -158,7 +158,6 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal 'invalid_token', json['error']['type']
-    assert_match(/Invalid Exercism token/, json['error']['message'])
   end
 
   test "POST exercism with expired code returns unauthorized" do
@@ -174,7 +173,6 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal 'invalid_token', json['error']['type']
-    assert_match(/Token expired/, json['error']['message'])
   end
 
   test "POST exercism falls back to generated handle when Exercism handle is taken" do

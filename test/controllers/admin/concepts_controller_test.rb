@@ -135,7 +135,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["slug"], "can't be blank"
+    assert_equal "blank", json["error"]["errors"]["slug"].first["error"]
   end
 
   # SHOW tests
@@ -190,7 +190,7 @@ class Admin::ConceptsControllerTest < ApplicationControllerTest
     assert_response :unprocessable_entity
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_includes json["error"]["errors"]["slug"], "can't be blank"
+    assert_equal "blank", json["error"]["errors"]["slug"].first["error"]
   end
 
   test "PATCH update returns 404 for non-existent concept" do

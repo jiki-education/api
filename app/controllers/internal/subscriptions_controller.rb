@@ -12,12 +12,7 @@ class Internal::SubscriptionsController < Internal::BaseController
         level: :error,
         extra: { user_id: current_user.id, interval: interval }
       )
-      return render json: {
-        error: {
-          type: "invalid_interval",
-          message: "Invalid interval. Must be 'monthly' or 'annual'"
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "invalid_interval" } }, status: :bad_request
     end
 
     # Block if user already has subscription
@@ -30,12 +25,7 @@ class Internal::SubscriptionsController < Internal::BaseController
           subscription_status: current_user.data.subscription_status
         }
       )
-      return render json: {
-        error: {
-          type: "existing_subscription",
-          message: "You already have a subscription. Use the update endpoint to change interval or cancel first."
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "existing_subscription" } }, status: :bad_request
     end
 
     # Validate return_url is from frontend
@@ -45,12 +35,7 @@ class Internal::SubscriptionsController < Internal::BaseController
         level: :error,
         extra: { user_id: current_user.id, return_url: return_url }
       )
-      return render json: {
-        error: {
-          type: "invalid_return_url",
-          message: "Return URL must be from #{Jiki.config.frontend_base_url}"
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "invalid_return_url" } }, status: :bad_request
     end
 
     price_id = Stripe::DetermineSubscriptionDetails.price_id_for(interval)
@@ -81,25 +66,13 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue StandardError => e
     Rails.logger.error("Failed to create checkout session: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "checkout_failed",
-        message: "Failed to create checkout session"
-      }
-    }, status: :internal_server_error
+    render json: { error: { type: "checkout_failed" } }, status: :internal_server_error
   end
 
   # POST /internal/subscriptions/portal_session
   # Creates a Stripe Customer Portal session for managing subscriptions
   def portal_session
-    unless current_user.data.stripe_customer_id.present?
-      return render json: {
-        error: {
-          type: "no_customer",
-          message: "No Stripe customer found"
-        }
-      }, status: :bad_request
-    end
+    return render json: { error: { type: "no_customer" } }, status: :bad_request unless current_user.data.stripe_customer_id.present?
 
     session = Stripe::CreatePortalSession.(current_user)
 
@@ -109,12 +82,7 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue StandardError => e
     Rails.logger.error("Failed to create portal session: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "portal_failed",
-        message: "Failed to create portal session"
-      }
-    }, status: :internal_server_error
+    render json: { error: { type: "portal_failed" } }, status: :internal_server_error
   end
 
   # POST /internal/subscriptions/verify_checkout
@@ -122,14 +90,7 @@ class Internal::SubscriptionsController < Internal::BaseController
   def verify_checkout
     session_id = params[:session_id]
 
-    unless session_id.present?
-      return render json: {
-        error: {
-          type: "missing_session_id",
-          message: "session_id is required"
-        }
-      }, status: :bad_request
-    end
+    return render json: { error: { type: "missing_session_id" } }, status: :bad_request unless session_id.present?
 
     result = Stripe::VerifyCheckoutSession.(current_user, session_id)
 
@@ -138,27 +99,21 @@ class Internal::SubscriptionsController < Internal::BaseController
       interval: result[:interval],
       payment_status: result[:payment_status],
       payment_state: result[:payment_state],
-      decline_reason: result[:decline_reason],
+      decline_code: result[:decline_code],
       subscription_status: result[:subscription_status]
     }
   rescue SecurityError => e
     Rails.logger.error("Security error verifying checkout: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "unauthorized",
-        message: "Checkout session does not belong to current user"
-      }
-    }, status: :forbidden
+    render json: { error: { type: "unauthorized" } }, status: :forbidden
   rescue StripeCheckoutSessionIncompleteError => e
     # Expected user-driven outcome (declined/abandoned payment), not a bug -
     # log only, don't report to Sentry.
-    Rails.logger.info("Checkout session incomplete: #{e.decline_reason || 'no reason given'}")
+    Rails.logger.info("Checkout session incomplete: #{e.decline_code || 'no reason given'}")
     render json: {
       error: {
         type: "checkout_payment_incomplete",
-        message: "Your payment wasn't completed. Please try again.",
-        decline_reason: e.decline_reason,
+        decline_code: e.decline_code,
         interval: e.interval,
         currency: e.currency
       }
@@ -166,21 +121,11 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue ArgumentError => e
     Rails.logger.error("Invalid checkout session: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "invalid_session",
-        message: e.message
-      }
-    }, status: :unprocessable_entity
+    render json: { error: { type: "invalid_session" } }, status: :unprocessable_entity
   rescue StandardError => e
     Rails.logger.error("Failed to verify checkout session: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "verification_failed",
-        message: "Failed to verify checkout session"
-      }
-    }, status: :internal_server_error
+    render json: { error: { type: "verification_failed" } }, status: :internal_server_error
   end
 
   # POST /internal/subscriptions/update
@@ -189,33 +134,14 @@ class Internal::SubscriptionsController < Internal::BaseController
     interval = params[:interval]
 
     # Validate interval
-    unless %w[monthly annual].include?(interval)
-      return render json: {
-        error: {
-          type: "invalid_interval",
-          message: "Invalid interval. Must be 'monthly' or 'annual'"
-        }
-      }, status: :bad_request
-    end
+    return render json: { error: { type: "invalid_interval" } }, status: :bad_request unless %w[monthly annual].include?(interval)
 
     # Check user can change plan
-    unless current_user.data.can_change_interval?
-      return render json: {
-        error: {
-          type: "no_subscription",
-          message: "You don't have an active subscription. Use checkout to create one."
-        }
-      }, status: :bad_request
-    end
+    return render json: { error: { type: "no_subscription" } }, status: :bad_request unless current_user.data.can_change_interval?
 
     # Check not same interval
     if current_user.data.subscription_interval == interval
-      return render json: {
-        error: {
-          type: "same_interval",
-          message: "You are already on #{interval} billing"
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "same_interval" } }, status: :bad_request
     end
 
     # Update subscription
@@ -230,21 +156,11 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue ArgumentError => e
     Rails.logger.error("Invalid subscription update: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "invalid_request",
-        message: e.message
-      }
-    }, status: :unprocessable_entity
+    render json: { error: { type: "invalid_request" } }, status: :unprocessable_entity
   rescue StandardError => e
     Rails.logger.error("Failed to update subscription: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "update_failed",
-        message: "Failed to update subscription"
-      }
-    }, status: :internal_server_error
+    render json: { error: { type: "update_failed" } }, status: :internal_server_error
   end
 
   # DELETE /internal/subscriptions/cancel
@@ -261,12 +177,7 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     # Check user has subscription
     unless current_user.data.stripe_subscription_id.present?
-      return render json: {
-        error: {
-          type: "no_subscription",
-          message: "You don't have an active subscription"
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "no_subscription" } }, status: :bad_request
     end
 
     # Cancel subscription
@@ -279,12 +190,7 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue StandardError => e
     Rails.logger.error("Failed to cancel subscription: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "cancel_failed",
-        message: "Failed to cancel subscription"
-      }
-    }, status: :internal_server_error
+    render json: { error: { type: "cancel_failed" } }, status: :internal_server_error
   end
 
   # POST /internal/subscriptions/reactivate
@@ -292,22 +198,12 @@ class Internal::SubscriptionsController < Internal::BaseController
   def reactivate
     # Check user has subscription
     unless current_user.data.stripe_subscription_id.present?
-      return render json: {
-        error: {
-          type: "no_subscription",
-          message: "You don't have an active subscription"
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "no_subscription" } }, status: :bad_request
     end
 
     # Check subscription is actually scheduled for cancellation
     unless current_user.data.subscription_status == 'cancelling'
-      return render json: {
-        error: {
-          type: "not_cancelling",
-          message: "Subscription is not scheduled for cancellation"
-        }
-      }, status: :bad_request
+      return render json: { error: { type: "not_cancelling" } }, status: :bad_request
     end
 
     # Reactivate subscription
@@ -320,20 +216,10 @@ class Internal::SubscriptionsController < Internal::BaseController
   rescue ArgumentError => e
     Rails.logger.error("Invalid subscription reactivation: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "invalid_request",
-        message: e.message
-      }
-    }, status: :unprocessable_entity
+    render json: { error: { type: "invalid_request" } }, status: :unprocessable_entity
   rescue StandardError => e
     Rails.logger.error("Failed to reactivate subscription: #{e.message}")
     Sentry.capture_exception(e, extra: { user_id: current_user.id })
-    render json: {
-      error: {
-        type: "reactivate_failed",
-        message: "Failed to reactivate subscription"
-      }
-    }, status: :internal_server_error
+    render json: { error: { type: "reactivate_failed" } }, status: :internal_server_error
   end
 end

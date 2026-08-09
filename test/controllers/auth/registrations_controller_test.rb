@@ -238,7 +238,6 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "validation_error", json["error"]["type"]
-    assert_equal "Validation failed", json["error"]["message"]
     assert json["error"]["errors"]["email"].present?
   end
 

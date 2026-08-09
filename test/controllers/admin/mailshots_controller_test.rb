@@ -82,7 +82,7 @@ class Admin::MailshotsControllerTest < ApplicationControllerTest
     assert_json_error(
       :unprocessable_entity,
       error_type: :validation_error,
-      errors: { email_communication_preferences_key: ["is not included in the list"] }
+      errors: { email_communication_preferences_key: [{ error: "inclusion", value: "event_emails" }] }
     )
   end
 
@@ -94,7 +94,7 @@ class Admin::MailshotsControllerTest < ApplicationControllerTest
     assert_json_error(
       :unprocessable_entity,
       error_type: :validation_error,
-      errors: { slug: ["can't be blank"], subject: ["can't be blank"] }
+      errors: { slug: [{ error: "blank" }], subject: [{ error: "blank" }] }
     )
   end
 

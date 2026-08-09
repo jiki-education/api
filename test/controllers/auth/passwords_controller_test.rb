@@ -13,7 +13,8 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
     assert_response :ok
 
     json = response.parsed_body
-    assert_equal "Reset instructions sent to test@example.com", json["message"]
+    assert_equal "password_reset_sent", json["type"]
+    assert_equal "test@example.com", json["email"]
   end
 
   test "POST password reset sends email with correct content and frontend URL" do
@@ -58,7 +59,8 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
     assert_response :ok
 
     json = response.parsed_body
-    assert_equal "Reset instructions sent to nonexistent@example.com", json["message"]
+    assert_equal "password_reset_sent", json["type"]
+    assert_equal "nonexistent@example.com", json["email"]
   end
 
   test "POST password reset returns 403 invalid_captcha when Turnstile token missing" do
@@ -95,7 +97,7 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
     assert_response :ok
 
     json = response.parsed_body
-    assert_equal "Password has been reset successfully", json["message"]
+    assert_equal "password_reset_success", json["type"]
 
     # Verify the user can login with new password
     post user_session_path, params: with_turnstile(
@@ -118,7 +120,7 @@ class Auth::PasswordsControllerTest < ApplicationControllerTest
 
     json = response.parsed_body
     assert_equal "invalid_token", json["error"]["type"]
-    assert json["error"]["message"].present?
+    assert json["error"]["errors"].present?
   end
 
   test "PATCH password reset fails with password mismatch" do
