@@ -185,6 +185,7 @@ Controllers are thin - delegate to commands, handle exceptions, render responses
   - `Webhooks::` - Webhook receivers (e.g., Stripe)
   - Auth is enforced at the namespace base controller level (e.g., `Internal::BaseController`), not globally in ApplicationController.
 - **Error responses**: Use `render_401`, `render_403`, `render_404`, `render_422` helpers from ApplicationController. Also use `use_lesson!`, `use_concept!`, `use_challenge!` for resource lookup with automatic 404 handling.
+- **Errors are symbols, not messages**: `error.type` is the only stable contract - never add localized/human-readable `message` text to an error response. The front-end owns all copy, mapping `type` to its own localized strings. See `docs/api_error_types.md`.
 - **Class naming**: Use `class Internal::LessonsController` not `module Internal; class LessonsController; end; end`
 - If you find yourself adding business logic to a controller, stop and move it into a command instead.
 
