@@ -1,0 +1,97 @@
+[
+  {
+    "level_uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
+    "milestone_email_subject": "Congratulazioni per il primo traguardo!",
+    "milestone_email_content_markdown": "Ottimo lavoro per aver completato il primo livello del corso Fondamenti di Programmazione di Jiki.\n\nPotresti non avere l'impressione di star facendo molto \"vero\" coding, ma hai appena acquisito una delle competenze più importanti nella programmazione. Utilizzerai le funzioni centinaia di volte al giorno d'ora in poi, quindi questa è davvero la base per tutto il resto.\n\nNel prossimo livello vedremo come usare i colori per disegnare, poi inizieremo a integrare un po' di logica nel processo. Divertiti!"
+  },
+  {
+    "level_uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
+    "milestone_email_subject": "Ti è piaciuto disegnare?",
+    "milestone_email_content_markdown": "Ottimo lavoro su questo livello, e sul tuo primo vero disegno.\n\nOra hai aggiunto stringhe e colori al tuo kit di strumenti, il che significa che i tuoi programmi possono iniziare a gestire testi e produrre risultati che hanno un bell'aspetto sullo schermo.\n\nNelle prossime lezioni inizieremo a introdurre un po' di logica, così potrai andare oltre le istruzioni lineari e aggiungere varietà e intelligenza ai tuoi programmi. Divertiti!"
+  },
+  {
+    "level_uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
+    "milestone_email_subject": "Dopo tutti quei loop, ti gira la testa?",
+    "milestone_email_content_markdown": "Ottimo lavoro su questo livello. I cicli sono un mattone fondamentale della programmazione, e si spera stiano iniziando a sembrarti piuttosto familiari.\n\nCi sono altri tipi di cicli che vedremo più avanti nel corso, ma il ciclo `repeat` sarà il tuo compagno per le prossime lezioni.\n\nIl prossimo argomento sono le variabili, ovvero l'idea di memorizzare e recuperare valori mentre il programma è in esecuzione. Divertiti!"
+  },
+  {
+    "level_uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
+    "milestone_email_subject": "Variabili, fatte tue!",
+    "milestone_email_content_markdown": "Ottimo lavoro per aver imparato le variabili.\n\nLe variabili sono una di quelle idee che sembrano piuttosto semplici in superficie, ma saranno alla base di quasi tutto ciò che scriverai d'ora in poi. La capacità di memorizzare un valore, dargli un nome e usarlo in seguito è ciò che trasforma il codice da una lista fissa di istruzioni a qualcosa di veramente flessibile.\n\nNel prossimo livello vedremo come le variabili cambiano nel tempo, che è ciò che i programmatori chiamano «stato». Divertiti!"
+  },
+  {
+    "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
+    "milestone_email_subject": "Stato di gioco",
+    "milestone_email_content_markdown": "Ottimo lavoro su questo livello. Ora puoi tenere traccia dei valori che cambiano durante l'esecuzione del programma, un vero passo avanti rispetto a dove eri qualche livello fa.\n\nQuesta idea di stato continuerà a ripresentarsi durante il corso, e diventa sempre più interessante ogni volta che la combiniamo con qualcosa di nuovo.\n\nIl prossimo è un livello corposo. Vedremo le funzioni che restituiscono valori, poi esploreremo colori, casualità, animazioni, scope e cicli annidati lungo il percorso. Divertiti!"
+  },
+  {
+    "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
+    "milestone_email_subject": "Un bel bottino!",
+    "milestone_email_content_markdown": "Ottimo lavoro su un livello denso. Funzioni che restituiscono valori, colori HSL e RGB, animazioni, numeri casuali, scope, scenari e cicli dentro ad altri cicli. Sono molte nuove idee da aggiungere al tuo kit di strumenti in un colpo solo.\n\nNon preoccuparti se alcune ti sembrano ancora un po' confuse. Torneranno tutte in contesti diversi più avanti nel corso, e ogni volta diventeranno più familiari.\n\nNel prossimo inizieremo a prendere decisioni nel codice usando le istruzioni `if`. È qui che i tuoi programmi inizieranno davvero a sembrare intelligenti. Divertiti!"
+  },
+  {
+    "level_uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
+    "milestone_email_subject": "Se, allora... cosa?",
+    "milestone_email_content_markdown": "Bel lavoro sul livello dei condizionali. Si spera che `if` ed `else` inizino a sembrarti piuttosto naturali.\n\nI condizionali sono una delle idee più importanti nella programmazione. Quasi ogni programma interessante deve prendere decisioni in base a ciò che è vero in un dato momento, e ora hai gli strumenti di base per farlo.\n\nNel prossimo livello vedremo modi più potenti di scrivere condizioni, combinandole insieme con `and`/`or`, oltre ad alcune idee correlate come il modulo. Divertiti!"
+  },
+  {
+    "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
+    "milestone_email_subject": "Prossimi passi logici",
+    "milestone_email_content_markdown": "Ottimo lavoro su un livello complesso. Ora hai sotto controllo `and`/`or`, il modulo e i cicli senza contatore.\n\nQuesti sono il tipo di strumenti che ti permettono di scrivere condizioni che rispecchiano davvero la logica del mondo reale, invece di dover suddividere tutto in piccoli controlli separati.\n\nNel prossimo livello combineremo i condizionali con lo stato, ed è qui che i tuoi programmi inizieranno a essere in grado di rispondere a ciò che accade durante l'esecuzione. Divertiti!"
+  },
+  {
+    "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
+    "milestone_email_subject": "Programmi che rispondono",
+    "milestone_email_content_markdown": "Ottimo lavoro. Combinare i condizionali con lo stato è il punto in cui i tuoi programmi iniziano davvero a sembrare vivi, rispondendo a ciò che accade invece di seguire un copione fisso.\n\nQuesto è più o meno il livello di complessità con cui scriverai per il resto del corso, quindi tutto ciò che hai praticato qui continuerà a tornare.\n\nIl prossimo è un livello importante: scrivere le tue funzioni. Finora hai usato funzioni scritte da altri. D'ora in poi, le scriverai tu. Divertiti!"
+  },
+  {
+    "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
+    "milestone_email_subject": "Ora sei tu al comando!",
+    "milestone_email_content_markdown": "Ottimo lavoro. Scrivere le tue funzioni è un vero cambiamento. Non stai più solo usando gli strumenti sullo scaffale, ne stai costruendo di nuovi.\n\nQuesta è una delle competenze più importanti in tutta la programmazione. Un buon codice consiste principalmente nel suddividere i problemi in piccole funzioni ben nominate, e ora hai tutto il necessario per iniziare a farlo.\n\nNel prossimo livello torneremo alle stringhe e vedremo come incollarle insieme e inserirvi valori. Divertiti!"
+  },
+  {
+    "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
+    "milestone_email_subject": "Stringhe, connesse",
+    "milestone_email_content_markdown": "Bel lavoro su questo livello. La concatenazione e le stringhe interpolate sono idee piuttosto semplici, ma si presentano di continuo, specialmente quando produci output da far leggere a una persona.\n\nUserai queste tecniche praticamente in ogni programma che scriverai d'ora in poi.\n\nNel prossimo livello vedremo come esplorare le stringhe carattere per carattere e come iterare attraverso il loro contenuto. Divertiti!"
+  },
+  {
+    "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
+    "milestone_email_subject": "Lettera per lettera",
+    "milestone_email_content_markdown": "Ottimo lavoro. Si spera che l'indicizzazione e l'iterazione attraverso le stringhe stia iniziando ad avere senso.\n\nEssere in grado di guardare i singoli caratteri e scorrere il testo in modo sistematico apre una vasta gamma di problemi che ora puoi risolvere. Molta programmazione nel mondo reale riguarda esattamente questo tipo di lavoro.\n\nNel prossimo livello vedremo come combinare più funzioni insieme per affrontare compiti più complessi. Divertiti!"
+  },
+  {
+    "level_uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
+    "milestone_email_subject": "Insieme è meglio",
+    "milestone_email_content_markdown": "Ottimo lavoro su questo livello. Combinare funzioni per risolvere problemi più grandi è ciò che la programmazione professionale effettivamente fa giorno per giorno. Si suddivide un problema in pezzi, si scrive una piccola funzione per ogni pezzo, e poi li si mette insieme.\n\nOra lo stai facendo per davvero.\n\nNel prossimo livello vedremo metodi e proprietà, un modo leggermente diverso di lavorare con i valori. Divertiti!"
+  },
+  {
+    "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
+    "milestone_email_subject": "Metodi alla follia",
+    "milestone_email_content_markdown": "Bel lavoro. Metodi e proprietà sono uno stile leggermente diverso da quello che hai visto finora. Invece di passare un valore a una funzione, chiami una funzione sul valore stesso. L'idea richiede un po' di pratica, ma è usata ovunque, quindi ti sembrerà naturale molto presto.\n\nNel prossimo livello vedremo alcuni tipi di cicli più potenti: i cicli `for`, i cicli `while`, `break` e `continue`. Divertiti!"
+  },
+  {
+    "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
+    "milestone_email_subject": "Oltre il repeat",
+    "milestone_email_content_markdown": "Ottimo lavoro. Ora hai sotto controllo i cicli `for`, i cicli `while`, `break` e `continue`. Questi sono i cicli a cui ricorrerai più spesso al di fuori di questo corso, quindi vale la pena il tempo che ci hai dedicato.\n\nOgnuno ha un compito leggermente diverso, e capire quale usare arriverà con la pratica.\n\nNel prossimo livello vedremo gli array, che è il modo in cui i programmi memorizzano e gestiscono raccolte di cose. Divertiti!"
+  },
+  {
+    "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
+    "milestone_email_subject": "Che bella collezione!",
+    "milestone_email_content_markdown": "Ottimo lavoro. Gli array (o liste, come alcuni li chiamano) sono uno degli strumenti più utili in qualsiasi linguaggio. Praticamente ogni volta che hai a che fare con più di un elemento, ricorrerai a un array.\n\nOra hai una buona padronanza di come leggerli e lavorare con il loro contenuto.\n\nPoi, vedremo come costruire array da zero, pezzo per pezzo. Divertiti!"
+  },
+  {
+    "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
+    "milestone_email_subject": "Costruire pezzo per pezzo",
+    "milestone_email_content_markdown": "Bel lavoro! Leggere dai array è utile, ma poterli costruire pezzo per pezzo è dove danno il meglio di sé. Itera su qualcosa, raccogli i pezzi che ti interessano in un nuovo array e restituiscilo: è un modello a cui ricorrerai ancora e ancora.\n\nProssimo: i dizionari. Questi ti permettono di memorizzare valori associati a chiavi con nome anziché solo a posizioni. Divertiti!"
+  },
+  {
+    "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
+    "milestone_email_subject": "Nominati per una ragione",
+    "milestone_email_content_markdown": "Ottimo lavoro. I dizionari ti permettono di memorizzare valori associati a chiavi con nome anziché solo a posizioni, il che rende la ricerca veloce e leggibile.\n\nPoi, e infine, vedremo come modificare i dizionari: aggiungere, aggiornare e rimuovere voci man mano. Divertiti!"
+  },
+  {
+    "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
+    "milestone_email_subject": "E questo è tutto!",
+    "milestone_email_content_markdown": "Ed ecco l'ultimo livello di Fondamenti di Programmazione. Si spera che i dizionari ti sembrino uno strumento utile da aggiungere al mix insieme agli array.\n\nQuesto è un vero traguardo. Hai ora coperto tutti i mattoni fondamentali della programmazione: funzioni, variabili, stato, condizionali, cicli, stringhe, array e dizionari. Tutto il resto da qui in poi sono combinazioni e perfezionamenti di ciò che già conosci.\n\nSiamo davvero orgogliosi di te per essere arrivato fin qui. Divertiti!"
+  }
+]
