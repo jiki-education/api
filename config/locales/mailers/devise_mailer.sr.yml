@@ -8,7 +8,9 @@ sr:
         preview: 'Možete potvrditi adresu e-pošte za vaš nalog na linku ispod:'
         greeting: Dobrodošli!
         body_markdown: 'Možete potvrditi adresu e-pošte za vaš nalog na linku ispod:'
-        cta: Potvrdi moj malog
+        # Upstream devise-i18n has "Potvrdi moj malog" - a typo for "nalog"
+        # (account) that renders as nonsense. Corrected here.
+        cta: Potvrdi moj nalog
       reset_password_instructions:
         subject: Uputstvo za promenu lozinke
         preview: Neko je zatražio link za promenu vaše lozinke. To možete učiniti na linku ispod.
