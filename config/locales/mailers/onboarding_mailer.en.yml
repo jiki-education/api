@@ -3,7 +3,7 @@ en:
     overview:
       subject: "The Two Halves of Becoming a Developer in 2026"
       preview: "For the last few years I've been slowly learning Japanese."
-      greeting: "Hi there,"
+      greeting: "Hi %{name},"
       body_markdown: |
         For the last few years I've been **slowly learning Japanese**. I visit Japan regularly and try and immerse myself in the language, but it's hard, because nowadays, with the help of Google Translate, it's pretty easy to spend time in Japan and not speak a word of Japanese. **So my brain can be lazy**, but I can get along fine.
 
@@ -26,7 +26,7 @@ en:
     coding:
       subject: "Build Rock-Solid Coding Fundamentals"
       preview: "Learning to code has a reputation for being technical and hard."
-      greeting: "Hi again,"
+      greeting: "Hi again %{name},"
       body_markdown: |
         Learning to code has a reputation for being technical and hard. When I started to learn to code, I was an 8-year-old kid who knew nothing about programming other than that **I could suddenly make cool stuff**. I didn't know it was supposed to be hard. I just knew I suddenly had a new outlet for my creativity.
 
@@ -43,7 +43,7 @@ en:
     building:
       subject: "The Best Way to Learn is to Make Stuff!"
       preview: "I really believe that now is the best possible time to get into tech."
-      greeting: "Hi there,"
+      greeting: "Hi %{name},"
       body_markdown: |
         I really believe that **now is the best possible time to get into tech**. There's never been an easier time to learn the fundamentals and to quickly be able to make things.
 
@@ -62,7 +62,7 @@ en:
     premium:
       subject: "Get More Out of Jiki (and help us out)"
       preview: "We made Jiki free because we want it to be accessible to everyone regardless"
-      greeting: "Hi there,"
+      greeting: "Hi %{name},"
       body_markdown: |
         We made Jiki free because we want it to be **accessible to everyone** regardless of their financial situation. Everyone gets hundreds of hours of exercises and videos, all available with nothing asked in return.
 
@@ -81,7 +81,7 @@ en:
     community:
       subject: "Don't Struggle Alone - Join Jiki's Community"
       preview: "You're a lot more likely to succeed learning anything if you're part of a group."
-      greeting: "Hi there,"
+      greeting: "Hi %{name},"
       body_markdown: |
         You're a lot more likely to succeed learning anything if **you're part of a group**. Coding is no different.
 

@@ -2,8 +2,8 @@ require "test_helper"
 
 # Locale-parity guard for the translation catalogs we own (config/locales/**).
 #
-# For every `*.en.yml` catalog we ship (api_errors, api_messages, our devise
-# overrides, the validations catalog, the mailer YAMLs, ...) this walks each
+# For every `*.en.yml` catalog we ship (api_errors, api_messages, the
+# validations catalog, the mailer YAMLs, ...) this walks each
 # other locale and checks key-tree parity against English, including that each
 # shared key carries the same %{interpolation} names.
 #
@@ -15,7 +15,7 @@ require "test_helper"
 #     file. hu today warns on premium_mailer (no hu file yet) - that's expected
 #     and handled by a separate task.
 #
-# Gem-provided catalogs (rails-i18n, devise-i18n) live in the gems, not in
+# Gem-provided catalogs (rails-i18n) live in the gem, not in
 # config/locales, so they're naturally excluded. Catalogs a locale ships that
 # have no en reference (e.g. activerecord attribute names) aren't parity-checked
 # against en - there's nothing to compare them to.

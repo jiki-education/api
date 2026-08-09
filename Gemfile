@@ -16,7 +16,6 @@ gem "bcrypt", "~> 3.1.7"
 
 # Authentication
 gem "devise", "~> 5.0"
-gem "devise-i18n" # Localized Devise messages (hu, etc.)
 gem "jwt" # For conversation tokens (AI assistant)
 gem "discourse_api" # For Discourse SSO integration
 gem "rotp", "~> 6.3" # TOTP for two-factor authentication
