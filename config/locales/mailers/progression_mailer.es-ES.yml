@@ -1,0 +1,6 @@
+"es-ES":
+  progression_mailer:
+    level_completed:
+      greeting: "Hola,"
+      signoff: "Un saludo,"
+      team: "Jeremy y el equipo"

@@ -1,0 +1,9 @@
+vi:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Bạn nhận được email này vì bạn có tài khoản tại %{jiki_link}."
+        manage_preferences_only_html: "Bạn muốn thay đổi cách nhận những email này? Bạn có thể %{preferences_link}"
+        manage_with_unsubscribe_html: "Bạn muốn thay đổi cách nhận những email này? Bạn có thể %{preferences_link} hoặc %{unsubscribe_link} khỏi danh sách này."
+        update_preferences: "cập nhật tùy chọn của bạn"
+        unsubscribe: "hủy đăng ký"

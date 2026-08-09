@@ -1,0 +1,6 @@
+ro:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Salut,"
+      signoff: "Cu drag,"
+      team: "Jeremy și echipa"

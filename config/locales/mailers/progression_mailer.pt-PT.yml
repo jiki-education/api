@@ -1,0 +1,6 @@
+"pt-PT":
+  progression_mailer:
+    level_completed:
+      greeting: "Olá,"
+      signoff: "Cumprimentos,"
+      team: "Jeremy e a equipa"

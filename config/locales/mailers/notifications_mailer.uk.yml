@@ -1,0 +1,6 @@
+uk:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Вітаємо,"
+      signoff: "З повагою,"
+      team: "Джеремі та команда"

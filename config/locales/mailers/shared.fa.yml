@@ -1,0 +1,9 @@
+fa:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "این ایمیل را دریافت می‌کنید چون در %{jiki_link} حساب کاربری دارید."
+        manage_preferences_only_html: "می‌خواهید نحوهٔ دریافت این ایمیل‌ها را تغییر دهید؟ می‌توانید %{preferences_link}"
+        manage_with_unsubscribe_html: "می‌خواهید نحوهٔ دریافت این ایمیل‌ها را تغییر دهید؟ می‌توانید %{preferences_link} یا از این فهرست %{unsubscribe_link}."
+        update_preferences: "تنظیمات خود را به‌روزرسانی کنید"
+        unsubscribe: "اشتراک خود را لغو کنید"

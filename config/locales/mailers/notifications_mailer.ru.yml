@@ -1,0 +1,6 @@
+ru:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Здравствуйте,"
+      signoff: "С уважением,"
+      team: "Джереми и команда"

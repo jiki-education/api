@@ -1,0 +1,6 @@
+sw:
+  progression_mailer:
+    level_completed:
+      greeting: "Habari,"
+      signoff: "Asante,"
+      team: "Jeremy na Timu"

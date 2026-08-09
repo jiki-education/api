@@ -1,0 +1,6 @@
+vi:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Xin chào,"
+      signoff: "Thân mến,"
+      team: "Jeremy và nhóm"

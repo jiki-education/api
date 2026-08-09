@@ -1,0 +1,6 @@
+ja:
+  progression_mailer:
+    level_completed:
+      greeting: "こんにちは、"
+      signoff: "それでは、"
+      team: "Jeremy とチーム一同"

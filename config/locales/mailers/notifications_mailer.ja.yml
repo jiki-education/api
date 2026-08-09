@@ -1,0 +1,6 @@
+ja:
+  notifications_mailer:
+    badge_earned:
+      greeting: "こんにちは、"
+      signoff: "それでは、"
+      team: "Jeremy とチーム一同"

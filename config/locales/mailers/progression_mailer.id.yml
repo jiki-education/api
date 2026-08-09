@@ -1,0 +1,6 @@
+id:
+  progression_mailer:
+    level_completed:
+      greeting: "Halo,"
+      signoff: "Salam,"
+      team: "Jeremy & Tim"

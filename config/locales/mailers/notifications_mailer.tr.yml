@@ -1,0 +1,6 @@
+tr:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Merhaba,"
+      signoff: "Sevgiler,"
+      team: "Jeremy ve ekibi"

@@ -1,0 +1,6 @@
+fr:
+  progression_mailer:
+    level_completed:
+      greeting: "Salut,"
+      signoff: "À bientôt,"
+      team: "Jeremy et l'équipe"

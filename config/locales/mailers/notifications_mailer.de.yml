@@ -1,0 +1,6 @@
+de:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Hallo,"
+      signoff: "Viele Grüße,"
+      team: "Jeremy & das Team"

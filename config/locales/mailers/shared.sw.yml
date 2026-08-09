@@ -1,0 +1,9 @@
+sw:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Unapokea barua pepe hii kwa sababu una akaunti kwenye %{jiki_link}."
+        manage_preferences_only_html: "Ungependa kubadilisha jinsi unavyopokea barua pepe hizi? Unaweza %{preferences_link}"
+        manage_with_unsubscribe_html: "Ungependa kubadilisha jinsi unavyopokea barua pepe hizi? Unaweza %{preferences_link} au %{unsubscribe_link} kwenye orodha hii."
+        update_preferences: "kusasisha mapendeleo yako"
+        unsubscribe: "kujiondoa"

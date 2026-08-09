@@ -1,0 +1,6 @@
+nl:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Hoi,"
+      signoff: "Groeten,"
+      team: "Jeremy & het team"

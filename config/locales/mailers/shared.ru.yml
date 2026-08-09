@@ -1,0 +1,9 @@
+ru:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Вы получили это письмо, потому что у вас есть аккаунт на %{jiki_link}."
+        manage_preferences_only_html: "Хотите изменить, как вы получаете эти письма? Вы можете %{preferences_link}"
+        manage_with_unsubscribe_html: "Хотите изменить, как вы получаете эти письма? Вы можете %{preferences_link} или %{unsubscribe_link} от этой рассылки."
+        update_preferences: "обновить настройки"
+        unsubscribe: "отписаться"

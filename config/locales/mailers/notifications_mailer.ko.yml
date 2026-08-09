@@ -1,0 +1,6 @@
+ko:
+  notifications_mailer:
+    badge_earned:
+      greeting: "안녕하세요,"
+      signoff: "감사합니다,"
+      team: "Jeremy와 팀 일동"

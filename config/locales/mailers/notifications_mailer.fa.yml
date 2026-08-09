@@ -1,0 +1,6 @@
+fa:
+  notifications_mailer:
+    badge_earned:
+      greeting: "سلام،"
+      signoff: "با احترام،"
+      team: "جرمی و تیم"

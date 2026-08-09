@@ -1,0 +1,6 @@
+fr:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Salut,"
+      signoff: "À bientôt,"
+      team: "Jeremy et l'équipe"

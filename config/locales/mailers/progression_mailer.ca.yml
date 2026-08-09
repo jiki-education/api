@@ -1,0 +1,6 @@
+ca:
+  progression_mailer:
+    level_completed:
+      greeting: "Hola,"
+      signoff: "Salutacions,"
+      team: "Jeremy i l'equip"

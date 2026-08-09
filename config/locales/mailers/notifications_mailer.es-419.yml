@@ -1,0 +1,6 @@
+"es-419":
+  notifications_mailer:
+    badge_earned:
+      greeting: "Hola,"
+      signoff: "Saludos,"
+      team: "Jeremy y el equipo"

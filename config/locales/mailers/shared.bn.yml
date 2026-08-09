@@ -1,0 +1,9 @@
+bn:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "আপনি এই ইমেলটি পাচ্ছেন কারণ %{jiki_link}-এ আপনার একটি অ্যাকাউন্ট রয়েছে।"
+        manage_preferences_only_html: "এই ইমেলগুলো কীভাবে পাবেন তা বদলাতে চান? আপনি %{preferences_link}"
+        manage_with_unsubscribe_html: "এই ইমেলগুলো কীভাবে পাবেন তা বদলাতে চান? আপনি %{preferences_link} বা এই তালিকা থেকে %{unsubscribe_link}।"
+        update_preferences: "আপনার পছন্দসমূহ আপডেট করতে পারেন"
+        unsubscribe: "আনসাবস্ক্রাইব করতে পারেন"

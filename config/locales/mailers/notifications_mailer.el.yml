@@ -1,0 +1,6 @@
+el:
+  notifications_mailer:
+    badge_earned:
+      greeting: "Γεια σου,"
+      signoff: "Με εκτίμηση,"
+      team: "Ο Jeremy και η ομάδα"

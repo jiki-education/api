@@ -1,0 +1,9 @@
+ja:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "%{jiki_link} のアカウントをお持ちのため、このメールをお送りしています。"
+        manage_preferences_only_html: "これらのメールの受け取り方を変更しますか？%{preferences_link}ことができます。"
+        manage_with_unsubscribe_html: "これらのメールの受け取り方を変更しますか？%{preferences_link}か、このリストから%{unsubscribe_link}ことができます。"
+        update_preferences: "設定を更新する"
+        unsubscribe: "配信を停止する"

@@ -1,0 +1,9 @@
+hi:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "आपको यह ईमेल इसलिए मिला है क्योंकि %{jiki_link} पर आपका खाता है।"
+        manage_preferences_only_html: "इन ईमेल को पाने का तरीका बदलना चाहते हैं? आप %{preferences_link}"
+        manage_with_unsubscribe_html: "इन ईमेल को पाने का तरीका बदलना चाहते हैं? आप %{preferences_link} या इस सूची से %{unsubscribe_link}।"
+        update_preferences: "अपनी प्राथमिकताएँ अपडेट कर सकते हैं"
+        unsubscribe: "सदस्यता छोड़ सकते हैं"

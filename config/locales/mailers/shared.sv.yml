@@ -1,0 +1,9 @@
+sv:
+  mailers:
+    shared:
+      footer:
+        account_notice_html: "Du får det här mejlet eftersom du har ett konto på %{jiki_link}."
+        manage_preferences_only_html: "Vill du ändra hur du får de här mejlen? Du kan %{preferences_link}"
+        manage_with_unsubscribe_html: "Vill du ändra hur du får de här mejlen? Du kan %{preferences_link} eller %{unsubscribe_link} från den här listan."
+        update_preferences: "uppdatera dina inställningar"
+        unsubscribe: "avregistrera dig"

@@ -1,0 +1,6 @@
+uk:
+  progression_mailer:
+    level_completed:
+      greeting: "Вітаємо,"
+      signoff: "З повагою,"
+      team: "Джеремі та команда"
