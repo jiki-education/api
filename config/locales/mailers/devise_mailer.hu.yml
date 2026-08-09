@@ -8,7 +8,6 @@ hu:
         body_markdown: |
           Kérjük, erősítsd meg az e-mail címedet az alábbi gombra kattintva.
         cta: "E-mail cím megerősítése"
-        footer: "Ha nem hoztál létre Jiki fiókot, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt."
       reset_password_instructions:
         subject: "Jelszó visszaállítása"
         preview: "Állítsd vissza jelszavadat a Jiki fiókodhoz"
@@ -16,4 +15,4 @@ hu:
         body_markdown: |
           Kaptunk egy kérést a Jiki fiókod jelszavának visszaállítására.
         cta: "Jelszó visszaállítása"
-        footer: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt — a jelszavad nem fog megváltozni, amíg nem kattintasz a fenti linkre. Ez a link 6 óra múlva lejár."
+        footer: "Ha nem te kérted ezt, nyugodtan figyelmen kívül hagyhatod ezt az e-mailt — a jelszavad nem fog megváltozni, amíg nem kattintasz a fenti linkre."

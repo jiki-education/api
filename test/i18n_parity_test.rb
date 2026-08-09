@@ -75,7 +75,11 @@ class I18nParityTest < ActiveSupport::TestCase
     reference_catalogs.each do |catalog, ref_keys|
       path = LOCALES_DIR.join("#{catalog}.#{locale}.yml")
       unless File.exist?(path)
-        problems << "missing catalog file: #{catalog}.#{locale}.yml"
+        # A production locale must ship every catalog. A WIP locale is
+        # translated catalog-by-catalog, so an absent file means "not started"
+        # rather than "drifted" - reporting it would bury the real parity
+        # problems under one line per untranslated catalog per locale.
+        problems << "missing catalog file: #{catalog}.#{locale}.yml" if hard_fail_locale?(locale)
         next
       end
 

@@ -1,0 +1,20 @@
+# Vendored from devise-i18n (sr.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+sr:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Uputstvo za potvrdu
+        preview: 'Možete potvrditi adresu e-pošte za vaš nalog na linku ispod:'
+        greeting: Dobrodošli!
+        body_markdown: 'Možete potvrditi adresu e-pošte za vaš nalog na linku ispod:'
+        # Upstream devise-i18n has "Potvrdi moj malog" - a typo for "nalog"
+        # (account) that renders as nonsense. Corrected here.
+        cta: Potvrdi moj nalog
+      reset_password_instructions:
+        subject: Uputstvo za promenu lozinke
+        preview: Neko je zatražio link za promenu vaše lozinke. To možete učiniti na linku ispod.
+        greeting: Zdravo,
+        body_markdown: Neko je zatražio link za promenu vaše lozinke. To možete učiniti na linku ispod.
+        cta: Promeni moju lozinku
+        footer: Ukoliko niste vi ovo zatražili, molim vas ignorišite ovu e-poruku. Vaša lozinka neće biti promenjena dok ne pristupite linku iznad i napravite novu.

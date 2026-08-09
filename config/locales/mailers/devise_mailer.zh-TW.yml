@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (zh-TW.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+zh-TW:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: 帳號驗證步驟
+        preview: 您可以利用下面的連結確認您的帳戶的電子郵件：
+        greeting: "歡迎您！"
+        body_markdown: 您可以利用下面的連結確認您的帳戶的電子郵件：
+        cta: 確認帳號
+      reset_password_instructions:
+        subject: 密碼重設步驟
+        preview: 有人要求更改密碼的連結，您可以利用下面的連結更改密碼。
+        greeting: "您好！"
+        body_markdown: 有人要求更改密碼的連結，您可以利用下面的連結更改密碼。
+        cta: 更改我的密碼
+        footer: 如果您沒有要求，請忽略此電子郵件。 如果您沒有進入上面的連結，並建立新的密碼，您的密碼不會被改變。

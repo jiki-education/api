@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (es.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+es-419:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: Instrucciones de confirmación
+        preview: 'Usted puede confirmar el correo electrónico de su cuenta a través de este enlace:'
+        greeting: "¡Bienvenido/a!"
+        body_markdown: 'Usted puede confirmar el correo electrónico de su cuenta a través de este enlace:'
+        cta: Confirmar mi cuenta
+      reset_password_instructions:
+        subject: Instrucciones de recuperación de contraseña
+        preview: Alguien ha solicitado un enlace para cambiar su contraseña, lo que se puede realizar a través del siguiente enlace.
+        greeting: "¡Hola!"
+        body_markdown: Alguien ha solicitado un enlace para cambiar su contraseña, lo que se puede realizar a través del siguiente enlace.
+        cta: Cambiar mi contraseña
+        footer: Si usted no lo ha solicitado, por favor ignore este correo electrónico. Su contraseña no será cambiada hasta que usted acceda al enlace y cree una nueva.

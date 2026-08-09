@@ -16,7 +16,6 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_match "We received a request to reset your password", mail.html_part.body.to_s
     assert_match "Reset My Password", mail.html_part.body.to_s
     assert_match "you can safely ignore this email", mail.html_part.body.to_s
-    assert_match "expire in 6 hours", mail.html_part.body.to_s
 
     # Check text body
     assert_match "Hi there,", mail.text_part.body.to_s
@@ -38,7 +37,6 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_match "Kaptunk egy kérést a Jiki fiókod jelszavának visszaállítására", mail.html_part.body.to_s
     assert_match "Jelszó visszaállítása", mail.html_part.body.to_s
     assert_match "figyelmen kívül hagyhatod", mail.html_part.body.to_s
-    assert_match "6 óra múlva lejár", mail.html_part.body.to_s
 
     # Check text body
     assert_match "Szia,", mail.text_part.body.to_s
@@ -154,6 +152,34 @@ class DeviseMailerTest < ActionMailer::TestCase
 
     # Check text body
     assert_match "Szia,", mail.text_part.body.to_s
+  end
+
+  # Locales other than en/hu use copy vendored from devise-i18n. This guards the
+  # remapping onto our key shape - in particular that the vendored greeting
+  # interpolates our `name` rather than devise's `recipient`.
+  test "confirmation_instructions renders vendored copy for a non-bespoke locale" do
+    user = create(:user, :unconfirmed, name: "Amélie Dubois", locale: "fr")
+
+    mail = DeviseMailer.confirmation_instructions(user, "confirmation_token_123")
+
+    assert_equal "Instructions de confirmation", mail.subject
+    assert_match "Bienvenue !", mail.html_part.body.to_s
+    assert_match "Vous pouvez confirmer votre email", mail.html_part.body.to_s
+    assert_match "Confirmer mon email", mail.html_part.body.to_s
+  end
+
+  test "reset_password_instructions renders vendored copy for a non-bespoke locale" do
+    user = create(:user, name: "Amélie Dubois", locale: "fr")
+
+    mail = DeviseMailer.reset_password_instructions(user, "abc123token")
+
+    assert_equal "Instructions pour changer le mot de passe", mail.subject
+    assert_match "Bonjour,", mail.html_part.body.to_s
+    assert_match "Quelqu&#39;un a demandé un lien", mail.html_part.body.to_s
+    assert_match "Changer mon mot de passe", mail.html_part.body.to_s
+
+    # instruction_2/instruction_3 land in our footer slot.
+    assert_match "merci d&#39;ignorer cet email", mail.html_part.body.to_s
   end
 
   test "confirmation_instructions includes frontend URL with token" do

@@ -8,7 +8,6 @@ en:
         body_markdown: |
           Please confirm your email address is real by clicking the button below.
         cta: "Confirm My Email"
-        footer: "If you didn't create a Jiki account, you can safely ignore this email."
       reset_password_instructions:
         subject: "Reset Your Password"
         preview: "Reset your password for your Jiki account"
@@ -16,4 +15,4 @@ en:
         body_markdown: |
           We received a request to reset your password for your Jiki account.
         cta: "Reset My Password"
-        footer: "If you didn't request this, you can safely ignore this email — your password won't change unless you click the link above. This link will expire in 6 hours."
+        footer: "If you didn't request this, you can safely ignore this email — your password won't change unless you click the link above."

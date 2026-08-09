@@ -1,0 +1,18 @@
+# Vendored from devise-i18n (ur.yml) - generic transactional copy,
+# remapped onto our key shape. Safe to hand-tune toward Jiki's voice.
+ur:
+  devise:
+    mailer:
+      confirmation_instructions:
+        subject: تصدیقی ہدایات
+        preview: آپ ذیل میں دیئے گئے لنک کے ذریعہ اپنا اکاؤنٹ ای میل کی تصدیق کرسکتے ہیں
+        greeting: "خوش آمدید!"
+        body_markdown: آپ ذیل میں دیئے گئے لنک کے ذریعہ اپنا اکاؤنٹ ای میل کی تصدیق کرسکتے ہیں
+        cta: کھاتا کی تصدیق کریں
+      reset_password_instructions:
+        subject: پاسورڈ تبدیل کرنے کی ہدایات۔
+        preview: کسی نے آپ کا پاس ورڈ تبدیل کرنے کے لئے ایک لنک کی درخواست کی ہے، اور آپ نیچے دئیے گئے لنک کے ذریعے ایسا کر سکتے ہیں۔
+        greeting: "آداب،"
+        body_markdown: کسی نے آپ کا پاس ورڈ تبدیل کرنے کے لئے ایک لنک کی درخواست کی ہے، اور آپ نیچے دئیے گئے لنک کے ذریعے ایسا کر سکتے ہیں۔
+        cta: میرا خفیہ لفظ تبدیل کریں۔
+        footer: اگر آپ نے اس کی درخواست نہیں کی، تو براہ مہربانی اس ای میل کو نظر انداز کریں۔ آپ کا پاس ورڈ تبدیل نہیں ہو گا جب تک آپ اوپر لنک پر نہ جایں اور ایک نیا بنائیں۔
