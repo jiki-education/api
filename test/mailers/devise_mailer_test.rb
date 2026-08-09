@@ -12,13 +12,13 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     # Check HTML body contains English text
-    assert_match "Hi John Doe,", mail.html_part.body.to_s
+    assert_match "Hi there,", mail.html_part.body.to_s
     assert_match "We received a request to reset your password", mail.html_part.body.to_s
     assert_match "Reset My Password", mail.html_part.body.to_s
     assert_match "you can safely ignore this email", mail.html_part.body.to_s
 
     # Check text body
-    assert_match "Hi John Doe,", mail.text_part.body.to_s
+    assert_match "Hi there,", mail.text_part.body.to_s
     assert_match "We received a request to reset your password", mail.text_part.body.to_s
   end
 
@@ -33,13 +33,13 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     # Check HTML body contains Hungarian text
-    assert_match "Szia János Kovács,", mail.html_part.body.to_s
+    assert_match "Szia,", mail.html_part.body.to_s
     assert_match "Kaptunk egy kérést a Jiki fiókod jelszavának visszaállítására", mail.html_part.body.to_s
     assert_match "Jelszó visszaállítása", mail.html_part.body.to_s
     assert_match "figyelmen kívül hagyhatod", mail.html_part.body.to_s
 
     # Check text body
-    assert_match "Szia János Kovács,", mail.text_part.body.to_s
+    assert_match "Szia,", mail.text_part.body.to_s
   end
 
   test "reset_password_instructions includes frontend URL with token" do
@@ -126,12 +126,12 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     # Check HTML body contains English text
-    assert_match "Hi John Doe,", mail.html_part.body.to_s
+    assert_match "Hi there,", mail.html_part.body.to_s
     assert_match "Please confirm your email address", mail.html_part.body.to_s
     assert_match "Confirm My Email", mail.html_part.body.to_s
 
     # Check text body
-    assert_match "Hi John Doe,", mail.text_part.body.to_s
+    assert_match "Hi there,", mail.text_part.body.to_s
     assert_match "Please confirm your email address", mail.text_part.body.to_s
   end
 
@@ -146,12 +146,12 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     # Check HTML body contains Hungarian text
-    assert_match "Szia János Kovács,", mail.html_part.body.to_s
+    assert_match "Szia,", mail.html_part.body.to_s
     assert_match "erősítsd meg az e-mail címedet", mail.html_part.body.to_s
     assert_match "E-mail cím megerősítése", mail.html_part.body.to_s
 
     # Check text body
-    assert_match "Szia János Kovács,", mail.text_part.body.to_s
+    assert_match "Szia,", mail.text_part.body.to_s
   end
 
   # Locales other than en/hu use copy vendored from devise-i18n. This guards the
@@ -163,7 +163,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.confirmation_instructions(user, "confirmation_token_123")
 
     assert_equal "Instructions de confirmation", mail.subject
-    assert_match "Bienvenue Amélie Dubois", mail.html_part.body.to_s
+    assert_match "Bienvenue !", mail.html_part.body.to_s
     assert_match "Vous pouvez confirmer votre email", mail.html_part.body.to_s
     assert_match "Confirmer mon email", mail.html_part.body.to_s
   end
@@ -174,7 +174,7 @@ class DeviseMailerTest < ActionMailer::TestCase
     mail = DeviseMailer.reset_password_instructions(user, "abc123token")
 
     assert_equal "Instructions pour changer le mot de passe", mail.subject
-    assert_match "Bonjour Amélie Dubois", mail.html_part.body.to_s
+    assert_match "Bonjour,", mail.html_part.body.to_s
     assert_match "Quelqu&#39;un a demandé un lien", mail.html_part.body.to_s
     assert_match "Changer mon mot de passe", mail.html_part.body.to_s
 

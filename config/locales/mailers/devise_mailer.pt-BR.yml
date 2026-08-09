@@ -6,13 +6,13 @@ pt-BR:
       confirmation_instructions:
         subject: Instruções de confirmação
         preview: 'Você pode confirmar sua conta através do link abaixo:'
-        greeting: Bem-vindo %{name}!
+        greeting: Boas-vindas!
         body_markdown: 'Você pode confirmar sua conta através do link abaixo:'
         cta: Confirmar minha conta
       reset_password_instructions:
         subject: Instruções de redefinição de senha
         preview: Alguém fez o pedido para redefinir sua senha, e você pode fazer isso clicando no link abaixo.
-        greeting: Olá %{name}!
+        greeting: Olá,
         body_markdown: Alguém fez o pedido para redefinir sua senha, e você pode fazer isso clicando no link abaixo.
         cta: Redefinir minha senha
         footer: Se você não fez este pedido, por favor ignore este e-mail. Sua senha não será alterada até que você acesse o link acima e crie uma nova.

@@ -6,13 +6,13 @@ id:
       confirmation_instructions:
         subject: Instruksi untuk melakukan konfirmasi
         preview: 'Anda bisa melakukan konfirmasi email akun Anda menggunakan tautan berikut ini:'
-        greeting: Selamat datang %{name}!
+        greeting: Selamat datang!
         body_markdown: 'Anda bisa melakukan konfirmasi email akun Anda menggunakan tautan berikut ini:'
         cta: Konfirmasi akun saya
       reset_password_instructions:
         subject: Instruksi untuk melakukan Reset password
         preview: Seseorang telah meminta tautan untuk mengganti password Anda, dan Anda bisa melakukannya menggunakan tautan berikut ini.
-        greeting: Halo %{name}!
+        greeting: Halo,
         body_markdown: Seseorang telah meminta tautan untuk mengganti password Anda, dan Anda bisa melakukannya menggunakan tautan berikut ini.
         cta: Ganti password saya
         footer: Jika Anda tidak meminta hal ini, abaikan saja email ini. Password Anda tidak akan berubah jika Anda tidak mengakses tautan di atas lalu membuat password yang baru.

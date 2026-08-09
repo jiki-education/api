@@ -6,13 +6,13 @@ sr:
       confirmation_instructions:
         subject: Uputstvo za potvrdu
         preview: 'Možete potvrditi adresu e-pošte za vaš nalog na linku ispod:'
-        greeting: Dobrodošli %{name}!
+        greeting: Dobrodošli!
         body_markdown: 'Možete potvrditi adresu e-pošte za vaš nalog na linku ispod:'
         cta: Potvrdi moj malog
       reset_password_instructions:
         subject: Uputstvo za promenu lozinke
         preview: Neko je zatražio link za promenu vaše lozinke. To možete učiniti na linku ispod.
-        greeting: Zdravo %{name}!
+        greeting: Zdravo,
         body_markdown: Neko je zatražio link za promenu vaše lozinke. To možete učiniti na linku ispod.
         cta: Promeni moju lozinku
         footer: Ukoliko niste vi ovo zatražili, molim vas ignorišite ovu e-poruku. Vaša lozinka neće biti promenjena dok ne pristupite linku iznad i napravite novu.

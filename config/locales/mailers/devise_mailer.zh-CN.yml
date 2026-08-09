@@ -6,13 +6,13 @@ zh-CN:
       confirmation_instructions:
         subject: 帐户确认信息
         preview: 您可以通过下面的链接确认您的帐户的电子邮件：
-        greeting: 欢迎 %{name}！
+        greeting: 欢迎您！
         body_markdown: 您可以通过下面的链接确认您的帐户的电子邮件：
         cta: 确认我的帐户
       reset_password_instructions:
         subject: 重置密码信息
         preview: 有人要求更改密码的链接，您可以通过下面的链接更改密码：
-        greeting: 您好 %{name}！
+        greeting: 您好！
         body_markdown: 有人要求更改密码的链接，您可以通过下面的链接更改密码：
         cta: 更改我的密码
         footer: 如果您没有要求请求更改密码，请忽略此电子邮件。 如果您没有访问上面的链接并更改密码，您的密码就不会被改变。

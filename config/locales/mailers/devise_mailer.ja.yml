@@ -6,13 +6,13 @@ ja:
       confirmation_instructions:
         subject: メールアドレス確認メール
         preview: 以下のリンクをクリックし、メールアドレスの確認手続を完了させてください。
-        greeting: "%{name}様"
+        greeting: "ようこそ！"
         body_markdown: 以下のリンクをクリックし、メールアドレスの確認手続を完了させてください。
         cta: メールアドレスの確認
       reset_password_instructions:
         subject: パスワードの再設定について
         preview: パスワード再設定の依頼を受けたため、メールを送信しています。下のリンクからパスワードの再設定ができます。
-        greeting: "%{name}様"
+        greeting: "こんにちは。"
         body_markdown: パスワード再設定の依頼を受けたため、メールを送信しています。下のリンクからパスワードの再設定ができます。
         cta: パスワード変更
         footer: パスワード再設定の依頼をしていない場合、このメールを無視してください。 パスワードの再設定は、上のリンクから新しいパスワードを登録するまで完了しません。

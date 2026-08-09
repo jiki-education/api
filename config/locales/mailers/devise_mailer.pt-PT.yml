@@ -6,13 +6,13 @@ pt-PT:
       confirmation_instructions:
         subject: Instruções de confirmação
         preview: 'Pode confirmar a sua conta através do link:'
-        greeting: Bem-vindo %{name}!
+        greeting: Damos-lhe as boas-vindas!
         body_markdown: 'Pode confirmar a sua conta através do link:'
         cta: Confirmar a minha conta
       reset_password_instructions:
         subject: Instruções de recuperação de palavra-passe
         preview: Foi efetuado um pedido para repor a sua palavra-passe. Para prosseguir clique no link abaixo.
-        greeting: Olá %{name}!
+        greeting: Olá,
         body_markdown: Foi efetuado um pedido para repor a sua palavra-passe. Para prosseguir clique no link abaixo.
         cta: Repor a minha palavra-passe
         footer: Se não fez este pedido, por favor ignore este e-mail. A sua palavra-passe só será alterada quando aceder ao link abaixo para a alterar.

@@ -6,13 +6,13 @@ ko:
       confirmation_instructions:
         subject: 이메일 인증 안내
         preview: '아래 링크를 클릭하시면 이메일 인증이 완료됩니다:'
-        greeting: "%{name}님"
+        greeting: "환영합니다!"
         body_markdown: '아래 링크를 클릭하시면 이메일 인증이 완료됩니다:'
         cta: 본인 계정 인증
       reset_password_instructions:
         subject: 비밀번호 재설정 안내
         preview: 누군가 당신의 비밀번호를 변경하는 링크를 요청했으며, 다음의 링크에서 비밀번호 변경이 가능합니다.
-        greeting: "%{name}님"
+        greeting: "안녕하세요,"
         body_markdown: 누군가 당신의 비밀번호를 변경하는 링크를 요청했으며, 다음의 링크에서 비밀번호 변경이 가능합니다.
         cta: 비밀번호 변경
         footer: 비밀번호 변경을 요청하지 않으셨다면 이 메일을 무시하십시오. 위 링크에 접속하여 새로운 비밀번호를 생성하기 전까지 귀하의 비밀번호는 변경되지 않습니다.

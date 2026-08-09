@@ -6,13 +6,13 @@ vi:
       confirmation_instructions:
         subject: Hướng dẫn xác nhận tài khoản
         preview: 'Bạn có thể xác nhận tài khoản email bằng liên kết dưới đây:'
-        greeting: Chào mừng %{name}!
+        greeting: Chào mừng bạn!
         body_markdown: 'Bạn có thể xác nhận tài khoản email bằng liên kết dưới đây:'
         cta: Xác nhận tài khoản
       reset_password_instructions:
         subject: Hướng dẫn thiết lập lại mật khẩu
         preview: Có ai đó yêu cầu liên kết thay đổi mật khẩu, bạn có thể thay đổi mật khẩu bằng liên kết dưới đây.
-        greeting: Xin chào %{name}!
+        greeting: Xin chào,
         body_markdown: Có ai đó yêu cầu liên kết thay đổi mật khẩu, bạn có thể thay đổi mật khẩu bằng liên kết dưới đây.
         cta: Thay đổi mật khẩu
         footer: Nếu bạn không yêu cầu, vui lòng bỏ qua email này. Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn ấn vào liên kết trên và tạo mật khẩu mới.

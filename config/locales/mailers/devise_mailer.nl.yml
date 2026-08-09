@@ -6,13 +6,13 @@ nl:
       confirmation_instructions:
         subject: Bevestiging
         preview: 'Je kunt je e-mailadres bevestigen via onderstaande link:'
-        greeting: Welkom %{name}!
+        greeting: Welkom!
         body_markdown: 'Je kunt je e-mailadres bevestigen via onderstaande link:'
         cta: Bevestig mijn account
       reset_password_instructions:
         subject: Instructies om je wachtwoord opnieuw in te stellen
         preview: Iemand heeft een link gevraagd om uw wachtwoord te wijzigen; dit kan via onderstaande link.
-        greeting: Hallo %{name}!
+        greeting: Hallo,
         body_markdown: Iemand heeft een link gevraagd om uw wachtwoord te wijzigen; dit kan via onderstaande link.
         cta: Verander mijn wachtwoord
         footer: Als je dit niet zelf hebt gevraagd, negeer deze mail dan alsjeblieft. Je wachtwoord zal niet wijzigen totdat je bovenstaande link hebt gevolgd en een nieuw wachtwoord hebt aangemaakt.
