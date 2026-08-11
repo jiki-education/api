@@ -120,12 +120,14 @@ class Internal::SettingsControllerTest < ApplicationControllerTest
   end
 
   test "PATCH locale accepts a draft locale, which is recorded but not yet served" do
-    with_supported_locales(%w[en]) do
-      patch locale_internal_settings_path, params: { value: "hu" }, as: :json
+    with_wip_locales(%w[xx]) do
+      with_supported_locales(%w[en]) do
+        patch locale_internal_settings_path, params: { value: "xx" }, as: :json
 
-      assert_response :success
-      assert_equal "hu", @user.reload.data.explicit_locale
-      assert_equal "en", @user.reload.locale
+        assert_response :success
+        assert_equal "xx", @user.reload.data.explicit_locale
+        assert_equal "en", @user.reload.locale
+      end
     end
   end
 
