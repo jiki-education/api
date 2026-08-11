@@ -42,13 +42,13 @@ class Level::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
     # all in the target locales
     assert_includes I18n::SUPPORTED_LOCALES.map(&:to_s), "en"
     assert_includes I18n::SUPPORTED_LOCALES.map(&:to_s), "hu"
-    assert_includes I18n::WIP_LOCALES.map(&:to_s), "hu"
+    assert_includes I18n::WIP_LOCALES.map(&:to_s), "fr"
 
     # Verify the command uses both
     Level::Translation::TranslateToLocale.stubs(:defer)
     result = Level::Translation::TranslateToAllLocales.(level)
 
-    assert_includes result, "hu" # From WIP_LOCALES (non-production SUPPORTED)
+    assert_includes result, "hu" # From SUPPORTED_LOCALES
     assert_includes result, "es-ES" # From WIP_LOCALES
   end
 

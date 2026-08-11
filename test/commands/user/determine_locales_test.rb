@@ -2,8 +2,10 @@ require "test_helper"
 
 class User::DetermineLocalesTest < ActiveSupport::TestCase
   test "returns every matching locale, live and draft, in preference order" do
-    with_supported_locales(%w[en]) do
-      assert_equal %w[hu es-ES en], User::DetermineLocales.(%w[hu es-ES en])
+    with_wip_locales(%w[xx es-ES]) do
+      with_supported_locales(%w[en]) do
+        assert_equal %w[xx es-ES en], User::DetermineLocales.(%w[xx es-ES en])
+      end
     end
   end
 

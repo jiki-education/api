@@ -38,7 +38,7 @@ class Badge::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
     Badge::Translation::TranslateToLocale.stubs(:defer)
     result = Badge::Translation::TranslateToAllLocales.(badge)
 
-    assert_includes result, "hu" # From WIP_LOCALES (non-production SUPPORTED)
+    assert_includes result, "hu" # From SUPPORTED_LOCALES
     assert_includes result, "es-ES" # From WIP_LOCALES
   end
 

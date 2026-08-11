@@ -197,29 +197,38 @@ class User::DataTest < ActiveSupport::TestCase
 
   test "locale ignores an explicit choice that isn't live yet" do
     user = create(:user)
-    user.data.update!(explicit_locale: "hu", locales: %w[en])
 
-    # hu is a draft locale here, so it must not drive what we serve.
-    with_supported_locales(%w[en]) do
-      assert_equal "en", user.data.locale
+    with_wip_locales(%w[xx]) do
+      user.data.update!(explicit_locale: "xx", locales: %w[en])
+
+      # xx is a draft locale here, so it must not drive what we serve.
+      with_supported_locales(%w[en]) do
+        assert_equal "en", user.data.locale
+      end
     end
   end
 
   test "locale honours the explicit choice once it goes live" do
     user = create(:user)
-    user.data.update!(explicit_locale: "hu", locales: %w[en])
 
-    with_supported_locales(%w[en hu]) do
-      assert_equal "hu", user.data.locale
+    with_wip_locales(%w[xx]) do
+      user.data.update!(explicit_locale: "xx", locales: %w[en])
+
+      with_supported_locales(%w[en xx]) do
+        assert_equal "xx", user.data.locale
+      end
     end
   end
 
   test "selected_locale keeps a draft choice" do
     user = create(:user)
-    user.data.update!(explicit_locale: "hu")
 
-    with_supported_locales(%w[en]) do
-      assert_equal "hu", user.data.selected_locale
+    with_wip_locales(%w[xx]) do
+      user.data.update!(explicit_locale: "xx")
+
+      with_supported_locales(%w[en]) do
+        assert_equal "xx", user.data.selected_locale
+      end
     end
   end
 
@@ -239,20 +248,26 @@ class User::DataTest < ActiveSupport::TestCase
 
   test "available_locales leads with the explicit choice, then the served locale" do
     user = create(:user)
-    user.data.update!(explicit_locale: "hu", locales: %w[fr en])
 
-    with_supported_locales(%w[en]) do
-      # hu is chosen but not live, so en is served — both appear, choice first.
-      assert_equal %w[hu en fr], user.data.available_locales
+    with_wip_locales(%w[xx fr]) do
+      user.data.update!(explicit_locale: "xx", locales: %w[fr en])
+
+      with_supported_locales(%w[en]) do
+        # xx is chosen but not live, so en is served — both appear, choice first.
+        assert_equal %w[xx en fr], user.data.available_locales
+      end
     end
   end
 
   test "available_locales dedupes when the explicit choice is also the served locale" do
     user = create(:user)
-    user.data.update!(explicit_locale: "hu", locales: %w[hu en])
 
-    with_supported_locales(%w[en hu]) do
-      assert_equal %w[hu en], user.data.available_locales
+    with_wip_locales(%w[xx]) do
+      user.data.update!(explicit_locale: "xx", locales: %w[xx en])
+
+      with_supported_locales(%w[en xx]) do
+        assert_equal %w[xx en], user.data.available_locales
+      end
     end
   end
 

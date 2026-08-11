@@ -115,6 +115,20 @@ module ActiveSupport
       I18n.send(:remove_const, :SUPPORTED_LOCALES)
       I18n.const_set(:SUPPORTED_LOCALES, original)
     end
+
+    # Temporarily override the draft locale set, for tests that exercise
+    # draft-locale behaviour (chosen but not yet live) against a synthetic
+    # locale ("xx") rather than a real WIP locale, which would otherwise
+    # drift out from under the test whenever a locale is promoted.
+    def with_wip_locales(locales)
+      original = I18n::WIP_LOCALES
+      I18n.send(:remove_const, :WIP_LOCALES)
+      I18n.const_set(:WIP_LOCALES, locales.freeze)
+      yield
+    ensure
+      I18n.send(:remove_const, :WIP_LOCALES)
+      I18n.const_set(:WIP_LOCALES, original)
+    end
   end
 end
 

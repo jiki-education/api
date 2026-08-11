@@ -2,9 +2,9 @@
 # Defines supported and work-in-progress locales for the application
 
 module I18n
-  # Locales that ship to production. Production is English-only for now; the
-  # locale-parity guard test hard-fails on any of these that drifts from en.
-  PRODUCTION_LOCALES = %w[en].freeze
+  # Locales that ship to production. The locale-parity guard test hard-fails
+  # on any of these that drifts from en.
+  PRODUCTION_LOCALES = %w[en hu].freeze
 
   # Locales that are being worked on but are not yet production-ready.
   # Translation generation targets these everywhere (so content can be
@@ -19,7 +19,7 @@ module I18n
   WIP_LOCALES = %w[
     ar bn ca de el
     es-ES es-419
-    fa fr hi hu id it ja ko nl pl
+    fa fr hi id it ja ko nl pl
     pt-PT pt-BR
     ro ru sr sv sw tr uk ur vi
     zh-CN zh-TW
