@@ -1,0 +1,27 @@
+it:
+  account_mailer:
+    welcome:
+      subject: "Benvenuto su Jiki!"
+      greeting: "Ciao,"
+      body_markdown: |
+        Benvenuto su [Jiki](https://jiki.io)! Siamo davvero felici di averti qui.
+
+        Jiki è stato progettato per portarti da principiante assoluto a programmatore sicuro di te. Lavorerai su progetti divertenti e risolverai problemi interessanti, facendo progressi un piccolo passo alla volta e imparando tantissimo lungo il percorso.
+
+        Se ti blocchi o hai domande, non esitare a contattarci. Imparare a programmare all'inizio può sembrare opprimente, ma ce la farai!
+
+        Divertiti e goditi il viaggio!
+
+        Ciao,  
+        Jeremy e il team
+    account_deletion_confirmation:
+      subject: "Conferma l'eliminazione del tuo account"
+      preview: "Conferma di voler eliminare definitivamente il tuo account Jiki"
+      greeting: "Ciao,"
+      body_markdown: |
+        Abbiamo ricevuto una richiesta di eliminare il tuo account Jiki.
+
+        Se sei stato tu a inviare questa richiesta, fai clic sul pulsante qui sotto per confermare. Questa azione è permanente e non può essere annullata. Tutti i tuoi progressi e i tuoi dati verranno eliminati.
+
+        Se non sei stato tu a richiederlo, puoi tranquillamente ignorare questa email e il tuo account rimarrà invariato.
+      cta: "Elimina il mio account"
