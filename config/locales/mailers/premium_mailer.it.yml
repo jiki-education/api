@@ -1,0 +1,26 @@
+it:
+  premium_mailer:
+    welcome_to_premium:
+      subject: "Benvenuto in Jiki Premium!"
+      greeting: "Ciao,"
+      body_markdown: |
+        Grazie per il tuo abbonamento a Jiki Premium!
+
+        Puoi vedere tutte le funzionalità a cui hai accesso sulla [pagina Premium](https://jiki.io/premium). Speriamo che tu ti diverta un sacco a usare Jiki e che ti vedremo presto in una diretta streaming!
+
+        Se hai domande, rispondi pure a questa email.
+
+        Un saluto,  
+        Jeremy e il team
+    subscription_ended:
+      subject: "Il tuo abbonamento a Jiki è terminato"
+      greeting: "Ciao,"
+      body_markdown: |
+        Il tuo abbonamento a Jiki Premium è terminato e ora sei nel piano gratuito.
+
+        Hai ancora pieno accesso all'intera sezione "Impara a programmare". Se vuoi abbonarti di nuovo, puoi farlo in qualsiasi momento dalla tua [pagina delle impostazioni](https://jiki.io/settings).
+
+        Grazie per aver provato Jiki Premium.
+
+        Un saluto,  
+        Jeremy e il team
