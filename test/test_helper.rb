@@ -103,31 +103,30 @@ module ActiveSupport
       assert_equal result_one, result_two
     end
 
-    # Temporarily override the live locale set. I18n::SUPPORTED_LOCALES is
-    # environment-gated (en-only in production, en/hu elsewhere), so locale
-    # logic has to be exercised against the eventual content set as well.
-    def with_supported_locales(locales)
-      original = I18n::SUPPORTED_LOCALES
-      I18n.send(:remove_const, :SUPPORTED_LOCALES)
-      I18n.const_set(:SUPPORTED_LOCALES, locales.freeze)
+    # Temporarily override the locale sets, keeping the three constants
+    # consistent with each other exactly as the initializer derives them.
+    #
+    # Locale behaviour splits on live vs draft, so tests that exercise it need
+    # to pin both sides. Use synthetic locales ("xx", "yy") rather than real
+    # ones: which real locale is live changes every time one is promoted, and a
+    # test pinned to a real name silently changes meaning when it does.
+    #
+    #   with_locales(live: %w[en], draft: %w[xx])
+    def with_locales(live:, draft: [])
+      originals = LOCALE_CONSTANTS.index_with { |name| I18n.const_get(name) }
+      override_locale_constants(SUPPORTED_LOCALES: live, WIP_LOCALES: draft, ALL_LOCALES: live + draft)
       yield
     ensure
-      I18n.send(:remove_const, :SUPPORTED_LOCALES)
-      I18n.const_set(:SUPPORTED_LOCALES, original)
+      override_locale_constants(originals)
     end
 
-    # Temporarily override the draft locale set, for tests that exercise
-    # draft-locale behaviour (chosen but not yet live) against a synthetic
-    # locale ("xx") rather than a real WIP locale, which would otherwise
-    # drift out from under the test whenever a locale is promoted.
-    def with_wip_locales(locales)
-      original = I18n::WIP_LOCALES
-      I18n.send(:remove_const, :WIP_LOCALES)
-      I18n.const_set(:WIP_LOCALES, locales.freeze)
-      yield
-    ensure
-      I18n.send(:remove_const, :WIP_LOCALES)
-      I18n.const_set(:WIP_LOCALES, original)
+    LOCALE_CONSTANTS = %i[SUPPORTED_LOCALES WIP_LOCALES ALL_LOCALES].freeze
+
+    def override_locale_constants(values)
+      values.each do |name, locales|
+        I18n.send(:remove_const, name)
+        I18n.const_set(name, locales.freeze)
+      end
     end
   end
 end

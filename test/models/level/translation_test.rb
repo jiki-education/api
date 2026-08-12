@@ -59,7 +59,7 @@ class Level::TranslationTest < ActiveSupport::TestCase
   end
 
   test "accepts supported locales" do
-    I18n::WIP_LOCALES.each do |locale|
+    (I18n::ALL_LOCALES - ["en"]).each do |locale|
       translation = build(:level_translation, locale:)
       assert translation.valid?, "Expected #{locale} to be valid"
     end

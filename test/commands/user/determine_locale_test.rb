@@ -31,7 +31,7 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     %w[xx-YY] => nil                      # nothing matches -> nil, caller applies the default
   }.each do |tags, expected|
     test "#{tags.join(', ')} negotiates to #{expected || 'nil'} against the full set" do
-      with_supported_locales(FULL_SET) do
+      with_locales(live: FULL_SET) do
         result = User::DetermineLocale.(tags)
         expected.nil? ? assert_nil(result) : assert_equal(expected, result)
       end
@@ -42,19 +42,19 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
   # subset. A tag that would collapse to a not-yet-live variant must fall
   # through rather than return it.
   test "pt-MZ, en falls through to en when pt-PT is not live" do
-    with_supported_locales(%w[en hu]) do
+    with_locales(live: %w[en hu]) do
       assert_equal "en", User::DetermineLocale.(%w[pt-MZ en])
     end
   end
 
   test "pt-BR returns nil (caller defaults) when pt-BR is not live" do
-    with_supported_locales(%w[en hu]) do
+    with_locales(live: %w[en hu]) do
       assert_nil User::DetermineLocale.(%w[pt-BR])
     end
   end
 
   test "hu-HU, en negotiates to hu when hu is live" do
-    with_supported_locales(%w[en hu]) do
+    with_locales(live: %w[en hu]) do
       assert_equal "hu", User::DetermineLocale.(%w[hu-HU en])
     end
   end
@@ -71,14 +71,14 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     %w[zh-US] => "zh-CN"        # diaspora region -> Simplified
   }.each do |tags, expected|
     test "#{tags.join(', ')} negotiates to #{expected}" do
-      with_supported_locales(%w[en zh-CN zh-TW]) do
+      with_locales(live: %w[en zh-CN zh-TW]) do
         assert_equal expected, User::DetermineLocale.(tags)
       end
     end
   end
 
   test "zh-HK falls through when zh-TW is not live" do
-    with_supported_locales(%w[en zh-CN]) do
+    with_locales(live: %w[en zh-CN]) do
       # Must not silently serve Simplified to a Traditional reader.
       assert_equal "en", User::DetermineLocale.(%w[zh-HK en])
     end
@@ -86,19 +86,19 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
 
   # Edge cases.
   test "empty list returns nil" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       assert_nil User::DetermineLocale.([])
     end
   end
 
   test "blank and malformed tags are skipped" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       assert_equal "fr", User::DetermineLocale.(["", "  ", "-", "fr"])
     end
   end
 
   test "mixed-case tags are normalised for exact matching" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       assert_equal "pt-BR", User::DetermineLocale.(%w[PT-br])
       assert_equal "es-419", User::DetermineLocale.(%w[ES-419])
       assert_equal "es-ES", User::DetermineLocale.(%w[es-es]) # lowercase region normalises to canonical es-ES
@@ -108,27 +108,27 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
   end
 
   test "mixed-case region collapses correctly" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       assert_equal "es-419", User::DetermineLocale.(%w[es-ar])
       assert_equal "pt-PT", User::DetermineLocale.(%w[pt-mz])
     end
   end
 
   test "duplicate tags are harmless" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       assert_equal "de", User::DetermineLocale.(%w[de-CH de-CH de])
     end
   end
 
   test "order determines the winner across supported languages" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       assert_equal "de", User::DetermineLocale.(%w[de fr])
       assert_equal "fr", User::DetermineLocale.(%w[fr de])
     end
   end
 
   test "exact es-419 beats an earlier es region rule only when listed first" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       # es-ES matches exactly (Peninsular) and wins because it appears first,
       # before es-MX (which would collapse to es-419) is reached.
       assert_equal "es-ES", User::DetermineLocale.(%w[es-ES es-MX])
@@ -136,7 +136,7 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
   end
 
   test "script subtags don't derail base-language collapse" do
-    with_supported_locales(FULL_SET) do
+    with_locales(live: FULL_SET) do
       # zh-Hant-TW is unsupported; ja is next.
       assert_equal "ja", User::DetermineLocale.(%w[zh-Hant-TW ja])
     end

@@ -81,19 +81,19 @@ class UserTest < ActiveSupport::TestCase
 
   test "locale skips preferences that aren't live" do
     user = create(:user)
-    user.data.update!(locales: %w[fr de hu])
+    with_locales(live: %w[en yy], draft: %w[xx]) do
+      user.data.update!(locales: %w[xx yy])
 
-    # fr and de are known locales but not live here, so hu wins.
-    with_supported_locales(%w[en hu]) do
-      assert_equal "hu", user.locale
+      # xx is a known locale but not live here, so yy wins.
+      assert_equal "yy", user.locale
     end
   end
 
   test "locale falls back to en when no preference is live" do
     user = create(:user)
-    user.data.update!(locales: %w[fr de])
+    with_locales(live: %w[en], draft: %w[xx]) do
+      user.data.update!(locales: %w[xx])
 
-    with_supported_locales(%w[en hu]) do
       assert_equal "en", user.locale
     end
   end
@@ -121,8 +121,8 @@ class UserTest < ActiveSupport::TestCase
   test "explicit_locale accepts a draft locale that isn't live yet" do
     # The test env ships the draft set as live, so narrow it to prove the
     # validation really does span live + draft rather than just live.
-    with_supported_locales(%w[en]) do
-      assert build(:user, locale: "fr").valid?
+    with_locales(live: %w[en], draft: %w[xx]) do
+      assert build(:user, locale: "xx").valid?
       refute build(:user, locale: "kl").valid?
     end
   end
