@@ -122,7 +122,7 @@ class UserTest < ActiveSupport::TestCase
     # The test env ships the draft set as live, so narrow it to prove the
     # validation really does span live + draft rather than just live.
     with_supported_locales(%w[en]) do
-      assert build(:user, locale: "hu").valid?
+      assert build(:user, locale: "fr").valid?
       refute build(:user, locale: "kl").valid?
     end
   end
