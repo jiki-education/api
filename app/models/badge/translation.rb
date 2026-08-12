@@ -7,7 +7,7 @@ class Badge::Translation < ApplicationRecord
   validates :locale, uniqueness: { scope: :badge_id }
   validates :locale, exclusion: { in: ['en'], message: "English content belongs on Badge model" }
   validates :locale, inclusion: {
-    in: ->(_) { (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s) - ['en'] },
+    in: ->(_) { I18n::ALL_LOCALES.map(&:to_s) - ['en'] },
     message: "is not a supported locale"
   }
 

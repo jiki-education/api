@@ -15,10 +15,5 @@ class Level::Translation::TranslateToAllLocales
 
   private
   memoize
-  def target_locales = supported_locales - ["en"]
-
-  memoize
-  def supported_locales
-    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
-  end
+  def target_locales = I18n::ALL_LOCALES - ["en"]
 end

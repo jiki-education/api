@@ -32,12 +32,7 @@ class Level::Translation::TranslateToLocale
   private
   def validate!
     raise ArgumentError, "Target locale cannot be English (en)" if target_locale == "en"
-    raise ArgumentError, "Target locale not supported" unless supported_locales.include?(target_locale)
-  end
-
-  memoize
-  def supported_locales
-    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
+    raise ArgumentError, "Target locale not supported" unless I18n::ALL_LOCALES.include?(target_locale)
   end
 
   memoize

@@ -4,8 +4,7 @@ class Level::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
   test "enqueues background jobs for all non-English locales" do
     level = create(:level)
 
-    # Get all supported locales (excluding English)
-    expected_locales = (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq - ["en"]
+    expected_locales = I18n::ALL_LOCALES - ["en"]
 
     # Expect .defer to be called for each target locale
     expected_locales.each do |locale|
@@ -31,32 +30,18 @@ class Level::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
     refute_includes result, "en"
   end
 
-  test "includes both SUPPORTED_LOCALES and WIP_LOCALES" do
+  test "targets draft locales as well as live ones" do
     level = create(:level)
 
-    # Get all non-English locales from both constants
-    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq
-
-    # Should include at least one from each constant
-    # WIP_LOCALES carries every non-production locale, so we expect them
-    # all in the target locales
-    assert_includes I18n::SUPPORTED_LOCALES.map(&:to_s), "en"
-    assert_includes I18n::SUPPORTED_LOCALES.map(&:to_s), "hu"
-    assert_includes I18n::WIP_LOCALES.map(&:to_s), "fr"
-
-    # Verify the command uses both
     Level::Translation::TranslateToLocale.stubs(:defer)
-    result = Level::Translation::TranslateToAllLocales.(level)
 
-    assert_includes result, "hu" # From SUPPORTED_LOCALES
-    assert_includes result, "es-ES" # From WIP_LOCALES
+    with_locales(live: %w[en xx], draft: %w[yy]) do
+      assert_equal %w[xx yy], Level::Translation::TranslateToAllLocales.(level)
+    end
   end
 
   test "uses .defer() for background job execution" do
     level = create(:level)
-
-    # Get first non-English locale
-    (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).find { |l| l != "en" }
 
     # Verify .defer is called (not .call)
     Level::Translation::TranslateToLocale.expects(:defer).at_least_once

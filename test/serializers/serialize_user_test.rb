@@ -184,18 +184,16 @@ class SerializeUserTest < ActiveSupport::TestCase
   end
 
   test "serializes explicit_locale and leads locales with it" do
-    with_wip_locales(%w[xx fr]) do
+    with_locales(live: %w[en], draft: %w[xx fr]) do
       user = create(:user, locale: "xx")
       user.data.update!(locales: %w[fr en])
 
-      with_supported_locales(%w[en]) do
-        result = SerializeUser.(user)
+      result = SerializeUser.(user)
 
-        # xx is chosen but not live: en is still served, xx still leads the list.
-        assert_equal "xx", result[:explicit_locale]
-        assert_equal "en", result[:locale]
-        assert_equal %w[xx en fr], result[:locales]
-      end
+      # xx is chosen but not live: en is still served, xx still leads the list.
+      assert_equal "xx", result[:explicit_locale]
+      assert_equal "en", result[:locale]
+      assert_equal %w[xx en fr], result[:locales]
     end
   end
 

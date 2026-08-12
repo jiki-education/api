@@ -5,7 +5,7 @@ class Badge::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
     badge = create(:member_badge)
 
     # Get all supported locales (excluding English)
-    expected_locales = (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).map(&:to_s).uniq - ["en"]
+    expected_locales = I18n::ALL_LOCALES - ["en"]
 
     # Expect .defer to be called for each target locale
     expected_locales.each do |locale|
@@ -31,15 +31,14 @@ class Badge::Translation::TranslateToAllLocalesTest < ActiveSupport::TestCase
     refute_includes result, "en"
   end
 
-  test "includes both SUPPORTED_LOCALES and WIP_LOCALES" do
+  test "targets draft locales as well as live ones" do
     badge = create(:member_badge)
 
-    # Verify the command uses both
     Badge::Translation::TranslateToLocale.stubs(:defer)
-    result = Badge::Translation::TranslateToAllLocales.(badge)
 
-    assert_includes result, "hu" # From SUPPORTED_LOCALES
-    assert_includes result, "es-ES" # From WIP_LOCALES
+    with_locales(live: %w[en xx], draft: %w[yy]) do
+      assert_equal %w[xx yy], Badge::Translation::TranslateToAllLocales.(badge)
+    end
   end
 
   test "uses .defer() for background job execution" do

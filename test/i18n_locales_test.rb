@@ -6,10 +6,17 @@ require "test_helper"
 # explicit_locale validation and the tag negotiation both match exactly, so
 # "zh-cn" would be advertised by the front end and then 422 on selection.
 class I18nLocalesTest < ActiveSupport::TestCase
-  ALL = (I18n::PRODUCTION_LOCALES + I18n::WIP_LOCALES).freeze
+  ALL = I18n::ALL_LOCALES
 
-  test "locales are unique across the production and WIP sets" do
+  test "locales are unique" do
     assert_equal ALL.uniq, ALL, "duplicate locale(s): #{ALL.tally.select { |_, n| n > 1 }.keys.inspect}"
+  end
+
+  test "every live locale is a known locale" do
+    # Promotion is a one-line edit to PRODUCTION_LOCALES, so a typo there is the
+    # likely failure: it would ship a locale nothing else in the app knows about.
+    unknown = I18n::PRODUCTION_LOCALES - ALL
+    assert_empty unknown, "in PRODUCTION_LOCALES but not in ALL_LOCALES: #{unknown.inspect}"
   end
 
   test "locales use canonical BCP-47 casing" do

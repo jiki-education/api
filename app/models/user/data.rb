@@ -16,7 +16,7 @@ class User::Data < ApplicationRecord
   # and we hold that choice until it does. Resolved lazily (rather than at
   # class-load) so the locale sets can be swapped in tests.
   validates :explicit_locale,
-    inclusion: { in: ->(_) { I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES } },
+    inclusion: { in: ->(_) { I18n::ALL_LOCALES } },
     allow_nil: true
 
   # Locale is derived, never stored directly: an explicit user choice wins
@@ -40,7 +40,7 @@ class User::Data < ApplicationRecord
   # though it were never set, rather than surfaced as a selection the user can't
   # act on.
   def selected_locale
-    return nil unless (I18n::SUPPORTED_LOCALES + I18n::WIP_LOCALES).include?(explicit_locale)
+    return nil unless I18n::ALL_LOCALES.include?(explicit_locale)
 
     explicit_locale
   end
