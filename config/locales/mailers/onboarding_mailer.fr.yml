@@ -1,0 +1,96 @@
+fr:
+  onboarding_mailer:
+    overview:
+      subject: "Devenir développeur en 2026 : les deux moitiés"
+      preview: "Depuis quelques années, j'apprends le japonais tout doucement."
+      greeting: "Salut,"
+      body_markdown: |
+        Depuis quelques années, **j'apprends le japonais tout doucement**. Je vais régulièrement au Japon et j'essaie de m'immerger dans la langue, mais c'est difficile, parce qu'aujourd'hui, avec l'aide de Google Traduction, il est plutôt facile de passer du temps au Japon sans dire un mot de japonais. **Mon cerveau peut donc se permettre d'être paresseux**, et je m'en sors très bien.
+
+        La programmation a récemment commencé à suivre le même chemin. Pendant trente ans, si tu voulais faire quoi que ce soit avec la technologie, **il fallait apprendre à coder**. C'était le seul moyen de communiquer avec un ordinateur. Mais depuis deux ans, avec l'essor de la programmation agentique, les choses ont changé. Tu peux désormais utiliser ta langue maternelle pour dire à un agent IA ce que tu veux qu'il fasse, et **il écrira le code à ta place**, en traduisant tes instructions pour l'ordinateur.
+
+        Tout comme je n'ai pas besoin d'attendre de parler couramment japonais pour explorer le Japon, **ça n'a plus aucun sens de passer des années à devenir bon en programmation** avant de commencer à créer des choses.
+
+        Mais si je veux vraiment entrer dans la culture japonaise et me faire des amis japonais, j'ai besoin d'apprendre le japonais. Et si tu veux entrer dans la tech, tu dois toujours apprendre à coder. Le code n'est plus le gardien de la porte, mais c'est **la différence entre « se débrouiller » et vraiment s'épanouir**.
+
+        Pour progresser vite, divise ton temps d'apprentissage en deux parties :
+        1. **Apprends à coder.** Suis le cours Fondamentaux de la programmation de Jiki et tu auras d'excellentes bases.
+        2. **Crée des choses.** Suis « Apprendre à créer », mets les mains dans le cambouis et crée des produits que les gens peuvent vraiment utiliser !
+
+        Si tu veux en savoir plus sur ma vision de **comment entrer dans la tech en 2026**, lis [cet article de blog](https://jiki.io/blog/how-to-get-into-tech-in-2026).
+
+        Dans les prochains jours, je te parlerai un peu plus des deux côtés, la programmation et la création, et de la façon dont tu peux tirer le meilleur parti de [Jiki](https://jiki.io). En attendant, **lance-toi et amuse-toi bien !**
+
+        Merci de m'avoir lu !
+        Jeremy
+    coding:
+      subject: "Construis des bases solides en programmation"
+      preview: "Apprendre à coder a la réputation d'être technique et difficile."
+      greeting: "Salut, c'est encore moi,"
+      body_markdown: |
+        Apprendre à coder a la réputation d'être technique et difficile. Quand j'ai commencé à apprendre à coder, j'étais un gamin de 8 ans qui ne connaissait rien à la programmation, à part que **je pouvais soudain créer des trucs géniaux**. Je ne savais pas que c'était censé être difficile. Je savais juste que j'avais tout à coup un nouvel exutoire pour ma créativité.
+
+        Pendant que tu apprends à coder, **je ne veux pas que tu voies ça comme une discipline technique à maîtriser**. Je veux que tu y voies un endroit où libérer **ta** créativité, où tu peux **t'amuser à créer des choses** et à résoudre des casse-tête. Parce que c'est vraiment ça, la programmation : résoudre des problèmes.
+
+        Peu importe [quel langage de programmation tu apprends](https://jiki.io/blog/just-learn-to-code), ce qui compte, c'est que tu construises une très bonne compréhension de **comment fonctionne la programmation**.
+
+        Au fil de ta progression, il y aura des moments où la programmation te semblera difficile et frustrante. Mais ce n'est pas parce que _la programmation_ est difficile, c'est parce qu'**apprendre est difficile**. Si tu veux devenir bon dans quoi que ce soit, tu dois traverser des phases où le défi paraît trop grand, mais il faut persévérer.
+
+        Si tu n'es pas sûr que la partie programmation vaille l'effort, lis [cet article de blog](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) qui explique pourquoi il faut encore apprendre à coder en 2026.
+
+        Merci de m'avoir lu !
+        Jeremy
+    building:
+      subject: "La meilleure façon d'apprendre, c'est de créer !"
+      preview: "Je crois vraiment que c'est le meilleur moment pour entrer dans la tech."
+      greeting: "Salut,"
+      body_markdown: |
+        Je crois vraiment qu'**il n'y a jamais eu meilleur moment pour entrer dans la tech**. Il n'a jamais été aussi facile d'apprendre les bases et de pouvoir rapidement créer des choses.
+
+        Mais (et c'est un gros mais !) là où beaucoup de gens se trompent, c'est qu'ils confient entièrement les rênes à un agent IA sans vraiment apprendre. Et c'est très agréable pendant un moment, tu peux faire apparaître plein de choses comme par magie, mais si tout ce que tu fais c'est dire à Claude ou à ChatGPT quoi faire, tu n'apprends rien du tout !
+
+        C'est pourquoi je prépare des **projets pas à pas** sur lesquels tu peux travailler, et où je _VEUX_ que tu utilises des agents IA pour faire une grande partie du travail à ta place. Mais où je veux aussi que tu t'assures de **bien comprendre ce qui se passe** à chaque étape.
+
+        Le but de ces projets, c'est de pouvoir apprendre **toutes les différentes facettes de la création de logiciels**. Tu peux me rejoindre pendant que je construis des choses, je t'expliquerai exactement ce que je fais et pourquoi, puis tu pourras travailler avec un agent IA pour appliquer ces mêmes idées à tes projets.
+
+        Mais surtout, **ne deviens pas accro aux shots de dopamine** que procure l'agent IA qui fait le travail à ta place. Prends bien le temps de comprendre ce qui se passe !
+
+        J'espère te croiser bientôt [lors d'un direct](https://youtube.com/@jiki-coding) !
+
+        Merci de m'avoir lu !
+        Jeremy
+    premium:
+      subject: "Profite encore plus de Jiki (et aide-nous)"
+      preview: "On a rendu Jiki gratuit parce qu'on veut qu'il soit accessible à tout le monde, quelle"
+      greeting: "Salut,"
+      body_markdown: |
+        On a rendu Jiki gratuit parce qu'on veut qu'il soit **accessible à tout le monde**, quelle que soit la situation financière de chacun. Tout le monde a accès à des centaines d'heures d'exercices et de vidéos, sans rien devoir en retour.
+
+        Mais **Jiki coûte de l'argent à faire tourner**, et on doit pouvoir payer nos loyers, notre nourriture (🍜) et notre caféine (☕), alors on a ajouté une formule Premium qui apporte quelques avantages supplémentaires qui, je pense, vont vraiment t'aider :
+        - **Demande à Jiki** : notre chat IA pour t'aider à te débloquer rapidement ou à explorer tes questions.
+        - **Projets Premium** : des exercices plus difficiles, où tu peux combiner les compétences que tu apprends.
+        - **Apprendre à créer** : beaucoup plus de contenu, où tu peux apprendre à mes côtés.
+        - **Badges** : montre ton soutien sur le site et dans les espaces communautaires avec les badges Premium.
+
+        On a rendu tout ça super abordable grâce à la **parité de pouvoir d'achat**. Ça veut dire que Premium coûte à peu près le prix de deux boissons à emporter dans ton pays, donc le tarif devrait te sembler raisonnable où que tu sois dans le monde.
+
+        Si Jiki te plaît, que tu veux **accélérer ton apprentissage** et soutenir l'équipe Jiki et moi-même, alors [passe à Premium](https://jiki.io/premium).
+
+        Merci,
+        Jeremy
+    community:
+      subject: "Ne galère pas tout seul, rejoins la communauté Jiki"
+      preview: "Tu as beaucoup plus de chances de réussir à apprendre si tu fais partie d'un groupe."
+      greeting: "Salut,"
+      body_markdown: |
+        Tu as beaucoup plus de chances de réussir à apprendre quoi que ce soit si **tu fais partie d'un groupe**. La programmation ne fait pas exception.
+
+        Si tu veux de l'aide, discuter de ton parcours en programmation ou simplement passer du temps avec d'autres, voici quelques endroits où le faire :
+        - [Notre forum](https://jiki.io/r/forum) : l'endroit idéal pour des conversations plus posées et plus longues. C'est ici qu'on **va plus loin**.
+        - [Le Discord d'Exercism](https://jiki.io/r/discord) : l'endroit idéal pour **discuter en temps réel** avec les autres personnes connectées. Cherche les salons #jiki-chat et #jiki-get-help.
+        - [YouTube](https://jiki.io/r/youtube) : participe à nos AMA (des sessions où tu peux tout me demander) et à nos autres **directs** pour me poser tes questions !
+
+        N'oublie pas qu'il y a des personnes de cultures très différentes dans ces espaces, alors **sois respectueux** envers tout le monde quand tu discutes.
+
+        À bientôt !
+        Jeremy
