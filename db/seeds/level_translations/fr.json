@@ -1,0 +1,97 @@
+[
+  {
+    "level_uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
+    "milestone_email_subject": "Bravo, première étape franchie !",
+    "milestone_email_content_markdown": "Beau travail, tu viens de terminer le premier niveau du cours Fondamentaux de la programmation de Jiki.\n\nTu as peut-être l'impression de ne pas encore faire de « vrai » code, mais tu viens d'acquérir l'une des compétences les plus importantes de la programmation. À partir de maintenant, tu vas utiliser des fonctions des centaines de fois par jour, donc c'est vraiment la base de tout le reste.\n\nEnsuite, on va voir comment utiliser les couleurs pour dessiner, puis on commencera à mêler un peu de logique à tout ça. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
+    "milestone_email_subject": "Tu as aimé dessiner ?",
+    "milestone_email_content_markdown": "Beau travail sur ce niveau, et sur ton premier vrai dessin.\n\nTu as maintenant ajouté les strings et les couleurs à ta boîte à outils, ce qui veut dire que tes programmes peuvent commencer à manipuler du texte et à produire des choses qui rendent vraiment bien à l'écran.\n\nAu fil des prochaines leçons, on va introduire un peu de logique, pour que tu puisses dépasser les instructions linéaires et apporter de la variété et de l'intelligence à tes programmes. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
+    "milestone_email_subject": "Ça boucle dans ta tête ?",
+    "milestone_email_content_markdown": "Beau travail sur ce niveau. Les boucles sont l'une des briques fondamentales de la programmation, et on espère qu'elles commencent à te paraître assez naturelles.\n\nIl existe d'autres types de boucles, que l'on verra plus tard dans le cours, mais la boucle repeat va rester ta compagne pendant les prochaines leçons.\n\nEnsuite, place aux variables, c'est-à-dire l'idée de stocker et de récupérer des valeurs pendant que ton programme s'exécute. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
+    "milestone_email_subject": "Les variables, c'est dans la poche",
+    "milestone_email_content_markdown": "Beau travail, tu as maintenant les variables bien en main.\n\nLes variables font partie de ces idées plutôt simples en apparence, mais elles vont sous-tendre presque tout ce que tu écriras à partir de maintenant. Pouvoir stocker une valeur, lui donner un nom et la réutiliser plus tard, c'est ce qui transforme une liste d'instructions figée en quelque chose de vraiment souple.\n\nEnsuite, on va voir comment les variables évoluent au fil du temps, ce que les programmeurs appellent « l'état ». Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
+    "milestone_email_subject": "L'état des lieux",
+    "milestone_email_content_markdown": "Beau travail sur celui-ci. Tu sais maintenant suivre des valeurs qui changent pendant que ton programme s'exécute, ce qui est un vrai pas en avant par rapport à il y a deux niveaux.\n\nCette idée d'état va revenir tout au long du cours, et elle devient plus intéressante à chaque fois qu'on la combine avec quelque chose de nouveau.\n\nEnsuite, place à un gros niveau. On va voir les fonctions qui renvoient des valeurs, puis on explorera les couleurs, le hasard, l'animation, la portée et les boucles imbriquées en chemin. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
+    "milestone_email_subject": "Un sacré butin",
+    "milestone_email_content_markdown": "Excellent travail sur un niveau bien chargé. Les fonctions qui renvoient des valeurs, les couleurs HSL et RGB, l'animation, les nombres aléatoires, la portée, les scénarios et les boucles dans les boucles. Ça fait beaucoup de nouvelles idées à ajouter d'un coup à ta boîte à outils.\n\nPas de panique si certaines restent encore un peu floues. Elles reviendront toutes dans d'autres contextes plus tard dans le cours, et elles te seront un peu plus familières à chaque fois.\n\nEnsuite, on va commencer à prendre des décisions dans le code avec les instructions if. C'est là que tes programmes commencent vraiment à paraître intelligents. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
+    "milestone_email_subject": "Si… alors quoi ?",
+    "milestone_email_content_markdown": "Bien joué sur le niveau des conditions. On espère que if et else commencent à te paraître assez naturels.\n\nLes conditions sont l'une des idées les plus importantes de la programmation. Presque tous les programmes intéressants ont besoin de prendre des décisions en fonction de ce qui est vrai à un instant donné, et tu as maintenant les outils de base pour le faire.\n\nEnsuite, on va voir des façons plus puissantes d'écrire des conditions, en les combinant avec and/or, ainsi que quelques idées voisines comme le modulo. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
+    "milestone_email_subject": "La suite logique",
+    "milestone_email_content_markdown": "Beau travail sur un niveau pas évident. Tu as maintenant and/or, le modulo et les boucles sans compteur bien en main.\n\nCe sont le genre d'outils qui te permettent d'écrire des conditions qui collent vraiment à la logique du monde réel, plutôt que de devoir tout découper en petites vérifications séparées.\n\nEnsuite, on va combiner les conditions et l'état, ce qui est le moment où tes programmes commencent à pouvoir réagir à ce qui se passe pendant leur exécution. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
+    "milestone_email_subject": "Des programmes qui réagissent",
+    "milestone_email_content_markdown": "Beau travail. Combiner les conditions et l'état, c'est le moment où tes programmes commencent vraiment à paraître vivants : ils réagissent à ce qui se passe au lieu de suivre un scénario figé.\n\nC'est à peu près le niveau de complexité auquel tu vas écrire pendant tout le reste du cours, donc tout ce que tu as pratiqué ici va continuer à revenir.\n\nEnsuite, place à un gros morceau : écrire tes propres fonctions. Jusqu'ici, tu utilisais des fonctions écrites par quelqu'un d'autre. À partir de maintenant, tu vas écrire les tiennes. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
+    "milestone_email_subject": "C'est toi qui commandes",
+    "milestone_email_content_markdown": "Excellent travail. Écrire tes propres fonctions, c'est un vrai changement. Tu ne te contentes plus d'utiliser les outils posés sur l'étagère, tu en fabriques de nouveaux.\n\nC'est l'une des compétences les plus importantes de toute la programmation. Un bon code, c'est avant tout des problèmes découpés en petites fonctions bien nommées, et tu as maintenant tout ce qu'il faut pour commencer à faire ça.\n\nEnsuite, on revient aux strings, pour voir comment les coller ensemble et y glisser des valeurs. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
+    "milestone_email_subject": "Tout se tient",
+    "milestone_email_content_markdown": "Bien joué sur celui-ci. La concaténation et les templates sont des idées plutôt simples, mais elles reviennent en permanence, surtout dès que tu produis du texte destiné à être lu par une personne.\n\nTu vas utiliser ces techniques dans à peu près tous les programmes que tu écriras à partir de maintenant.\n\nEnsuite, on va voir comment fouiller dans une string caractère par caractère, et comment parcourir son contenu. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
+    "milestone_email_subject": "Lettre par lettre",
+    "milestone_email_content_markdown": "Beau travail. On espère que l'accès par indice et le parcours des strings commencent à te paraître clairs.\n\nPouvoir regarder les caractères un par un et parcourir un texte de façon méthodique t'ouvre un immense éventail de problèmes que tu sais désormais résoudre. Une bonne partie de la programmation du monde réel consiste exactement en ce genre de travail.\n\nEnsuite, on va voir comment combiner plusieurs fonctions pour s'attaquer à des tâches plus complexes. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
+    "milestone_email_subject": "Mieux ensemble",
+    "milestone_email_content_markdown": "Beau travail sur ce niveau. Combiner des fonctions pour résoudre de plus gros problèmes, c'est exactement à quoi ressemble la programmation professionnelle au quotidien. Tu découpes un problème en morceaux, tu écris une petite fonction pour chaque morceau, puis tu les assembles.\n\nTu fais maintenant ça pour de vrai.\n\nEnsuite, on va voir les méthodes et les propriétés, une façon un peu différente de travailler avec les valeurs. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
+    "milestone_email_subject": "Il y a bien une méthode",
+    "milestone_email_content_markdown": "Bien joué. Les méthodes et les propriétés ont un style un peu différent de ce que tu as vu jusqu'ici. Au lieu de passer une valeur à une fonction, tu appelles une fonction sur la valeur elle-même. L'idée demande un petit temps d'adaptation, mais elle est utilisée partout, donc elle va vite te paraître naturelle.\n\nEnsuite, on va voir des types de boucles plus puissants : les boucles for, les boucles while, break et continue. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
+    "milestone_email_subject": "Il n'y a pas que repeat",
+    "milestone_email_content_markdown": "Beau travail. Tu as maintenant les boucles for, les boucles while, break et continue bien en main. Ce sont les boucles que tu utiliseras le plus souvent en dehors de ce cours, donc le temps que tu y as consacré en valait vraiment la peine.\n\nChacune a un rôle un peu différent, et savoir laquelle choisir viendra avec la pratique.\n\nEnsuite, on va voir les tableaux, c'est-à-dire la façon dont les programmes stockent des collections d'éléments et travaillent avec. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
+    "milestone_email_subject": "Une belle collection",
+    "milestone_email_content_markdown": "Excellent travail. Les tableaux (ou « listes », comme les appellent certains) sont l'un des outils les plus utiles de n'importe quel langage. Dès que tu manipules plus d'un élément à la fois, tu vas te tourner vers un tableau.\n\nTu as maintenant une bonne maîtrise de la façon de les lire et de parcourir leur contenu.\n\nEnsuite, on va voir comment construire des tableaux à partir de rien, morceau par morceau. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
+    "milestone_email_subject": "On assemble les morceaux",
+    "milestone_email_content_markdown": "Bien joué ! Lire dans un tableau, c'est pratique, mais c'est en pouvant les construire morceau par morceau qu'ils prennent toute leur valeur. Parcourir quelque chose, rassembler les éléments qui t'intéressent dans un nouveau tableau et le renvoyer : voilà un schéma que tu réutiliseras encore et encore.\n\nEnsuite, place aux dictionnaires. Ils te permettent de stocker des valeurs sous des clés nommées, plutôt que par simple position. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
+    "milestone_email_subject": "Tout est dans le nom",
+    "milestone_email_content_markdown": "Beau travail. Les dictionnaires te permettent de stocker des valeurs sous des clés nommées plutôt que par simple position, ce qui rend la recherche d'une information rapide et lisible.\n\nEnsuite, et pour finir, on va voir comment modifier un dictionnaire : ajouter, mettre à jour et supprimer des entrées au fil de l'eau. Amuse-toi bien !"
+  },
+  {
+    "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
+    "milestone_email_subject": "C'est dans la boîte",
+    "milestone_email_content_markdown": "Et voilà le dernier niveau des Fondamentaux de la programmation. On espère que les dictionnaires te paraissent maintenant un outil utile à ajouter à la panoplie, aux côtés des tableaux.\n\nC'est une vraie réussite. Tu as maintenant couvert toutes les briques de base de la programmation : les fonctions, les variables, l'état, les conditions, les boucles, les strings, les tableaux et les dictionnaires. Tout le reste ne sera que combinaisons et raffinements de ce que tu connais déjà.\n\nOn est vraiment fiers du chemin que tu as parcouru. Amuse-toi bien !"
+  }
+]
