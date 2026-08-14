@@ -2,12 +2,12 @@ it:
   onboarding_mailer:
     overview:
       subject: "Diventare uno sviluppatore nel 2026: le due metà"
-      preview: "Negli ultimi anni ho imparato lentamente il giapponese."
+      preview: "Negli ultimi anni ho imparato il giapponese lentamente."
       greeting: "Ciao,"
       body_markdown: |
-        Negli ultimi anni ho **imparato lentamente il giapponese**. Vado regolarmente in Giappone e cerco di immergermi nella lingua, ma è difficile, perché al giorno d'oggi, con l'aiuto di Google Translate, è piuttosto facile passare del tempo in Giappone senza dire una parola di giapponese. **Quindi il mio cervello può essere pigro**, ma me la cavo benissimo.
+        Negli ultimi anni ho imparato il giapponese lentamente. Vado spesso in Giappone e cerco di parlare la lingua, ma non è semplice: con Google Translate puoi fare tutto senza praticare il giapponese. Quindi il mio cervello non si impegna, perché non ne ha bisogno… e io me la cavo lo stesso.
 
-        La programmazione ha iniziato da poco a fare lo stesso percorso. Negli ultimi 30 anni, se volevi fare qualcosa con la tecnologia, **dovevi imparare a programmare**. Era l'unico modo per comunicare con un computer. Ma negli ultimi due anni, con l'ascesa della programmazione agentica, le cose sono cambiate. Ora puoi usare la tua lingua madre per dire a un agente IA cosa vuoi che faccia, e **lui scriverà il codice al posto tuo**: traduce le tue istruzioni per il computer.
+        La programmazione sta cambiando. Per trent'anni, se volevi creare qualcosa con la tecnologia, dovevi imparare a programmare: era l'unico modo per comunicare con un computer. Ma negli ultimi anni, con l'arrivo degli agenti IA, tutto è cambiato. Ora puoi usare la tua lingua madre per dire a un agente cosa vuoi ottenere, e sarà lui a scrivere il codice per te: traduce le tue istruzioni in un linguaggio che il computer può capire.
 
         Proprio come non devo aspettare di essere fluente in giapponese prima di poter esplorare il Giappone, **non ha più alcun senso passare anni a migliorare nella programmazione** prima di iniziare a costruire cose.
 
