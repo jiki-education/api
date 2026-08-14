@@ -5,14 +5,14 @@ it:
     mailer:
       confirmation_instructions:
         subject: Istruzioni per la conferma
-        preview: 'Puoi confermare il tuo account cliccando sul link qui sotto:'
+        preview: 'Conferma il tuo account cliccando sul link qui sotto:'
         greeting: Ti diamo il benvenuto!
-        body_markdown: 'Puoi confermare il tuo account cliccando sul link qui sotto:'
+        body_markdown: 'Conferma il tuo account cliccando sul link qui sotto:'
         cta: Conferma il mio account
       reset_password_instructions:
-        subject: Istruzioni per reimpostare la password
-        preview: Qualcuno ha richiesto di resettare la tua password, se lo vuoi davvero puoi farlo cliccando sul link qui sotto.
+        subject: Come reimpostare la password
+        preview: 'Qualcuno ha richiesto di reimpostare la password del tuo account. Se sei stato tu, puoi procedere cliccando sul link qui sotto. Se non hai effettuato tu la richiesta, puoi ignorare questa email: il tuo account non subirà modifiche.'
         greeting: Ciao,
-        body_markdown: Qualcuno ha richiesto di resettare la tua password, se lo vuoi davvero puoi farlo cliccando sul link qui sotto.
-        cta: Cambia la mia password
-        footer: Se non sei stato tu ad effettuare questa richiesta puoi ignorare questa mail. La tua password non cambierà finché non accederai al link sopra.
+        body_markdown: 'Qualcuno ha richiesto di reimpostare la password del tuo account. Se sei stato tu, puoi procedere cliccando sul link qui sotto. Se non hai effettuato tu la richiesta, puoi ignorare questa email: il tuo account non subirà modifiche.'
+        cta: Reimposta la mia password
+        footer: 'Se non hai effettuato tu la richiesta, puoi ignorare questa email: il tuo account non subirà modifiche. La tua password non verrà modificata finché non cliccherai sul link qui sopra.'
