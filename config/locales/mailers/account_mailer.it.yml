@@ -19,7 +19,7 @@ it:
       preview: "Conferma di voler eliminare definitivamente il tuo account Jiki"
       greeting: "Ciao,"
       body_markdown: |
-        Abbiamo ricevuto una richiesta di eliminare il tuo account Jiki.
+        Abbiamo ricevuto una richiesta di eliminare il tuo account.
 
         Se sei stato tu a inviare questa richiesta, fai clic sul pulsante qui sotto per confermare. Questa azione è permanente e non può essere annullata. Tutti i tuoi progressi e i tuoi dati verranno eliminati.
 
