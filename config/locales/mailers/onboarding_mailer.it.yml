@@ -80,10 +80,10 @@ it:
         Jeremy
     community:
       subject: "Non lottare da solo: unisciti alla community di Jiki"
-      preview: "Hai molte più probabilità di riuscire a imparare qualsiasi cosa se fai parte di un gruppo."
+      preview: "Imparare è più facile quando collabori con altre persone."
       greeting: "Ciao,"
       body_markdown: |
-        Hai molte più probabilità di riuscire a imparare qualsiasi cosa se **fai parte di un gruppo**. La programmazione non è diversa.
+        Imparare è più facile **quando _collabori con altre persone_**, e la programmazione non fa eccezione.
 
         Se vuoi ricevere aiuto, parlare del tuo percorso di programmazione o semplicemente passare del tempo con gli altri, ecco alcuni luoghi in cui farlo:
         - [Il nostro forum](https://jiki.io/r/forum): il posto giusto per conversazioni più lente e approfondite. Qui si va **più in profondità**.
