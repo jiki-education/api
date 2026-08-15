@@ -1,7 +1,7 @@
 it:
   onboarding_mailer:
     overview:
-      subject: "Diventare uno sviluppatore nel 2026: le due metà"
+      subject: "Le due facce del diventare sviluppatore nel 2026"
       preview: "Negli ultimi anni ho imparato lentamente il giapponese."
       greeting: "Ciao,"
       body_markdown: |
