@@ -47,7 +47,7 @@
   {
     "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
     "milestone_email_subject": "Ora sei tu al comando!",
-    "milestone_email_content_markdown": "Ottimo lavoro. Scrivere le tue funzioni è un vero cambiamento. Non stai più solo usando gli strumenti sullo scaffale, ne stai costruendo di nuovi.\n\nQuesta è una delle competenze più importanti in tutta la programmazione. Un buon codice consiste principalmente nel suddividere i problemi in piccole funzioni ben nominate, e ora hai tutto il necessario per iniziare a farlo.\n\nNel prossimo livello torneremo alle stringhe e vedremo come incollarle insieme e inserirvi valori. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro. Scrivere le tue funzioni segna un vero salto di qualità: non stai più solo usando gli strumenti sullo scaffale, ma inizi a crearne di nuovi.\n\nQuesta è una delle competenze più importanti in tutta la programmazione. Un codice ben strutturato nasce soprattutto dalla capacità di dividere un problema in parti più piccole e risolverlo per mezzo di funzioni chiare e mirate, e ora hai tutto ciò che ti serve per iniziare a farlo.\n\nNel prossimo livello torneremo alle stringhe e vedremo come unirle e inserirvi dei valori. Divertiti!"
   },
   {
     "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
