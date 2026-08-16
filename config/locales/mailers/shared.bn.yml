@@ -2,8 +2,8 @@ bn:
   mailers:
     shared:
       footer:
-        account_notice_html: "আপনি এই ইমেলটি পাচ্ছেন কারণ %{jiki_link}-এ আপনার একটি অ্যাকাউন্ট রয়েছে।"
-        manage_preferences_only_html: "এই ইমেলগুলো কীভাবে পাবেন তা বদলাতে চান? আপনি %{preferences_link}"
-        manage_with_unsubscribe_html: "এই ইমেলগুলো কীভাবে পাবেন তা বদলাতে চান? আপনি %{preferences_link} বা এই তালিকা থেকে %{unsubscribe_link}।"
-        update_preferences: "আপনার পছন্দসমূহ আপডেট করতে পারেন"
-        unsubscribe: "আনসাবস্ক্রাইব করতে পারেন"
+        account_notice_html: "আপনি এই ইমেইলটি পাচ্ছেন কারণ %{jiki_link}-এ আপনার একটি অ্যাকাউন্ট রয়েছে।"
+        manage_preferences_only_html: "এই ইমেইলগুলো পাওয়ার ধরন পরিবর্তন করতে চাইলে %{preferences_link}।"
+        manage_with_unsubscribe_html: "আপনি কি এই ইমেইলগুলো পাওয়ার ধরন পরিবর্তন করতে চান? আপনি এই তালিকা থেকে %{preferences_link} অথবা %{unsubscribe_link} করতে পারেন।"
+        update_preferences: "আপনার পছন্দসমূহ আপডেট করুন"
+        unsubscribe: "আনসাবস্ক্রাইব করুন"
