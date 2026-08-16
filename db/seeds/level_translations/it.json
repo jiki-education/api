@@ -22,7 +22,7 @@
   {
     "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
     "milestone_email_subject": "Stato di gioco",
-    "milestone_email_content_markdown": "Ottimo lavoro su questo livello. Ora puoi tenere traccia dei valori che cambiano durante l'esecuzione del programma, un vero passo avanti rispetto a dove eri qualche livello fa.\n\nQuesta idea di stato continuerà a ripresentarsi durante il corso, e diventa sempre più interessante ogni volta che la combiniamo con qualcosa di nuovo.\n\nIl prossimo è un livello corposo. Vedremo le funzioni che restituiscono valori, poi esploreremo colori, casualità, animazioni, scope e cicli annidati lungo il percorso. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro su questo livello. Ora puoi tenere traccia dei valori che cambiano durante l'esecuzione del programma, un vero passo avanti rispetto a dove eri qualche livello fa.\n\nL'idea di \"stato\" tornerà spesso nel corso, e diventerà sempre più interessante ogni volta che la combineremo con qualcosa di nuovo.\n\nIl prossimo livello è piuttosto ricco: vedremo le funzioni che restituiscono valori e, lungo il percorso, esploreremo colori, casualità, animazioni, scope e cicli annidati. Divertiti!"
   },
   {
     "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
@@ -72,12 +72,12 @@
   {
     "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
     "milestone_email_subject": "Oltre il repeat",
-    "milestone_email_content_markdown": "Ottimo lavoro. Ora hai sotto controllo i cicli `for`, i cicli `while`, `break` e `continue`. Questi sono i cicli a cui ricorrerai più spesso al di fuori di questo corso, quindi vale la pena il tempo che ci hai dedicato.\n\nOgnuno ha un compito leggermente diverso, e capire quale usare arriverà con la pratica.\n\nNel prossimo livello vedremo gli array, che è il modo in cui i programmi memorizzano e gestiscono raccolte di cose. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro. Ora hai sotto controllo i cicli for, while, e le istruzioni break e continue. Sono gli strumenti che userai più spesso al di fuori di questo corso, quindi il tempo che ci hai dedicato è davvero ben speso.\n\nOgnuno ha un compito leggermente diverso, e capire quale usare ti verrà naturale con l'esperienza.\n\nNella prossima sezione vedremo gli array, il modo in cui i programmi memorizzano e gestiscono raccolte di elementi. Divertiti!"
   },
   {
     "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
-    "milestone_email_subject": "Che bella collezione!",
-    "milestone_email_content_markdown": "Ottimo lavoro. Gli array (o liste, come alcuni li chiamano) sono uno degli strumenti più utili in qualsiasi linguaggio. Praticamente ogni volta che hai a che fare con più di un elemento, ricorrerai a un array.\n\nOra hai una buona padronanza di come leggerli e lavorare con il loro contenuto.\n\nPoi, vedremo come costruire array da zero, pezzo per pezzo. Divertiti!"
+    "milestone_email_subject": "Che collezione incredibile!",
+    "milestone_email_content_markdown": "Ottimo lavoro. Gli array (o liste, come alcuni li chiamano) sono tra gli strumenti più utili in qualsiasi linguaggio. Ogni volta che devi gestire più di un elemento, finirai per usare un array.\n\nOra sai come leggerli e come lavorare con ciò che contengono.\n\nPoi imparerai a creare array da zero, passo dopo passo. Divertiti!"
   },
   {
     "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
