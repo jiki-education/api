@@ -37,7 +37,7 @@
   {
     "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
     "milestone_email_subject": "Prossimi passi logici",
-    "milestone_email_content_markdown": "Ottimo lavoro su un livello complesso. Ora hai sotto controllo `and`/`or`, il modulo e i cicli senza contatore.\n\nQuesti sono il tipo di strumenti che ti permettono di scrivere condizioni che rispecchiano davvero la logica del mondo reale, invece di dover suddividere tutto in piccoli controlli separati.\n\nNel prossimo livello combineremo i condizionali con lo stato, ed è qui che i tuoi programmi inizieranno a essere in grado di rispondere a ciò che accade durante l'esecuzione. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro su un livello impegnativo. Hai acquisito pieno controllo su *and/or*, sull'operatore modulo e sui cicli senza contatore.\n\nQuesti sono gli strumenti che ti permettono di scrivere condizioni che riflettono la logica del mondo reale, invece di dover spezzare tutto in tanti piccoli controlli separati.\n\nNel prossimo passaggio userai i condizionali (\"se succede X, allora fai Y\") insieme allo stato. Da qui i tuoi programmi inizieranno a tenere conto di ciò che accade durante l'esecuzione. Divertiti!"
   },
   {
     "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
@@ -82,16 +82,16 @@
   {
     "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
     "milestone_email_subject": "Costruire pezzo per pezzo",
-    "milestone_email_content_markdown": "Bel lavoro! Leggere dai array è utile, ma poterli costruire pezzo per pezzo è dove danno il meglio di sé. Itera su qualcosa, raccogli i pezzi che ti interessano in un nuovo array e restituiscilo: è un modello a cui ricorrerai ancora e ancora.\n\nProssimo: i dizionari. Questi ti permettono di memorizzare valori associati a chiavi con nome anziché solo a posizioni. Divertiti!"
+    "milestone_email_content_markdown": "Bel lavoro! Leggere dai array è utile, ma poterli costruire pezzo per pezzo è dove danno il meglio di sé. Scorri gli elementi, tieni solo quelli che ti servono, aggiungili a un nuovo array e restituiscilo: è un modello che userai spesso.\n\nProssimo: i dizionari. Questi ti permettono di memorizzare valori associati a chiavi con nome anziché solo a posizioni. Divertiti!"
   },
   {
     "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
     "milestone_email_subject": "Nominati per una ragione",
-    "milestone_email_content_markdown": "Ottimo lavoro. I dizionari ti permettono di memorizzare valori associati a chiavi con nome anziché solo a posizioni, il che rende la ricerca veloce e leggibile.\n\nPoi, e infine, vedremo come modificare i dizionari: aggiungere, aggiornare e rimuovere voci man mano. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro. I dizionari ti permettono di memorizzare valori associati a chiavi con nome, invece che a semplici posizioni, rendendo la consultazione più veloce e leggibile.\n\nPoi, e infine, vedremo come modificare i dizionari: aggiungere, aggiornare e rimuovere voci man mano. Divertiti!"
   },
   {
     "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
     "milestone_email_subject": "E questo è tutto!",
-    "milestone_email_content_markdown": "Ed ecco l'ultimo livello di Fondamenti di Programmazione. Si spera che i dizionari ti sembrino uno strumento utile da aggiungere al mix insieme agli array.\n\nQuesto è un vero traguardo. Hai ora coperto tutti i mattoni fondamentali della programmazione: funzioni, variabili, stato, condizionali, cicli, stringhe, array e dizionari. Tutto il resto da qui in poi sono combinazioni e perfezionamenti di ciò che già conosci.\n\nSiamo davvero orgogliosi di te per essere arrivato fin qui. Divertiti!"
+    "milestone_email_content_markdown": "Questo è l'ultimo livello di Fondamenti di Programmazione. Mi auguro che i dizionari ti tornino utili da affiancare agli array.\n\nQuesto è un traguardo importante. Hai coperto tutti i concetti fondamentali della programmazione: funzioni, variabili, stato, condizionali, cicli, stringhe, array e dizionari. Da qui in avanti tutto il resto sarà una combinazione e un perfezionamento di ciò che già conosci.\n\nSiamo davvero orgogliosi di te per essere arrivato fin qui. Divertiti!"
   }
 ]
