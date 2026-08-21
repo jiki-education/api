@@ -1,6 +1,6 @@
 bn:
   notifications_mailer:
     badge_earned:
-      greeting: "হ্যালো,"
+      greeting: "স্বাগতম!"
       signoff: "শুভেচ্ছান্তে,"
       team: "জেরেমি ও টিম"
