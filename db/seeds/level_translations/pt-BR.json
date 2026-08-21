@@ -1,0 +1,97 @@
+[
+  {
+    "level_uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
+    "milestone_email_subject": "Parabéns pelo primeiro marco!",
+    "milestone_email_content_markdown": "Ótimo trabalho por concluir o primeiro nível do curso de Fundamentos de Programação do Jiki.\n\nPode ser que você ainda não sinta que está programando \"de verdade\", mas acabou de aprender uma das habilidades mais importantes da programação. Daqui em diante, você vai usar funções centenas de vezes por dia, então esta é mesmo a base para todo o resto.\n\nA seguir, vamos ver como usar cores para desenhar e depois começar a misturar um pouco de lógica no processo. Divirta-se!"
+  },
+  {
+    "level_uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
+    "milestone_email_subject": "Curtiu desenhar?",
+    "milestone_email_content_markdown": "Ótimo trabalho neste nível e no seu primeiro desenho de verdade.\n\nVocê acabou de acrescentar strings e cores à sua caixa de ferramentas, o que significa que os seus programas já podem lidar com texto e produzir coisas que ficam bonitas na tela.\n\nNas próximas lições, vamos começar a trazer um pouco de lógica, para você ir além das instruções lineares e colocar variedade e inteligência nos seus programas. Divirta-se!"
+  },
+  {
+    "level_uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
+    "milestone_email_subject": "Tanto laço que já deu nó?",
+    "milestone_email_content_markdown": "Ótimo trabalho neste nível. Os laços são um bloco de construção fundamental da programação e, com sorte, já estão começando a ficar bem confortáveis.\n\nExistem outros tipos de laço que vamos ver mais adiante no curso, mas o laço repeat vai ser o seu companheiro nas próximas lições.\n\nA seguir vêm as variáveis, que são a ideia de guardar e recuperar valores enquanto o programa roda. Divirta-se!"
+  },
+  {
+    "level_uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
+    "milestone_email_subject": "Variáveis na bagagem",
+    "milestone_email_content_markdown": "Ótimo trabalho ao colocar as variáveis na bagagem.\n\nAs variáveis são uma daquelas ideias que parecem bem simples por fora, mas vão sustentar quase tudo o que você escrever daqui em diante. Poder guardar um valor, dar um nome a ele e usá-lo depois é o que transforma o código de uma lista fixa de instruções em algo realmente flexível.\n\nA seguir, vamos ver como as variáveis mudam ao longo do tempo, que é o que os programadores chamam de \"estado\". Divirta-se!"
+  },
+  {
+    "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
+    "milestone_email_subject": "O estado das coisas",
+    "milestone_email_content_markdown": "Ótimo trabalho neste. Agora você consegue acompanhar valores que mudam enquanto o programa roda, o que é um belo salto em relação a onde você estava alguns níveis atrás.\n\nEssa ideia de estado vai voltar várias vezes ao longo do curso, e fica mais interessante a cada vez que a combinamos com algo novo.\n\nO próximo é um nível parrudo. Vamos ver funções que retornam valores e, no caminho, explorar cores, aleatoriedade, animação, escopo e laços dentro de laços. Divirta-se!"
+  },
+  {
+    "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
+    "milestone_email_subject": "Quanta coisa de uma vez só",
+    "milestone_email_content_markdown": "Trabalho brilhante em um nível bem cheio. Funções que retornam valores, cores HSL e RGB, animação, números aleatórios, escopo, cenários e laços dentro de laços. É bastante ideia nova para acrescentar à caixa de ferramentas de uma vez só.\n\nNão se preocupe se algumas ainda parecerem meio nebulosas. Todas voltam em outros contextos mais adiante no curso, e a cada vez ficam mais familiares.\n\nA seguir, vamos começar a tomar decisões no código usando condicionais. É aí que os seus programas começam mesmo a parecer inteligentes. Divirta-se!"
+  },
+  {
+    "level_uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
+    "milestone_email_subject": "If, else... e agora?",
+    "milestone_email_content_markdown": "Muito bem no nível de condicionais. Com sorte, if e else já estão começando a parecer bem naturais.\n\nAs condicionais são uma das ideias mais importantes da programação. Quase todo programa interessante precisa tomar decisões com base no que é verdade naquele momento, e agora você tem as ferramentas básicas para isso.\n\nA seguir, vamos ver formas mais poderosas de escrever condições, combinando umas com as outras usando and/or, além de algumas ideias relacionadas, como o módulo. Divirta-se!"
+  },
+  {
+    "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
+    "milestone_email_subject": "Próximos passos bem lógicos",
+    "milestone_email_content_markdown": "Ótimo trabalho em um nível complicado. Agora você tem and/or, módulo e laços sem contagem na bagagem.\n\nÉ esse tipo de ferramenta que permite escrever condições que refletem a lógica do mundo real, em vez de você ter que quebrar tudo em verificações pequenas e separadas.\n\nA seguir, vamos combinar condicionais com estado, que é quando os seus programas começam a conseguir responder ao que está acontecendo enquanto rodam. Divirta-se!"
+  },
+  {
+    "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
+    "milestone_email_subject": "Programas que respondem",
+    "milestone_email_content_markdown": "Ótimo trabalho. Combinar condicionais com estado é quando os seus programas começam mesmo a parecer vivos, respondendo ao que está acontecendo em vez de apenas seguir um roteiro fixo.\n\nEsse é mais ou menos o nível de complexidade em que você vai escrever pelo resto do curso, então tudo o que praticou aqui vai continuar voltando.\n\nO próximo é grande: escrever as suas próprias funções. Até agora você vinha usando funções que outra pessoa escreveu. Daqui em diante, vai escrever as suas. Divirta-se!"
+  },
+  {
+    "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
+    "milestone_email_subject": "Agora quem manda é você",
+    "milestone_email_content_markdown": "Trabalho brilhante. Escrever as suas próprias funções é uma virada de verdade. Você não está mais só usando as ferramentas que estavam na prateleira, está construindo ferramentas novas.\n\nEssa é uma das habilidades mais importantes de toda a programação. Um bom código é, na maior parte, quebrar problemas em funções pequenas e bem nomeadas, e agora você tem tudo o que precisa para começar a fazer isso.\n\nA seguir, vamos voltar às strings e ver como juntá-las e encaixar valores dentro delas. Divirta-se!"
+  },
+  {
+    "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
+    "milestone_email_subject": "Strings bem amarradas",
+    "milestone_email_content_markdown": "Muito bem neste. A concatenação e os templates são ideias bem simples, mas aparecem o tempo todo, principalmente em qualquer lugar onde você produz uma saída para uma pessoa ler.\n\nVocê vai usar essas técnicas em praticamente todo programa que escrever daqui em diante.\n\nA seguir, vamos ver como entrar nas strings caractere por caractere e como percorrer o conteúdo delas. Divirta-se!"
+  },
+  {
+    "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
+    "milestone_email_subject": "Letra por letra",
+    "milestone_email_content_markdown": "Ótimo trabalho. Com sorte, a indexação e os laços sobre strings já estão começando a fazer sentido.\n\nConseguir olhar caracteres individuais e percorrer um texto de forma sistemática abre um leque enorme de problemas que você já consegue resolver. Boa parte da programação do mundo real é exatamente esse tipo de trabalho.\n\nA seguir, vamos ver como combinar várias funções para dar conta de tarefas mais complexas. Divirta-se!"
+  },
+  {
+    "level_uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
+    "milestone_email_subject": "Melhor em conjunto",
+    "milestone_email_content_markdown": "Ótimo trabalho neste nível. Combinar funções para resolver problemas maiores é o que a programação profissional realmente é no dia a dia. Você quebra um problema em pedaços, escreve uma função pequena para cada pedaço e depois junta tudo.\n\nAgora você já faz isso de verdade.\n\nA seguir, vamos ver métodos e propriedades, que são uma forma um pouco diferente de trabalhar com valores. Divirta-se!"
+  },
+  {
+    "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
+    "milestone_email_subject": "Tem método na loucura",
+    "milestone_email_content_markdown": "Muito bem. Métodos e propriedades têm um estilo um pouco diferente do que você viu até aqui. Em vez de passar um valor para uma função, você chama uma função no próprio valor. A ideia leva um tempinho para entrar na cabeça, mas é usada em todo lugar, então logo vai parecer natural.\n\nA seguir, vamos ver alguns tipos de laço mais poderosos: laços for, laços while, break e continue. Divirta-se!"
+  },
+  {
+    "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
+    "milestone_email_subject": "Muito além do repeat",
+    "milestone_email_content_markdown": "Ótimo trabalho. Agora você tem laços for, laços while, break e continue na bagagem. Esses são os laços que você mais vai usar fora deste curso, então valeu muito o tempo que dedicou a eles.\n\nCada um tem um papel um pouco diferente, e a sensibilidade para saber qual escolher vem com a prática.\n\nA seguir, vamos ver os arrays, que são a forma como os programas guardam e trabalham com coleções de coisas. Divirta-se!"
+  },
+  {
+    "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
+    "milestone_email_subject": "Que coleção!",
+    "milestone_email_content_markdown": "Trabalho brilhante. Os arrays (ou listas, como algumas pessoas chamam) são uma das ferramentas mais úteis de qualquer linguagem. Praticamente toda vez que você lidar com mais de um item de alguma coisa, vai recorrer a um array.\n\nAgora você já entende bem como ler deles e como percorrer o conteúdo deles.\n\nA seguir, vamos ver como construir arrays do zero, pedaço por pedaço. Divirta-se!"
+  },
+  {
+    "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
+    "milestone_email_subject": "Montando peça por peça",
+    "milestone_email_content_markdown": "Muito bem! Ler de um array é útil, mas poder construí-lo pedaço por pedaço é onde eles mostram todo o valor deles. Percorra alguma coisa, junte os pedaços que importam em um array novo e entregue esse array de volta: esse é um padrão que você vai usar de novo e de novo.\n\nA seguir vêm os dicionários. Eles deixam você guardar valores associados a chaves com nome, em vez de só a posições. Divirta-se!"
+  },
+  {
+    "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
+    "milestone_email_subject": "Cada um com seu nome",
+    "milestone_email_content_markdown": "Ótimo trabalho. Os dicionários deixam você guardar valores associados a chaves com nome, em vez de só a posições, o que torna a busca rápida e fácil de ler.\n\nA seguir, e por último, vamos ver como mudar dicionários: adicionar, atualizar e remover entradas conforme você avança. Divirta-se!"
+  },
+  {
+    "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
+    "milestone_email_subject": "Chegamos ao fim!",
+    "milestone_email_content_markdown": "E esse foi o último nível de Fundamentos de Programação. Com sorte, os dicionários já estão parecendo uma ferramenta útil para somar aos arrays.\n\nIsso é uma conquista de verdade. Agora você já viu todos os blocos de construção centrais da programação: funções, variáveis, estado, condicionais, laços, strings, arrays e dicionários. Tudo daqui para frente são combinações e refinamentos do que você já sabe.\n\nEstamos muito orgulhosos de você por ter chegado até aqui. Divirta-se!"
+  }
+]
