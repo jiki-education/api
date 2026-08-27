@@ -51,6 +51,12 @@
     "uuid": "3f6e48c4-a057-46b1-a275-a60379a59e78",
     "slug": "matching-socks",
     "exercise_slug": "matching-socks",
+    "unlocked_by_lesson_slug": "lunchbox"
+  },
+  {
+    "uuid": "a0a6a859-5ff9-401a-8fd8-912ccf601759",
+    "slug": "wordle-solver",
+    "exercise_slug": "wordle-solver",
     "unlocked_by_lesson_slug": "wordle-process-game"
   },
   {
