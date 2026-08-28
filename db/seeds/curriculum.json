@@ -985,8 +985,13 @@
           }
         },
         {
-          "uuid": "c5dad5d3-dc0d-4de9-89dd-fe1e6363c207",
-          "slug": "lunchbox",
+          "uuid": "b940269f-2ebb-41cd-b7fa-02ffede96e9a",
+          "slug": "meal-prep",
+          "type": "exercise"
+        },
+        {
+          "uuid": "97f4f083-fe33-4ef8-97ca-02b4dc0fc27e",
+          "slug": "sign-words",
           "type": "exercise"
         },
         {
@@ -995,23 +1000,18 @@
           "type": "exercise"
         },
         {
-          "uuid": "b940269f-2ebb-41cd-b7fa-02ffede96e9a",
-          "slug": "meal-prep",
-          "type": "exercise"
-        },
-        {
           "uuid": "3d269adb-c4a4-4786-af09-99b3d56d1d86",
           "slug": "wordle-process-guess",
           "type": "exercise"
         },
         {
-          "uuid": "97f4f083-fe33-4ef8-97ca-02b4dc0fc27e",
-          "slug": "extract-words",
+          "uuid": "c7f70657-698d-4abc-85e9-26b9b5520ca7",
+          "slug": "chop-shop",
           "type": "exercise"
         },
         {
-          "uuid": "c7f70657-698d-4abc-85e9-26b9b5520ca7",
-          "slug": "chop-shop",
+          "uuid": "c5dad5d3-dc0d-4de9-89dd-fe1e6363c207",
+          "slug": "lunchbox",
           "type": "exercise"
         },
         {
