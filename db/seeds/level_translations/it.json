@@ -37,12 +37,12 @@
   {
     "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
     "milestone_email_subject": "Prossimi passi logici",
-    "milestone_email_content_markdown": "Ottimo lavoro su un livello impegnativo. Hai acquisito pieno controllo su *and/or*, sull'operatore modulo e sui cicli senza contatore.\n\nQuesti sono gli strumenti che ti permettono di scrivere condizioni che riflettono la logica del mondo reale, invece di dover spezzare tutto in tanti piccoli controlli separati.\n\nNel prossimo passaggio userai i condizionali (\"se succede X, allora fai Y\") insieme allo stato. Da qui i tuoi programmi inizieranno a tenere conto di ciò che accade durante l'esecuzione. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro su un livello impegnativo. Hai acquisito pieno controllo su *and/or*, sull'operatore modulo e sui cicli senza contatore.\n\nQuesti sono gli strumenti che ti permettono di scrivere condizioni che riflettono la logica del mondo reale, invece di dover spezzare tutto in tanti piccoli controlli separati.\n\nNel prossimo livello userai i condizionali (\"se succede X, allora fai Y\") insieme allo stato. Da qui i tuoi programmi inizieranno a tenere conto di ciò che accade durante l'esecuzione. Divertiti!"
   },
   {
     "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
     "milestone_email_subject": "Programmi che rispondono",
-    "milestone_email_content_markdown": "Ottimo lavoro. Combinare i condizionali con lo stato è il punto in cui i tuoi programmi iniziano davvero a sembrare vivi, rispondendo a ciò che accade invece di seguire un copione fisso.\n\nQuesto è più o meno il livello di complessità con cui scriverai per il resto del corso, quindi tutto ciò che hai praticato qui continuerà a tornare.\n\nIl prossimo è un livello importante: scrivere le tue funzioni. Finora hai usato funzioni scritte da altri. D'ora in poi, le scriverai tu. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro. Combinare i condizionali con lo stato, cioè le informazioni che descrivono la situazione attuale del programma, è il punto in cui i tuoi programmi iniziano davvero a sembrare vivi, rispondendo a ciò che accade invece di seguire un copione fisso.\n\nQuesto è più o meno il livello di complessità con cui scriverai per il resto del corso, quindi tutto ciò che hai praticato qui continuerà a tornare.\n\nIl prossimo è un livello importante: scrivere le tue funzioni. Finora hai usato funzioni scritte da altri. D'ora in poi, le scriverai tu. Divertiti!"
   },
   {
     "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
@@ -52,7 +52,7 @@
   {
     "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
     "milestone_email_subject": "Stringhe, connesse",
-    "milestone_email_content_markdown": "Bel lavoro su questo livello. La concatenazione e le stringhe interpolate sono idee piuttosto semplici, ma si presentano di continuo, specialmente quando produci output da far leggere a una persona.\n\nUserai queste tecniche praticamente in ogni programma che scriverai d'ora in poi.\n\nNel prossimo livello vedremo come esplorare le stringhe carattere per carattere e come iterare attraverso il loro contenuto. Divertiti!"
+    "milestone_email_content_markdown": "Buon lavoro su questo livello. La concatenazione e le stringhe interpolate sono concetti semplici, ma tornano spesso, soprattutto quando vuoi creare output chiari per chi legge.\n\nUserai queste tecniche praticamente in ogni programma che scriverai d'ora in poi.\n\nNel prossimo livello vedremo come esplorare le stringhe carattere per carattere e come iterare attraverso il loro contenuto. Divertiti!"
   },
   {
     "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
@@ -67,12 +67,12 @@
   {
     "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
     "milestone_email_subject": "Metodi alla follia",
-    "milestone_email_content_markdown": "Bel lavoro. Metodi e proprietà sono uno stile leggermente diverso da quello che hai visto finora. Invece di passare un valore a una funzione, chiami una funzione sul valore stesso. L'idea richiede un po' di pratica, ma è usata ovunque, quindi ti sembrerà naturale molto presto.\n\nNel prossimo livello vedremo alcuni tipi di cicli più potenti: i cicli `for`, i cicli `while`, `break` e `continue`. Divertiti!"
+    "milestone_email_content_markdown": "Buon lavoro! Metodi e proprietà sono un modo leggermente diverso di lavorare con i valori. Invece di passare un valore a una funzione, richiami una funzione direttamente sul valore. All'inizio può sembrare nuovo, ma con un po' di pratica diventa naturale: è un meccanismo usato ovunque.\n\nNel prossimo livello vedremo alcuni tipi di cicli più potenti: i cicli for, i cicli while, e le istruzioni break e continue. Divertiti!"
   },
   {
     "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
     "milestone_email_subject": "Oltre il repeat",
-    "milestone_email_content_markdown": "Ottimo lavoro. Ora hai sotto controllo i cicli for, while, e le istruzioni break e continue. Sono gli strumenti che userai più spesso al di fuori di questo corso, quindi il tempo che ci hai dedicato è davvero ben speso.\n\nOgnuno ha un compito leggermente diverso, e capire quale usare ti verrà naturale con l'esperienza.\n\nNella prossima sezione vedremo gli array, il modo in cui i programmi memorizzano e gestiscono raccolte di elementi. Divertiti!"
+    "milestone_email_content_markdown": "Ottimo lavoro. Ora hai sotto controllo i cicli for, while, e le istruzioni break e continue. Sono gli strumenti che userai più spesso al di fuori di questo corso, quindi il tempo che ci hai dedicato è davvero ben speso.\n\nOgnuno ha un compito leggermente diverso, e capire quale usare ti verrà naturale con l'esperienza.\n\nNel prossimo livello vedremo gli array, il modo in cui i programmi memorizzano e gestiscono raccolte di elementi. Divertiti!"
   },
   {
     "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
