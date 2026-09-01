@@ -10,6 +10,11 @@
 # is users who had ALREADY completed the level: SerializeUserLevels never
 # advertises a next lesson on a completed level, so the new lesson is invisible
 # to them. Pass reopen_completed: true to resurface it (see below).
+#
+# Idempotent: if the lesson already exists (matched by uuid, falling back to
+# slug) it is left exactly as it is - including its position - and only the user
+# reconciliation runs. This means the command can be called from a migration
+# even when the seeds have already created the lesson.
 class Curriculum::AppendLesson
   include Mandate
 
@@ -17,7 +22,7 @@ class Curriculum::AppendLesson
 
   def call
     ActiveRecord::Base.transaction do
-      create_lesson!.tap do
+      (existing_lesson || create_lesson!).tap do
         reopen_for_completed_users! if reopen_completed
       end
     end
@@ -26,6 +31,22 @@ class Curriculum::AppendLesson
   private
   # Lesson#set_position assigns the next position at the end of the level.
   def create_lesson! = level.lessons.create!(**lesson_attributes)
+
+  # Matched by uuid, falling back to slug, mirroring how the seeds sync lessons.
+  memoize
+  def existing_lesson
+    uuid = lesson_attributes[:uuid]
+    lesson = (Lesson.find_by(uuid:) if uuid.present?)
+    lesson ||= Lesson.find_by(slug: lesson_attributes[:slug])
+    return nil unless lesson
+
+    # Appending is not a move: repositioning an existing lesson into a different
+    # level is Curriculum::MoveLesson's job, and doing it here would reopen the
+    # wrong level's users.
+    raise "Lesson #{lesson.slug} already exists on level #{lesson.level.slug}" unless lesson.level == level
+
+    lesson
+  end
 
   def reopen_for_completed_users!
     # Un-complete the level for everyone who had finished it, so the new lesson
