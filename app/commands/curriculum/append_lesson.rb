@@ -22,8 +22,8 @@ class Curriculum::AppendLesson
 
   def call
     ActiveRecord::Base.transaction do
-      (existing_lesson || create_lesson!).tap do
-        reopen_for_completed_users! if reopen_completed
+      (existing_lesson || create_lesson!).tap do |lesson|
+        reopen_for_completed_users!(lesson) if reopen_completed
       end
     end
   end
@@ -48,14 +48,21 @@ class Curriculum::AppendLesson
     lesson
   end
 
-  def reopen_for_completed_users!
+  def reopen_for_completed_users!(lesson)
     # Un-complete the level for everyone who had finished it, so the new lesson
     # resurfaces as their frontier. We deliberately do NOT touch
     # current_user_level: users whose frontier has moved past this level stay
     # put, and finishing the new lesson won't yank them backwards because
     # UserLevel::Complete only advances the frontier when completing the level
     # the user is currently on.
-    UserLevel.where(level:).where.not(completed_at: nil).find_each do |user_level|
+    #
+    # Anyone who has already completed the new lesson is skipped: the seeds may
+    # have created it before this ran, so they've already seen it and there's
+    # nothing to resurface. Reopening their level would only push them back
+    # through a lesson they've done.
+    done_user_ids = UserLesson.where(lesson:).where.not(completed_at: nil).select(:user_id)
+
+    UserLevel.where(level:).where.not(completed_at: nil).where.not(user_id: done_user_ids).find_each do |user_level|
       user_level.update!(completed_at: nil)
     end
   end

@@ -104,4 +104,15 @@ class Curriculum::AppendLessonTest < ActiveSupport::TestCase
       Curriculum::AppendLesson.(level, ATTRS)
     end
   end
+
+  test "does not reopen the level for users who already completed the new lesson" do
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:, slug: ATTRS[:slug])
+    completed = create(:user_level, level:, completed_at: Time.current)
+    create(:user_lesson, user: completed.user, lesson:, completed_at: Time.current)
+
+    Curriculum::AppendLesson.(level, ATTRS, reopen_completed: true)
+
+    refute_nil completed.reload.completed_at
+  end
 end
