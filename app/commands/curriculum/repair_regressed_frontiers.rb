@@ -8,10 +8,11 @@
 # interpreter's unlocked feature set from the frontier, so those users lost
 # language features they'd already earned.
 #
-# Deliberately scoped to those two levels rather than "any frontier behind the
-# furthest UserLevel reached". That broader rule is NOT safe: MoveLesson
-# backfills UserLevels ahead of a user's frontier, and the pull-back in
-# 20260726120000 parks users behind theirs on purpose. Both would be trampled.
+# Scoped to those two levels rather than repairing every frontier that sits
+# behind the user's furthest UserLevel. That IS now an invariant - nothing
+# creates a level ahead of the frontier any more - but this runs against data
+# that predates it, which still holds users parked behind their furthest level
+# by 20260726120000. Shunting them forwards would skip them past `pangram`.
 class Curriculum::RepairRegressedFrontiers
   include Mandate
 
