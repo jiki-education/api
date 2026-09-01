@@ -62,4 +62,46 @@ class Curriculum::AppendLessonTest < ActiveSupport::TestCase
 
     assert_equal frontier, user_course.reload.current_user_level
   end
+
+  test "does not create a duplicate when the lesson already exists" do
+    level = create(:level)
+    create(:lesson, :video, level:, position: 1)
+    existing = create(:lesson, :exercise, level:, position: 2, slug: ATTRS[:slug])
+
+    lesson = Curriculum::AppendLesson.(level, ATTRS)
+
+    assert_equal existing, lesson
+    assert_equal 2, lesson.reload.position
+    assert_equal 2, level.lessons.count
+  end
+
+  test "matches an existing lesson by uuid ahead of slug" do
+    level = create(:level)
+    existing = create(:lesson, :exercise, level:, uuid: SecureRandom.uuid)
+
+    lesson = Curriculum::AppendLesson.(level, ATTRS.merge(uuid: existing.uuid))
+
+    assert_equal existing, lesson
+    assert_equal 1, level.lessons.count
+  end
+
+  test "still reopens completed levels when the lesson already exists" do
+    level = create(:level)
+    create(:lesson, :exercise, level:, slug: ATTRS[:slug])
+    completed = create(:user_level, level:, completed_at: Time.current)
+
+    Curriculum::AppendLesson.(level, ATTRS, reopen_completed: true)
+
+    assert_nil completed.reload.completed_at
+  end
+
+  test "raises when the lesson exists on a different level" do
+    level = create(:level)
+    other_level = create(:level, course: level.course, position: 99)
+    create(:lesson, :exercise, level: other_level, slug: ATTRS[:slug])
+
+    assert_raises(RuntimeError) do
+      Curriculum::AppendLesson.(level, ATTRS)
+    end
+  end
 end

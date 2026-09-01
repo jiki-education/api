@@ -917,6 +917,11 @@
           "uuid": "bfd5762d-1807-49dd-913c-d32cb26d66d9",
           "slug": "digital-root",
           "type": "exercise"
+        },
+        {
+          "uuid": "0f457c0a-2464-4741-990a-9f885c838160",
+          "slug": "adventures-in-poetry",
+          "type": "exercise"
         }
       ]
     },
