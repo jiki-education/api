@@ -56,10 +56,10 @@ class Curriculum::AppendLesson
     # UserLevel::Complete only advances the frontier when completing the level
     # the user is currently on.
     #
-    # Anyone who has already completed the new lesson is skipped: the seeds may
-    # have created it before this ran, so they've already seen it and there's
-    # nothing to resurface. Reopening their level would only push them back
-    # through a lesson they've done.
+    # Anyone who has already completed the new lesson is skipped: their level
+    # completion is genuine, so there's nothing to resurface and reopening
+    # would only push them back through work they've done. This is also what
+    # makes the reopen safe to run more than once.
     done_user_ids = UserLesson.where(lesson:).where.not(completed_at: nil).select(:user_id)
 
     UserLevel.where(level:).where.not(completed_at: nil).where.not(user_id: done_user_ids).find_each do |user_level|
