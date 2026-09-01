@@ -7,7 +7,7 @@ class UserLevel::Start
     ActiveRecord::Base.transaction do
       UserLevel.find_create_or_find_by!(user:, level:).tap do |user_level|
         if user_level.just_created?
-          user_course.update!(current_user_level: user_level)
+          UserCourse::AdvanceFrontier.(user_course, user_level)
           emit_first_lesson_unlocked_event!
         end
       end

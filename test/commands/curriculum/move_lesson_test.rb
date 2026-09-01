@@ -70,7 +70,9 @@ class Curriculum::MoveLessonTest < ActiveSupport::TestCase
     create(:lesson, :exercise, level: source, position: 2) # keeper, keeps source non-empty & incomplete
     mover = create(:lesson, :exercise, level: source, position: 1)
     user = create(:user)
-    create(:user_course, user:, course: source.course)
+    user_course = create(:user_course, user:, course: source.course)
+    frontier = create(:user_level, user:, level: create(:level, course: source.course, position: 3))
+    user_course.update!(current_user_level: frontier)
     create(:user_lesson, user:, lesson: mover, completed_at: Time.current)
     refute UserLevel.exists?(user:, level: destination)
 
@@ -120,5 +122,22 @@ class Curriculum::MoveLessonTest < ActiveSupport::TestCase
     Curriculum::MoveLesson.(mover, destination, reopen_completed: true)
 
     assert_nil destination_ul.reload.completed_at
+  end
+
+  test "does not backfill a destination user_level ahead of the user's frontier" do
+    source = create(:level, position: 1)
+    destination = create(:level, course: source.course, position: 3)
+    create(:lesson, :exercise, level: source, position: 2) # keeper
+    mover = create(:lesson, :exercise, level: source, position: 1)
+    user = create(:user)
+    user_course = create(:user_course, user:, course: source.course)
+    frontier = create(:user_level, user:, level: source)
+    user_course.update!(current_user_level: frontier)
+    create(:user_lesson, user:, lesson: mover, completed_at: Time.current)
+
+    Curriculum::MoveLesson.(mover, destination)
+
+    refute UserLevel.exists?(user:, level: destination)
+    assert_equal frontier, user_course.reload.current_user_level
   end
 end

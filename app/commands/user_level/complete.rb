@@ -50,7 +50,7 @@ class UserLevel::Complete
     return unless user_course.current_user_level_id.nil? ||
                   user_course.current_user_level_id == user_level.id
 
-    user_course.update!(current_user_level: next_user_level)
+    UserCourse::AdvanceFrontier.(user_course, next_user_level)
   end
 
   def send_completion_email!

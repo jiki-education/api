@@ -14,12 +14,15 @@
 #   2. Users who progressed on the lesson while it lived on the source level
 #      hold a UserLesson but may have no UserLevel for the DESTINATION, so
 #      SerializeUserLevels (which joins user_levels -> lessons) can't show their
-#      progress. We backfill an incomplete UserLevel.
+#      progress. We backfill an incomplete UserLevel - but only for users who
+#      have actually reached the destination.
 #   3. Users who had already completed the DESTINATION level can't see the newly
 #      arrived lesson (completed levels never advertise a next lesson). Pass
 #      reopen_completed: true to resurface it for them.
 #
-# No current_user_level pointer is ever moved backwards.
+# A user is never moved backwards, and never granted a level ahead of their
+# frontier: a UserLevel is a level you have reached, so handing one out for a
+# level you haven't would surface it on your dashboard early.
 class Curriculum::MoveLesson
   include Mandate
 
@@ -69,8 +72,21 @@ class Curriculum::MoveLesson
     UserLesson.where(lesson:).distinct.pluck(:user_id).each do |user_id|
       next if UserLevel.exists?(user_id:, level: to_level)
 
+      # Moving a lesson must not pull a user forwards. If the destination is
+      # ahead of their frontier they simply don't have that level yet; their
+      # UserLesson travels with the lesson and surfaces when they arrive.
+      next unless reached_destination?(user_id)
+
       UserLevel.create!(user_id:, level: to_level)
     end
+  end
+
+  def reached_destination?(user_id)
+    frontier_position = UserCourse.joins(current_user_level: :level).
+      where(user_id:, course_id: to_level.course_id).
+      pick("levels.position")
+
+    frontier_position.present? && frontier_position >= to_level.position
   end
 
   def reopen_destination_for_completed_users!

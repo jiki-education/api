@@ -17,7 +17,11 @@ class UserLesson::Start
         # Guard against a concurrent request winning the race in find_create_or_find_by!
         if user_lesson.just_created?
           user_level.update!(current_user_lesson: user_lesson)
-          user_course.update!(current_user_level: user_level)
+
+          # Only ever forwards: starting a lesson on an EARLIER level (one
+          # reopened by a curriculum change, or a revisit) must not pull the
+          # frontier back and re-lock language features (forum t/2248).
+          UserCourse::AdvanceFrontier.(user_course, user_level)
           track_first_ever_lesson_started!
         end
       end
@@ -68,6 +72,11 @@ class UserLesson::Start
     # other levels); the in-progress check above still guards each level.
     current_level = user_course.current_user_level&.level
     return unless current_level && current_level.id != lesson.level_id
+
+    # Only forward jumps are suspicious. Starting a lesson on an earlier level
+    # is always legitimate (revisits, and lessons appended to a level the user
+    # has already passed through), and the frontier stays where it is.
+    return if lesson.level.position < current_level.position
     return unless all_lessons_complete?(current_level)
 
     raise LevelNotCompletedError, "Complete the current level before starting lessons in the next level"

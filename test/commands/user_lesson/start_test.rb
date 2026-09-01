@@ -282,4 +282,35 @@ class UserLesson::StartTest < ActiveSupport::TestCase
 
     UserLesson::Start.(user_level.user, lesson)
   end
+
+  test "does not pull the frontier backwards when starting a lesson on an earlier level" do
+    user_course = create(:user_course)
+    level1 = create(:level, course: user_course.course, position: 1)
+    level2 = create(:level, course: user_course.course, position: 2)
+    lesson1 = create(:lesson, :exercise, level: level1)
+    create(:lesson, :exercise, level: level2)
+    create(:user_level, user: user_course.user, level: level1)
+    user_level2 = create(:user_level, user: user_course.user, level: level2)
+    user_course.update!(current_user_level: user_level2)
+
+    UserLesson::Start.(user_course.user, lesson1)
+
+    assert_equal user_level2, user_course.reload.current_user_level
+  end
+
+  test "allows starting a lesson on an earlier completed level" do
+    user_course = create(:user_course)
+    level1 = create(:level, course: user_course.course, position: 1)
+    level2 = create(:level, course: user_course.course, position: 2)
+    lesson1 = create(:lesson, :exercise, level: level1)
+    lesson2 = create(:lesson, :exercise, level: level2)
+    create(:user_level, user: user_course.user, level: level1)
+    user_level2 = create(:user_level, user: user_course.user, level: level2)
+    create(:user_lesson, user: user_course.user, lesson: lesson2, completed_at: Time.current)
+    user_course.update!(current_user_level: user_level2)
+
+    assert_difference -> { UserLesson.count }, 1 do
+      UserLesson::Start.(user_course.user, lesson1)
+    end
+  end
 end
