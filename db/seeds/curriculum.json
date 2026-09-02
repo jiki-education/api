@@ -249,13 +249,13 @@
           "type": "exercise"
         },
         {
-          "uuid": "754677f0-92af-4160-a76f-2c644bb42161",
-          "slug": "golf-rolling-ball-state",
+          "uuid": "ec7aede4-b9da-4b11-a3e7-cbb8b4492fdc",
+          "slug": "finish-wall",
           "type": "exercise"
         },
         {
-          "uuid": "ec7aede4-b9da-4b11-a3e7-cbb8b4492fdc",
-          "slug": "finish-wall",
+          "uuid": "754677f0-92af-4160-a76f-2c644bb42161",
+          "slug": "golf-rolling-ball-state",
           "type": "exercise"
         }
       ]
