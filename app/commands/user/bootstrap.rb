@@ -1,10 +1,11 @@
 class User::Bootstrap
   include Mandate
 
-  initialize_with :user, :provider, attribution: nil, country_code: nil, accept_language: nil
+  initialize_with :user, :provider, attribution: nil, country_code: nil, accept_language: nil, locale: nil
 
   def call
     set_country_code!
+    set_explicit_locale!
     set_locales!
     send_welcome_email!
     enroll_in_course!
@@ -20,6 +21,19 @@ class User::Bootstrap
     return if code.blank? || code == "XX"
 
     user.data.update_column(:country_code, code)
+  end
+
+  # The locale the signup happened in, when the front end could tell us one.
+  # Recorded as an explicit choice, so it wins over the Accept-Language
+  # derivation below for the whole life of the account.
+  #
+  # Email signups set this through Devise's own params, so only the OAuth
+  # providers reach it here — but it's set before set_locales! either way, so
+  # the PostHog sync that fires there sees the final locale.
+  def set_explicit_locale!
+    return if locale.blank?
+
+    user.data.update!(locale:)
   end
 
   def set_locales! = User::UpdateLocales.(user, accept_language)

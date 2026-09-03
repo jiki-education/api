@@ -314,4 +314,53 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
 
     assert_response :ok
   end
+  test "POST exercism forwards the signup locale to User::Bootstrap" do
+    exercism_payload = {
+      'id' => '8801',
+      'email' => 'locale@exercism.org',
+      'name' => 'Locale User',
+      'handle' => 'localeuser',
+      'avatar_url' => nil
+    }
+
+    Auth::VerifyExercismToken.stubs(:call).returns(exercism_payload)
+
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "exercism",
+      has_entries(locale: "bn")
+    )
+
+    post auth_exercism_path,
+      params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier', locale: "bn" },
+      as: :json
+
+    assert_response :ok
+  end
+
+  # An unsupported value is no signal rather than a failed signup, so the
+  # account still gets created and falls back to Accept-Language.
+  test "POST exercism ignores a locale we do not serve" do
+    exercism_payload = {
+      'id' => '8802',
+      'email' => 'locale2@exercism.org',
+      'name' => 'Locale User',
+      'handle' => 'localeuser2',
+      'avatar_url' => nil
+    }
+
+    Auth::VerifyExercismToken.stubs(:call).returns(exercism_payload)
+
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "exercism",
+      has_entries(locale: nil)
+    )
+
+    post auth_exercism_path,
+      params: { code: 'valid-exercism-auth-code', code_verifier: 'code-verifier', locale: "xx" },
+      as: :json
+
+    assert_response :ok
+  end
 end

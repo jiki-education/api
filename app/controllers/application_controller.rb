@@ -186,6 +186,19 @@ class ApplicationController < ActionController::API
       compact
   end
 
+  # The locale a signup was made in. The front end sends this only when the
+  # user was demonstrably browsing a locale-prefixed page, so it's an explicit
+  # signal rather than a guess — and a stronger one than Accept-Language, which
+  # reports the device's language and not the one being read (a reader on /bn
+  # whose laptop asks for en-US has no way to say so in a header).
+  #
+  # An unsupported value is treated as no signal (the locale then falls back to
+  # the Accept-Language derivation) rather than failing the signup.
+  def signup_locale_param
+    locale = params[:locale]
+    locale if I18n::SUPPORTED_LOCALES.include?(locale)
+  end
+
   # Signs in the user, checking for 2FA requirement first.
   # For admin users, stores OTP session and renders 2FA response instead of signing in.
   # For non-admin users, signs in immediately and renders success response.
