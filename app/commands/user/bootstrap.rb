@@ -23,13 +23,8 @@ class User::Bootstrap
     user.data.update_column(:country_code, code)
   end
 
-  # The locale the signup happened in, when the front end could tell us one.
   # Recorded as an explicit choice, so it wins over the Accept-Language
-  # derivation below for the whole life of the account.
-  #
-  # Email signups set this through Devise's own params, so only the OAuth
-  # providers reach it here — but it's set before set_locales! either way, so
-  # the PostHog sync that fires there sees the final locale.
+  # derivation in set_locales! below.
   def set_explicit_locale!
     return if locale.blank?
 

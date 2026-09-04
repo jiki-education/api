@@ -246,8 +246,6 @@ class User::BootstrapTest < ActiveSupport::TestCase
     assert_equal "bn", user.data.reload.explicit_locale
   end
 
-  # The whole point of the explicit signal: the device asks for one language
-  # while the user reads another, and the choice they made must win.
   test "explicit locale beats the Accept-Language derivation" do
     create(:course, slug: "coding-fundamentals")
     user = create(:user)

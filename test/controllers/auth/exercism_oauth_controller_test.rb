@@ -338,8 +338,6 @@ class Auth::ExercismOauthControllerTest < ApplicationControllerTest
     assert_response :ok
   end
 
-  # An unsupported value is no signal rather than a failed signup, so the
-  # account still gets created and falls back to Accept-Language.
   test "POST exercism ignores a locale we do not serve" do
     exercism_payload = {
       'id' => '8802',
