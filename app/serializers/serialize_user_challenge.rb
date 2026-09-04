@@ -38,6 +38,7 @@ class SerializeUserChallenge
 
     {
       uuid: last_submission.uuid,
+      created_at: last_submission.created_at.utc.iso8601,
       files: last_submission.files.map do |file|
         {
           filename: file.filename,
