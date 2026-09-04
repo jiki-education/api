@@ -186,6 +186,11 @@ class ApplicationController < ActionController::API
       compact
   end
 
+  def signup_locale_param
+    locale = params[:locale]
+    locale if I18n::SUPPORTED_LOCALES.include?(locale)
+  end
+
   # Signs in the user, checking for 2FA requirement first.
   # For admin users, stores OTP session and renders 2FA response instead of signing in.
   # For non-admin users, signs in immediately and renders success response.

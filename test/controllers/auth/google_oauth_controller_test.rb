@@ -302,4 +302,49 @@ class Auth::GoogleOauthControllerTest < ApplicationControllerTest
     get internal_me_path, as: :json
     assert_response :unauthorized
   end
+  test "POST google forwards the signup locale to User::Bootstrap" do
+    google_payload = {
+      'id' => 'google-locale-id',
+      'email' => 'locale@gmail.com',
+      'name' => 'Locale User',
+      'exp' => 1.hour.from_now.to_i
+    }
+
+    Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "google",
+      has_entries(locale: "bn")
+    )
+
+    post auth_google_path,
+      params: { code: 'valid-google-auth-code', locale: "bn" },
+      as: :json
+
+    assert_response :ok
+  end
+
+  test "POST google ignores a locale we do not serve" do
+    google_payload = {
+      'id' => 'google-locale-id-2',
+      'email' => 'locale2@gmail.com',
+      'name' => 'Locale User',
+      'exp' => 1.hour.from_now.to_i
+    }
+
+    Auth::VerifyGoogleToken.stubs(:call).returns(google_payload)
+
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "google",
+      has_entries(locale: nil)
+    )
+
+    post auth_google_path,
+      params: { code: 'valid-google-auth-code', locale: "xx" },
+      as: :json
+
+    assert_response :ok
+  end
 end

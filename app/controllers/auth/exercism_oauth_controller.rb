@@ -8,7 +8,8 @@ module Auth
         User::Bootstrap.(user, "exercism",
           attribution: signup_attribution_params,
           country_code: request.headers["CF-IPCountry"],
-          accept_language: request.headers["Accept-Language"])
+          accept_language: request.headers["Accept-Language"],
+          locale: signup_locale_param)
       end
 
       User::Exercism::ReconcileEntitlements.(

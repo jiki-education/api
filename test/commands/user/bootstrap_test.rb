@@ -236,4 +236,42 @@ class User::BootstrapTest < ActiveSupport::TestCase
 
     User::Bootstrap.(user, "email", accept_language: "hu, en-GB;q=0.9, en;q=0.8")
   end
+
+  test "records an explicit locale when the signup supplies one" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "google", locale: "bn")
+
+    assert_equal "bn", user.data.reload.explicit_locale
+  end
+
+  test "explicit locale beats the Accept-Language derivation" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "google", locale: "bn", accept_language: "en-US,en;q=0.9")
+
+    assert_equal "bn", user.reload.locale
+    assert_equal %w[en-US en], user.data.locales
+  end
+
+  test "leaves the locale to Accept-Language when no explicit locale is supplied" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "google", accept_language: "hu,en;q=0.9")
+
+    assert_nil user.data.reload.explicit_locale
+    assert_equal "hu", user.reload.locale
+  end
+
+  test "ignores a blank explicit locale" do
+    create(:course, slug: "coding-fundamentals")
+    user = create(:user)
+
+    User::Bootstrap.(user, "google", locale: "", accept_language: "hu,en;q=0.9")
+
+    assert_nil user.data.reload.explicit_locale
+  end
 end
