@@ -74,8 +74,16 @@ class UserLesson::Complete
     Analytics::TrackEvent.defer(user, "lesson_completed", properties: properties)
   end
 
+  # The next lesson the user still has to do, not merely the next by position.
+  # A curriculum reorder can put an already-completed lesson after this one
+  # (basic-state, Sep 2026: golf-rolling-ball-state was swapped behind
+  # finish-wall). Treating that as the "next" lesson meant the level never
+  # completed and the next level never unlocked.
   memoize
-  def next_lesson = level.lessons.where('position > ?', lesson.position).first
+  def next_lesson
+    completed_lesson_ids = UserLesson.where(user:, lesson: level.lessons).where.not(completed_at: nil).select(:lesson_id)
+    level.lessons.where('position > ?', lesson.position).where.not(id: completed_lesson_ids).first
+  end
 
   # Use start here rather than find, so if for some reason we've not
   # had a valid API call to the start endpoint, we don't hurt the user.
