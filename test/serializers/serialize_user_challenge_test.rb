@@ -45,7 +45,7 @@ class SerializeUserChallengeTest < ActiveSupport::TestCase
     assert_empty result[:conversation]
     assert result[:data].key?(:last_submission)
     assert_equal submission.uuid, result[:data][:last_submission][:uuid]
-    assert_equal submission.created_at.utc.iso8601, result[:data][:last_submission][:stored_at]
+    assert_equal submission.created_at.utc.iso8601, result[:data][:last_submission][:created_at]
     assert_equal 1, result[:data][:last_submission][:files].length
     assert_equal "calculator.rb", result[:data][:last_submission][:files][0][:filename]
     assert_equal "class Calculator\nend", result[:data][:last_submission][:files][0][:content]
