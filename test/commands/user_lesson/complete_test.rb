@@ -409,6 +409,42 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert_equal "lesson-three", lesson_unlocked_event[:data][:lesson_slug]
   end
 
+  test "lesson_unlocked event skips a later lesson the user has already completed" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, :exercise, level:, slug: "lesson-one", position: 1)
+    lesson2 = create(:lesson, :exercise, level:, slug: "lesson-two", position: 2)
+    create(:lesson, :exercise, level:, slug: "lesson-three", position: 3)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson1)
+    create(:user_lesson, user:, lesson: lesson2, completed_at: 1.day.ago)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson1)
+
+    lesson_unlocked_event = Current.events.find { |e| e[:type] == "lesson_unlocked" }
+    assert_equal "lesson-three", lesson_unlocked_event[:data][:lesson_slug]
+  end
+
+  # Regression: a reorder moved an already-completed lesson behind the one being
+  # completed, so the level looked unfinished and the next level never unlocked.
+  test "completes level when the only remaining later lesson is already completed" do
+    user = create(:user)
+    level = create(:level)
+    lesson1 = create(:lesson, :exercise, level:, slug: "finish-wall", position: 1)
+    lesson2 = create(:lesson, :exercise, level:, slug: "golf-rolling-ball-state", position: 2)
+    user_level = create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson: lesson1)
+    create(:user_lesson, user:, lesson: lesson2, completed_at: 1.day.ago)
+
+    UserLevel::Complete.expects(:call).with(user_level)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson1)
+
+    assert_empty((Current.events || []).select { |e| e[:type] == "lesson_unlocked" })
+  end
+
   # Level auto-completion tests
   test "auto-completes level when completing the last lesson" do
     user = create(:user)
