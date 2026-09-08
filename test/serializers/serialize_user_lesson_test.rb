@@ -8,6 +8,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     expected = {
       lesson_slug: "hello-world",
       status: "completed",
+      bonus_completed: false,
       difficulty_rating: nil,
       fun_rating: nil,
       walkthrough_video_watched_percentage: nil,
@@ -26,6 +27,7 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     expected = {
       lesson_slug: "hello-world",
       status: "started",
+      bonus_completed: false,
       difficulty_rating: nil,
       fun_rating: nil,
       walkthrough_video_watched_percentage: nil,
@@ -35,6 +37,13 @@ class SerializeUserLessonTest < ActiveSupport::TestCase
     }
 
     assert_equal(expected, SerializeUserLesson.(user_lesson))
+  end
+
+  test "serializes bonus_completed as true when the bonus is passed" do
+    lesson = create(:lesson, :exercise, slug: "hello-world")
+    user_lesson = create(:user_lesson, lesson: lesson, bonus_completed_at: Time.current)
+
+    assert SerializeUserLesson.(user_lesson)[:bonus_completed]
   end
 
   test "serializes ratings when present" do

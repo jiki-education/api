@@ -109,6 +109,7 @@ Rails.application.routes.draw do
       member do
         post :start
         patch :complete
+        patch :bonus_completed
         patch :rate
         patch :walkthrough_video_percentage
       end

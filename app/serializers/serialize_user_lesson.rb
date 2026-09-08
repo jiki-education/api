@@ -7,6 +7,7 @@ class SerializeUserLesson
     {
       lesson_slug: user_lesson.lesson.slug,
       status: status,
+      bonus_completed: user_lesson.bonus_completed_at.present?,
       difficulty_rating: user_lesson.difficulty_rating,
       fun_rating: user_lesson.fun_rating,
       walkthrough_video_watched_percentage: user_lesson.walkthrough_video_watched_percentage,

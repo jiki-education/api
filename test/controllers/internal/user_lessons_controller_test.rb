@@ -12,6 +12,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
   guard_incorrect_token! :internal_user_lesson_path, args: ["solve-a-maze"], method: :get
   guard_incorrect_token! :start_internal_user_lesson_path, args: ["solve-a-maze"], method: :post
   guard_incorrect_token! :complete_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
+  guard_incorrect_token! :bonus_completed_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
   guard_incorrect_token! :rate_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
   guard_incorrect_token! :walkthrough_video_percentage_internal_user_lesson_path, args: ["solve-a-maze"], method: :patch
 
@@ -123,7 +124,7 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
 
   test "PATCH complete delegates to UserLesson::Complete command" do
     create(:user_lesson, user: @current_user, lesson: @lesson)
-    UserLesson::Complete.expects(:call).with(@current_user, @lesson)
+    UserLesson::Complete.expects(:call).with(@current_user, @lesson, bonus_passed: false)
 
     patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
       as: :json
@@ -131,8 +132,78 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     assert_response :success
   end
 
+  test "PATCH complete passes bonus_passed through to the command" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+    UserLesson::Complete.expects(:call).with(@current_user, @lesson, bonus_passed: true)
+
+    patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      params: { bonus_passed: true },
+      as: :json
+
+    assert_response :success
+  end
+
+  test "PATCH complete records the bonus alongside the completion" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+
+    patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      params: { bonus_passed: true },
+      as: :json
+
+    assert_response :success
+    user_lesson = UserLesson.find_by!(user: @current_user, lesson: @lesson)
+    assert user_lesson.completed_at.present?
+    assert user_lesson.bonus_completed_at.present?
+  end
+
+  test "PATCH complete leaves the bonus unset without bonus_passed" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+
+    patch complete_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_response :success
+    assert_nil UserLesson.find_by!(user: @current_user, lesson: @lesson).bonus_completed_at
+  end
+
   test "PATCH complete returns 404 for non-existent lesson" do
     patch complete_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
+      as: :json
+
+    assert_json_error(:not_found, error_type: :lesson_not_found)
+  end
+
+  # PATCH /v1/user_lessons/:slug/bonus_completed tests
+  test "PATCH bonus_completed records the bonus" do
+    create(:user_lesson, user: @current_user, lesson: @lesson, completed_at: Time.current)
+
+    patch bonus_completed_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_response :success
+    assert_json_response({})
+    assert UserLesson.find_by!(user: @current_user, lesson: @lesson).bonus_completed_at.present?
+  end
+
+  test "PATCH bonus_completed delegates to UserLesson::CompleteBonus command" do
+    create(:user_lesson, user: @current_user, lesson: @lesson)
+    UserLesson::CompleteBonus.expects(:call).with(@current_user, @lesson)
+
+    patch bonus_completed_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_response :success
+  end
+
+  test "PATCH bonus_completed returns 422 when the lesson has not been started" do
+    patch bonus_completed_internal_user_lesson_path(lesson_slug: @lesson.slug),
+      as: :json
+
+    assert_json_error(:unprocessable_entity, error_type: :user_lesson_not_found)
+  end
+
+  test "PATCH bonus_completed returns 404 for non-existent lesson" do
+    patch bonus_completed_internal_user_lesson_path(lesson_slug: "non-existent-slug"),
       as: :json
 
     assert_json_error(:not_found, error_type: :lesson_not_found)
