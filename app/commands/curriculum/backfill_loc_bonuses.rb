@@ -22,6 +22,8 @@
 class Curriculum::BackfillLocBonuses
   include Mandate
 
+  queue_as :default
+
   # Exercise slug => max lines of code.
   LOC_LIMITS = {
     "alphanumeric" => 42,

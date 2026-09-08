@@ -3,7 +3,12 @@
 # See Curriculum::BackfillLocBonuses for what's in scope and what isn't.
 class BackfillLocBonuses < ActiveRecord::Migration[8.0]
   def up
-    Curriculum::BackfillLocBonuses.()
+    # Deferred rather than run inline: this downloads the latest submission's
+    # files for every completed lesson in scope, so its runtime scales with
+    # usage and grows between now and whenever this deploys. Migrations run in
+    # the entrypoint before the container serves, so doing it here would hold
+    # the new ECS task un-healthy for the duration.
+    Curriculum::BackfillLocBonuses.defer
   end
 
   def down
