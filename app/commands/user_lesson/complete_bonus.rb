@@ -1,5 +1,3 @@
-# Records that a user has passed a lesson's bonus tasks.
-#
 # A high-water mark, like completed_at: once set it is never cleared or moved.
 # The bonus can be passed at completion time (via UserLesson::Complete) or
 # later, when a user comes back to an already-completed lesson to finish it off.

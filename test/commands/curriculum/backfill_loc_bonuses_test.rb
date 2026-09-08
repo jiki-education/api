@@ -119,11 +119,10 @@ class Curriculum::BackfillLocBonusesTest < ActiveSupport::TestCase
     assert_nil user_lesson.reload.bonus_completed_at
   end
 
-  test "uses each user's own language limit" do
-    # lunchbox: javascript 16, python 13. 15 lines passes as JS, fails as Python.
-    code = (1..15).map { |i| "a#{i} = #{i}" }.join("\n")
+  test "skips users who chose python" do
+    code = "function twoFer(n) {\n  return n;\n}\n"
 
-    python_user, lesson = setup_lesson(slug: "lunchbox", language: "python")
+    python_user, lesson = setup_lesson(language: "python")
     course = lesson.level.course
     js_user = create(:user)
     create(:user_course, user: js_user, course:, language: "javascript")
@@ -139,16 +138,15 @@ class Curriculum::BackfillLocBonusesTest < ActiveSupport::TestCase
     assert js_lesson.reload.bonus_completed_at.present?
   end
 
-  test "uses the stricter limit when no language has been chosen" do
-    # sign-price: javascript 9, python 6 - so 8 lines passes as JS but must
-    # not pass here, because the stricter python limit is used.
+  test "treats an unset language as javascript" do
+    # sign-price's javascript limit is 9, so 8 lines qualifies.
     user, lesson = setup_lesson(slug: "sign-price", language: nil)
     user_lesson = create(:user_lesson, user:, lesson:, completed_at: Time.current)
     submit!(user_lesson, (1..8).map { |i| "let a#{i} = #{i};" }.join("\n"))
 
     Curriculum::BackfillLocBonuses.()
 
-    assert_nil user_lesson.reload.bonus_completed_at
+    assert user_lesson.reload.bonus_completed_at.present?
   end
 
   test "counts lines across every file in the submission" do

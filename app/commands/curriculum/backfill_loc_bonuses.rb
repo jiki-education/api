@@ -5,6 +5,9 @@
 # result), but the code that earned them is stored, so an LOC-only bonus can be
 # recovered after the fact.
 #
+# Javascript only: the limits differ per language, and python users are skipped
+# rather than scored against the wrong target.
+#
 # LOC_LIMITS is a snapshot of the front-end curriculum taken at backfill time -
 # deliberately frozen here rather than read from the curriculum package, both
 # because the API can't import it and because a migration must keep scoring the
@@ -19,23 +22,23 @@
 class Curriculum::BackfillLocBonuses
   include Mandate
 
-  # Exercise slug => max lines of code, per language.
+  # Exercise slug => max lines of code.
   LOC_LIMITS = {
-    "alphanumeric" => { javascript: 42, python: 35 },
-    "driving-test" => { javascript: 12, python: 8 },
-    "even-or-odd" => { javascript: 6, python: 4 },
-    "formal-dinner" => { javascript: 9, python: 6 },
-    "guest-list" => { javascript: 9, python: 6 },
-    "hamming" => { javascript: 11, python: 8 },
-    "lower-pangram" => { javascript: 16, python: 10 },
-    "lunchbox" => { javascript: 16, python: 13 },
-    "matching-socks" => { javascript: 29, python: 67 },
-    "niche-named-party" => { javascript: 20, python: 14 },
-    "raindrops" => { javascript: 16, python: 16 },
-    "sign-price" => { javascript: 9, python: 6 },
-    "three-letter-acronym" => { javascript: 3, python: 2 },
-    "tile-search" => { javascript: 8, python: 5 },
-    "two-fer" => { javascript: 6, python: 6 }
+    "alphanumeric" => 42,
+    "driving-test" => 12,
+    "even-or-odd" => 6,
+    "formal-dinner" => 9,
+    "guest-list" => 9,
+    "hamming" => 11,
+    "lower-pangram" => 16,
+    "lunchbox" => 16,
+    "matching-socks" => 29,
+    "niche-named-party" => 20,
+    "raindrops" => 16,
+    "sign-price" => 9,
+    "three-letter-acronym" => 3,
+    "tile-search" => 8,
+    "two-fer" => 6
   }.freeze
 
   # Guards against awarding a bonus for a stub. An empty or near-empty file
@@ -45,6 +48,8 @@ class Curriculum::BackfillLocBonuses
   MIN_LINES = 3
 
   BATCH_SIZE = 500
+
+  LANGUAGE = "javascript".freeze
 
   def call
     scope.includes(lesson: :level).find_in_batches(batch_size: BATCH_SIZE) do |batch|
@@ -73,11 +78,12 @@ class Curriculum::BackfillLocBonuses
 
   def backfill!(user_lesson, submission)
     return unless submission
+    return if python?(user_lesson)
 
     source = source_for(submission)
     return if source.nil?
 
-    lines = ExerciseSubmission::CountLinesOfCode.(source, language_for(user_lesson))
+    lines = ExerciseSubmission::CountLinesOfCode.(source, LANGUAGE)
     return if lines < MIN_LINES
     return if lines > limit_for(user_lesson)
 
@@ -115,19 +121,14 @@ class Curriculum::BackfillLocBonuses
   memoize
   def counts = { awarded: 0, missing_files: 0 }
 
-  def limit_for(user_lesson)
-    limits = LOC_LIMITS.fetch(user_lesson.lesson.slug)
-    language = language_for(user_lesson)
+  def limit_for(user_lesson) = LOC_LIMITS.fetch(user_lesson.lesson.slug)
 
-    # No language chosen means we can't tell which limit applied, so use the
-    # stricter of the two - never award a bonus that might not have been earned.
-    return limits.values.min if language.nil?
-
-    limits.fetch(language.to_sym)
-  end
-
-  def language_for(user_lesson)
-    languages[[user_lesson.user_id, user_lesson.lesson.level.course_id]]
+  # The limits differ per language, and these are the javascript ones, so a
+  # user who chose python is left alone rather than scored against the wrong
+  # target. An unset language is treated as javascript: it's the default, and
+  # a user who never chose can't have submitted python.
+  def python?(user_lesson)
+    languages[[user_lesson.user_id, user_lesson.lesson.level.course_id]] == "python"
   end
 
   # One query for every relevant user's chosen language, rather than one per row.
