@@ -2,8 +2,9 @@
 # so LOC-based bonuses score the same here as they did in the browser.
 #
 # Mirrors countLinesOfCode in interpreters/src/{javascript,python}/
-# assertion-helpers.ts. Keep the two in step.
-class ExerciseSubmission::CountLinesOfCode
+# assertion-helpers.ts, as it stood when the backfill ran - a snapshot for
+# Migrations::BackfillLocBonuses, not a live mirror to keep in step.
+class Migrations::CountLinesOfCode
   include Mandate
 
   initialize_with :source, :language

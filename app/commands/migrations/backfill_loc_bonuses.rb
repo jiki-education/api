@@ -88,7 +88,7 @@ class Migrations::BackfillLocBonuses
     source = source_for(submission)
     return if source.nil?
 
-    lines = ExerciseSubmission::CountLinesOfCode.(source, LANGUAGE)
+    lines = Migrations::CountLinesOfCode.(source, LANGUAGE)
     return if lines < MIN_LINES
     return if lines > limit_for(user_lesson)
 
