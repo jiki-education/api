@@ -17,6 +17,17 @@ class SerializeUserLevels
   end
 
   private
+  # Keyed so the pluck and the hash it becomes can't drift apart.
+  PLUCKED_COLUMNS = {
+    level_slug: "levels.slug",
+    lesson_slug: "lessons.slug",
+    user_lesson_id: "user_lessons.id",
+    completed_at: "user_lessons.completed_at",
+    bonus_completed_at: "user_lessons.bonus_completed_at",
+    walkthrough_video_watched_percentage: "user_lessons.walkthrough_video_watched_percentage",
+    user_level_completed_at: "user_levels.completed_at"
+  }.freeze
+
   # Each level's rows are ordered by lesson position. We emit every lesson the
   # user has a record for (completed/started), and - provided nothing in the
   # level is currently in progress - the single next lesson as not_started.
@@ -44,36 +55,19 @@ class SerializeUserLevels
     {
       lesson_slug: row[:lesson_slug],
       status:,
+      bonus_completed: row[:bonus_completed_at].present?,
       walkthrough_video_watched_percentage: row[:walkthrough_video_watched_percentage]
     }
   end
 
   memoize
   def results
-    results = user_levels.
+    user_levels.
       joins(:level).
       joins("INNER JOIN lessons ON lessons.level_id = levels.id").
       joins("LEFT JOIN user_lessons ON user_lessons.lesson_id = lessons.id AND user_lessons.user_id = user_levels.user_id").
       order("levels.position, lessons.position").
-      pluck(
-        "levels.slug",
-        "lessons.slug",
-        "user_lessons.id",
-        "user_lessons.completed_at",
-        "user_lessons.walkthrough_video_watched_percentage",
-        "user_levels.completed_at"
-      )
-
-    # Map pluck results (arrays) to hashes for easier access
-    results.map do |level_slug, lesson_slug, user_lesson_id, lesson_completed_at, watched_percentage, user_level_completed_at|
-      {
-        level_slug: level_slug,
-        lesson_slug: lesson_slug,
-        user_lesson_id: user_lesson_id,
-        completed_at: lesson_completed_at,
-        walkthrough_video_watched_percentage: watched_percentage,
-        user_level_completed_at: user_level_completed_at
-      }
-    end
+      pluck(*PLUCKED_COLUMNS.values).
+      map { |row| PLUCKED_COLUMNS.keys.zip(row).to_h }
   end
 end

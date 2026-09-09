@@ -28,7 +28,7 @@ class Internal::UserLessonsController < Internal::BaseController
   end
 
   def complete
-    UserLesson::Complete.(current_user, @lesson)
+    UserLesson::Complete.(current_user, @lesson, bonus_passed:)
 
     render json: {}
   rescue UserLessonNotFoundError
@@ -39,6 +39,14 @@ class Internal::UserLessonsController < Internal::BaseController
     render_422(:lesson_in_progress)
   rescue LessonNotUnlockedError
     render_422(:lesson_not_unlocked)
+  end
+
+  def bonus_completed
+    UserLesson::CompleteBonus.(current_user, @lesson)
+
+    render json: {}
+  rescue UserLessonNotFoundError
+    render_422(:user_lesson_not_found)
   end
 
   def rate
@@ -56,4 +64,9 @@ class Internal::UserLessonsController < Internal::BaseController
   rescue UserLessonNotFoundError
     render_422(:user_lesson_not_found)
   end
+
+  private
+  # Cast to a real boolean: an absent param casts to nil, and the command's
+  # keyword default expects true/false.
+  def bonus_passed = ActiveModel::Type::Boolean.new.cast(params[:bonus_passed]) || false
 end

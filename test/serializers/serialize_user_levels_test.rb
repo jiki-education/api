@@ -1,6 +1,22 @@
 require "test_helper"
 
 class SerializeUserLevelsTest < ActiveSupport::TestCase
+  test "serializes bonus_completed for lessons whose bonus is passed" do
+    user = create(:user)
+    level = create(:level, slug: "basics", position: 1)
+    lesson1 = create(:lesson, :exercise, level: level, slug: "lesson-1", position: 1)
+    lesson2 = create(:lesson, :exercise, level: level, slug: "lesson-2", position: 2)
+
+    create(:user_level, user: user, level: level)
+    create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current, bonus_completed_at: Time.current)
+    create(:user_lesson, user: user, lesson: lesson2, completed_at: Time.current)
+
+    user_lessons = SerializeUserLevels.(user.user_levels).first[:user_lessons]
+
+    assert user_lessons.first[:bonus_completed]
+    refute user_lessons.second[:bonus_completed]
+  end
+
   test "serializes user_levels with user_lessons" do
     user = create(:user)
     level1 = create(:level, slug: "basics", position: 1)
@@ -22,15 +38,15 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
         level_slug: "basics",
         status: "completed",
         user_lessons: [
-          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: 100 },
-          { lesson_slug: "lesson-2", status: "started", walkthrough_video_watched_percentage: 42 }
+          { lesson_slug: "lesson-1", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: 100 },
+          { lesson_slug: "lesson-2", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: 42 }
         ]
       },
       {
         level_slug: "advanced",
         status: "started",
         user_lessons: [
-          { lesson_slug: "lesson-3", status: "completed", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-3", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       }
     ]
@@ -62,8 +78,8 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
         level_slug: "basics",
         status: "started",
         user_lessons: [
-          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
-          { lesson_slug: "lesson-2", status: "started", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-1", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       }
     ]
@@ -90,9 +106,9 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
         level_slug: "basics",
         status: "started",
         user_lessons: [
-          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
-          { lesson_slug: "lesson-2", status: "completed", walkthrough_video_watched_percentage: nil },
-          { lesson_slug: "lesson-3", status: "not_started", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-1", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-3", status: "not_started", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       }
     ]
@@ -120,14 +136,14 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
         level_slug: "basics",
         status: "completed",
         user_lessons: [
-          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-1", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       },
       {
         level_slug: "advanced",
         status: "started",
         user_lessons: [
-          { lesson_slug: "lesson-2", status: "not_started", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-2", status: "not_started", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       }
     ]
@@ -155,8 +171,8 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
         level_slug: "basics",
         status: "completed",
         user_lessons: [
-          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
-          { lesson_slug: "lesson-2", status: "completed", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-1", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "completed", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       }
     ]
@@ -184,11 +200,11 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
 
     expected = [
       { level_slug: "level-a", status: "started",
-        user_lessons: [{ lesson_slug: "lesson-a", status: "started", walkthrough_video_watched_percentage: nil }] },
+        user_lessons: [{ lesson_slug: "lesson-a", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil }] },
       { level_slug: "level-b", status: "started",
-        user_lessons: [{ lesson_slug: "lesson-b", status: "started", walkthrough_video_watched_percentage: nil }] },
+        user_lessons: [{ lesson_slug: "lesson-b", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil }] },
       { level_slug: "level-c", status: "started",
-        user_lessons: [{ lesson_slug: "lesson-c", status: "started", walkthrough_video_watched_percentage: nil }] }
+        user_lessons: [{ lesson_slug: "lesson-c", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil }] }
     ]
 
     assert_equal(expected, SerializeUserLevels.(user.user_levels))
@@ -212,9 +228,9 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
         level_slug: "basics",
         status: "started",
         user_lessons: [
-          { lesson_slug: "lesson-a", status: "started", walkthrough_video_watched_percentage: nil },
-          { lesson_slug: "lesson-b", status: "started", walkthrough_video_watched_percentage: nil },
-          { lesson_slug: "lesson-c", status: "started", walkthrough_video_watched_percentage: nil }
+          { lesson_slug: "lesson-a", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-b", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-c", status: "started", bonus_completed: false, walkthrough_video_watched_percentage: nil }
         ]
       }
     ]
