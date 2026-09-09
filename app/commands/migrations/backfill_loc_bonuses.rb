@@ -1,3 +1,6 @@
+# One-off backfill, run from a migration and not used by the app. Lives under
+# Migrations:: so it doesn't sit alongside the commands the app actually calls.
+#
 # Backfills bonus_completed_at for exercises whose bonus is purely a
 # lines-of-code target, by re-scoring each user's most recent submission.
 #
@@ -19,7 +22,7 @@
 # snapshot that's: acronym, adventures-in-poetry, digital-root, isbn-verifier,
 # leap, look-around and maze-turn-around. anagram, smashing-blocks, word-count
 # and wordle-process-game have bonuses that aren't LOC-based at all.
-class Curriculum::BackfillLocBonuses
+class Migrations::BackfillLocBonuses
   include Mandate
 
   queue_as :default

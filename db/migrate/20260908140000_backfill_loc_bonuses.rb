@@ -1,6 +1,6 @@
 # Recovers historical bonus passes for exercises whose bonus is purely a
 # lines-of-code target, by re-scoring each user's most recent submission.
-# See Curriculum::BackfillLocBonuses for what's in scope and what isn't.
+# See Migrations::BackfillLocBonuses for what's in scope and what isn't.
 class BackfillLocBonuses < ActiveRecord::Migration[8.0]
   def up
     # Deferred rather than run inline: this downloads the latest submission's
@@ -8,7 +8,7 @@ class BackfillLocBonuses < ActiveRecord::Migration[8.0]
     # usage and grows between now and whenever this deploys. Migrations run in
     # the entrypoint before the container serves, so doing it here would hold
     # the new ECS task un-healthy for the duration.
-    Curriculum::BackfillLocBonuses.defer
+    Migrations::BackfillLocBonuses.defer
   end
 
   def down
