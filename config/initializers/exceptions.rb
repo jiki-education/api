@@ -83,6 +83,9 @@ class LessonNotUnlockedError < RuntimeError; end
 class LevelNotCompletedError < RuntimeError; end
 class ChallengeLockedError < RuntimeError; end
 
+# Curriculum errors
+class InvalidLessonOrderingError < RuntimeError; end
+
 # Badge errors
 class BadgeCriteriaNotFulfilledError < RuntimeError; end
 
