@@ -52,9 +52,12 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
     lesson2 = create(:lesson, :exercise, level: level, slug: "lesson-2", position: 2)
     create(:lesson, :exercise, level: level, slug: "lesson-3", position: 3)
 
-    create(:user_level, user: user, level: level)
+    user_level = create(:user_level, user: user, level: level)
     create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current)
-    create(:user_lesson, user: user, lesson: lesson2, completed_at: nil)
+    in_progress = create(:user_lesson, user: user, lesson: lesson2, completed_at: nil)
+    # UserLesson::Start points the level at the lesson it starts; that pointer is
+    # what makes a lesson "in progress".
+    user_level.update!(current_user_lesson: in_progress)
 
     # lesson-2 is in progress, so lesson-3 is NOT appended as not_started
     expected = [
@@ -215,6 +218,87 @@ class SerializeUserLevelsTest < ActiveSupport::TestCase
           { lesson_slug: "lesson-a", status: "started", walkthrough_video_watched_percentage: nil },
           { lesson_slug: "lesson-b", status: "started", walkthrough_video_watched_percentage: nil },
           { lesson_slug: "lesson-c", status: "started", walkthrough_video_watched_percentage: nil }
+        ]
+      }
+    ]
+
+    assert_equal(expected, SerializeUserLevels.(user.user_levels))
+  end
+
+  test "advertises the next lesson when an incomplete lesson has been released from the pointer" do
+    user = create(:user)
+    level = create(:level, slug: "basics")
+
+    lesson1 = create(:lesson, :exercise, level: level, slug: "lesson-1", position: 1)
+    create(:lesson, :exercise, level: level, slug: "lesson-2", position: 2)
+    lesson3 = create(:lesson, :exercise, level: level, slug: "lesson-3", position: 3)
+
+    user_level = create(:user_level, user: user, level: level)
+    create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current)
+    # A reorder left lesson-3 behind lesson-2, and the pointer was released from
+    # it - so lesson-2 is startable and must be advertised, while the work
+    # already done on lesson-3 stays visible.
+    create(:user_lesson, user: user, lesson: lesson3, completed_at: nil)
+    user_level.update!(current_user_lesson: nil)
+
+    expected = [
+      {
+        level_slug: "basics",
+        status: "started",
+        user_lessons: [
+          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "not_started", walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-3", status: "started", walkthrough_video_watched_percentage: nil }
+        ]
+      }
+    ]
+
+    assert_equal(expected, SerializeUserLevels.(user.user_levels))
+  end
+
+  test "only ever advertises one not_started lesson" do
+    user = create(:user)
+    level = create(:level, slug: "basics")
+
+    lesson1 = create(:lesson, :exercise, level: level, slug: "lesson-1", position: 1)
+    create(:lesson, :exercise, level: level, slug: "lesson-2", position: 2)
+    create(:lesson, :exercise, level: level, slug: "lesson-3", position: 3)
+
+    create(:user_level, user: user, level: level)
+    create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current)
+
+    expected = [
+      {
+        level_slug: "basics",
+        status: "started",
+        user_lessons: [
+          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "not_started", walkthrough_video_watched_percentage: nil }
+        ]
+      }
+    ]
+
+    assert_equal(expected, SerializeUserLevels.(user.user_levels))
+  end
+
+  test "a completed pointer does not block the next lesson" do
+    user = create(:user)
+    level = create(:level, slug: "basics")
+
+    lesson1 = create(:lesson, :exercise, level: level, slug: "lesson-1", position: 1)
+    create(:lesson, :exercise, level: level, slug: "lesson-2", position: 2)
+
+    user_level = create(:user_level, user: user, level: level)
+    completed = create(:user_lesson, user: user, lesson: lesson1, completed_at: Time.current)
+    user_level.update!(current_user_lesson: completed)
+
+    expected = [
+      {
+        level_slug: "basics",
+        status: "started",
+        user_lessons: [
+          { lesson_slug: "lesson-1", status: "completed", walkthrough_video_watched_percentage: nil },
+          { lesson_slug: "lesson-2", status: "not_started", walkthrough_video_watched_percentage: nil }
         ]
       }
     ]

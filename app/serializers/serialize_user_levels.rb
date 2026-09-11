@@ -22,21 +22,38 @@ class SerializeUserLevels
   # level is currently in progress - the single next lesson as not_started.
   # Lessons beyond that next one are not included.
   def serialize_lessons(rows)
-    in_progress = rows.any? { |row| row[:user_lesson_id].present? && row[:completed_at].blank? }
+    blocked = in_progress?(rows)
+    advertised_next = false
 
     [].tap do |lessons|
       rows.each do |row|
         if row[:user_lesson_id].present?
           lessons << serialize_lesson(row, row[:completed_at].present? ? "completed" : "started")
-        elsif !in_progress && row[:user_level_completed_at].blank?
+        elsif !blocked && !advertised_next && row[:user_level_completed_at].blank?
           # First lesson with no UserLesson record: this is the next lesson up.
           # A completed level never advertises a next lesson.
           lessons << serialize_lesson(row, "not_started")
-          break
+          advertised_next = true
         else
           break
         end
       end
+    end
+  end
+
+  # What actually stops a user starting something else is the level's pointer,
+  # which is the condition UserLesson::Start guards on - not the mere existence
+  # of an incomplete UserLesson. The two only diverge once a lesson reorder has
+  # left an incomplete lesson behind the user's frontier and the pointer has
+  # been released from it (see Curriculum::ReleaseStrandedLessonPointers).
+  # Treating that released row as "in progress" would hide the lesson the user
+  # now owes and leave them with nothing to click.
+  def in_progress?(rows)
+    current_user_lesson_id = rows.first[:current_user_lesson_id]
+    return false if current_user_lesson_id.blank?
+
+    rows.any? do |row|
+      row[:user_lesson_id] == current_user_lesson_id && row[:completed_at].blank?
     end
   end
 
@@ -61,18 +78,21 @@ class SerializeUserLevels
         "user_lessons.id",
         "user_lessons.completed_at",
         "user_lessons.walkthrough_video_watched_percentage",
-        "user_levels.completed_at"
+        "user_levels.completed_at",
+        "user_levels.current_user_lesson_id"
       )
 
     # Map pluck results (arrays) to hashes for easier access
-    results.map do |level_slug, lesson_slug, user_lesson_id, lesson_completed_at, watched_percentage, user_level_completed_at|
+    results.map do |level_slug, lesson_slug, user_lesson_id, lesson_completed_at, watched_percentage, user_level_completed_at,
+      current_user_lesson_id|
       {
         level_slug: level_slug,
         lesson_slug: lesson_slug,
         user_lesson_id: user_lesson_id,
         completed_at: lesson_completed_at,
         walkthrough_video_watched_percentage: watched_percentage,
-        user_level_completed_at: user_level_completed_at
+        user_level_completed_at: user_level_completed_at,
+        current_user_lesson_id: current_user_lesson_id
       }
     end
   end
