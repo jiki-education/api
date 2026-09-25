@@ -1,0 +1,96 @@
+sr:
+  onboarding_mailer:
+    overview:
+      subject: "Dve polovine puta do programera u 2026."
+      preview: "Poslednjih nekoliko godina polako učim japanski."
+      greeting: "Zdravo,"
+      body_markdown: |
+        Poslednjih nekoliko godina **polako učim japanski**. Redovno idem u Japan i trudim se da uronim u jezik, ali to je teško, jer je danas uz pomoć Google prevodioca prilično lako provesti vreme u Japanu, a da ne izgovoriš nijednu reč japanskog. **Moj mozak može da bude lenj**, ali snalazim se sasvim dobro.
+
+        Programiranje je nedavno krenulo tim istim putem. Poslednjih 30 godina, ako želiš bilo šta da uradiš sa tehnologijom, **moraš da naučiš da programiraš**. To je bio jedini način da komuniciraš sa računarom. Ali u poslednje dve godine, sa usponom agentnog programiranja, to se promenilo. Sada možeš da koristiš svoj maternji jezik i kažeš AI agentu šta želiš da uradi, a **on će napisati kod umesto tebe**, prevodeći tvoje instrukcije u ono što računar razume.
+
+        Kao što ne moram da čekam da tečno govorim japanski pa da istražujem Japan, **više nema smisla provoditi godine usavršavajući se u programiranju** pre nego što počneš da gradiš stvari.
+
+        Ali ako želim stvarno da uđem u japansku kulturu i steknem japanske prijatelje, moram da naučim japanski. A ako želiš da uđeš u IT, i dalje moraš da naučiš da programiraš. Kod više nije čuvar kapije, ali je **razlika između „snalaženja“ i pravog napretka**.
+
+        Za brz napredak, podeli vreme za učenje na dva dela:
+        1. **Nauči da programiraš.** Prođi kroz Jikin kurs Osnove programiranja i imaćeš odlične temelje.
+        2. **Pravi stvari.** Prođi kroz „Nauči da gradiš“, uđi u detalje i pravi proizvode koje ljudi zaista mogu da koriste!
+
+        Ako te zanima šta mislim o **tome kako ući u IT 2026. godine**, pročitaj [ovaj blog post](https://jiki.io/blog/how-to-get-into-tech-in-2026).
+
+        Narednih nekoliko dana pričaću ti malo više i o programiranju i o građenju, i o tome kako da najbolje iskoristiš [Jiki](https://jiki.io). Do tada, **zasukaj rukave i zabavi se!**
+
+        Hvala što čitaš!
+        Džeremi
+    coding:
+      subject: "Izgradi čvrste osnove programiranja"
+      preview: "Učenje programiranja slovi za tehnički zahtevno i teško."
+      greeting: "Zdravo ponovo,"
+      body_markdown: |
+        Učenje programiranja slovi za tehnički zahtevno i teško. Kada sam počeo da učim da programiram, bio sam osmogodišnji klinac koji nije znao ništa o programiranju osim da **odjednom mogu da pravim kul stvari**. Nisam znao da bi to trebalo da bude teško. Znao sam samo da odjednom imam novi kanal za svoju kreativnost.
+
+        Dok učiš da programiraš, **ne želim da na to gledaš kao na neku tehničku disciplinu koju treba savladati**, želim da to vidiš kao mesto gde možeš da oslobodiš **svoju** kreativnost, gde možeš da **se zabavljaš praveći stvari** i rešavajući zagonetke. Jer programiranje je upravo to, rešavanje problema.
+
+        Nije važno [koji programski jezik učiš](https://jiki.io/blog/just-learn-to-code), važno je da izgradiš zaista dobro razumevanje **toga kako programiranje funkcioniše**.
+
+        Kako budeš napredovao, biće trenutaka kada će programiranje zaista delovati teško i frustrirajuće. Ali to nije zato što je _programiranje_ teško, već zato što je **učenje teško**. Ako želiš da budeš dobar u bilo čemu, moraš da prođeš kroz faze u kojima izazov deluje prevelik, ali moraš da istraješ.
+
+        Ako se pitaš da li se deo sa programiranjem isplati, pročitaj [ovaj blog post](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) koji objašnjava zašto bi trebalo i u 2026. da naučiš da programiraš.
+
+        Hvala što čitaš!
+        Džeremi
+    building:
+      subject: "Najbolji način da naučiš jeste da praviš stvari!"
+      preview: "Zaista verujem da je sada najbolji trenutak da uđeš u IT."
+      greeting: "Zdravo,"
+      body_markdown: |
+        Zaista verujem da je **sada najbolji mogući trenutak da uđeš u IT**. Nikada nije bilo lakše naučiti osnove i brzo početi da praviš stvari.
+
+        Ali (i to je veliko „ali“!) mnogi greše jer potpuno prepuštaju uzde AI agentu i zapravo ne uče. To na kratko deluje odlično, sve te stvari mogu magično da se pojave, ali ako samo govoriš Claudeu ili ChatGPT-ju šta da radi, zapravo ne učiš ništa!
+
+        Zato pripremam **projekte korak po korak** na kojima možeš da radiš, gde _ŽELIM_ da koristiš AI agente da odrade veliki deo posla za tebe, ali gde želim i da se potrudiš da **zaista razumeš šta se dešava** u svakoj fazi.
+
+        Smisao ovih projekata je da naučiš **sve različite delove pravljenja softvera**. Možeš da mi se pridružiš dok gradim stvari, a ja ću tačno objasniti šta radim i zašto, pa možeš sa AI agentom da primeniš te iste ideje na svoje projekte.
+
+        Samo se **ne navuci na dopaminske udarce** koje daje AI agent koji radi tvoj posao umesto tebe. Nađi vremena da razumeš šta se stvarno dešava!
+
+        Nadam se da ćemo se uskoro videti [na lajv strimu](https://youtube.com/@jiki-coding)!
+
+        Hvala što čitaš!
+        Džeremi
+    premium:
+      subject: "Postigni više uz Jiki (i pomozi nam)"
+      preview: "Jiki je besplatan jer želimo da bude dostupan svima, bez obzira"
+      greeting: "Zdravo,"
+      body_markdown: |
+        Jiki smo napravili besplatnim jer želimo da bude **dostupan svima**, bez obzira na finansijsku situaciju. Svako dobija stotine sati vežbi i videa, sve dostupno i ništa se ne traži zauzvrat.
+
+        Ali **Jiki košta**, treba da platimo stanarinu i obezbedimo hranu (🍜) i kafu (☕), pa smo dodali Premium paket sa dodatnim pogodnostima za koje mislim da će ti zaista pomoći:
+        - **Pitaj Džikija**: naš AI čet koji ti pomaže da brzo razrešiš zastoj ili istražiš svoja pitanja.
+        - **Premium projekti**: teže vežbe, gde možeš da kombinuješ veštine koje učiš.
+        - **Nauči da gradiš**: mnogo više sadržaja gde možeš da učiš zajedno sa mnom.
+        - **Značke**: pokaži svoju podršku na sajtu i u zajednici uz Premium značke.
+
+        Učinili smo ga veoma pristupačnim koristeći **paritet kupovne moći**. To znači da Premium košta otprilike kao dva pića za poneti u tvojoj zemlji, pa bi trebalo da deluje kao razumna cena gde god da se nalaziš.
+
+        Ako ti se Jiki dopada, ako želiš da **ubrzaš svoje učenje** i da podržiš mene i Jiki tim, onda [pređi na Premium](https://jiki.io/premium).
+
+        Hvala,
+        Džeremi
+    community:
+      subject: "Zajedno je lakše, pridruži se Jiki zajednici"
+      preview: "Mnogo je veća šansa da uspeš u učenju bilo čega ako si deo grupe."
+      greeting: "Zdravo,"
+      body_markdown: |
+        Mnogo je veća šansa da u bilo čemu uspeš ako si **deo grupe**. Isto je i sa programiranjem.
+
+        Ako želiš da dobiješ pomoć, popričaš o svom programerskom putu ili se samo družiš sa drugima, evo nekoliko mesta za to:
+        - [Naš forum](https://jiki.io/r/forum): mesto za sporije, duže razgovore. Ovde **idi dublje**.
+        - [Exercismov Discord](https://jiki.io/r/discord): mesto za **razgovor u realnom vremenu** sa onima koji su trenutno online. Potraži kanale #jiki-chat i #jiki-get-help.
+        - [YouTube](https://jiki.io/r/youtube): pridruži se našim AMA sesijama (Ask Me Anything, pitaj me bilo šta) i drugim **lajv strimovima** i postavi mi svoja pitanja!
+
+        Imaj u vidu da na tim mestima ima ljudi iz mnogo različitih kultura, pa se u razgovoru **prema svima ophodi s poštovanjem**.
+
+        Vidimo se tamo!
+        Džeremi

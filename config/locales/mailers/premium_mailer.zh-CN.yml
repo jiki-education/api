@@ -1,0 +1,26 @@
+zh-CN:
+  premium_mailer:
+    welcome_to_premium:
+      subject: "欢迎订阅 Jiki Premium！"
+      greeting: "你好，"
+      body_markdown: |
+        感谢订阅 Jiki Premium！
+
+        你可以在 [Premium 页面](https://jiki.io/premium)查看你能使用的所有功能。希望你在使用 Jiki 时玩得开心，也希望很快能在直播中见到你！
+
+        如果有任何问题，直接回复这封邮件就行。
+
+        祝好，  
+        Jeremy 和团队
+    subscription_ended:
+      subject: "你的 Jiki 订阅已结束"
+      greeting: "你好，"
+      body_markdown: |
+        你的 Jiki Premium 订阅已经结束，现在你使用的是我们的免费方案。
+
+        你仍然可以完整访问我们整个“学习编程”版块。如果想重新订阅，随时可以在[设置页面](https://jiki.io/settings)操作。
+
+        谢谢你试用 Jiki Premium。
+
+        祝好，  
+        Jeremy 和团队

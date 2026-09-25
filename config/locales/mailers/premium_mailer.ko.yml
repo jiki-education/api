@@ -1,0 +1,26 @@
+ko:
+  premium_mailer:
+    welcome_to_premium:
+      subject: "Jiki Premium에 오신 것을 환영해요!"
+      greeting: "안녕하세요,"
+      body_markdown: |
+        Jiki Premium을 구독해 주셔서 감사해요!
+
+        이용할 수 있는 모든 기능은 [Premium 페이지](https://jiki.io/premium)에서 확인할 수 있어요. Jiki를 사용하면서 즐거운 시간을 많이 보내시고, 곧 라이브 방송에서 만나면 좋겠어요!
+
+        궁금한 점이 있으면 이 이메일에 답장해 주세요.
+
+        좋은 하루 보내세요,  
+        Jeremy와 팀
+    subscription_ended:
+      subject: "Jiki 구독이 끝났어요"
+      greeting: "안녕하세요,"
+      body_markdown: |
+        Jiki Premium 구독이 끝나서 이제 무료 플랜을 이용하고 있어요.
+
+        코딩 배우기 섹션은 여전히 모두 이용할 수 있어요. 다시 구독하고 싶다면 언제든지 [설정 페이지](https://jiki.io/settings)에서 다시 구독할 수 있어요.
+
+        Jiki Premium을 이용해 주셔서 감사해요.
+
+        좋은 하루 보내세요,  
+        Jeremy와 팀

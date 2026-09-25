@@ -1,0 +1,26 @@
+ja:
+  premium_mailer:
+    welcome_to_premium:
+      subject: "Jiki Premiumへようこそ！"
+      greeting: "こんにちは。"
+      body_markdown: |
+        Jiki Premiumのサブスクリプションにご登録いただきありがとうございます！
+
+        [Premiumページ](https://jiki.io/premium)では、利用できるすべての機能を確認できます。Jikiを存分に楽しんでいただき、近いうちにライブ配信でお会いできることを楽しみにしています！
+
+        ご不明な点があれば、このメールに返信してください。
+
+        それでは、  
+        ジェレミーとチーム
+    subscription_ended:
+      subject: "Jikiのサブスクリプションが終了しました"
+      greeting: "こんにちは。"
+      body_markdown: |
+        Jiki Premiumのサブスクリプションが終了し、現在は無料プランをご利用いただいています。
+
+        プログラミングを学ぶセクションは、引き続きすべてご利用いただけます。サブスクリプションを再開したい場合は、[設定ページ](https://jiki.io/settings)からいつでもお手続きいただけます。
+
+        Jiki Premiumをお試しいただきありがとうございました。
+
+        それでは、  
+        ジェレミーとチーム
