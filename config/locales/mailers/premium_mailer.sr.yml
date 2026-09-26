@@ -1,0 +1,26 @@
+sr:
+  premium_mailer:
+    welcome_to_premium:
+      subject: "Dobrodošlica u Jiki Premium!"
+      greeting: "Zdravo,"
+      body_markdown: |
+        Hvala na pretplati na Jiki Premium!
+
+        Na [Premium stranici](https://jiki.io/premium) možeš da vidiš sve funkcionalnosti koje su ti dostupne. Nadamo se da ćeš se lepo zabaviti uz Jiki i da ćemo se uskoro videti na prenosu uživo!
+
+        Ako imaš bilo kakva pitanja, samo odgovori na ovaj e-mail.
+
+        Pozdrav,  
+        Džeremi i tim
+    subscription_ended:
+      subject: "Tvoja pretplata na Jiki je istekla"
+      greeting: "Zdravo,"
+      body_markdown: |
+        Tvoja pretplata na Jiki Premium je istekla i sada si na našem besplatnom paketu.
+
+        I dalje imaš pun pristup celoj našoj sekciji „Nauči da programiraš“. Ako želiš ponovo da se pretplatiš, možeš to učiniti bilo kada na svojoj [stranici sa podešavanjima](https://jiki.io/settings).
+
+        Hvala na isprobavanju Jiki Premiuma.
+
+        Pozdrav,  
+        Džeremi i tim
