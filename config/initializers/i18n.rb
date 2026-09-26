@@ -22,7 +22,7 @@ module I18n
 
   # The live set: locales that ship to production. The locale-parity guard test
   # hard-fails on any of these that drifts from en.
-  PRODUCTION_LOCALES = %w[bn el en es-ES es-419 fa fr hi hu it ja ko pt-PT pt-BR sr uk zh-CN].freeze
+  PRODUCTION_LOCALES = %w[ar bn el en es-ES es-419 fa fr hi hu it ja ko pt-PT pt-BR sr uk zh-CN].freeze
 
   # The draft set: everything not yet live. Translation generation targets every
   # locale (so content can be pre-generated before a locale is promoted), but
