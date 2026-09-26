@@ -871,6 +871,11 @@
           "type": "exercise"
         },
         {
+          "uuid": "b85d3e99-994a-4193-904d-41a4959bb75a",
+          "slug": "rna-transcription",
+          "type": "exercise"
+        },
+        {
           "uuid": "8c78036f-26bf-4036-8fca-abc0a6f4d2ce",
           "slug": "nucleotide",
           "type": "exercise"
@@ -1056,6 +1061,21 @@
           "uuid": "22376195-3641-4c44-b064-2cb2afc071ca",
           "slug": "scrabble-score",
           "type": "exercise"
+        },
+        {
+          "uuid": "852bf9c4-f891-4ab1-ab6e-e6c9d887ba9f",
+          "slug": "protein-translation",
+          "type": "exercise"
+        },
+        {
+          "uuid": "2daff9b4-62db-4ff7-9b69-07327e347709",
+          "slug": "spotify",
+          "type": "exercise"
+        },
+        {
+          "uuid": "44d7eb9c-995f-4ceb-9d93-56d261ddf2a3",
+          "slug": "llm-response",
+          "type": "exercise"
         }
       ]
     },
@@ -1081,28 +1101,8 @@
           }
         },
         {
-          "uuid": "b85d3e99-994a-4193-904d-41a4959bb75a",
-          "slug": "rna-transcription",
-          "type": "exercise"
-        },
-        {
-          "uuid": "852bf9c4-f891-4ab1-ab6e-e6c9d887ba9f",
-          "slug": "protein-translation",
-          "type": "exercise"
-        },
-        {
-          "uuid": "2daff9b4-62db-4ff7-9b69-07327e347709",
-          "slug": "spotify",
-          "type": "exercise"
-        },
-        {
           "uuid": "79b01c8a-7747-4f14-acb8-4f873d63ae78",
           "slug": "word-count",
-          "type": "exercise"
-        },
-        {
-          "uuid": "44d7eb9c-995f-4ceb-9d93-56d261ddf2a3",
-          "slug": "llm-response",
           "type": "exercise"
         },
         {
