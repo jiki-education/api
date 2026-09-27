@@ -68,7 +68,21 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     %w[zh-HK] => "zh-TW",       # Hong Kong writes Traditional
     %w[zh-MO] => "zh-TW",       # Macau writes Traditional
     %w[zh-SG] => "zh-CN",       # Singapore writes Simplified
-    %w[zh-US] => "zh-CN"        # diaspora region -> Simplified
+    %w[zh-US] => "zh-CN",       # diaspora region -> Simplified
+    %w[zh-Hant] => "zh-TW",
+    %w[zh-Hant-TW] => "zh-TW",
+    %w[zh-Hant-HK] => "zh-TW",
+    %w[zh-Hant-CN] => "zh-TW",
+    %w[zh-Hant-SG] => "zh-TW",
+    %w[zh-Hans] => "zh-CN",
+    %w[zh-Hans-CN] => "zh-CN",
+    %w[zh-Hans-TW] => "zh-CN",
+    %w[zh-Hans-HK] => "zh-CN",
+    %w[ZH-HANT] => "zh-TW",
+    %w[zh-TW zh-CN zh] => "zh-TW",
+    %w[zh-CN zh-TW] => "zh-CN",
+    %w[zh-Hant zh-Hans] => "zh-TW",
+    %w[zh-Hans zh-Hant] => "zh-CN"
   }.each do |tags, expected|
     test "#{tags.join(', ')} negotiates to #{expected}" do
       with_locales(live: %w[en zh-CN zh-TW]) do
@@ -81,6 +95,19 @@ class User::DetermineLocaleTest < ActiveSupport::TestCase
     with_locales(live: %w[en zh-CN]) do
       # Must not silently serve Simplified to a Traditional reader.
       assert_equal "en", User::DetermineLocale.(%w[zh-HK en])
+    end
+  end
+
+  test "zh-Hant falls through when zh-TW is not live" do
+    with_locales(live: %w[en zh-CN]) do
+      assert_equal "en", User::DetermineLocale.(%w[zh-Hant zh-Hant-CN en])
+    end
+  end
+
+  test "q-order decides between the two Chinese variants" do
+    with_locales(live: %w[en zh-CN zh-TW]) do
+      assert_equal "zh-TW", User::DetermineLocale.(User::ParseAcceptLanguage.("zh-CN;q=0.8,zh-Hant;q=0.9,en;q=0.5"))
+      assert_equal "zh-CN", User::DetermineLocale.(User::ParseAcceptLanguage.("zh-Hant;q=0.8,zh-Hans-TW;q=0.9"))
     end
   end
 
