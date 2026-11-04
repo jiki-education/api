@@ -9,6 +9,8 @@ class Stripe::Webhook::SubscriptionDeletedTest < ActiveSupport::TestCase
       stripe_subscription_status: "active",
       subscription_status: "active",
       subscription_valid_until: 1.month.from_now,
+      subscription_amount_in_cents: 999,
+      subscription_currency: "usd",
       subscriptions: [{
         stripe_subscription_id: "sub_123",
         tier: "premium",
@@ -33,6 +35,8 @@ class Stripe::Webhook::SubscriptionDeletedTest < ActiveSupport::TestCase
     assert_equal "canceled", user.data.subscription_status
     assert_nil user.data.stripe_subscription_id
     assert_nil user.data.subscription_valid_until
+    assert_nil user.data.subscription_amount_in_cents
+    assert_nil user.data.subscription_currency
 
     # Check subscriptions array updated with end_reason
     sub_entry = user.data.subscriptions.first

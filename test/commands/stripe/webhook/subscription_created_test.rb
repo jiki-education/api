@@ -2,6 +2,8 @@ require "test_helper"
 
 class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
   test "creates monthly subscription for user" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -27,6 +29,8 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
   end
 
   test "creates annual subscription for user" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -41,6 +45,8 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
   end
 
   test "creates incomplete subscription for user" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -105,6 +111,8 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
   end
 
   test "resolves user via subscription metadata when customer is not linked" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     # The user has no stripe_customer_id - e.g. checkout.session.completed was
     # dropped or arrived after this event, so it never linked the customer.
     user = create(:user)
@@ -124,6 +132,8 @@ class Stripe::Webhook::SubscriptionCreatedTest < ActiveSupport::TestCase
   end
 
   test "prefers customer lookup over metadata" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     customer_user = create(:user)
     customer_user.data.update!(stripe_customer_id: "cus_123")
     metadata_user = create(:user)

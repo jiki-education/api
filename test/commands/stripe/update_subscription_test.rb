@@ -29,6 +29,7 @@ class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
       items: [{ id: "si_123", price: Jiki.config.stripe_premium_annual_price_id }],
       proration_behavior: "always_invoice"
     ).returns(updated_subscription)
+    Stripe::SyncSubscriptionPrice.expects(:call).with(user, updated_subscription)
 
     result = Stripe::UpdateSubscription.(user, "annual")
 
@@ -41,6 +42,8 @@ class Stripe::UpdateSubscriptionTest < ActiveSupport::TestCase
   end
 
   test "switches from annual to monthly with prorations" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     period_end = 1.month.from_now
     user.data.update!(

@@ -2,6 +2,8 @@ require "test_helper"
 
 class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   test "verifies checkout session for monthly subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
     session_id = "cs_test_123"
@@ -31,6 +33,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "verifies checkout session for annual subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
     session_id = "cs_test_123"
@@ -255,6 +259,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "verifies via metadata user_id and persists stripe_customer_id when user has none" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     assert_nil user.data.stripe_customer_id
 
@@ -287,6 +293,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "handles incomplete subscription for async payments and reports payment_state processing" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -319,6 +327,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "degrades payment_state to processing when the payment intent lookup fails" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -340,6 +350,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "reports payment_state failed with the decline reason when the first payment is declined" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 

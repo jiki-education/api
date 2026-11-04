@@ -8,6 +8,7 @@ class Stripe::SyncSubscriptionToUser
       update_user_data!
       update_subscriptions_array!
     end
+    Stripe::SyncSubscriptionPrice.(user, subscription)
     status
   end
 

@@ -22,7 +22,9 @@ class Stripe::Webhook::SubscriptionDeleted
       stripe_subscription_status: 'canceled',
       subscription_status: 'canceled',
       stripe_subscription_id: nil,
-      subscription_valid_until: nil
+      subscription_valid_until: nil,
+      subscription_amount_in_cents: nil,
+      subscription_currency: nil
     )
 
     Rails.logger.info("Subscription deleted for user #{user.id}, downgraded from #{old_tier} to standard")

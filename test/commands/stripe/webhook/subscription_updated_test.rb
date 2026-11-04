@@ -67,6 +67,9 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     event = mock
     event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes))
 
+    # Only an items change can change the price
+    Stripe::SyncSubscriptionPrice.expects(:call).never
+
     Stripe::Webhook::SubscriptionUpdated.(event)
 
     @user.data.reload
@@ -197,6 +200,7 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
     @user.data.update!(subscription_interval: "monthly")
 
     subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
+    Stripe::SyncSubscriptionPrice.expects(:call).with(@user, subscription)
 
     event = mock
     event.stubs(:data).returns(mock(object: subscription, previous_attributes: stripe_previous_attributes(items: true)))
@@ -223,6 +227,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
   # Regression for #558: previous_attributes arrives as a Stripe::StripeObject,
   # which has no #key?. Detecting the 'items' change must not raise.
   test "detects items change on a real Stripe::StripeObject without raising" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     @user.data.update!(subscription_interval: "monthly")
 
     subscription = mock_subscription_with_price(Jiki.config.stripe_premium_annual_price_id)
@@ -240,6 +246,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
   end
 
   test "handles interval change from annual to monthly" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     @user.data.update!(
       subscription_interval: "annual",
       subscriptions: [{
@@ -351,6 +359,8 @@ class Stripe::Webhook::SubscriptionUpdatedTest < ActiveSupport::TestCase
   end
 
   test "is idempotent - does not duplicate entry on retry" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     @user.data.update!(
       subscription_interval: "annual",
       subscriptions: [

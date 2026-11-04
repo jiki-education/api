@@ -55,7 +55,9 @@ class SerializeUserTest < ActiveSupport::TestCase
       membership_type: "premium",
       subscription_status: "active",
       subscription_interval: "monthly",
-      subscription_valid_until: valid_until
+      subscription_valid_until: valid_until,
+      subscription_amount_in_cents: 799,
+      subscription_currency: "gbp"
     )
 
     result = SerializeUser.(user)
@@ -64,6 +66,8 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "active", result[:subscription_status]
     refute_nil result[:subscription]
     assert_equal "monthly", result[:subscription][:interval]
+    assert_equal 799, result[:subscription][:amount_in_cents]
+    assert_equal "gbp", result[:subscription][:currency]
     assert_equal valid_until.iso8601(3), result[:subscription][:subscription_valid_until].iso8601(3)
     refute result[:subscription][:in_grace_period]
     # grace_period_ends_at is present whenever subscription_valid_until is present

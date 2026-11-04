@@ -42,6 +42,8 @@ class SerializeUser
 
     {
       interval: user.data.subscription_interval,
+      amount_in_cents: user.data.subscription_amount_in_cents,
+      currency: user.data.subscription_currency,
       in_grace_period: user.data.in_grace_period?,
       grace_period_ends_at: user.data.grace_period_ends_at,
       subscription_valid_until: user.data.subscription_valid_until
