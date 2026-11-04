@@ -3,49 +3,63 @@ require "test_helper"
 class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @lesson = create(:lesson, :exercise)
+    @scores = { "v" => 1, "score" => 15, "metrics" => { "scenarios" => 10, "distance" => 5 } }
   end
 
   guard_incorrect_token! :internal_exercise_submission_path, args: ["test-uuid"], method: :patch
 
-  # PATCH /internal/exercise_submissions/:uuid (progression scores) tests
   test "PATCH update calls UpdateProgressionScores and returns 200" do
-    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    submission = create(:exercise_submission, context: user_lesson)
-    scores = { "version" => 1, "runs" => 5 }
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
     ExerciseSubmission::UpdateProgressionScores.expects(:call).with do |sub, progression_scores|
-      sub == submission && progression_scores.to_h == scores
+      sub == submission && progression_scores.to_unsafe_h == @scores
     end
 
     patch internal_exercise_submission_path(submission.uuid),
-      params: { submission: { progression_scores: scores } },
+      params: { progression_scores: @scores },
       as: :json
 
     assert_response :ok
     assert_json_response({})
   end
 
-  test "PATCH update persists progression_scores for a challenge submission" do
-    user_challenge = create(:user_challenge, user: @current_user)
-    submission = create(:exercise_submission, context: user_challenge)
-    scores = { "version" => 1, "runs" => 5 }
+  test "PATCH update persists progression_scores for a lesson submission" do
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
     patch internal_exercise_submission_path(submission.uuid),
-      params: { submission: { progression_scores: scores } },
+      params: { progression_scores: @scores },
       as: :json
 
     assert_response :ok
-    assert_equal scores, submission.reload.progression_scores
+    assert_equal @scores, submission.reload.progression_scores
+  end
+
+  test "PATCH update persists progression_scores for a challenge submission" do
+    submission = create(:exercise_submission, context: create(:user_challenge, user: @current_user))
+
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { progression_scores: @scores },
+      as: :json
+
+    assert_response :ok
+    assert_equal @scores, submission.reload.progression_scores
   end
 
   test "PATCH update with malformed progression_scores still returns 200" do
-    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    submission = create(:exercise_submission, context: user_lesson)
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
     patch internal_exercise_submission_path(submission.uuid),
-      params: { submission: { progression_scores: "1:5,10,0" } },
+      params: { progression_scores: "1:5,10,0" },
       as: :json
+
+    assert_response :ok
+    assert_nil submission.reload.progression_scores
+  end
+
+  test "PATCH update with no progression_scores still returns 200" do
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
+
+    patch internal_exercise_submission_path(submission.uuid), params: {}, as: :json
 
     assert_response :ok
     assert_nil submission.reload.progression_scores
@@ -53,7 +67,7 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
 
   test "PATCH update returns 404 for an unknown uuid" do
     patch internal_exercise_submission_path("nonexistent"),
-      params: { submission: { progression_scores: { "runs" => 1 } } },
+      params: { progression_scores: @scores },
       as: :json
 
     assert_json_error(:not_found, error_type: :exercise_submission_not_found)
@@ -63,9 +77,10 @@ class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
     submission = create(:exercise_submission, context: create(:user_lesson))
 
     patch internal_exercise_submission_path(submission.uuid),
-      params: { submission: { progression_scores: { "runs" => 1 } } },
+      params: { progression_scores: @scores },
       as: :json
 
     assert_json_error(:not_found, error_type: :exercise_submission_not_found)
+    assert_nil submission.reload.progression_scores
   end
 end
