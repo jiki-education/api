@@ -18,6 +18,19 @@ FactoryBot.define do
       }
     end
 
+    trait :lifetime do
+      sequence(:payment_processor_id) { |n| "pi_test#{SecureRandom.hex(8)}#{n}" }
+      external_receipt_url { "https://pay.stripe.com/receipts/#{SecureRandom.hex(16)}" }
+      data do
+        {
+          purchase_type: "lifetime",
+          stripe_payment_intent_id: payment_processor_id,
+          stripe_charge_id: "ch_#{SecureRandom.hex(12)}",
+          stripe_customer_id: "cus_#{SecureRandom.hex(12)}"
+        }
+      end
+    end
+
     trait :renewal do
       data do
         {

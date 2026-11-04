@@ -18,12 +18,15 @@ class SerializeUserTest < ActiveSupport::TestCase
         uses_oauth: false,
         email_confirmed: user.confirmed?,
         admin: false,
+        lifetime_premium: false,
+        can_purchase_premium: true,
         subscription_status: "never_subscribed",
         subscription: nil,
         premium_prices: {
           currency: :usd,
           monthly: 999,
           annual: 9900,
+          lifetime: 2999,
           country_code: nil
         }
       },
@@ -244,5 +247,15 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal 999, result[:premium_prices][:monthly]
     assert_equal 9900, result[:premium_prices][:annual]
     assert_nil result[:premium_prices][:country_code]
+  end
+
+  test "serializes lifetime premium for a user who bought premium" do
+    user = create(:user)
+    create(:premium_entitlement, :stripe, user:)
+
+    result = SerializeUser.(user)
+
+    assert result[:lifetime_premium]
+    refute result[:can_purchase_premium]
   end
 end

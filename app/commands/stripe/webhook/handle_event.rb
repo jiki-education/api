@@ -7,7 +7,17 @@ class Stripe::Webhook::HandleEvent
     # Route to appropriate handler based on event type
     case event.type
     when 'checkout.session.completed'
-      Stripe::Webhook::CheckoutCompleted.(event)
+      if event.data.object.mode == 'payment'
+        Stripe::Webhook::PremiumPurchaseCompleted.(event)
+      else
+        Stripe::Webhook::CheckoutCompleted.(event)
+      end
+    when 'checkout.session.async_payment_succeeded'
+      Stripe::Webhook::PremiumPurchaseCompleted.(event)
+    when 'charge.refunded'
+      Stripe::Webhook::ChargeRefunded.(event)
+    when 'charge.dispute.created'
+      Stripe::Webhook::DisputeCreated.(event)
     when 'customer.subscription.created'
       Stripe::Webhook::SubscriptionCreated.(event)
     when 'customer.subscription.updated'

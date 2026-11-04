@@ -16,6 +16,8 @@ class SerializeUser
       uses_oauth: user.uses_oauth?,
       email_confirmed: user.confirmed?,
       admin: user.admin?,
+      lifetime_premium: user.data.lifetime_premium?,
+      can_purchase_premium: user.data.can_purchase_premium?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data,
       premium_prices: premium_prices_data
@@ -29,6 +31,7 @@ class SerializeUser
       currency: user.currency,
       monthly: prices[:monthly],
       annual: prices[:annual],
+      lifetime: prices[:lifetime],
       country_code: user.data.country_code
     }
   end

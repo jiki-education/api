@@ -11,6 +11,10 @@ FactoryBot.define do
       source { PremiumEntitlement::EXERCISM_BOOTCAMP }
     end
 
+    trait :stripe do
+      source { PremiumEntitlement::STRIPE }
+    end
+
     trait :revoked do
       revoked_at { Time.current }
     end

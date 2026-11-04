@@ -146,6 +146,51 @@ class User::DataTest < ActiveSupport::TestCase
     refute user.data.can_checkout?
   end
 
+  %w[never_subscribed incomplete canceled].each do |status|
+    test "can_purchase_premium? returns true for #{status} without an entitlement" do
+      user = create(:user)
+      user.data.update!(subscription_status: status)
+
+      assert user.data.can_purchase_premium?
+    end
+  end
+
+  %w[active payment_failed cancelling].each do |status|
+    test "can_purchase_premium? returns false for a #{status} subscription" do
+      user = create(:user)
+      user.data.update!(subscription_status: status)
+
+      refute user.data.can_purchase_premium?
+    end
+  end
+
+  %i[stripe insider bootcamp].each do |source|
+    test "can_purchase_premium? returns false with an active #{source} entitlement" do
+      user = create(:user)
+      create(:premium_entitlement, source, user:)
+
+      refute user.data.can_purchase_premium?
+    end
+  end
+
+  test "can_purchase_premium? ignores revoked entitlements" do
+    user = create(:user)
+    create(:premium_entitlement, :stripe, :revoked, user:)
+
+    assert user.data.can_purchase_premium?
+  end
+
+  test "lifetime_premium? is true only for an active stripe entitlement" do
+    user = create(:user)
+    refute user.data.lifetime_premium?
+
+    create(:premium_entitlement, :insider, user:)
+    refute user.data.lifetime_premium?
+
+    create(:premium_entitlement, :stripe, user:)
+    assert user.data.lifetime_premium?
+  end
+
   test "can_change_interval? returns true for active" do
     user = create(:user)
     user.data.update!(subscription_status: "active")

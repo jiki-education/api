@@ -106,6 +106,17 @@ class User::Data < ApplicationRecord
     subscription_status.in?(%w[never_subscribed canceled])
   end
 
+  # Premium is bought once. Anyone who already has premium through an
+  # entitlement (Exercism, or a previous purchase) or a live legacy
+  # subscription can't buy it again.
+  def can_purchase_premium?
+    return false if user.premium_entitlements.active.exists?
+
+    !subscription_status.in?(%w[active payment_failed cancelling])
+  end
+
+  def lifetime_premium? = user.premium_entitlements.active.exists?(source: PremiumEntitlement::STRIPE)
+
   def can_change_interval?
     subscription_status.in?(%w[active payment_failed cancelling])
   end

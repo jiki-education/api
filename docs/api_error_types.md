@@ -121,6 +121,10 @@ copy included as a starting point for the front-end catalogue.
 - `checkout_payment_incomplete` - was "Your payment wasn't completed. Please try again." (extra: `decline_code`, `interval`, `currency`). `decline_code` is a stable key (e.g. `insufficient_funds`, `expired_card`, `card_declined`), not free text - map it to your own localized copy rather than displaying it directly, same pattern as `error.type` elsewhere in the API.
 - `unauthorized` (subscriptions-specific) - was "Checkout session does not belong to current user"
 
+### Premium purchases
+These come from `/internal/premium_purchases/*`. The endpoints also return `invalid_return_url`, `checkout_failed`, `missing_session_id`, `invalid_session`, `verification_failed`, `unauthorized` and `checkout_payment_incomplete` from the Subscriptions list above. On a purchase, `checkout_payment_incomplete` carries `decline_code` and `currency`, but no `interval`.
+- `already_premium` - The user already has Premium (an entitlement or a live subscription), so can't buy it
+
 ### External services
 - `stripe_error` - "Payment processing error"
 - `exercism_unavailable` - "Couldn't reach Exercism. Try again shortly."

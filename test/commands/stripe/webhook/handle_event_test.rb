@@ -7,14 +7,53 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
 
     event = mock
     event.stubs(:type).returns('checkout.session.completed')
+    event.stubs(:data).returns(stub(object: stub(mode: 'subscription')))
 
     ::Stripe::Webhook.expects(:construct_event).
       with(payload, signature, Jiki.secrets.stripe_webhook_secret).
       returns(event)
 
     Stripe::Webhook::CheckoutCompleted.expects(:call).with(event)
+    Stripe::Webhook::PremiumPurchaseCompleted.expects(:call).never
 
     Stripe::Webhook::HandleEvent.(payload, signature)
+  end
+
+  test "routes payment-mode checkout.session.completed to the premium purchase handler" do
+    event = stub(type: 'checkout.session.completed', data: stub(object: stub(mode: 'payment')))
+    ::Stripe::Webhook.expects(:construct_event).returns(event)
+
+    Stripe::Webhook::PremiumPurchaseCompleted.expects(:call).with(event)
+    Stripe::Webhook::CheckoutCompleted.expects(:call).never
+
+    Stripe::Webhook::HandleEvent.("{}", "sig_123")
+  end
+
+  test "routes checkout.session.async_payment_succeeded event" do
+    event = stub(type: 'checkout.session.async_payment_succeeded')
+    ::Stripe::Webhook.expects(:construct_event).returns(event)
+
+    Stripe::Webhook::PremiumPurchaseCompleted.expects(:call).with(event)
+
+    Stripe::Webhook::HandleEvent.("{}", "sig_123")
+  end
+
+  test "routes charge.refunded event" do
+    event = stub(type: 'charge.refunded')
+    ::Stripe::Webhook.expects(:construct_event).returns(event)
+
+    Stripe::Webhook::ChargeRefunded.expects(:call).with(event)
+
+    Stripe::Webhook::HandleEvent.("{}", "sig_123")
+  end
+
+  test "routes charge.dispute.created event" do
+    event = stub(type: 'charge.dispute.created')
+    ::Stripe::Webhook.expects(:construct_event).returns(event)
+
+    Stripe::Webhook::DisputeCreated.expects(:call).with(event)
+
+    Stripe::Webhook::HandleEvent.("{}", "sig_123")
   end
 
   test "routes customer.subscription.created event" do
