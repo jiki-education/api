@@ -50,7 +50,7 @@ PREMIUM_PRICES = {
   ils: { monthly: 599, annual: 5900, lifetime: 1799 },
   inr: { monthly: 19_900, annual: 199_900, lifetime: 59_900 },
   jmd: { monthly: 89_900, annual: 899_900, lifetime: 269_900 },
-  jpy: { monthly: 999, annual: 9999, lifetime: 2999 },
+  jpy: { monthly: 999, annual: 9999, lifetime: 2980 },
   kes: { monthly: 59_900, annual: 599_900, lifetime: 179_900 },
   kgs: { monthly: 19_900, annual: 199_900, lifetime: 59_900 },
   khr: { monthly: 1_399_900, annual: 13_999_900, lifetime: 4_199_900 },
