@@ -24,7 +24,7 @@ class Internal::Challenges::ExerciseSubmissionsControllerTest < ApplicationContr
     end
 
     assert_response :created
-    assert_json_response({})
+    assert_json_response({ submission: { uuid: ExerciseSubmission.last.uuid } })
   end
 
   test "POST create starts the UserChallenge" do
