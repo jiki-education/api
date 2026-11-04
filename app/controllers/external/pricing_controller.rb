@@ -10,6 +10,7 @@ class External::PricingController < ApplicationController
         currency:,
         monthly: prices[:monthly],
         annual: prices[:annual],
+        lifetime: prices[:lifetime],
         country_code: country.presence
       }
     }

@@ -10,6 +10,7 @@ class External::PricingControllerTest < ActionDispatch::IntegrationTest
         currency: :brl,
         monthly: PREMIUM_PRICES[:brl][:monthly],
         annual: PREMIUM_PRICES[:brl][:annual],
+        lifetime: PREMIUM_PRICES[:brl][:lifetime],
         country_code: "BR"
       }
     })
@@ -24,6 +25,7 @@ class External::PricingControllerTest < ActionDispatch::IntegrationTest
         currency: :usd,
         monthly: PREMIUM_PRICES[:usd][:monthly],
         annual: PREMIUM_PRICES[:usd][:annual],
+        lifetime: PREMIUM_PRICES[:usd][:lifetime],
         country_code: nil
       }
     })
@@ -38,6 +40,7 @@ class External::PricingControllerTest < ActionDispatch::IntegrationTest
         currency: :usd,
         monthly: PREMIUM_PRICES[:usd][:monthly],
         annual: PREMIUM_PRICES[:usd][:annual],
+        lifetime: PREMIUM_PRICES[:usd][:lifetime],
         country_code: "XX"
       }
     })
