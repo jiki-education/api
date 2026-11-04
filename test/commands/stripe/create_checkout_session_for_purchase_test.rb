@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Stripe::PremiumPurchase::CreateCheckoutSessionTest < ActiveSupport::TestCase
+class Stripe::CreateCheckoutSessionForPurchaseTest < ActiveSupport::TestCase
   test "creates a payment-mode session for the lifetime price" do
     user = create(:user)
     return_url = "#{Jiki.config.frontend_base_url}/premium/complete"
@@ -25,7 +25,7 @@ class Stripe::PremiumPurchase::CreateCheckoutSessionTest < ActiveSupport::TestCa
       }
     ).returns(session)
 
-    assert_equal session, Stripe::PremiumPurchase::CreateCheckoutSession.(user, return_url, :gbp)
+    assert_equal session, Stripe::CreateCheckoutSessionForPurchase.(user, return_url, :gbp)
   end
 
   test "uses the low USD price for a low-tier country" do
@@ -40,6 +40,6 @@ class Stripe::PremiumPurchase::CreateCheckoutSessionTest < ActiveSupport::TestCa
         args[:metadata][:price_id] == price_id
     end
 
-    Stripe::PremiumPurchase::CreateCheckoutSession.(user, "#{Jiki.config.frontend_base_url}/premium/complete", :usd)
+    Stripe::CreateCheckoutSessionForPurchase.(user, "#{Jiki.config.frontend_base_url}/premium/complete", :usd)
   end
 end

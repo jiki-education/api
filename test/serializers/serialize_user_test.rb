@@ -266,7 +266,7 @@ class SerializeUserTest < ActiveSupport::TestCase
 
   test "serializes lifetime premium for a user who bought premium" do
     user = create(:user)
-    create(:premium_entitlement, :stripe, user:)
+    create(:premium_entitlement, :stripe_purchase, user:)
 
     result = SerializeUser.(user)
 

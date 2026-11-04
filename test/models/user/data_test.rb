@@ -164,7 +164,7 @@ class User::DataTest < ActiveSupport::TestCase
     end
   end
 
-  %i[stripe insider bootcamp].each do |source|
+  %i[stripe_purchase insider bootcamp].each do |source|
     test "can_purchase_premium? returns false with an active #{source} entitlement" do
       user = create(:user)
       create(:premium_entitlement, source, user:)
@@ -201,7 +201,7 @@ class User::DataTest < ActiveSupport::TestCase
 
   test "can_purchase_premium? ignores revoked entitlements" do
     user = create(:user)
-    create(:premium_entitlement, :stripe, :revoked, user:)
+    create(:premium_entitlement, :stripe_purchase, :revoked, user:)
 
     assert user.data.can_purchase_premium?
   end
@@ -213,7 +213,7 @@ class User::DataTest < ActiveSupport::TestCase
     create(:premium_entitlement, :insider, user:)
     refute user.data.lifetime_premium?
 
-    create(:premium_entitlement, :stripe, user:)
+    create(:premium_entitlement, :stripe_purchase, user:)
     assert user.data.lifetime_premium?
   end
 

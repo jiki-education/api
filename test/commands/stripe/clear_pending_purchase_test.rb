@@ -1,11 +1,11 @@
 require "test_helper"
 
-class Stripe::PremiumPurchase::ClearPendingTest < ActiveSupport::TestCase
+class Stripe::ClearPendingPurchaseTest < ActiveSupport::TestCase
   test "clears the matching pending purchase" do
     user = create(:user)
     user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
 
-    Stripe::PremiumPurchase::ClearPending.(user, "pi_123")
+    Stripe::ClearPendingPurchase.(user, "pi_123")
 
     user.data.reload
     assert_nil user.data.pending_premium_purchase_payment_intent_id
@@ -16,7 +16,7 @@ class Stripe::PremiumPurchase::ClearPendingTest < ActiveSupport::TestCase
     user = create(:user)
     user.data.update!(pending_premium_purchase_payment_intent_id: "pi_new", pending_premium_purchase_at: 1.day.ago)
 
-    Stripe::PremiumPurchase::ClearPending.(user, "pi_old")
+    Stripe::ClearPendingPurchase.(user, "pi_old")
 
     assert_equal "pi_new", user.data.reload.pending_premium_purchase_payment_intent_id
   end

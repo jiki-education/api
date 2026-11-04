@@ -1,4 +1,4 @@
-class Stripe::Webhook::PremiumPurchaseFailed
+class Stripe::Webhook::PurchaseFailed
   include Mandate
 
   initialize_with :event
@@ -13,7 +13,7 @@ class Stripe::Webhook::PremiumPurchaseFailed
       return
     end
 
-    Stripe::PremiumPurchase::ClearPending.(user, session.payment_intent)
+    Stripe::ClearPendingPurchase.(user, session.payment_intent)
     Rails.logger.info("Premium purchase #{session.id} failed for user #{user.id}")
   end
 

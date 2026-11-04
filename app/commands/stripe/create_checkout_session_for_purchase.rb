@@ -1,4 +1,4 @@
-class Stripe::PremiumPurchase::CreateCheckoutSession
+class Stripe::CreateCheckoutSessionForPurchase
   include Mandate
 
   initialize_with :user, :return_url, :currency
@@ -29,5 +29,5 @@ class Stripe::PremiumPurchase::CreateCheckoutSession
   def customer = Stripe::GetOrCreateCustomer.(user)
 
   memoize
-  def price_id = Pricing::DetermineLifetimePrice.(user.data.country_code, currency)[:stripe_price_id]
+  def price_id = Pricing::DeterminePrices.(user.data.country_code)[:lifetime_price_id]
 end

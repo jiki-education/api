@@ -11,8 +11,8 @@ FactoryBot.define do
       source { PremiumEntitlement::EXERCISM_BOOTCAMP }
     end
 
-    trait :stripe do
-      source { PremiumEntitlement::STRIPE }
+    trait :stripe_purchase do
+      source { PremiumEntitlement::STRIPE_PURCHASE }
     end
 
     trait :revoked do

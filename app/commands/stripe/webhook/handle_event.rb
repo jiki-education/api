@@ -8,14 +8,14 @@ class Stripe::Webhook::HandleEvent
     case event.type
     when 'checkout.session.completed'
       if event.data.object.mode == 'payment'
-        Stripe::Webhook::PremiumPurchaseCompleted.(event)
+        Stripe::Webhook::PurchaseCompleted.(event)
       else
         Stripe::Webhook::CheckoutCompleted.(event)
       end
     when 'checkout.session.async_payment_succeeded'
-      Stripe::Webhook::PremiumPurchaseCompleted.(event)
+      Stripe::Webhook::PurchaseCompleted.(event)
     when 'checkout.session.async_payment_failed'
-      Stripe::Webhook::PremiumPurchaseFailed.(event)
+      Stripe::Webhook::PurchaseFailed.(event)
     when 'charge.refunded'
       Stripe::Webhook::ChargeRefunded.(event)
     when 'charge.dispute.created'

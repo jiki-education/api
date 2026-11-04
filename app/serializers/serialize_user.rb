@@ -27,12 +27,12 @@ class SerializeUser
 
   private
   def premium_prices_data
-    prices = PREMIUM_PRICES[user.currency]
+    prices = Pricing::DeterminePrices.(user.data.country_code)
     {
-      currency: user.currency,
+      currency: prices[:currency],
       monthly: prices[:monthly],
       annual: prices[:annual],
-      lifetime: Pricing::DetermineLifetimePrice.(user.data.country_code, user.currency)[:amount_in_cents],
+      lifetime: prices[:lifetime],
       country_code: user.data.country_code
     }
   end

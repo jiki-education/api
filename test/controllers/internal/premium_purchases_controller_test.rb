@@ -13,7 +13,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   ### checkout_session ###
 
   test "POST checkout_session returns the decoded client secret" do
-    Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).
+    Stripe::CreateCheckoutSessionForPurchase.expects(:call).
       with(@user, @return_url, :usd).
       returns(stub(client_secret: "cs_secret%5F123"))
 
@@ -24,7 +24,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST checkout_session tracks checkout_started" do
-    Stripe::PremiumPurchase::CreateCheckoutSession.stubs(:call).returns(stub(client_secret: "cs_secret"))
+    Stripe::CreateCheckoutSessionForPurchase.stubs(:call).returns(stub(client_secret: "cs_secret"))
 
     Analytics::TrackEvent.expects(:defer).with(
       @user,
@@ -40,8 +40,8 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST checkout_session rejects a user who already has premium" do
-    create(:premium_entitlement, :stripe, user: @user)
-    Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).never
+    create(:premium_entitlement, :stripe_purchase, user: @user)
+    Stripe::CreateCheckoutSessionForPurchase.expects(:call).never
 
     post internal_premium_purchases_checkout_session_path, params: { return_url: @return_url }, as: :json
 
@@ -51,7 +51,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
 
   test "POST checkout_session rejects a user whose purchase is still clearing" do
     @user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
-    Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).never
+    Stripe::CreateCheckoutSessionForPurchase.expects(:call).never
     Sentry.expects(:capture_message).never
 
     post internal_premium_purchases_checkout_session_path, params: { return_url: @return_url }, as: :json
@@ -62,7 +62,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
 
   test "POST checkout_session rejects a live legacy subscriber" do
     @user.data.update!(subscription_status: "active")
-    Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).never
+    Stripe::CreateCheckoutSessionForPurchase.expects(:call).never
 
     post internal_premium_purchases_checkout_session_path, params: { return_url: @return_url }, as: :json
 
@@ -71,7 +71,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST checkout_session rejects a non-frontend return_url" do
-    Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).never
+    Stripe::CreateCheckoutSessionForPurchase.expects(:call).never
 
     post internal_premium_purchases_checkout_session_path,
       params: { return_url: "https://evil.example.com" },
@@ -82,7 +82,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST checkout_session handles Stripe failures" do
-    Stripe::PremiumPurchase::CreateCheckoutSession.stubs(:call).raises(::Stripe::APIConnectionError.new("boom"))
+    Stripe::CreateCheckoutSessionForPurchase.stubs(:call).raises(::Stripe::APIConnectionError.new("boom"))
 
     post internal_premium_purchases_checkout_session_path, params: { return_url: @return_url }, as: :json
 
@@ -93,7 +93,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   ### verify_checkout ###
 
   test "POST verify_checkout returns the payment state" do
-    Stripe::PremiumPurchase::VerifyCheckoutSession.expects(:call).
+    Stripe::VerifyCheckoutSessionForPurchase.expects(:call).
       with(@user, "cs_123").
       returns({ success: true, payment_state: "paid" })
 
@@ -111,7 +111,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST verify_checkout rejects another user's session" do
-    Stripe::PremiumPurchase::VerifyCheckoutSession.stubs(:call).raises(SecurityError)
+    Stripe::VerifyCheckoutSessionForPurchase.stubs(:call).raises(SecurityError)
 
     post internal_premium_purchases_verify_checkout_path, params: { session_id: "cs_123" }, as: :json
 
@@ -120,7 +120,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST verify_checkout reports an incomplete payment" do
-    Stripe::PremiumPurchase::VerifyCheckoutSession.stubs(:call).
+    Stripe::VerifyCheckoutSessionForPurchase.stubs(:call).
       raises(StripeCheckoutSessionIncompleteError.new(decline_code: "expired_card", currency: "gbp"))
 
     post internal_premium_purchases_verify_checkout_path, params: { session_id: "cs_123" }, as: :json
@@ -130,7 +130,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST verify_checkout rejects an invalid session" do
-    Stripe::PremiumPurchase::VerifyCheckoutSession.stubs(:call).raises(ArgumentError)
+    Stripe::VerifyCheckoutSessionForPurchase.stubs(:call).raises(ArgumentError)
 
     post internal_premium_purchases_verify_checkout_path, params: { session_id: "cs_123" }, as: :json
 
@@ -139,7 +139,7 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
   end
 
   test "POST verify_checkout handles unexpected failures" do
-    Stripe::PremiumPurchase::VerifyCheckoutSession.stubs(:call).raises(::Stripe::APIConnectionError.new("boom"))
+    Stripe::VerifyCheckoutSessionForPurchase.stubs(:call).raises(::Stripe::APIConnectionError.new("boom"))
 
     post internal_premium_purchases_verify_checkout_path, params: { session_id: "cs_123" }, as: :json
 

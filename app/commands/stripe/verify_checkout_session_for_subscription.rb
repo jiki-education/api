@@ -1,4 +1,4 @@
-class Stripe::VerifyCheckoutSession
+class Stripe::VerifyCheckoutSessionForSubscription
   include Mandate
 
   initialize_with :user, :session_id

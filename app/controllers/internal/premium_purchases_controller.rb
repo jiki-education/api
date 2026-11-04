@@ -24,7 +24,7 @@ class Internal::PremiumPurchasesController < Internal::BaseController
     end
 
     currency = current_user.currency
-    session = Stripe::PremiumPurchase::CreateCheckoutSession.(current_user, params[:return_url], currency)
+    session = Stripe::CreateCheckoutSessionForPurchase.(current_user, params[:return_url], currency)
 
     Analytics::TrackEvent.defer(
       current_user,
@@ -51,7 +51,7 @@ class Internal::PremiumPurchasesController < Internal::BaseController
   def verify_checkout
     return render json: { error: { type: "missing_session_id" } }, status: :bad_request if params[:session_id].blank?
 
-    result = Stripe::PremiumPurchase::VerifyCheckoutSession.(current_user, params[:session_id])
+    result = Stripe::VerifyCheckoutSessionForPurchase.(current_user, params[:session_id])
 
     render json: {
       success: result[:success],

@@ -1,4 +1,4 @@
-class Stripe::PremiumPurchase::Fulfill
+class Stripe::FulfillPurchase
   include Mandate
 
   initialize_with :user, :payment_intent_id
@@ -7,7 +7,7 @@ class Stripe::PremiumPurchase::Fulfill
   # time, so every step is idempotent.
   def call
     revoked = payment.data["revoked_at"].present?
-    Stripe::PremiumPurchase::ClearPending.(user, payment_intent_id)
+    Stripe::ClearPendingPurchase.(user, payment_intent_id)
     return if revoked
 
     grant!
@@ -15,7 +15,7 @@ class Stripe::PremiumPurchase::Fulfill
 
   private
   def grant!
-    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::STRIPE)
+    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::STRIPE_PURCHASE)
   rescue ActiveRecord::RecordNotUnique
     # A concurrent fulfilment created the entitlement first, and that call
     # handles the upgrade.

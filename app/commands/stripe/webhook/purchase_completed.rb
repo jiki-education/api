@@ -1,4 +1,4 @@
-class Stripe::Webhook::PremiumPurchaseCompleted
+class Stripe::Webhook::PurchaseCompleted
   include Mandate
 
   initialize_with :event
@@ -14,10 +14,10 @@ class Stripe::Webhook::PremiumPurchaseCompleted
     end
 
     if session.payment_status == "paid"
-      Stripe::PremiumPurchase::Fulfill.(user, session.payment_intent)
+      Stripe::FulfillPurchase.(user, session.payment_intent)
     else
       Rails.logger.info("Premium purchase #{session.id} completed but not yet paid (#{session.payment_status})")
-      Stripe::PremiumPurchase::MarkPending.(user, session.payment_intent)
+      Stripe::MarkPurchasePending.(user, session.payment_intent)
     end
   end
 

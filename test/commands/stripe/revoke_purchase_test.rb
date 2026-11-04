@@ -1,14 +1,14 @@
 require "test_helper"
 
-class Stripe::PremiumPurchase::RevokeTest < ActiveSupport::TestCase
+class Stripe::RevokePurchaseTest < ActiveSupport::TestCase
   test "marks the payment revoked and revokes the stripe entitlement" do
     user = create(:user)
     payment = create(:payment, :lifetime, user:, payment_processor_id: "pi_123")
 
-    User::PremiumEntitlement::Revoke.expects(:call).with(user, PremiumEntitlement::STRIPE)
+    User::PremiumEntitlement::Revoke.expects(:call).with(user, PremiumEntitlement::STRIPE_PURCHASE)
 
     freeze_time do
-      Stripe::PremiumPurchase::Revoke.("pi_123", "refunded")
+      Stripe::RevokePurchase.("pi_123", "refunded")
 
       payment.reload
       assert_equal Time.current.iso8601, payment.data["revoked_at"]
@@ -19,10 +19,10 @@ class Stripe::PremiumPurchase::RevokeTest < ActiveSupport::TestCase
   test "downgrades a user whose only premium came from the purchase" do
     user = create(:user)
     create(:payment, :lifetime, user:, payment_processor_id: "pi_123")
-    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::STRIPE)
+    User::PremiumEntitlement::Grant.(user, PremiumEntitlement::STRIPE_PURCHASE)
     assert user.reload.premium?
 
-    Stripe::PremiumPurchase::Revoke.("pi_123", "disputed")
+    Stripe::RevokePurchase.("pi_123", "disputed")
 
     assert user.reload.standard?
   end
@@ -34,7 +34,7 @@ class Stripe::PremiumPurchase::RevokeTest < ActiveSupport::TestCase
 
     User::PremiumEntitlement::Revoke.expects(:call).never
 
-    Stripe::PremiumPurchase::Revoke.("pi_123", "disputed")
+    Stripe::RevokePurchase.("pi_123", "disputed")
 
     assert_equal "refunded", payment.reload.data["revoked_reason"]
   end
@@ -42,6 +42,6 @@ class Stripe::PremiumPurchase::RevokeTest < ActiveSupport::TestCase
   test "does nothing when no purchase matches" do
     User::PremiumEntitlement::Revoke.expects(:call).never
 
-    Stripe::PremiumPurchase::Revoke.("pi_unknown", "refunded")
+    Stripe::RevokePurchase.("pi_unknown", "refunded")
   end
 end

@@ -1,4 +1,4 @@
-class Stripe::PremiumPurchase::MarkPending
+class Stripe::MarkPurchasePending
   include Mandate
 
   initialize_with :user, :payment_intent_id

@@ -3,6 +3,11 @@ class User::Data < ApplicationRecord
   has_email_status :welcome
   has_email_status :welcome_to_premium
 
+  # Stripe's async_payment_failed webhook clears a pending purchase whose
+  # payment fails. The cutoff is a backstop so a lost webhook can't block the
+  # user from buying forever.
+  PENDING_PREMIUM_PURCHASE_CUTOFF = 30.days
+
   belongs_to :user
 
   # Generate unsubscribe token for new records
@@ -116,16 +121,11 @@ class User::Data < ApplicationRecord
     !subscription_status.in?(%w[active payment_failed cancelling])
   end
 
-  # Stripe's async_payment_failed webhook clears a pending purchase whose
-  # payment fails. The cutoff is a backstop so a lost webhook can't block the
-  # user from buying forever.
-  PENDING_PREMIUM_PURCHASE_CUTOFF = 30.days
-
   def premium_purchase_pending?
     pending_premium_purchase_at.present? && pending_premium_purchase_at > PENDING_PREMIUM_PURCHASE_CUTOFF.ago
   end
 
-  def lifetime_premium? = user.premium_entitlements.active.exists?(source: PremiumEntitlement::STRIPE)
+  def lifetime_premium? = user.premium_entitlements.active.exists?(source: PremiumEntitlement::STRIPE_PURCHASE)
 
   def can_change_interval?
     subscription_status.in?(%w[active payment_failed cancelling])

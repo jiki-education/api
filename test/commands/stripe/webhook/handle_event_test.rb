@@ -14,7 +14,7 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
       returns(event)
 
     Stripe::Webhook::CheckoutCompleted.expects(:call).with(event)
-    Stripe::Webhook::PremiumPurchaseCompleted.expects(:call).never
+    Stripe::Webhook::PurchaseCompleted.expects(:call).never
 
     Stripe::Webhook::HandleEvent.(payload, signature)
   end
@@ -23,7 +23,7 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
     event = stub(type: 'checkout.session.completed', data: stub(object: stub(mode: 'payment')))
     ::Stripe::Webhook.expects(:construct_event).returns(event)
 
-    Stripe::Webhook::PremiumPurchaseCompleted.expects(:call).with(event)
+    Stripe::Webhook::PurchaseCompleted.expects(:call).with(event)
     Stripe::Webhook::CheckoutCompleted.expects(:call).never
 
     Stripe::Webhook::HandleEvent.("{}", "sig_123")
@@ -33,7 +33,7 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
     event = stub(type: 'checkout.session.async_payment_succeeded')
     ::Stripe::Webhook.expects(:construct_event).returns(event)
 
-    Stripe::Webhook::PremiumPurchaseCompleted.expects(:call).with(event)
+    Stripe::Webhook::PurchaseCompleted.expects(:call).with(event)
 
     Stripe::Webhook::HandleEvent.("{}", "sig_123")
   end
@@ -42,7 +42,7 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
     event = stub(type: 'checkout.session.async_payment_failed')
     ::Stripe::Webhook.expects(:construct_event).returns(event)
 
-    Stripe::Webhook::PremiumPurchaseFailed.expects(:call).with(event)
+    Stripe::Webhook::PurchaseFailed.expects(:call).with(event)
 
     Stripe::Webhook::HandleEvent.("{}", "sig_123")
   end

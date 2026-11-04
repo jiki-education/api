@@ -1,4 +1,4 @@
-class Stripe::PremiumPurchase::VerifyCheckoutSession
+class Stripe::VerifyCheckoutSessionForPurchase
   include Mandate
 
   initialize_with :user, :session_id
@@ -16,9 +16,9 @@ class Stripe::PremiumPurchase::VerifyCheckoutSession
     # bank debit) that is still clearing. The checkout.session.async_payment_*
     # webhooks finish the job once it settles.
     if paid?
-      Stripe::PremiumPurchase::Fulfill.(user, session.payment_intent)
+      Stripe::FulfillPurchase.(user, session.payment_intent)
     else
-      Stripe::PremiumPurchase::MarkPending.(user, session.payment_intent)
+      Stripe::MarkPurchasePending.(user, session.payment_intent)
     end
 
     {

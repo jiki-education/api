@@ -6,7 +6,7 @@ class Stripe::Webhook::DisputeCreated
   def call
     return if dispute.payment_intent.blank?
 
-    Stripe::PremiumPurchase::Revoke.(dispute.payment_intent, "disputed")
+    Stripe::RevokePurchase.(dispute.payment_intent, "disputed")
   end
 
   private

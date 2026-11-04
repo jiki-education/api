@@ -1,13 +1,13 @@
 require "test_helper"
 
-class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
+class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
   test "records the payment and grants the stripe entitlement" do
     user = create(:user)
     stub_payment_intent
 
-    User::PremiumEntitlement::Grant.expects(:call).with(user, PremiumEntitlement::STRIPE)
+    User::PremiumEntitlement::Grant.expects(:call).with(user, PremiumEntitlement::STRIPE_PURCHASE)
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     payment = user.payments.sole
     assert_equal "pi_123", payment.payment_processor_id
@@ -31,7 +31,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
     stub_payment_intent
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     refute user.data.reload.premium_purchase_pending?
   end
@@ -41,7 +41,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
     stub_payment_intent(refunded: true)
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     refute user.data.reload.premium_purchase_pending?
     refute user.premium?
@@ -52,7 +52,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
     stub_payment_intent(status: "processing")
 
-    assert_raises(ArgumentError) { Stripe::PremiumPurchase::Fulfill.(user, "pi_123") }
+    assert_raises(ArgumentError) { Stripe::FulfillPurchase.(user, "pi_123") }
     assert user.data.reload.premium_purchase_pending?
   end
 
@@ -60,7 +60,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     user = create(:user)
     stub_payment_intent
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     assert user.reload.premium?
     assert user.data.lifetime_premium?
@@ -70,8 +70,8 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     user = create(:user)
     stub_payment_intent
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     assert_equal 1, user.payments.count
     assert_equal 1, user.premium_entitlements.count
@@ -82,9 +82,9 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     create(:payment, :lifetime, user:, payment_processor_id: "pi_123")
 
     ::Stripe::PaymentIntent.expects(:retrieve).never
-    User::PremiumEntitlement::Grant.expects(:call).with(user, PremiumEntitlement::STRIPE)
+    User::PremiumEntitlement::Grant.expects(:call).with(user, PremiumEntitlement::STRIPE_PURCHASE)
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
   end
 
   test "does not grant for a revoked payment" do
@@ -94,7 +94,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
 
     User::PremiumEntitlement::Grant.expects(:call).never
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
   end
 
   test "records but does not grant when the charge was already refunded" do
@@ -103,7 +103,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
 
     User::PremiumEntitlement::Grant.expects(:call).never
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     payment = user.payments.sole
     assert_equal "refunded", payment.data["revoked_reason"]
@@ -116,7 +116,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
 
     User::PremiumEntitlement::Grant.expects(:call).never
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
 
     assert_equal "disputed", user.payments.sole.data["revoked_reason"]
   end
@@ -125,7 +125,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     user = create(:user)
     stub_payment_intent(status: "processing")
 
-    assert_raises(ArgumentError) { Stripe::PremiumPurchase::Fulfill.(user, "pi_123") }
+    assert_raises(ArgumentError) { Stripe::FulfillPurchase.(user, "pi_123") }
     assert_empty user.payments
   end
 
@@ -135,7 +135,7 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
 
     User::PremiumEntitlement::Grant.expects(:call).raises(ActiveRecord::RecordNotUnique)
 
-    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+    Stripe::FulfillPurchase.(user, "pi_123")
   end
 
   private

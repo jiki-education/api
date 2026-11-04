@@ -1,4 +1,4 @@
-class Stripe::PremiumPurchase::Revoke
+class Stripe::RevokePurchase
   include Mandate
 
   initialize_with :payment_intent_id, :reason
@@ -12,7 +12,7 @@ class Stripe::PremiumPurchase::Revoke
     return if payment.data["revoked_at"].present?
 
     payment.update!(data: payment.data.merge("revoked_at" => Time.current.iso8601, "revoked_reason" => reason))
-    User::PremiumEntitlement::Revoke.(payment.user, PremiumEntitlement::STRIPE)
+    User::PremiumEntitlement::Revoke.(payment.user, PremiumEntitlement::STRIPE_PURCHASE)
 
     Rails.logger.info("Revoked premium purchase #{payment_intent_id} for user #{payment.user_id} (#{reason})")
   end

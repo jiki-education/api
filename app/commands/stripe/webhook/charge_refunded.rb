@@ -9,7 +9,7 @@ class Stripe::Webhook::ChargeRefunded
     return unless charge.refunded
     return if charge.payment_intent.blank?
 
-    Stripe::PremiumPurchase::Revoke.(charge.payment_intent, "refunded")
+    Stripe::RevokePurchase.(charge.payment_intent, "refunded")
   end
 
   private

@@ -8,7 +8,7 @@ class User::PremiumEntitlement::Revoke
 
     entitlement.update!(revoked_at: Time.current)
 
-    return if stripe_providing_premium?
+    return if stripe_subscription_providing_premium?
 
     User::DowngradeToStandard.(user)
   end
@@ -17,9 +17,9 @@ class User::PremiumEntitlement::Revoke
   memoize
   def entitlement = user.premium_entitlements.active.find_by(source: source)
 
-  # True when Stripe is currently entitling the user to premium, so revoking
-  # this entitlement shouldn't flip them back to standard.
-  def stripe_providing_premium?
+  # True when a Stripe subscription is currently entitling the user to premium,
+  # so revoking this entitlement shouldn't flip them back to standard.
+  def stripe_subscription_providing_premium?
     user.data.subscription_status_active? ||
       user.data.subscription_status_payment_failed? ||
       user.data.subscription_status_cancelling?

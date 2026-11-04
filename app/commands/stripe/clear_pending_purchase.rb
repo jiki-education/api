@@ -1,4 +1,4 @@
-class Stripe::PremiumPurchase::ClearPending
+class Stripe::ClearPendingPurchase
   include Mandate
 
   initialize_with :user, :payment_intent_id

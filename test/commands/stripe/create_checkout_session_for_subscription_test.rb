@@ -1,6 +1,6 @@
 require "test_helper"
 
-class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
+class Stripe::CreateCheckoutSessionForSubscriptionTest < ActiveSupport::TestCase
   test "creates checkout session with existing customer" do
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
@@ -37,7 +37,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
       customer_update: { address: 'auto', name: 'auto' }
     ).returns(session)
 
-    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, :usd)
+    result = Stripe::CreateCheckoutSessionForSubscription.(user, price_id, return_url, :usd)
 
     assert_equal session, result
   end
@@ -74,7 +74,7 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
       customer_email: "alice@example.com"
     ).returns(session)
 
-    result = Stripe::CreateCheckoutSession.(user, price_id, return_url, :usd)
+    result = Stripe::CreateCheckoutSessionForSubscription.(user, price_id, return_url, :usd)
 
     assert_equal session, result
   end
@@ -86,6 +86,6 @@ class Stripe::CreateCheckoutSessionTest < ActiveSupport::TestCase
 
     ::Stripe::Checkout::Session.expects(:create).with(has_entry(currency: :inr)).returns(mock)
 
-    Stripe::CreateCheckoutSession.(user, price_id, return_url, :inr)
+    Stripe::CreateCheckoutSessionForSubscription.(user, price_id, return_url, :inr)
   end
 end

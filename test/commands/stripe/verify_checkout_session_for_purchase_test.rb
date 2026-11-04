@@ -1,13 +1,13 @@
 require "test_helper"
 
-class Stripe::PremiumPurchase::VerifyCheckoutSessionTest < ActiveSupport::TestCase
+class Stripe::VerifyCheckoutSessionForPurchaseTest < ActiveSupport::TestCase
   test "fulfils a paid session" do
     user = create(:user)
     stub_session(user)
 
-    Stripe::PremiumPurchase::Fulfill.expects(:call).with(user, "pi_123")
+    Stripe::FulfillPurchase.expects(:call).with(user, "pi_123")
 
-    result = Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123")
+    result = Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123")
 
     assert_equal({ success: true, payment_state: "paid" }, result)
   end
@@ -16,10 +16,10 @@ class Stripe::PremiumPurchase::VerifyCheckoutSessionTest < ActiveSupport::TestCa
     user = create(:user)
     stub_session(user, payment_status: "unpaid")
 
-    Stripe::PremiumPurchase::Fulfill.expects(:call).never
-    Stripe::PremiumPurchase::MarkPending.expects(:call).with(user, "pi_123")
+    Stripe::FulfillPurchase.expects(:call).never
+    Stripe::MarkPurchasePending.expects(:call).with(user, "pi_123")
 
-    result = Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123")
+    result = Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123")
 
     assert_equal({ success: true, payment_state: "processing" }, result)
   end
@@ -28,21 +28,21 @@ class Stripe::PremiumPurchase::VerifyCheckoutSessionTest < ActiveSupport::TestCa
     user = create(:user)
     stub_session(create(:user))
 
-    assert_raises(SecurityError) { Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123") }
+    assert_raises(SecurityError) { Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123") }
   end
 
   test "raises SecurityError when the session has no user metadata" do
     user = create(:user)
     ::Stripe::Checkout::Session.stubs(:retrieve).with("cs_123").returns(OpenStruct.new(metadata: nil))
 
-    assert_raises(SecurityError) { Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123") }
+    assert_raises(SecurityError) { Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123") }
   end
 
   test "raises ArgumentError for a subscription session" do
     user = create(:user)
     stub_session(user, mode: "subscription")
 
-    assert_raises(ArgumentError) { Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123") }
+    assert_raises(ArgumentError) { Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123") }
   end
 
   test "raises StripeCheckoutSessionIncompleteError with the decline code when not complete" do
@@ -53,7 +53,7 @@ class Stripe::PremiumPurchase::VerifyCheckoutSessionTest < ActiveSupport::TestCa
       returns(OpenStruct.new(payment_intent:))
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123")
+      Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123")
     end
 
     assert_equal "insufficient_funds", error.decline_code
@@ -68,7 +68,7 @@ class Stripe::PremiumPurchase::VerifyCheckoutSessionTest < ActiveSupport::TestCa
       raises(::Stripe::APIConnectionError.new("boom"))
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123")
+      Stripe::VerifyCheckoutSessionForPurchase.(user, "cs_123")
     end
 
     assert_nil error.decline_code
