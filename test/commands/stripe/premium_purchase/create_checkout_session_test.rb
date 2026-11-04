@@ -27,4 +27,19 @@ class Stripe::PremiumPurchase::CreateCheckoutSessionTest < ActiveSupport::TestCa
 
     assert_equal session, Stripe::PremiumPurchase::CreateCheckoutSession.(user, return_url, :gbp)
   end
+
+  test "uses the low USD price for a low-tier country" do
+    user = create(:user)
+    user.data.update_column(:country_code, "EC")
+    price_id = Jiki.config.stripe_premium_lifetime_low_usd_price_id
+
+    Stripe::GetOrCreateCustomer.stubs(:call).returns(OpenStruct.new(id: "cus_123"))
+    ::Stripe::Checkout::Session.expects(:create).with do |args|
+      args[:currency] == :usd &&
+        args[:line_items] == [{ price: price_id, quantity: 1 }] &&
+        args[:metadata][:price_id] == price_id
+    end
+
+    Stripe::PremiumPurchase::CreateCheckoutSession.(user, "#{Jiki.config.frontend_base_url}/premium/complete", :usd)
+  end
 end

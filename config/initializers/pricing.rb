@@ -124,6 +124,11 @@ PREMIUM_PRICES = {
   zmw: { monthly: 3900, annual: 39_900, lifetime: 11_900 }
 }.freeze
 
+# Lower-income countries priced in USD buy lifetime through a separate, cheaper
+# Stripe Price, since one Price can't hold two USD amounts.
+LOW_USD_LIFETIME_PRICE = 1299
+LOW_USD_COUNTRIES = %w[EC GH IQ JO LY MM MR SV TL TN VE].freeze
+
 COUNTRY_CURRENCIES = {
   "AE" => "aed",
   "AF" => "afn",

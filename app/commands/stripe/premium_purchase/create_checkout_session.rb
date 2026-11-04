@@ -28,5 +28,6 @@ class Stripe::PremiumPurchase::CreateCheckoutSession
   memoize
   def customer = Stripe::GetOrCreateCustomer.(user)
 
-  def price_id = Jiki.config.stripe_premium_lifetime_price_id
+  memoize
+  def price_id = Pricing::DetermineLifetimePrice.(user.data.country_code, currency)[:stripe_price_id]
 end

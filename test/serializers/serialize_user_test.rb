@@ -253,6 +253,16 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_nil result[:premium_prices][:country_code]
   end
 
+  test "serializes the low USD lifetime price for a low-tier country" do
+    user = create(:user)
+    user.data.update_column(:country_code, "EC")
+
+    result = SerializeUser.(user)
+
+    assert_equal :usd, result[:premium_prices][:currency]
+    assert_equal LOW_USD_LIFETIME_PRICE, result[:premium_prices][:lifetime]
+  end
+
   test "serializes lifetime premium for a user who bought premium" do
     user = create(:user)
     create(:premium_entitlement, :stripe, user:)

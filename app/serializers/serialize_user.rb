@@ -31,7 +31,7 @@ class SerializeUser
       currency: user.currency,
       monthly: prices[:monthly],
       annual: prices[:annual],
-      lifetime: prices[:lifetime],
+      lifetime: Pricing::DetermineLifetimePrice.(user.data.country_code, user.currency)[:amount_in_cents],
       country_code: user.data.country_code
     }
   end
