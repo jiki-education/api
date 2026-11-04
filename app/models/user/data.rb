@@ -110,9 +110,19 @@ class User::Data < ApplicationRecord
   # entitlement (Exercism, or a previous purchase) or a live legacy
   # subscription can't buy it again.
   def can_purchase_premium?
+    return false if premium_purchase_pending?
     return false if user.premium_entitlements.active.exists?
 
     !subscription_status.in?(%w[active payment_failed cancelling])
+  end
+
+  # Stripe's async_payment_failed webhook clears a pending purchase whose
+  # payment fails. The cutoff is a backstop so a lost webhook can't block the
+  # user from buying forever.
+  PENDING_PREMIUM_PURCHASE_CUTOFF = 30.days
+
+  def premium_purchase_pending?
+    pending_premium_purchase_at.present? && pending_premium_purchase_at > PENDING_PREMIUM_PURCHASE_CUTOFF.ago
   end
 
   def lifetime_premium? = user.premium_entitlements.active.exists?(source: PremiumEntitlement::STRIPE)

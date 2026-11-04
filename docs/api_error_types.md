@@ -124,6 +124,7 @@ copy included as a starting point for the front-end catalogue.
 ### Premium purchases
 These come from `/internal/premium_purchases/*`. The endpoints also return `invalid_return_url`, `checkout_failed`, `missing_session_id`, `invalid_session`, `verification_failed`, `unauthorized` and `checkout_payment_incomplete` from the Subscriptions list above. On a purchase, `checkout_payment_incomplete` carries `decline_code` and `currency`, but no `interval`.
 - `already_premium` - The user already has Premium (an entitlement or a live subscription), so can't buy it
+- `purchase_pending` - The user's earlier purchase is still clearing (e.g. a bank debit). `/me` returns `premium_purchase_pending: true` until it clears or fails.
 
 ### External services
 - `stripe_error` - "Payment processing error"

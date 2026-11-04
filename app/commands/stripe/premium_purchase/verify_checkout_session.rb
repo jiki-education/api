@@ -15,7 +15,11 @@ class Stripe::PremiumPurchase::VerifyCheckoutSession
     # A complete session with an unpaid status is an async payment method (e.g. a
     # bank debit) that is still clearing. The checkout.session.async_payment_*
     # webhooks finish the job once it settles.
-    Stripe::PremiumPurchase::Fulfill.(user, session.payment_intent) if paid?
+    if paid?
+      Stripe::PremiumPurchase::Fulfill.(user, session.payment_intent)
+    else
+      Stripe::PremiumPurchase::MarkPending.(user, session.payment_intent)
+    end
 
     {
       success: true,

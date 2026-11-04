@@ -38,6 +38,15 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
     Stripe::Webhook::HandleEvent.("{}", "sig_123")
   end
 
+  test "routes checkout.session.async_payment_failed event" do
+    event = stub(type: 'checkout.session.async_payment_failed')
+    ::Stripe::Webhook.expects(:construct_event).returns(event)
+
+    Stripe::Webhook::PremiumPurchaseFailed.expects(:call).with(event)
+
+    Stripe::Webhook::HandleEvent.("{}", "sig_123")
+  end
+
   test "routes charge.refunded event" do
     event = stub(type: 'charge.refunded')
     ::Stripe::Webhook.expects(:construct_event).returns(event)

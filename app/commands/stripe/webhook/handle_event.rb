@@ -14,6 +14,8 @@ class Stripe::Webhook::HandleEvent
       end
     when 'checkout.session.async_payment_succeeded'
       Stripe::Webhook::PremiumPurchaseCompleted.(event)
+    when 'checkout.session.async_payment_failed'
+      Stripe::Webhook::PremiumPurchaseFailed.(event)
     when 'charge.refunded'
       Stripe::Webhook::ChargeRefunded.(event)
     when 'charge.dispute.created'

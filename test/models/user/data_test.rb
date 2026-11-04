@@ -173,6 +173,32 @@ class User::DataTest < ActiveSupport::TestCase
     end
   end
 
+  test "can_purchase_premium? returns false while a purchase is pending" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
+
+    refute user.data.can_purchase_premium?
+  end
+
+  test "premium_purchase_pending? is false without a pending purchase" do
+    refute create(:user).data.premium_purchase_pending?
+  end
+
+  test "premium_purchase_pending? is true for a recent pending purchase" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 29.days.ago)
+
+    assert user.data.premium_purchase_pending?
+  end
+
+  test "premium_purchase_pending? ignores a pending purchase past the cutoff" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 31.days.ago)
+
+    refute user.data.premium_purchase_pending?
+    assert user.data.can_purchase_premium?
+  end
+
   test "can_purchase_premium? ignores revoked entitlements" do
     user = create(:user)
     create(:premium_entitlement, :stripe, :revoked, user:)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_070346) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_04_071634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -419,6 +419,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_070346) do
     t.boolean "notifications_enabled", default: true, null: false
     t.datetime "otp_enabled_at"
     t.string "otp_secret"
+    t.datetime "pending_premium_purchase_at"
+    t.string "pending_premium_purchase_payment_intent_id"
     t.boolean "receive_activity_emails", default: true, null: false
     t.boolean "receive_event_emails", default: true, null: false
     t.boolean "receive_milestone_emails", default: true, null: false

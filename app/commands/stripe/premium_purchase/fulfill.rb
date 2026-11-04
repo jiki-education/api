@@ -6,7 +6,9 @@ class Stripe::PremiumPurchase::Fulfill
   # Both the verify endpoint and the webhooks call this, possibly at the same
   # time, so every step is idempotent.
   def call
-    return if payment.data["revoked_at"].present?
+    revoked = payment.data["revoked_at"].present?
+    Stripe::PremiumPurchase::ClearPending.(user, payment_intent_id)
+    return if revoked
 
     grant!
   end

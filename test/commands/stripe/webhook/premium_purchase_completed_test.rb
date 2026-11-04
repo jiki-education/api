@@ -15,15 +15,18 @@ class Stripe::Webhook::PremiumPurchaseCompletedTest < ActiveSupport::TestCase
     Stripe::Webhook::PremiumPurchaseCompleted.(event_for(user: create(:user), mode: "subscription"))
   end
 
-  test "waits for an unpaid session to clear" do
-    Stripe::PremiumPurchase::Fulfill.expects(:call).never
+  test "marks an unpaid session as pending" do
+    user = create(:user)
 
-    Stripe::Webhook::PremiumPurchaseCompleted.(event_for(user: create(:user), payment_status: "unpaid"))
+    Stripe::PremiumPurchase::Fulfill.expects(:call).never
+    Stripe::PremiumPurchase::MarkPending.expects(:call).with(user, "pi_123")
+
+    Stripe::Webhook::PremiumPurchaseCompleted.(event_for(user:, payment_status: "unpaid"))
   end
 
   test "logs an error when the user is not found" do
     Stripe::PremiumPurchase::Fulfill.expects(:call).never
-    Rails.logger.expects(:error).with("Premium purchase cs_123 paid but user not found")
+    Rails.logger.expects(:error).with("Premium purchase cs_123 completed but user not found")
 
     Stripe::Webhook::PremiumPurchaseCompleted.(event_for(user: nil))
   end

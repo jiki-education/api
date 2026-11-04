@@ -49,6 +49,17 @@ class Internal::PremiumPurchasesControllerTest < ApplicationControllerTest
     assert_json_response({ error: { type: "already_premium" } })
   end
 
+  test "POST checkout_session rejects a user whose purchase is still clearing" do
+    @user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
+    Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).never
+    Sentry.expects(:capture_message).never
+
+    post internal_premium_purchases_checkout_session_path, params: { return_url: @return_url }, as: :json
+
+    assert_response :bad_request
+    assert_json_response({ error: { type: "purchase_pending" } })
+  end
+
   test "POST checkout_session rejects a live legacy subscriber" do
     @user.data.update!(subscription_status: "active")
     Stripe::PremiumPurchase::CreateCheckoutSession.expects(:call).never

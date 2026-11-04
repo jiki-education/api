@@ -2,6 +2,9 @@ class Internal::PremiumPurchasesController < Internal::BaseController
   # POST /internal/premium_purchases/checkout_session
   # Creates a Stripe Checkout Session for a one-off lifetime Premium purchase
   def checkout_session
+    # Expected while a bank debit clears, so not reported to Sentry
+    return render json: { error: { type: "purchase_pending" } }, status: :bad_request if current_user.data.premium_purchase_pending?
+
     unless current_user.data.can_purchase_premium?
       Sentry.capture_message(
         "Premium purchase rejected: already premium",

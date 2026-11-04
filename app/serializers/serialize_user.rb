@@ -18,6 +18,7 @@ class SerializeUser
       admin: user.admin?,
       lifetime_premium: user.data.lifetime_premium?,
       can_purchase_premium: user.data.can_purchase_premium?,
+      premium_purchase_pending: user.data.premium_purchase_pending?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data,
       premium_prices: premium_prices_data

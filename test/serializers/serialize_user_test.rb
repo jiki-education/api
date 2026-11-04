@@ -20,6 +20,7 @@ class SerializeUserTest < ActiveSupport::TestCase
         admin: false,
         lifetime_premium: false,
         can_purchase_premium: true,
+        premium_purchase_pending: false,
         subscription_status: "never_subscribed",
         subscription: nil,
         premium_prices: {

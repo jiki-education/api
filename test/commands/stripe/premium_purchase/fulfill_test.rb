@@ -26,6 +26,36 @@ class Stripe::PremiumPurchase::FulfillTest < ActiveSupport::TestCase
     )
   end
 
+  test "clears the pending purchase" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
+    stub_payment_intent
+
+    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+
+    refute user.data.reload.premium_purchase_pending?
+  end
+
+  test "clears the pending purchase even when the charge was already refunded" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
+    stub_payment_intent(refunded: true)
+
+    Stripe::PremiumPurchase::Fulfill.(user, "pi_123")
+
+    refute user.data.reload.premium_purchase_pending?
+    refute user.premium?
+  end
+
+  test "keeps the pending purchase when the payment intent has not succeeded" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
+    stub_payment_intent(status: "processing")
+
+    assert_raises(ArgumentError) { Stripe::PremiumPurchase::Fulfill.(user, "pi_123") }
+    assert user.data.reload.premium_purchase_pending?
+  end
+
   test "upgrades the user to premium" do
     user = create(:user)
     stub_payment_intent

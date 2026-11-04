@@ -12,11 +12,12 @@ class Stripe::PremiumPurchase::VerifyCheckoutSessionTest < ActiveSupport::TestCa
     assert_equal({ success: true, payment_state: "paid" }, result)
   end
 
-  test "reports processing without fulfilling when the payment is still clearing" do
+  test "marks the purchase pending and reports processing when the payment is still clearing" do
     user = create(:user)
     stub_session(user, payment_status: "unpaid")
 
     Stripe::PremiumPurchase::Fulfill.expects(:call).never
+    Stripe::PremiumPurchase::MarkPending.expects(:call).with(user, "pi_123")
 
     result = Stripe::PremiumPurchase::VerifyCheckoutSession.(user, "cs_123")
 
