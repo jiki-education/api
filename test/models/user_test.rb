@@ -257,7 +257,9 @@ class UserTest < ActiveSupport::TestCase
   end
 
   {
-    "CA" => :cad, "CH" => :chf, "LI" => :chf, "DK" => :dkk, "GL" => :dkk, "FO" => :dkk, "NO" => :nok, "SE" => :sek
+    "CA" => :cad, "CH" => :chf, "LI" => :chf, "DK" => :dkk, "GL" => :dkk, "FO" => :dkk, "NO" => :nok, "SE" => :sek,
+    "BT" => :inr, "CO" => :cop, "DO" => :dop, "TO" => :top, "WS" => :wst, "CW" => :xcg, "SX" => :xcg,
+    "KW" => :usd, "GH" => :usd
   }.each do |country, currency|
     test "currency returns #{currency} for #{country}" do
       user = create(:user)
