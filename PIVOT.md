@@ -1,271 +1,312 @@
-# Jiki Pivot — Where We've Landed
-
-This document captures the current shape of Jiki's repositioning, after a long discussion. It is a snapshot, not a finished plan. Several things are still open.
-
-The pivot is **phased**. Phase 1 ships alongside the existing LTC product and adds no new product surface — content and production work only. Phase 2 is the larger product vision (custom UI, conversation exercises, curriculum dependency graph) and is built later, against signal from Phase 1.
-
-## Thesis
-
-> You now have these really powerful tools that can make you anything. These are all the things you need to guide them like a senior would.
-
-The framing is **complement**, not **compete**. Learners are not training to out-code, out-debug, or out-produce LLMs — they will lose every one of those contests, and trying is a waste of their time. They are training to add the human insight that lets the LLM produce the right thing instead of just *a* thing.
-
-That insight is concrete, finite, and teachable. It consists of:
-
-1. **How everything actually works.** APIs, front-ends, databases, what an N+1 is, what a CDN does, what auth actually involves, what stateless means. The conceptual catalogue of modern computing.
-2. **What LLMs don't or won't think about.** The blind spots. The failure modes LLMs reliably produce. The things that are obvious in hindsight to a senior reviewer and invisible to the model that wrote the code.
-
-Old curricula taught syntax production. The 2026 curriculum teaches **recognition, articulation, and direction**.
-
-## Why this is a new kind of teachable
-
-In the old world, senior judgment was developed through years of exposure to infinite-variety failures across infinite-variety codebases. It was hard to teach because the patterns were genuinely diverse and earned through scars.
-
-In an LLM-mediated world, the failures a learner will be reviewing come from a *constrained source*. LLMs trained on similar corpora make similar mistakes — the N+1 they reliably write when iterating over results, the auth check they put in the wrong layer, the regex that misses the same edge cases. That makes "senior-level review skill" a finite catalogue of patterns, not infinite-variety chaos.
-
-The audacious version of the thesis: **senior-level review judgment is more teachable now than it has ever been**, because the differential diagnosis for LLM-produced code is a curriculum-shaped problem.
-
-## Audience
-
-**Aspiring entrants** — people wanting to get into tech today.
-
-This is resolved (not just preferred) because Jiki's existing LTC infrastructure is core value for entrants and dead weight for displaced juniors. Pivoting to displaced juniors would mean either abandoning that asset or running two products. The bundle (LTC + architect-track content) only makes coherent sense for an audience that needs both halves.
-
-The natural progression: entrants need everything; juniors need the architect-track only; existing seniors don't need it. This shapes pricing tiers and content paths but the primary audience is settled.
-
-## Scope
-
-**Web development, only, for the foreseeable future.** Don't try to be multi-domain. Web dev is the largest entry-level market, the most LLM-relevant domain, and the one Jiki's existing LTC infrastructure already serves. It's also broader than it sounds in 2026 — it absorbs database/data work, AI/ML usage, and DevOps fundamentals because those are now part of what a working web dev does.
-
-Other top-level domains (mobile, data engineering, AI/ML application development, security) are post-credibility-establishment expansions, not initial scope. Build a credible web-dev curriculum first, earn reputation, then expand from a position of strength.
-
-## Phase 1 — Launch Shape
-
-Phase 1 ships alongside the existing LTC product. **No new product surface is built** — all output is content and production work on top of infrastructure that already exists. The combined launch positions Jiki as the place to "learn to be useful in tech in the LLM era," with LTC as the "learn the craft properly" half and the new content as the "learn to apply it with LLMs" half.
-
-### What ships at launch
-
-Three video series, in addition to the continuing LTC track:
-
-1. **Building Basics** — *for absolute beginners.* A live build-along series. Jeremy builds a Japanese-learning website from scratch, slowly, narrating each prompt and decision. **Crucially, learners build their own app in parallel.** Each episode introduces a feature in general terms, shows Jeremy adding it to the Japanese app live, and ships an instruction set so learners can add the equivalent feature to whatever app they're building. The series is therefore not "watch a build" but "build alongside, with worked example."
-
-   This shape forces an episode-design constraint: each episode's feature must be **generalisable** — auth, persistence, deploying, forms, lists, etc. — so a learner building any reasonable web app can follow along. Japanese-specific work (kana rendering, IME input) either gets relegated to bonus content or framed explicitly as "an example of the kind of weird stuff you hit in real apps."
-
-   Learners pick their own app idea on day one, with light guardrails so they don't choose something the series can't serve. The accumulating personal artifact across episodes is the strongest retention hook the format has — someone mid-way through building their own app comes back for episode 7. Replays catalogued and chaptered; build-along instruction sets are part of the Premium package.
-
-2. **How Things Work** — *for more junior-level viewers who can already read code.* Deep-dive videos into how Exercism and Jiki actually work, one topic per video. Real production codebases as the teaching material: how auth is structured, how the test runner sandboxes execution, how translations are stored, how Stripe webhooks are handled, how the deployment pipeline works. Concrete and unfakeable — these are systems that genuinely exist and ship to real users. Leverages assets (Exercism + Jiki) that competitors can't.
-
-3. **Your Questions Answered** — live Q&A sessions where viewers submit questions ahead of time. Audience-agnostic; whoever shows up. Direct access to Jeremy. Premium-attendance, replays catalogued.
-
-The two build/content series are deliberately at different audience tiers. Building Basics is the on-ramp from zero. How Things Work is the next-step content for someone who's gained enough literacy to read other people's code — that's a meaningful progression through Premium, and it stops the two series competing for the same slot in the same viewer's week.
-
-### Free vs Premium
-
-Free on YouTube (top of funnel):
-
-- Live streams while live
-- Short clips cut from streams (e.g. "what is a webserver" extracted from a Building Basics episode)
-- Possibly the first episode of each series in full
-
-Premium:
-
-- The catalogued, chaptered, searchable archive of full episodes
-- Live Q&A attendance and replays
-- All LTC content
-
-The free tier needs to be genuinely useful — not teaser content. Free content earns reach and goodwill; Premium is the curated, navigable, archive product plus access.
-
-### What Phase 1 deliberately does not include
-
-Listed here so the launch shape stays disciplined — these are deferred to Phase 2:
-
-- The Discuss-with-Jiki conversation exercise UI
-- The general artifact viewer (LHS code/config/network/etc.)
-- Final-edit-after-agreement debug format
-- Per-concept dependency graph and curriculum navigation
-- Scaffolding video production as a separate workstream (concept explanations emerge as cuttable clips from streams, not as a dedicated production line)
-- Project library with AGENTS.md (interesting format, not Phase 1 priority)
-- Reference checklists as a polished marketing artifact (may emerge informally first)
-
-### Why phased
-
-Three reasons:
-
-1. **Time-to-launch.** Phase 1 components are all content/production on top of existing infrastructure. No new product surface to design, build, or test.
-2. **Risk-shape.** Building the full Discuss-with-Jiki UI before knowing whether the positioning lands is the wrong order. Phase 1 produces signal; Phase 2 invests against that signal.
-3. **The launch credibility problem.** Launching LTC in 2026 with no LLM-era story reads as irrelevant to a market being told daily that learning to code is dead. Phase 1 exists in part to make the launch credible — there has to be substance behind the door, not a coming-soon page.
-
-## What's deliberately out
-
-- Algorithm grinding (sorting, tree balancing, leetcode)
-- Design pattern theology
-- Hand-typing HTML files as a primary activity
-- "Build a TODO app" as a portfolio piece
-- Anything framed as "become faster than the LLM"
-- TypeScript in early phases (twice the syntax for the same idea — adds load before benefit)
-- "Build me an app" agent loops (token explosion, breaks PPP economics)
-- Calendar-based pacing ("week 1, week 2..."). The curriculum is a dependency graph of content, not a timetable.
-- Foundations-before-real-apps sequencing. Apps come on day one via Cursor; understanding follows, attached to the artifacts the learner already has.
-- Projects as the curriculum spine. Projects are reinforcement anchors, not the spine.
-
-## Phase 2 — Future Vision
-
-Everything below is the longer-term product vision: the structured curriculum, the Discuss-with-Jiki exercise format, the artifact viewer, the dependency graph, the checklists. **None of this is being built for launch.** Phase 2 is invested against signal from Phase 1 — i.e. once we know the positioning lands and engagement is real, we build the product surface that turns the content track into a structured curriculum.
-
-This section is preserved as the design we'd already developed, so the eventual Phase 2 work has somewhere to start from.
-
-### Lesson Formats
-
-There isn't one lesson format. The bulk of the curriculum is **scaffolding videos** — concept explanations taught in a consistent voice across the platform. The platform's value is in the coherent unified treatment, not in any single video being uniquely better than what's on YouTube. A learner builds a unified mental model of computing because everything they encounter was designed to fit together.
-
-Many videos pair with a **"Discuss with Jiki" exercise** — a structured conversation between the learner and a Jiki-managed pedagogical LLM, anchored to a defined goal. This is the umbrella exercise format. Debugging is one species of it; there are several others.
-
-#### Format progression within a topic
-
-A single topic typically progresses through several lesson types as the learner moves from "I've never heard of this" to "I can review this independently":
-
-1. **Introduction** — pure scaffolding video. What X is, why it exists, mental model. Maybe with light comprehension checks. The job is to install the concept.
-2. **Familiarisation** — guided walkthrough. What X looks like in the wild, with annotated examples. The learner is shown, not yet asked to find.
-3. **Pattern recognition** — light interactive exercises. "Which of these is doing X?" "Highlight where Y is happening." The learner engages actively but with strong scaffolding.
-4. **Failure-mode catalogue** — video plus examples. "Here are the common ways this goes wrong." The LLM-vigilance content lives here. Not yet review — they're being shown the failure modes.
-5. **Senior review** — the full "Discuss with Jiki" debug format (see below). The learner reviews independently, articulates, and the LLM applies the agreed fix.
-
-Not every topic needs all five formats. Simple concepts (a CDN, a status code) might be one introductory video. Big concepts (auth, HTTP, deployment) might span eight or ten lessons across the format progression. The structure scales to topic depth.
-
-#### "Discuss with Jiki" exercise types
-
-The conversation format takes many shapes depending on the senior skill being trained:
-
-- **Debug** — "Here's an artifact with a problem. Find it, articulate it, then we apply the fix." (The format described in detail below.)
-- **Plan** — "Given these constraints and this goal, walk through how you'd design X."
-- **Choose** — "Which approach fits this situation, and why?"
-- **Compare** — "Two designs in front of you. Which is better and what are the tradeoffs?"
-- **Predict** — "What would happen if you changed X to Y? When would you do that?"
-- **Design** — "Build the architecture / API / schema for this scenario, in conversation."
-
-In all of them the LLM tutor's role is the same — push back, ask clarifying questions, validate good reasoning, surface missed considerations. The LLM does not hand out answers. It evaluates the *quality* of the learner's reasoning against an exercise-specific rubric.
-
-Each exercise is a designed scenario, not a templated one. Curriculum production for these is real creative work; that's both a cost and a moat.
-
-#### The debug format, in detail
-
-The debug exercise is the format that culminates the senior-review format progression and is the most structurally distinctive.
-
-1. **A static artifact** is shown inside the Jiki UI. Often code, but the LHS pane is general — it can be a config file, a network tab snapshot, DNS records, a query plan, an error trace, anything reviewable. The learner has read access only.
-2. **A conversation panel** on the RHS where the learner discusses what they see with the pedagogical LLM. The LLM is in tutor mode, not agent mode.
-3. **A final edit** at the end of the conversation. Once the learner and LLM have reached agreement on what's wrong and what should change, the LLM applies the agreed changes to the artifact on the LHS. The learner sees their understanding manifest as actual edits. This is the satisfying landing point of the lesson and doubles as the assessment artifact.
-
-The conversation explores; the agreement crystallises; the artifact changes.
-
-#### Why these formats work
-
-- **They map onto the real working job.** Reviewing artifacts, having structured conversations about decisions, and articulating fixes is what working seniors actually do.
-- **Self-validating.** If the learner can't reason precisely, the conversation doesn't reach agreement. No separate grading step.
-- **Cheap to run.** Most lessons are video-watching. Conversation exercises stay in conversation; only debug-format lessons end with a code edit, and those are bounded in scope. Per-lesson token cost is predictable enough to bundle at PPP pricing.
-- **Reuse existing Jiki pedagogical-LLM tooling.** Already built for the LTC product.
-- **Produce portfolio artifacts.** Completed lessons leave the learner with written reasoning, change-sets, design docs, decisions — evidence of skill that accumulates.
-
-#### Calibration note (important)
-
-Examples used in lessons must be calibrated to **actual LLM failure modes that beginners can grasp**, not the most sophisticated mistakes a senior could imagine. A previous draft used "migration adds NOT NULL without a default on a populated table" as an example — that's a sophisticated DB-DBA failure that LLMs basically never produce (they include defaults reflexively) and that requires extensive prerequisite knowledge to grasp. Lessons should target the things LLMs *do* reliably get wrong and that a learner with the relevant prerequisites *can* see. Example calibration is part of curriculum design, not an afterthought.
-
-#### A second exercise format: external action
-
-Some concepts cannot be tested or practiced through static-artifact review or pure conversation. Deployment, DNS, real auth provider setup, monitoring — these require the learner to leave the Jiki UI and do something in the world.
-
-For these: video + a chunk of code or configuration + an instruction to deploy/configure/inspect the real thing externally + a return-to-Jiki step where the learner pastes a URL, screenshot, or answers a verification question to confirm they did it.
-
-### Pedagogical Principles
-
-1. **Recognition + articulation, not production.** The valuable cognitive work happens in seeing the problem and explaining it precisely. The fix is the trivial mechanical step at the end. Optimise the curriculum for the former.
-2. **Comprehension is the deliverable, not the artifact.** Old LTC pretended the working code proved the skill. We're not pretending. The change-set is the proof.
-3. **Concepts arrive with a vigilance angle when applicable.** "What is X" + "what does X look like when an LLM produces it badly" + "find an instance in this codebase" — three layers, same lesson.
-4. **Mix patterns within sections.** If every lesson in a section is "find the N+1," learners pattern-match on the section, not the principle. Inter-mix patterns so the learner has to actually look.
-5. **Difficulty progression via specificity demand and example complexity, not via more code.** A harder lesson asks for a more precise change-set or has more subtle pathologies — not a bigger codebase.
-
-### Pacing and Navigation
-
-The curriculum is **not a calendar**. It is a dependency graph of content. There is no "week 1, week 2." There is a library of videos and exercises, organised by concept, with prerequisites mapped between them. A learner traverses the graph at whatever pace fits their life — full-time learners might cover the foundations in weeks; part-timers in months. Both reach the same place.
-
-Apps are abundant, on-demand, and free. Cursor produces a working app in two minutes. The learner can have one on day one and ten by the weekend if they want. **The curriculum does not gate access to building** — it can't, the tools are already in the learner's hands. What it gates is *understanding what was built*.
-
-This means:
-
-- **The artifact comes first; the curriculum unpacks it.** A learner makes their first app within minutes of starting. The curriculum then provides the vocabulary, mental models, and review skills to understand what they're looking at, layer by layer. Mental models attach to artifacts the learner already has, not to abstractions taught in advance.
-- **Apps function as anchors, not milestones.** "Make app 2" is not a curriculum step — the learner may already have made fifteen. The curriculum suggests "this would be a good moment to build something that uses what you just learned" when reinforcement helps, but it doesn't measure progress in apps-built.
-- **The learner navigates the graph based on what they want to understand next.** Some pathways are linear (you can't review HTTP before you know what HTTP is). Others are parallel (you can study CSS and JS in either order). The graph encodes this; the UI exposes it.
-
-### Other Product Elements
-
-#### Reference Resources (Checklists)
-
-Each operational concept should ship with a printable PDF (or equivalent digital reference) checklist — the kind of thing a learner can keep next to their monitor. Database review checklist. Auth audit checklist. Pre-deploy checklist. Migration safety checklist. "Reading code Claude wrote" general checklist.
-
-These are **job aids**, not study aids. They translate concept-knowledge into applied knowledge in the workflow. The Checklist Manifesto pattern applied to LLM-era dev work — surgeons and pilots use checklists because reviewing under time pressure is exactly when memory fails. A reviewing-junior-engineer is in the same situation.
-
-Two strategic uses:
-
-- **Top-of-funnel marketing.** Free downloadable checklists are exactly the kind of thing that gets shared on Twitter, ranks in search, builds credibility. Each is a discoverable artifact. The full curriculum is the conversion.
-- **Graduation gift.** A learner finishes Jiki with a kit of professional reference cards they actually use in their first job. Strong retention, strong referral effect.
-
-Discipline: each checklist must be designed to be useful to a *working* engineer, not just a learner. If a senior says "this is genuinely good," it's working. If they say "this is beginner stuff," it's failed. Get them reviewed by working seniors before publishing.
-
-#### Optional Reinforcement Projects
-
-Projects are *not* the spine. They are supplementary "want to try this in a fuller context?" exercises that reinforce a concept after the lesson. A learner who completes the concept lesson on N+1s might then optionally walk through a project where they audit a small running app for performance problems. The project is the dessert, not the meal.
-
-This means the project-tooling rabbit hole (Groq vs Gemini, Cline vs OpenCode, terminal vs GUI) is *lower priority* than it felt during the conversation. Those decisions matter for the optional projects but they don't make or break the product. The product is the teaching.
-
-#### LTC Track
-
-The existing learn-to-code content keeps its place as the foundation track: **you cannot direct what you cannot read**. Coding fundamentals is not a vestigial limb; it's the literacy floor that makes senior-level direction possible. The LTC content and the architect-track content are the two halves of a coherent product for entrants.
-
-## What Was Considered and Rejected
-
-- **Project-based curriculum as the spine.** Initially we drafted 5 projects. Real comprehension of concepts like N+1s comes from explicit teaching, not from happening to encounter them in a project. Projects can't be the teacher; they can be reinforcement.
-- **Calendar-based pacing ("week 1, week 5...").** Repeated drafts kept reverting to weekly framings. The curriculum is dependency-shaped, not time-shaped. Apps are 2-minute artifacts, content is a library; pacing is a function of how many hours a learner can spend on it, not a fixed timetable.
-- **Foundations-before-real-apps sequencing.** The 2026 reality is that a learner makes a real app on day one with Cursor. Designing a curriculum that gates "real apps" behind months of sequential foundations rebuilds 2018 pedagogy with newer wrapping. Artifact first; understanding follows.
-- **One lesson format applied uniformly.** Different stages of learning a topic need different formats. Pure videos for introduction, walkthroughs for familiarisation, light interaction for pattern recognition, the full review-and-articulate format for senior-level work. Trying to apply the review format universally fails for foundational concepts.
-- **LLM iteratively rewrites code during the conversation.** Too expensive in tokens, and emphasises the wrong skill (prompting for fixes, which the LLM mostly handles anyway). Conversation-only during the discussion phase, with a single final code edit after agreement, is cheaper and better-aligned to the senior skill.
-- **LLM as junior teammate framing.** Real seniors today prompt LLMs directly as oracles; the junior-delegation model is outdated by the very thesis we're teaching. The LLM is a tutor in the lesson, a collaborator in the workflow, not a junior to be managed.
-- **Bundled unlimited AI at PPP pricing.** Math doesn't work. Realistic agent usage is $1-50/learner/month wholesale; $3 PPP can't absorb it. The format-pivot to conversation-based exercises largely solves this because per-lesson tokens are bounded.
-- **Terminal-based tools as default.** Real onboarding cliff for beginners on Windows. VS Code is the default external editor for any work outside the Jiki UI; terminal-based tools are introduced later for those who progress.
-- **TypeScript from the start.** Twice the syntax for the same idea, adds cognitive load before the benefit lands. Plain JS first; TS introduced later as a concept lesson.
-- **Multi-domain initial scope.** Web dev only at launch; other domains are post-credibility expansions.
-
-## Marketing Positioning
-
-Working candidates for the headline:
-
-- *"These tools can build anything. Here's what you need to know to make them build the right thing."*
-- *"AI can write the code. Becoming a senior is knowing what to ask for, what to check, and what to push back on."*
-- *"The tools build. Engineers guide. Here's how to be the engineer."*
-
-Probably the first lands strongest top-of-funnel. The framing applies to entrants and professionals alike — no audience-pivot language needed.
-
-## Open Questions
-
-### Phase 1
-
-1. **Streaming cadence.** How often does Building Basics ship — weekly? More? Sustainable cadence given everything else Jeremy is doing matters more than ambitious scheduling.
-2. **First How-Things-Work topics.** Pick the first 5-10. Auth, test runner sandboxing, translations, Stripe webhooks, deployment pipeline are candidates. Sequence them for variety, not depth-progression.
-3. **Streaming platform.** YouTube Live is the default candidate (good replays, embeddable, discoverable). Twitch worse for replays. Decide deliberately.
-4. **Free / Premium boundary specifics.** Are full live streams free-while-live and Premium afterwards, or always free? Are clip-cuts done by Jeremy or outsourced? First episode of each series free in full?
-5. **Launch positioning copy.** The headline candidates exist (see Marketing); the actual landing page copy that frames LTC + the new content as a coherent bundle still needs writing.
-6. **Q&A submission and selection.** How questions get submitted ahead, how they're chosen, how this interacts with chat during the live session.
-7. **Catalogue navigation in Premium.** Replays need chapters, search, and sensible categorisation. Simplest possible first version that doesn't feel like a content dump.
-8. **Building Basics — the actual project.** Japanese-learning website is set; the specific feature arc (auth? spaced repetition? content?) and the agent stack used in-stream still need deciding. The choice affects what concepts naturally come up.
-9. **Build-along feature sequence.** What features, in what order, across the first ~10 episodes? Each must be generalisable enough that a learner with any reasonable app can follow. Probably: pick app → static page → add data → forms → persistence → auth → deploy → … The exact arc shapes the whole series.
-10. **Pick-your-app onboarding.** What does the day-one "choose your app" flow look like? Starter idea list? Property checklist (must have users / must store data / must have a UI)? How prescriptive vs free is the right call?
-
-### Phase 2
-
-9. **The catalogue and dependency graph.** What concepts are in the curriculum, what depends on what, what's the foundational layer that comes first? The opening of the graph matters most — a beginner's first hours need lessons that attach to the app they just built with Cursor.
-10. **Specificity-of-direction in conversations.** What does "good enough articulation" look like across the different exercise types (debug, plan, choose, compare, predict, design)? How does difficulty progression work?
-11. **Lesson format selection per concept.** For each concept, which formats apply? Some purely informational, some need the full progression up to senior review.
-12. **The first concrete Phase 2 lesson, end-to-end.** Pick one concept, design the video, the exercise, the scenario. Prototype before committing to a content-production pipeline.
-13. **Pricing tier mapping.** What's free, what's PPP-priced, what's developed-market priced, what's bundled at each tier?
-14. **Production cadence and quality control.** Livestream-only video means lower per-video cost but also lower per-video quality. What's the editorial discipline that prevents the curriculum feeling like a YouTube channel rather than a course?
-15. **Community and "compare findings."** Once a learner submits an exercise output, can they see anonymised submissions from others? Powerful learning signal but adds product surface.
-16. **The first 5-10 checklists.** Pick the operational concepts that map best to printable reference artifacts.
-17. **Jiki UI generalisation.** The LHS pane needs to be an artifact viewer that adapts — code, config, network tab, scenario brief, etc. — not just a code editor.
+# Pivot: finite Coding Fundamentals course (API)
+
+## Context (read this first)
+
+**The decision.** Jiki is being pivoted from an open-ended platform into one finished product: the
+Coding Fundamentals course (roughly 2-3 months for a learner). Everything that implied ongoing
+expansion is removed, what remains is finished properly, and the whole thing is then left running
+with minimal maintenance. The master plan lives in `../front-end/pivot.md`; read its Context section
+first. This file is the API-side breakdown of that plan and nothing more.
+
+**What changes for this repo, in one line each:**
+
+- Learn to Build never had API models, so removal here is copy only: the onboarding drip and the
+  premium welcome email.
+- The course gets its last level(s) seeded and the milestone emails for them finished and
+  translated.
+- Premium changes from a monthly/annual Stripe subscription to a one-off lifetime purchase. This is
+  the bulk of the API work: checkout, webhooks, entitlements, `User::Data` columns, pricing table,
+  serializers, emails, ~3,500 lines of tests.
+- Existing subscribers are converted to lifetime and their Stripe subscriptions cancelled.
+- Copy is frozen, then mailer translations are finished for the locales that are kept.
+- Recurring jobs, workflows and alerting are trimmed to a maintenance footprint.
+
+**Why the ordering matters.** Same as the front-end: translation multiplies by locale, so copy must
+be frozen first. Do content, then pricing model, then emails, then translate once. The pricing
+change also has a hard dependency on the front-end data layer, so the API and front-end pricing PRs
+must land together (or the API must keep serving the old shape until the front-end switches).
+
+**Open decisions (not yet made, do not assume):** base price and PPP scaling, the Ask Jiki cap for
+lifetime users, the refund policy, which locales are kept, whether Exercism Insider/Bootcamp
+entitlements still grant lifetime Premium, whether `everything` is a real level, and whether the
+`Payment` history endpoint stays.
+
+**Repos involved.** This repo (`jiki/api`, Rails), `../front-end` (Next.js app, curriculum,
+content, `llm-chat-proxy`), `../config` (the `Jiki.config` / `Jiki.secrets` gem, which owns the
+Stripe price-id keys) and `../terraform` (billing cap). File paths below are relative to this repo
+unless prefixed with `front-end/` or `config/` (the gem).
+
+**Useful facts discovered while building this list:**
+
+- Curriculum seed: `db/seeds/curriculum.json` has **19 levels, 124 lessons (90 exercises)**. The
+  front-end registry has 20: this repo has **no `everything` level**. The front-end's
+  `everything.ts` describes itself as "All language features enabled for testing and advanced
+  exercises" with no exercise list, and the `changing-dictionaries` milestone email already says
+  "that's the last level of Coding Fundamentals". Decide which is true before touching seeds.
+- The API stores slugs only. All screen copy is authored in `front-end/curriculum/src`.
+  `lib/curriculum_content_check.rb` (run by `.github/workflows/curriculum-content.yml` against
+  front-end@main, weekly) is the only thing coupling the repos.
+- Level milestone email copy is the one DB-translated curriculum thing here: `Level` +
+  `Level::Translation`, seeded from `db/seeds/level_translations/{locale}.json` (18 locales, 19
+  entries each; `hu.json` is `[HU TBD]` placeholders). `dictionaries` and `changing-dictionaries`
+  already have English milestone copy.
+- Learn to Build / projects / episodes / livestreams / roadmap have **no models, tables, routes,
+  commands or jobs** here. Grep hits are copy only: `onboarding_mailer.{en,bn,el,uk}.yml`,
+  `premium_mailer.en.yml`, and one "fun projects" line in `account_mailer.en.yml`.
+- Premium access is driven solely by `user_data.membership_type`. `PremiumEntitlement` only blocks
+  `User::DowngradeToStandard`. `PremiumEntitlement::STRIPE` is declared but never granted anywhere.
+  Only `EXERCISM_INSIDER` (revocable) and `EXERCISM_BOOTCAMP` (one-way) are used, synced daily by
+  `User::Exercism::SyncEntitlements`.
+- Checkout is hardcoded `mode: 'subscription'` (`app/commands/stripe/create_checkout_session.rb`)
+  and `VerifyCheckoutSession` hard-requires `session.subscription`. `Payment` rows are only ever
+  created from `invoice.payment_succeeded`; there is no one-off `payment_intent` path.
+- `PREMIUM_PRICES` in `config/initializers/pricing.rb` has 103 currencies, each `{monthly:, annual:}`
+  only. `COUNTRY_CURRENCIES` (same file) maps country → currency and is unaffected.
+  `lib/tasks/stripe_currency_options.rake` syncs those to the two recurring Stripe prices.
+- Stripe price ids come from the config gem: `stripe_premium_monthly_price_id` and
+  `stripe_premium_annual_price_id` (`config/settings/{local,ci}.yml` in `../config`).
+- `user_data.subscription_interval` is `NOT NULL DEFAULT 'monthly'`; `subscription_status` is an
+  integer enum with 6 values (`never_subscribed incomplete active payment_failed cancelling
+  canceled`); plus `stripe_subscription_id/status`, `subscription_valid_until`, `subscriptions`
+  jsonb. `SerializeUser` exposes `subscription_status`, `subscription {interval, in_grace_period,
+  grace_period_ends_at, subscription_valid_until}` and `premium_prices {currency, monthly, annual,
+  country_code}`.
+- Ask Jiki gating (`app/commands/assistant_conversation/check_user_access.rb`): premium = unlimited,
+  free = one lesson conversation ever. There are no usage counters in this repo; the daily/monthly
+  cap lives in `front-end/llm-chat-proxy/src/usage.ts`. Challenge chat is premium-only.
+- The `welcome_modal` flag is a generic client-namespaced row in `user_flags`
+  (`client:welcome_modal`). Nothing in app code knows the key; only tests use it as an example.
+  No API change is needed to remove the modal.
+- The API does not issue certificates. Nothing here needs to change for course completion unless a
+  "course completed" email is wanted (`ProgressionMailer` has a "future: course completion" note).
+- Locales: `config/initializers/i18n.rb` has `ALL_LOCALES` (31) and `PRODUCTION_LOCALES` (11:
+  `bn el en es-ES es-419 fr hu it pt-PT pt-BR uk`). `devise_mailer`, `notifications_mailer`,
+  `progression_mailer`, `shared` exist for ~31 locales; `account_mailer`, `onboarding_mailer`,
+  `premium_mailer` exist for the 11 only. Non-en onboarding files are independent rewrites, not
+  translations (hu is 3KB vs 8KB en), and only `bn el en uk` contain the Learn to Build pitch.
+- Docs: `docs/` holds only `api_error_types.md` and `i18n.md`. Business-model statements live in
+  `CLAUDE.md` lines 24-25 only.
+- There is a `lesson_translations` migration with no model or code reference (dead).
+
+**How to use this file.** Pick a section, tick items as they land, commit the tick with the work.
+Work on feature branches prefixed `ihid-`. Keep sections in this order when adding items.
+
+Suggested order: finish the levels -> strip Learn to Build copy -> pricing model -> migrate
+subscribers -> freeze copy -> translations -> maintenance/cleanup.
+
+## Finish the last levels
+
+- [ ] Decide whether `everything` is a real published level or a front-end testing scaffold; if
+      real, append it to `db/seeds/curriculum.json` with its lessons (goes through
+      `Level::CreateAllFromJson` on deploy; use `Curriculum::AppendLesson` semantics, never mid-level inserts)
+- [ ] Reconcile lesson lists for `dictionaries` (3 here: video + 2 exercises) and
+      `changing-dictionaries` (7 here: video + 6 exercises) against the front-end's final content
+      once the 16 exercises are reviewed there; run `bin/rails curriculum:verify_content`
+- [ ] Write the final-level milestone email: `changing-dictionaries` currently says "that's the last
+      level of Coding Fundamentals" and "That's a wrap"; move/rewrite if `everything` is added
+- [ ] Add an Exercism "what next" CTA to the final level's milestone email (the API is the only
+      thing that emails users at course end)
+- [ ] Decide whether to add a `course_completed` email to `ProgressionMailer` (noted as "future"
+      in `app/mailers/progression_mailer.rb`) or rely on the front-end certificate flow
+- [ ] Add milestone translations for any new level to `db/seeds/level_translations/*.json` for kept
+      locales (`test/db/seeds/level_translations_completeness_test.rb` will fail until done);
+      replace the `[HU TBD]` placeholders in `hu.json` if hu is kept
+- [ ] Review `db/seeds/challenges.json` (14 challenges) for anything gated behind unshipped levels
+- [ ] Keep `.github/workflows/curriculum-content.yml` (weekly check against front-end@main) or
+      reduce it to PR-only once content is frozen
+
+## Remove Learn to Build (copy only)
+
+### Onboarding drip
+
+- [ ] Rewrite `config/locales/mailers/onboarding_mailer.en.yml` `overview` ("The Two Halves of
+      Becoming a Developer", "Make stuff… Learn to Build", "both the coding and the building sides")
+- [ ] Remove or replace the `building` email: `config/locales/mailers/onboarding_mailer.*.yml`
+      `building.*`, `app/views/onboarding_mailer/building.{mjml,text.erb}`,
+      `User::Notifications::OnboardingBuildingNotification`, the `building` entry in
+      `OnboardingMailer::HEADER_IMAGES`, and day 3 in `User::Onboarding::CreateDueNotifications::EMAILS`
+      (renumber or leave a gap; existing notifications are idempotent by kind)
+- [ ] Rewrite `premium` drip bullets ("Premium Projects", "Learn to Build") — do this together with
+      the pricing rewrite below, not twice
+- [ ] Rewrite `community` YouTube line ("AMAs and other livestreams") if livestreams stop
+- [ ] Drop `onboarding-building-*.jpg` from `scripts/upload_email_images.sh` and S3 if the email goes
+- [ ] Update `test/mailers/onboarding_mailer_test.rb`, `test/commands/user/onboarding/*`, mailer
+      previews, and `docs/i18n.md` line 45 mailer list if a mailer action is deleted
+
+### Other mailers
+
+- [ ] `config/locales/mailers/premium_mailer.en.yml` `welcome_to_premium`: "see you on a livestream
+      soon" and "Thank you for subscribing"
+- [ ] `config/locales/mailers/account_mailer.en.yml` `welcome`: "working on fun projects" (decide
+      whether "projects" still reads fine as exercises)
+- [ ] Propagate every change above to the 10 non-en copies (`bn el es-419 es-ES fr hu it pt-BR
+      pt-PT uk`) — or blank the keys and let the translation pass rewrite them; the locale
+      completeness workflow hard-fails on missing keys for production locales
+
+## Change Premium to a one-off payment
+
+### Decisions first (shared with the front-end list; recorded here for the API-specific angle)
+
+- [ ] Base price and PPP scaling: the 103-row `PREMIUM_PRICES` table needs a single amount per
+      currency; decide formula (e.g. scale from `annual`) before rewriting by hand
+- [ ] Lifetime representation: (a) grant a non-expiring `PremiumEntitlement` with source `STRIPE`
+      (constant already exists), or (b) a new `LIFETIME` source. Recommend (a); it makes
+      `DowngradeToStandard` refuse to downgrade for free
+- [ ] Whether `premium?` should be derived from active entitlements instead of `membership_type`
+      (today `membership_type` is the source of truth and entitlements only block downgrade)
+- [ ] Exercism Insider entitlement is revocable daily; decide if it stays revocable or becomes
+      one-way like Bootcamp
+- [ ] Ask Jiki cap for lifetime users, and whether the API should own a per-user counter
+      (`assistant_conversations` has no usage columns) or leave it in the proxy
+- [ ] Refund policy, and whether refunds revoke the entitlement (`charge.refunded` webhook)
+- [ ] Whether `Payment` history (`internal/payments_controller.rb`, `SerializePayments`) stays
+
+### Stripe integration
+
+- [ ] Create one-off Stripe Prices (one product, multi-currency price or per-currency prices);
+      replace `stripe_premium_monthly_price_id` / `stripe_premium_annual_price_id` in the config gem
+      (`../config/settings/*.yml`, `../config/lib`) with a single `stripe_premium_lifetime_price_id`;
+      include the config PR in the plan
+- [ ] Rewrite `config/initializers/pricing.rb` `PREMIUM_PRICES` to `{ currency => amount }`; update
+      `lib/tasks/stripe_currency_options.rake` for the new price
+- [ ] `Stripe::CreateCheckoutSession`: `mode: 'payment'`, drop `subscription_data`, keep
+      `ui_mode: 'elements'` and metadata
+- [ ] Replace `Stripe::DetermineSubscriptionDetails` (interval → price id map) with a single-price
+      lookup
+- [ ] `Stripe::VerifyCheckoutSession`: verify `payment_status == 'paid'` / `payment_intent`, not
+      `session.subscription`; drop interval/decline handling that assumed subscriptions; keep
+      `StripeCheckoutSessionIncompleteError` (remove `interval` attribute)
+- [ ] `Stripe::Webhook::HandleEvent`: route `checkout.session.completed` (payment mode) and
+      `payment_intent.succeeded` / `charge.refunded`; delete `customer.subscription.*` and
+      `invoice.payment_*` handlers (`subscription_created/updated/deleted`,
+      `invoice_payment_succeeded/failed`)
+- [ ] New grant path: on paid checkout → `User::PremiumEntitlement::Grant.(user, STRIPE)` +
+      `Payment` row from the payment intent / charge (replace `CreatePaymentFromInvoice`)
+- [ ] Delete `Stripe::UpdateSubscription`, `CancelSubscription`, `ReactivateSubscription`,
+      `CreatePortalSession`, `SyncSubscriptionToUser`, `UpdateSubscriptionsFromInvoice`
+- [ ] `Internal::SubscriptionsController`: keep `checkout_session` (no `interval` param) and
+      `verify_checkout`; remove `portal_session`, `update`, `cancel`, `reactivate` and their routes
+      (`config/routes.rb` subscriptions namespace); consider renaming to `purchases`
+- [ ] `External::PricingController`: return a single `price` (+ currency, country_code)
+- [ ] Remove `StripeSubscriptionCancellationError` from `config/initializers/exceptions.rb`; remove
+      `existing_subscription`, `invalid_interval`, `cancel_failed`, `reactivate_failed`,
+      `portal_failed` from `docs/api_error_types.md`
+- [ ] `Dev::UsersController#clear_stripe_history` and `dev` routes: simplify or delete
+
+### User data model
+
+- [ ] `User::Data`: remove `subscription_status` enum and helpers (`monthly?`, `annual?`,
+      `subscription_paid?`, `in_grace_period?`, `grace_period_ends_at`, `current_subscription`,
+      `can_change_interval?`); `can_checkout?` becomes `!premium?`
+- [ ] Migration: drop or leave dormant `stripe_subscription_id`, `stripe_subscription_status`,
+      `subscription_interval` (NOT NULL default 'monthly'), `subscription_status`,
+      `subscription_valid_until`, `subscriptions` jsonb; keep `stripe_customer_id`,
+      `membership_type`, `welcome_to_premium_email_status`
+- [ ] `User::DowngradeToStandard`: keep for admin/refund use only; remove subscription-lapse callers
+- [ ] `User::PremiumEntitlement::Revoke`: drop the "skip downgrade if Stripe subscription still
+      active" branch, replace with "skip if any other active entitlement"
+- [ ] `User::UpgradeToPremium`: default analytics source and `welcome_to_premium` still fit
+- [ ] `SerializeUser`: drop `subscription_status` and `subscription`; make `premium_prices` a single
+      amount; coordinate with `front-end/types/auth.ts` and `tests/mocks/user.ts`
+- [ ] Analytics (`app/commands/analytics/track_event.rb` callers): `checkout_started` loses
+      plan/interval; remove `subscription_reactivated`, `subscription_cancelled` etc.
+
+### Emails
+
+- [ ] Delete `PremiumMailer#subscription_ended` + views + locale keys in all 11 files, or repurpose
+      as `premium_revoked` for refunds
+- [ ] Rewrite `welcome_to_premium` ("subscribing", livestream)
+- [ ] Rewrite onboarding `premium` drip: bullets and the PPP "two takeaway drinks" line (per-month
+      framing), keep the `next if user.premium?` skip
+- [ ] Decide the `invoice_payment_failed` "TODO payment failed mailer" is now moot and delete the note
+- [ ] `test/mailers/premium_mailer_test.rb`, `test/mailers/previews/premium_mailer_preview.rb`
+
+### Migrate existing subscribers
+
+- [ ] One-off script (rake task or Mandate command under `app/commands/stripe/`): for every user
+      with `subscription_status` active/payment_failed/cancelling → grant lifetime entitlement,
+      cancel the Stripe subscription immediately (no proration or per policy), append a closing
+      `subscriptions` entry, send the announcement email
+- [ ] Decide handling for `incomplete` and `canceled`-but-still-in-period users
+- [ ] Add a one-off `PremiumMailer#converted_to_lifetime` (or send via `Mailshot::SendToSegment`)
+      in kept locales
+- [ ] Stripe dashboard: archive recurring prices, disable the customer portal config created by
+      `CreatePortalSession`, update webhook endpoint event list
+- [ ] Verify no recurring job or webhook can re-downgrade a converted user afterwards
+      (`subscription_deleted` webhooks will arrive for every cancellation — handlers must be gone
+      or no-ops before the script runs)
+
+### Tests
+
+- [ ] Rewrite/delete under `test/commands/stripe/**` (11 files) and
+      `test/commands/stripe/webhook/**` (7 files), `test/controllers/internal/subscriptions_controller_test.rb`
+      (824 lines), `test/controllers/webhooks/stripe_controller_test.rb`,
+      `test/controllers/external/pricing_controller_test.rb`, `test/serializers/serialize_user_test.rb`,
+      `test/models/user/data_test.rb`, `test/commands/user/{downgrade_to_standard,premium_entitlement/*}_test.rb`,
+      `test/factories/{payments,premium_entitlements,user_data}.rb`
+
+## Ask Jiki gating
+
+- [ ] Decide free tier: keep "one lesson conversation ever" in
+      `AssistantConversation::CheckUserAccess` or change; challenge chat stays premium-only via
+      `require_premium!`
+- [ ] If a per-user lifetime budget is chosen, decide whether the API stores the counter (new
+      column on `user_data` or `assistant_conversations`) and exposes it in the JWT from
+      `CreateConversationToken`, or the proxy's KV owns it
+- [ ] Confirm `terraform/google/billing-cap.tf` against the new exposure (front-end list owns this;
+      link only)
+
+## Videos
+
+- [ ] Nothing to do in the API for the welcome modal: `welcome_modal` is a generic
+      `client:`-namespaced `user_flags` row. Optionally delete stale rows and swap the example key
+      in `test/commands/user/flag/mark_test.rb` and `test/controllers/internal/flags_controller_test.rb`
+
+## Freeze copy, then finish translations
+
+Do every item above before this section. Locales here: `I18n::PRODUCTION_LOCALES` (11) must match
+whatever the front-end settles on in `app/lib/locales.ts`; `ALL_LOCALES` (31) is the WIP pool.
+
+- [ ] Prune `PRODUCTION_LOCALES` / `ALL_LOCALES` in `config/initializers/i18n.rb` to the kept set;
+      delete orphaned `config/locales/mailers/*.{locale}.yml` and
+      `db/seeds/level_translations/{locale}.json` for dropped locales (or keep WIP files, they only warn)
+- [ ] Re-translate `onboarding_mailer` (rewritten drip), `premium_mailer` (rewritten), and
+      `account_mailer` for every kept locale; note the non-en onboarding files are independent
+      rewrites today, so decide whether they become faithful translations
+- [ ] Level milestone emails: complete `db/seeds/level_translations/*.json` for kept locales
+      (hu placeholders; any new level)
+- [ ] Badge email copy: `badge_translations` via `Badge::Translation::TranslateToAllLocales` for
+      kept locales (no live `badge_earned` call site per `docs/i18n.md`; decide whether to wire or drop)
+- [ ] Locale-prefixed unsubscribe links in emails (`ApplicationMailer#unsubscribe_url`) — carried
+      over from `front-end/i18n_TODO.md`
+- [ ] `.github/workflows/locale-completeness.yml` and `test/i18n_parity_test.rb` stay as the gate;
+      confirm they cover any new mailer
+
+## Existing users and communication
+
+- [ ] Send the subscriber conversion email (see migration section) via the new mailer or `Mailshot`
+- [ ] Optional: a one-off `Mailshot::SendToSegment` announcing the finished course and Exercism as
+      the next step to all confirmed users
+
+## Freeze the stack and set a maintenance budget
+
+- [ ] `config/recurring.yml`: keep `clear_solid_queue_finished_jobs`,
+      `create_onboarding_notifications`; keep `sync_exercism_entitlements` only if Exercism
+      entitlements still grant Premium
+- [ ] `.github/workflows/`: decide on `claude-code-review.yml`, `claude.yml`, the weekly
+      `curriculum-content.yml` cron, and dependency bots
+- [ ] Sentry: quiet alert rules to what will be read; Ops Handler GitHub mirroring likewise
+- [ ] Pin gems; decide the Rails / Stripe API version (`Stripe.api_version = "2026-05-27.dahlia"`)
+      is the last one and note it
+- [ ] Remove the dead `lesson_translations` table (no model) and `Lesson` translation migration
+      remnants while the schema is being touched for subscription columns
+- [ ] Write down the monthly run cost for this half (ECS, Aurora Serverless, SES, Solid Queue
+      worker, Gemini translation calls) alongside the front-end's list
+
+## Docs cleanup
+
+- [ ] `CLAUDE.md` lines 24-25: "Subscriptions: Stripe for payments. Status tracked in User::Data
+      with webhooks" → one-off purchase, entitlements
+- [ ] `docs/api_error_types.md`: remove subscription-only error types (listed above)
+- [ ] `docs/i18n.md`: mailer list (line 45) if `building` / `subscription_ended` are deleted
+- [ ] Memory notes referencing subscription states, the stuckometer, or Learn to Build
