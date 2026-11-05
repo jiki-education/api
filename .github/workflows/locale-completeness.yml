@@ -17,7 +17,8 @@ on:
 
 jobs:
   verify_locales:
-    runs-on: ubuntu-latest
+    # setup-ruby has no build of our Ruby version for ubuntu-26.04 yet
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout API
