@@ -25,8 +25,28 @@ class SerializePaymentsTest < ActiveSupport::TestCase
     assert_equal 1999, serialized[:amount_in_cents]
     assert_equal "usd", serialized[:currency]
     assert_equal "premium", serialized[:product]
+    assert_equal "subscription", serialized[:purchase_type]
+    assert_nil serialized[:revoked_reason]
     assert_equal "https://invoice.stripe.com/test", serialized[:external_receipt_url]
     assert_equal "2025-01-15T10:00:00Z", serialized[:paid_at]
+  end
+
+  test "serializes a lifetime purchase" do
+    payment = create(:payment, :lifetime)
+
+    result = SerializePayments.([payment]).first
+
+    assert_equal "lifetime", result[:purchase_type]
+    assert_nil result[:revoked_reason]
+  end
+
+  test "serializes a revoked lifetime purchase" do
+    payment = create(:payment, :lifetime)
+    payment.update!(data: payment.data.merge("revoked_at" => Time.current.iso8601, "revoked_reason" => "refunded"))
+
+    result = SerializePayments.([payment]).first
+
+    assert_equal "refunded", result[:revoked_reason]
   end
 
   test "serializes multiple payments" do

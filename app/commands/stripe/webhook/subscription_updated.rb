@@ -10,7 +10,10 @@ class Stripe::Webhook::SubscriptionUpdated
     end
 
     # Check if price changed (interval change)
-    handle_plan_change if previous_attribute_keys.include?('items')
+    if previous_attribute_keys.include?('items')
+      handle_plan_change
+      Stripe::SyncSubscriptionPrice.(user, subscription)
+    end
 
     # Check if cancellation was scheduled/unscheduled
     handle_cancellation_change

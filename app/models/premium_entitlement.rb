@@ -1,7 +1,7 @@
 class PremiumEntitlement < ApplicationRecord
   EXERCISM_INSIDER = "exercism_insider".freeze
   EXERCISM_BOOTCAMP = "exercism_bootcamp".freeze
-  STRIPE = "stripe".freeze
+  STRIPE_PURCHASE = "stripe_purchase".freeze
 
   belongs_to :user, class_name: "::User"
 

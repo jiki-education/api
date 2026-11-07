@@ -10,6 +10,8 @@ class SerializePayments
         amount_in_cents: payment.amount_in_cents,
         currency: payment.currency,
         product: payment.product,
+        purchase_type: payment.purchase_type,
+        revoked_reason: payment.revoked_reason,
         external_receipt_url: payment.external_receipt_url,
         paid_at: payment.created_at.iso8601
       }

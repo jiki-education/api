@@ -16,6 +16,9 @@ class SerializeUser
       uses_oauth: user.uses_oauth?,
       email_confirmed: user.confirmed?,
       admin: user.admin?,
+      lifetime_premium: user.data.lifetime_premium?,
+      can_purchase_premium: user.data.can_purchase_premium?,
+      premium_purchase_pending: user.data.premium_purchase_pending?,
       subscription_status: user.data.subscription_status,
       subscription: subscription_data,
       premium_prices: premium_prices_data
@@ -24,11 +27,12 @@ class SerializeUser
 
   private
   def premium_prices_data
-    prices = PREMIUM_PRICES[user.currency]
+    prices = Pricing::DeterminePrices.(user.data.country_code)
     {
-      currency: user.currency,
+      currency: prices[:currency],
       monthly: prices[:monthly],
       annual: prices[:annual],
+      lifetime: prices[:lifetime],
       country_code: user.data.country_code
     }
   end
@@ -39,6 +43,8 @@ class SerializeUser
 
     {
       interval: user.data.subscription_interval,
+      amount_in_cents: user.data.subscription_amount_in_cents,
+      currency: user.data.subscription_currency,
       in_grace_period: user.data.in_grace_period?,
       grace_period_ends_at: user.data.grace_period_ends_at,
       subscription_valid_until: user.data.subscription_valid_until

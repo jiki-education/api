@@ -6,6 +6,7 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
     user.data.update!(membership_type: "standard")
 
     subscription = mock_subscription(status: "active")
+    Stripe::SyncSubscriptionPrice.expects(:call).with(user, subscription)
 
     status = Stripe::SyncSubscriptionToUser.(user, subscription, "monthly")
 
@@ -20,6 +21,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "sets active status for trialing subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
 
     subscription = mock_subscription(status: "trialing")
@@ -33,6 +36,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "sets subscription_interval to annual when specified" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
 
     subscription = mock_subscription(status: "active")
@@ -44,6 +49,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "sets subscription_interval to monthly when specified" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
 
     subscription = mock_subscription(status: "active")
@@ -55,6 +62,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "sets incomplete status and preserves membership_type for incomplete subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(membership_type: "premium")
 
@@ -71,6 +80,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "preserves standard membership_type for incomplete subscription when user has no prior subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(membership_type: "standard")
 
@@ -85,6 +96,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "adds subscription to subscriptions array with interval" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
 
     subscription = mock_subscription(status: "active")
@@ -104,6 +117,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "is idempotent - does not duplicate subscription entry if already exists" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(
       subscriptions: [
@@ -128,6 +143,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "adds new subscription entry if different subscription id" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(
       subscriptions: [
@@ -155,6 +172,8 @@ class Stripe::SyncSubscriptionToUserTest < ActiveSupport::TestCase
   end
 
   test "leaves subscription_valid_until nil when subscription item has no period end" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
 
     subscription = mock_subscription(status: "active", period_end: nil)

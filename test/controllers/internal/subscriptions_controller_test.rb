@@ -22,7 +22,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
@@ -37,7 +37,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
     session = mock
     session.stubs(:client_secret).returns("cs_secret_x")
-    Stripe::CreateCheckoutSession.stubs(:call).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.stubs(:call).returns(session)
 
     Analytics::TrackEvent.expects(:defer).with(
       @user,
@@ -61,7 +61,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
     session = mock
     session.stubs(:client_secret).returns("cs_secret_x")
-    Stripe::CreateCheckoutSession.stubs(:call).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.stubs(:call).returns(session)
 
     Analytics::TrackEvent.expects(:defer).with(
       @user,
@@ -86,7 +86,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_456")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "annual", return_url: return_url },
@@ -103,7 +103,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { return_url: return_url },
@@ -123,7 +123,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns(url_encoded_secret)
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
@@ -161,7 +161,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST checkout_session handles Stripe errors gracefully" do
     return_url = "#{Jiki.config.frontend_base_url}/subscribe/complete"
 
-    Stripe::CreateCheckoutSession.expects(:call).raises(StandardError.new("Stripe API error"))
+    Stripe::CreateCheckoutSessionForSubscription.expects(:call).raises(StandardError.new("Stripe API error"))
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
@@ -178,7 +178,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
     session = mock
     session.stubs(:client_secret).returns("cs_secret_123")
 
-    Stripe::CreateCheckoutSession.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
+    Stripe::CreateCheckoutSessionForSubscription.expects(:call).with(@user, price_id, return_url, :usd).returns(session)
 
     post internal_subscriptions_checkout_session_path,
       params: { interval: "monthly", return_url: return_url },
@@ -245,7 +245,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout successfully verifies and syncs subscription" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).with(@user, session_id).returns({
       success: true,
       interval: "monthly",
       payment_status: "paid",
@@ -271,7 +271,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout passes through payment_state and decline_code for a failed async payment" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).with(@user, session_id).returns({
       success: true,
       interval: "monthly",
       payment_status: "unpaid",
@@ -293,7 +293,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout returns incomplete status for async payments" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).with(@user, session_id).returns({
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).with(@user, session_id).returns({
       success: true,
       interval: "monthly",
       payment_status: "unpaid",
@@ -328,7 +328,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout returns forbidden when session does not belong to user" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).
       with(@user, session_id).
       raises(SecurityError.new("Checkout session does not belong to current user"))
 
@@ -344,7 +344,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout returns unprocessable_entity for invalid session" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).
       with(@user, session_id).
       raises(ArgumentError.new("Subscription has no items"))
 
@@ -360,7 +360,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout returns checkout_payment_incomplete with decline code and attempted plan" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).
       with(@user, session_id).
       raises(StripeCheckoutSessionIncompleteError.new(
         decline_code: "insufficient_funds", interval: "monthly", currency: "gbp"
@@ -381,7 +381,7 @@ class Internal::SubscriptionsControllerTest < ApplicationControllerTest
   test "POST verify_checkout handles general errors gracefully" do
     session_id = "cs_test_123"
 
-    Stripe::VerifyCheckoutSession.expects(:call).
+    Stripe::VerifyCheckoutSessionForSubscription.expects(:call).
       with(@user, session_id).
       raises(StandardError.new("Stripe API error"))
 

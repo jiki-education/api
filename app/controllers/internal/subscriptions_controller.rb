@@ -42,7 +42,7 @@ class Internal::SubscriptionsController < Internal::BaseController
     currency = current_user.currency
 
     # Create checkout session
-    session = Stripe::CreateCheckoutSession.(current_user, price_id, return_url, currency)
+    session = Stripe::CreateCheckoutSessionForSubscription.(current_user, price_id, return_url, currency)
 
     Analytics::TrackEvent.defer(
       current_user,
@@ -92,7 +92,7 @@ class Internal::SubscriptionsController < Internal::BaseController
 
     return render json: { error: { type: "missing_session_id" } }, status: :bad_request unless session_id.present?
 
-    result = Stripe::VerifyCheckoutSession.(current_user, session_id)
+    result = Stripe::VerifyCheckoutSessionForSubscription.(current_user, session_id)
 
     render json: {
       success: result[:success],

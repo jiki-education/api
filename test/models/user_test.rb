@@ -249,6 +249,26 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :eur, user.currency
   end
 
+  test "currency returns eur for Bulgaria" do
+    user = create(:user)
+    user.data.update_column(:country_code, "BG")
+
+    assert_equal :eur, user.currency
+  end
+
+  {
+    "CA" => :cad, "CH" => :chf, "LI" => :chf, "DK" => :dkk, "GL" => :dkk, "FO" => :dkk, "NO" => :nok, "SE" => :sek,
+    "BT" => :inr, "CO" => :cop, "DO" => :dop, "TO" => :top, "WS" => :wst, "CW" => :xcg, "SX" => :xcg,
+    "KW" => :usd, "GH" => :usd
+  }.each do |country, currency|
+    test "currency returns #{currency} for #{country}" do
+      user = create(:user)
+      user.data.update_column(:country_code, country)
+
+      assert_equal currency, user.currency
+    end
+  end
+
   test "currency returns usd for unknown country" do
     user = create(:user)
     user.data.update_column(:country_code, "XX")

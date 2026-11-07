@@ -154,6 +154,12 @@ Rails.application.routes.draw do
       post :reactivate
     end
 
+    # One-off lifetime Premium purchase
+    namespace :premium_purchases do
+      post :checkout_session
+      post :verify_checkout
+    end
+
     # Payment history
     resources :payments, only: [:index]
 

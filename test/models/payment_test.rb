@@ -99,4 +99,17 @@ class PaymentTest < ActiveSupport::TestCase
 
     refute Payment.exists?(payment_id)
   end
+
+  test "purchase_type defaults to subscription" do
+    assert_equal "subscription", build(:payment).purchase_type
+  end
+
+  test "purchase_type reads lifetime from data" do
+    assert_equal "lifetime", build(:payment, :lifetime).purchase_type
+  end
+
+  test "revoked_reason reads from data" do
+    assert_nil build(:payment, :lifetime).revoked_reason
+    assert_equal "disputed", build(:payment, :lifetime, data: { "revoked_reason" => "disputed" }).revoked_reason
+  end
 end
