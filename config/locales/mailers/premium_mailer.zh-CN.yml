@@ -1,10 +1,10 @@
 zh-CN:
   premium_mailer:
     welcome_to_premium:
-      subject: "欢迎订阅 Jiki Premium！"
+      subject: "欢迎加入 Jiki Premium！"
       greeting: "你好，"
       body_markdown: |
-        感谢订阅 Jiki Premium！
+        感谢升级到 Jiki Premium！
 
         你可以在 [Premium 页面](https://jiki.io/premium)查看你能使用的所有功能。希望你在使用 Jiki 时玩得开心，也希望很快能在直播中见到你！
 

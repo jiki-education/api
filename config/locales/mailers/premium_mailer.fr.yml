@@ -4,7 +4,7 @@ fr:
       subject: "Bienvenue sur Jiki Premium !"
       greeting: "Salut,"
       body_markdown: |
-        Merci de ton abonnement à Jiki Premium !
+        Merci d'avoir rejoint Jiki Premium !
 
         Tu peux voir toutes les fonctionnalités auxquelles tu as accès sur la [page Premium](https://jiki.io/premium). On espère que tu vas bien t'amuser avec Jiki et qu'on te retrouvera bientôt lors d'un live !
 
