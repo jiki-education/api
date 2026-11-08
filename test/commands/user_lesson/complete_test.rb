@@ -27,6 +27,45 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
     assert user_lesson.completed_at.present?
   end
 
+  test "delegates to CompleteBonus when bonus_passed" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+
+    UserLesson::CompleteBonus.expects(:call).with(user, lesson)
+
+    UserLesson::Complete.(user, lesson, bonus_passed: true)
+  end
+
+  test "does not touch the bonus by default" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    user_lesson = create(:user_lesson, user:, lesson:)
+
+    UserLesson::Complete.(user, lesson)
+
+    assert_nil user_lesson.reload.bonus_completed_at
+  end
+
+  test "records the bonus even when the lesson is already complete" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    completed_at = Time.utc(2026, 9, 1, 12, 0, 0)
+    user_lesson = create(:user_lesson, user:, lesson:, completed_at:)
+
+    UserLesson::Complete.(user, lesson, bonus_passed: true)
+
+    user_lesson.reload
+    assert user_lesson.bonus_completed_at.present?
+    assert_equal completed_at, user_lesson.completed_at
+  end
+
   test "raises error if user_lesson doesn't exist and lesson is not startable" do
     user = create(:user)
     lesson = create(:lesson, :exercise)

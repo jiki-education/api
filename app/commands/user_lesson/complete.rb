@@ -1,10 +1,15 @@
 class UserLesson::Complete
   include Mandate
 
-  initialize_with :user, :lesson
+  initialize_with :user, :lesson, bonus_passed: false
 
   def call
     user_lesson.with_lock do
+      # The bonus is an independent high-water mark, so record it even when the
+      # lesson itself is already complete - a user can pass the bonus on a
+      # re-run long after finishing the required scenarios.
+      UserLesson::CompleteBonus.(user, lesson) if bonus_passed
+
       # Guard: if already completed, return early (idempotent)
       return if user_lesson.completed_at.present?
 
