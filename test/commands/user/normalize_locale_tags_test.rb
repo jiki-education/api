@@ -16,4 +16,12 @@ class User::NormalizeLocaleTagsTest < ActiveSupport::TestCase
   test "returns an empty array when tags is empty" do
     assert_equal [], User::NormalizeLocaleTags.([], %w[en])
   end
+
+  test "a script subtag decides the Chinese variant over the region" do
+    assert_equal %w[zh-TW zh-CN], User::NormalizeLocaleTags.(%w[zh-Hant-CN zh-Hans-TW], %w[zh-CN zh-TW])
+  end
+
+  test "a script subtag whose variant is absent from the set falls through" do
+    assert_equal %w[en], User::NormalizeLocaleTags.(%w[zh-Hant-TW en], %w[en zh-CN])
+  end
 end

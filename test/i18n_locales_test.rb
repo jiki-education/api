@@ -39,7 +39,7 @@ class I18nLocalesTest < ActiveSupport::TestCase
 
   test "every LANGUAGE_VARIANTS target is a real locale" do
     User::NormalizeLocaleTags::LANGUAGE_VARIANTS.each do |language, variant|
-      targets = [variant[:bare], variant[:fallback], *variant[:regions].values].uniq
+      targets = [variant[:bare], variant[:fallback], *variant[:regions].values, *variant.fetch(:scripts, {}).values].uniq
       targets.each do |target|
         assert_includes ALL, target, "#{language} maps to #{target.inspect}, which isn't a known locale"
       end

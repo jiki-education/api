@@ -13,12 +13,16 @@ class Internal::Challenges::ExerciseSubmissionsController < Internal::BaseContro
     user_challenge = UserChallenge::Start.(current_user, @challenge)
 
     # Create submission with UserChallenge as context
-    ExerciseSubmission::Create.(
+    submission = ExerciseSubmission::Create.(
       user_challenge,
       submission_params[:files]
     )
 
-    render json: {}, status: :created
+    # Return only the identifier: the client already has the files, and uses
+    # the uuid to patch progression scores in a follow-up request.
+    render json: {
+      submission: { uuid: submission.uuid }
+    }, status: :created
   end
 
   private

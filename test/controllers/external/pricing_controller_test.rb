@@ -10,6 +10,7 @@ class External::PricingControllerTest < ActionDispatch::IntegrationTest
         currency: :brl,
         monthly: PREMIUM_PRICES[:brl][:monthly],
         annual: PREMIUM_PRICES[:brl][:annual],
+        lifetime: PREMIUM_PRICES[:brl][:lifetime],
         country_code: "BR"
       }
     })
@@ -24,6 +25,7 @@ class External::PricingControllerTest < ActionDispatch::IntegrationTest
         currency: :usd,
         monthly: PREMIUM_PRICES[:usd][:monthly],
         annual: PREMIUM_PRICES[:usd][:annual],
+        lifetime: PREMIUM_PRICES[:usd][:lifetime],
         country_code: nil
       }
     })
@@ -38,7 +40,23 @@ class External::PricingControllerTest < ActionDispatch::IntegrationTest
         currency: :usd,
         monthly: PREMIUM_PRICES[:usd][:monthly],
         annual: PREMIUM_PRICES[:usd][:annual],
+        lifetime: PREMIUM_PRICES[:usd][:lifetime],
         country_code: "XX"
+      }
+    })
+  end
+
+  test "returns the low USD lifetime price for a low-tier country" do
+    get external_pricing_path, headers: { "CF-IPCountry" => "EC" }, as: :json
+
+    assert_response :success
+    assert_json_response({
+      premium_prices: {
+        currency: :usd,
+        monthly: PREMIUM_PRICES[:usd][:monthly],
+        annual: PREMIUM_PRICES[:usd][:annual],
+        lifetime: LOW_USD_LIFETIME_PRICE,
+        country_code: "EC"
       }
     })
   end

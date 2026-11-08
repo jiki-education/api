@@ -1,0 +1,97 @@
+[
+  {
+    "level_uuid": "7963a7e0-0386-46fa-bf47-c19eaa1eb555",
+    "milestone_email_subject": "Glückwunsch zum ersten Meilenstein!",
+    "milestone_email_content_markdown": "Super gemacht! Das erste Level von Jikis Kurs „Coding Fundamentals“ ist geschafft.\n\nVielleicht fühlt es sich noch nicht so an, als würdest du schon „echt“ programmieren, aber du hast gerade eine der wichtigsten Fähigkeiten der Programmierung gelernt. Ab jetzt wirst du Funktionen hunderte Male am Tag benutzen. Das hier ist also wirklich das Fundament für alles Weitere.\n\nAls Nächstes schauen wir uns an, wie du mit Farben zeichnest, und danach bringen wir etwas Logik ins Spiel. Viel Spaß!"
+  },
+  {
+    "level_uuid": "de4de3c1-d2ee-4af5-9df6-857a9f1df478",
+    "milestone_email_subject": "Hat dir das Zeichnen Spaß gemacht?",
+    "milestone_email_content_markdown": "Großartige Arbeit in diesem Level, und Glückwunsch zu deinen ersten richtigen Zeichnungen.\n\nJetzt hast du Strings und Farben in deinem Werkzeugkasten. Das heißt, deine Programme können mit Text umgehen und Dinge erzeugen, die auf dem Bildschirm wirklich gut aussehen.\n\nIn den nächsten Lektionen bringen wir etwas Logik ins Spiel. Dann musst du dich nicht mehr auf lineare Anweisungen beschränken und kannst Abwechslung und Intelligenz in deine Programme bringen. Viel Spaß!"
+  },
+  {
+    "level_uuid": "8eafc890-d96f-4143-9556-fafd58f90735",
+    "milestone_email_subject": "Schon ganz schwindelig vom vielen Schleifen?",
+    "milestone_email_content_markdown": "Großartige Arbeit in diesem Level. Schleifen sind ein grundlegender Baustein der Programmierung, und hoffentlich fühlen sie sich inzwischen ganz vertraut an.\n\nEs gibt noch andere Arten von Schleifen, die wir uns später im Kurs anschauen. Die repeat-Schleife wird dich aber erst einmal durch die nächsten Lektionen begleiten.\n\nAls Nächstes kommen Variablen. Dabei geht es darum, Werte zu speichern und wieder abzurufen, während dein Programm läuft. Viel Spaß!"
+  },
+  {
+    "level_uuid": "a47b33c1-fecd-4f15-a025-f95b878e31b7",
+    "milestone_email_subject": "Variablen im Griff",
+    "milestone_email_content_markdown": "Super gemacht, jetzt hast du Variablen im Griff.\n\nVariablen sind so eine Idee: an der Oberfläche ziemlich einfach, aber sie werden fast alles tragen, was du ab jetzt schreibst. Einen Wert speichern, ihm einen Namen geben und ihn später wieder benutzen: genau das macht aus Code, der nur eine feste Liste von Anweisungen ist, etwas wirklich Flexibles.\n\nAls Nächstes schauen wir uns an, wie sich Variablen mit der Zeit ändern. Das nennen Programmierer „Zustand“. Viel Spaß!"
+  },
+  {
+    "level_uuid": "f74c506c-144e-4287-83eb-356568ffc234",
+    "milestone_email_subject": "Der Zustand der Dinge",
+    "milestone_email_content_markdown": "Großartige Arbeit. Jetzt kannst du Werte verfolgen, die sich ändern, während dein Programm läuft. Das ist ein echter Sprung im Vergleich zu vor ein paar Levels.\n\nDiese Idee des Zustands wird dir im ganzen Kurs immer wieder begegnen, und sie wird jedes Mal interessanter, wenn wir sie mit etwas Neuem kombinieren.\n\nAls Nächstes kommt ein ordentliches Level. Wir schauen uns Funktionen an, die Werte zurückgeben, und erkunden unterwegs Farben, Zufall, Animation, den Gültigkeitsbereich und verschachtelte Schleifen. Viel Spaß!"
+  },
+  {
+    "level_uuid": "e3933253-d25e-4b35-a442-4cd96ead2188",
+    "milestone_email_subject": "Eine ordentliche Ausbeute",
+    "milestone_email_content_markdown": "Großartige Arbeit in einem prall gefüllten Level. Funktionen, die Werte zurückgeben, HSL- und RGB-Farben, Animation, Zufallszahlen, Gültigkeitsbereich, Szenarien und Schleifen in Schleifen. Das sind eine Menge neuer Ideen auf einmal für deinen Werkzeugkasten.\n\nMach dir keine Sorgen, wenn sich manches davon noch etwas verschwommen anfühlt. Alles kommt später im Kurs in anderen Zusammenhängen wieder, und jedes Mal wird es vertrauter.\n\nAls Nächstes treffen wir Entscheidungen im Code, und zwar mit if-Anweisungen. Hier fühlen sich deine Programme zum ersten Mal wirklich intelligent an. Viel Spaß!"
+  },
+  {
+    "level_uuid": "2977da36-d6e7-4e94-b654-f029f8fd55dd",
+    "milestone_email_subject": "Wenn, dann, was?",
+    "milestone_email_content_markdown": "Gut gemacht im Level zu den Bedingungen. Hoffentlich fühlen sich if und else inzwischen ganz natürlich an.\n\nBedingungen gehören zu den wichtigsten Ideen der Programmierung. Fast jedes interessante Programm muss Entscheidungen darüber treffen, was gerade zutrifft, und du hast jetzt das Handwerkszeug dafür.\n\nAls Nächstes schauen wir uns mächtigere Arten an, Bedingungen zu schreiben. Wir kombinieren sie mit and/or und schauen uns ein paar verwandte Ideen wie Modulo an. Viel Spaß!"
+  },
+  {
+    "level_uuid": "fcd15968-fc9e-49e7-b6dc-d29da3ecf711",
+    "milestone_email_subject": "Logische nächste Schritte",
+    "milestone_email_content_markdown": "Großartige Arbeit in einem kniffligen Level. Jetzt hast du and/or, Modulo und Schleifen ohne Zähler im Griff.\n\nMit solchen Werkzeugen kannst du Bedingungen schreiben, die wirklich der Logik der echten Welt entsprechen, statt alles in winzige einzelne Prüfungen aufzuteilen.\n\nAls Nächstes kombinieren wir Bedingungen mit Zustand. Damit können deine Programme darauf reagieren, was während ihres Laufs passiert. Viel Spaß!"
+  },
+  {
+    "level_uuid": "f8e8a86f-8802-4cdb-863c-6f8187785cfd",
+    "milestone_email_subject": "Programme, die reagieren",
+    "milestone_email_content_markdown": "Großartige Arbeit. Wenn du Bedingungen mit Zustand kombinierst, werden deine Programme richtig lebendig: Sie reagieren auf das, was passiert, statt nur ein festes Skript abzuspulen.\n\nUngefähr auf diesem Komplexitätsniveau wirst du für den Rest des Kurses schreiben. Alles, was du hier geübt hast, wird also immer wieder auftauchen.\n\nAls Nächstes kommt ein großer Schritt: eigene Funktionen schreiben. Bisher hast du Funktionen benutzt, die jemand anderes geschrieben hat. Ab jetzt schreibst du sie selbst. Viel Spaß!"
+  },
+  {
+    "level_uuid": "d45d91fe-f790-4f47-b072-9e7d8c453aa4",
+    "milestone_email_subject": "Jetzt hast du das Sagen",
+    "milestone_email_content_markdown": "Großartige Arbeit. Eigene Funktionen zu schreiben, ist ein echter Wendepunkt. Jetzt benutzt du nicht mehr nur die Werkzeuge im Regal, sondern baust neue.\n\nDas ist eine der wichtigsten Fähigkeiten der gesamten Programmierung. Guter Code besteht vor allem darin, Probleme in kleine, gut benannte Funktionen zu zerlegen, und du hast jetzt alles, was du dafür brauchst.\n\nAls Nächstes kehren wir zu Strings zurück und schauen uns an, wie du sie aneinanderhängst und Werte in sie einsetzt. Viel Spaß!"
+  },
+  {
+    "level_uuid": "0dcf7cf5-1b75-450d-aaeb-5246c28c3750",
+    "milestone_email_subject": "Strings, aneinandergereiht",
+    "milestone_email_content_markdown": "Gut gemacht. Verkettung und Templates sind ziemlich einfache Ideen, aber sie tauchen ständig auf, besonders überall dort, wo du eine Ausgabe für Menschen erzeugst.\n\nAb jetzt wirst du diese Techniken in fast jedem Programm benutzen, das du schreibst.\n\nAls Nächstes schauen wir uns an, wie du dich Zeichen für Zeichen durch einen String arbeitest und wie du mit einer Schleife durch seinen Inhalt gehst. Viel Spaß!"
+  },
+  {
+    "level_uuid": "a6244fe4-bc09-4c54-b244-0599bd419fdf",
+    "milestone_email_subject": "Buchstabe für Buchstabe",
+    "milestone_email_content_markdown": "Großartige Arbeit. Hoffentlich wird dir langsam klar, wie der Umgang mit Indizes und das Durchlaufen von Strings funktioniert.\n\nEinzelne Zeichen anzusehen und Text systematisch zu durchlaufen, öffnet dir eine riesige Bandbreite an Problemen, die du jetzt lösen kannst. Ein großer Teil der echten Programmierarbeit besteht genau darin.\n\nAls Nächstes schauen wir uns an, wie du mehrere Funktionen kombinierst, um komplexere Aufgaben zu lösen. Viel Spaß!"
+  },
+  {
+    "level_uuid": "f2d5a243-732a-433d-9e9b-51548c41828c",
+    "milestone_email_subject": "Zusammen besser",
+    "milestone_email_content_markdown": "Großartige Arbeit in diesem Level. Funktionen zu kombinieren, um größere Probleme zu lösen, ist genau das, was professionelle Programmierung im Alltag ausmacht. Du zerlegst ein Problem in Teile, schreibst für jeden Teil eine kleine Funktion und setzt sie dann zusammen.\n\nUnd genau das machst du jetzt wirklich.\n\nAls Nächstes schauen wir uns Methoden und Eigenschaften an. Das ist eine etwas andere Art, mit Werten zu arbeiten. Viel Spaß!"
+  },
+  {
+    "level_uuid": "37f0b015-986c-4b6a-8d3f-704a0056f994",
+    "milestone_email_subject": "Alles hat Methode",
+    "milestone_email_content_markdown": "Gut gemacht. Methoden und Eigenschaften sind ein etwas anderer Stil als das, was du bisher kennst. Statt einen Wert in eine Funktion zu geben, rufst du eine Funktion direkt auf dem Wert selbst auf. Daran muss man sich erst gewöhnen, aber es wird überall verwendet, also wird es sich schnell natürlich anfühlen.\n\nAls Nächstes schauen wir uns mächtigere Schleifen an: for-Schleifen, while-Schleifen, break und continue. Viel Spaß!"
+  },
+  {
+    "level_uuid": "86e3939f-3141-4b0e-aedb-249a1da33530",
+    "milestone_email_subject": "Mehr als nur repeat",
+    "milestone_email_content_markdown": "Großartige Arbeit. Jetzt hast du for-Schleifen, while-Schleifen, break und continue im Griff. Das sind die Schleifen, zu denen du außerhalb dieses Kurses am häufigsten greifen wirst, die investierte Zeit hat sich also gelohnt.\n\nJede hat eine etwas andere Aufgabe, und ein Gefühl dafür zu bekommen, wann du welche nimmst, kommt mit der Übung.\n\nAls Nächstes schauen wir uns Arrays an. Damit speichern Programme Sammlungen von Dingen und arbeiten mit ihnen. Viel Spaß!"
+  },
+  {
+    "level_uuid": "ecea29c5-9e4a-4d1a-a215-c3ea2d13a06d",
+    "milestone_email_subject": "Eine ganze Sammlung",
+    "milestone_email_content_markdown": "Großartige Arbeit. Arrays (oder Listen, wie manche sie nennen) gehören zu den nützlichsten Werkzeugen in jeder Sprache. Immer wenn du es mit mehr als einem von etwas zu tun hast, greifst du zu einem Array.\n\nJetzt hast du ein gutes Gefühl dafür, wie du Werte aus ihnen liest und ihren Inhalt durchgehst.\n\nAls Nächstes bauen wir Arrays Stück für Stück von Grund auf auf. Viel Spaß!"
+  },
+  {
+    "level_uuid": "d65e091d-ea5d-4f7b-b588-d06fa712d91e",
+    "milestone_email_subject": "Baustein für Baustein",
+    "milestone_email_content_markdown": "Gut gemacht! Aus Arrays zu lesen ist praktisch, aber richtig stark werden sie, wenn du sie Stück für Stück selbst aufbaust. Dabei gehst du mit einer Schleife über etwas, sammelst die Teile, die dich interessieren, in einem neuen Array und gibst es zurück. Auf dieses Muster wirst du immer wieder zurückkommen.\n\nAls Nächstes: Wörterbücher. Damit speicherst du Werte unter benannten Schlüsseln statt nur unter Positionen. Viel Spaß!"
+  },
+  {
+    "level_uuid": "4647e76e-e600-43dc-8354-bf30e2dc2537",
+    "milestone_email_subject": "Namen statt Nummern",
+    "milestone_email_content_markdown": "Großartig. Wörterbücher speichern Werte unter benannten Schlüsseln statt nur unter Positionen. Dadurch wird das Nachschlagen schnell und gut lesbar.\n\nAls Nächstes und zum Schluss geht es darum, Wörterbücher zu verändern: Einträge hinzufügen, aktualisieren und entfernen, während du arbeitest. Viel Spaß!"
+  },
+  {
+    "level_uuid": "42cbc5e7-c2eb-4abb-b3e2-724d240f6f9c",
+    "milestone_email_subject": "Das war's",
+    "milestone_email_content_markdown": "Und das war das letzte Level von Jikis Kurs „Coding Fundamentals“. Hoffentlich fühlen sich Wörterbücher inzwischen wie ein nützliches Werkzeug an, das gut zu Arrays passt.\n\nDas ist eine echte Leistung. Jetzt hast du alle grundlegenden Bausteine der Programmierung abgedeckt: Funktionen, Variablen, Zustand, Bedingungen, Schleifen, Strings, Arrays und Wörterbücher. Alles Weitere sind Kombinationen und Verfeinerungen von dem, was du schon kennst.\n\nWir sind wirklich stolz auf dich, dass du so weit gekommen bist. Viel Spaß!"
+  }
+]

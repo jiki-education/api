@@ -15,6 +15,7 @@ class User::NormalizeLocaleTags
   #   :bare     - the variant for a region-less tag (e.g. "pt" -> pt-BR)
   #   :regions  - explicit region -> variant overrides
   #   :fallback - the variant for any region not listed above
+  #   :scripts  - script subtag -> variant overrides, checked before the region
   # A tag whose language is absent here simply collapses to its base language.
   LANGUAGE_VARIANTS = {
     "pt" => { bare: "pt-BR", regions: { "BR" => "pt-BR" }.freeze, fallback: "pt-PT" },
@@ -32,12 +33,16 @@ class User::NormalizeLocaleTags
     "zh" => {
       bare: "zh-CN",
       regions: { "TW" => "zh-TW", "HK" => "zh-TW", "MO" => "zh-TW" }.freeze,
-      fallback: "zh-CN"
+      fallback: "zh-CN",
+      scripts: { "Hans" => "zh-CN", "Hant" => "zh-TW" }.freeze
     }
   }.freeze
 
   def call
-    parsed_tags.filter_map do |language, region, canonical|
+    parsed_tags.filter_map do |language, script, region, canonical|
+      scripted = LANGUAGE_VARIANTS.dig(language, :scripts, script)
+      next supported?(scripted) ? scripted : nil if scripted
+
       next canonical if supported?(canonical)
 
       target = collapse(language, region)
@@ -58,7 +63,7 @@ class User::NormalizeLocaleTags
   memoize
   def parsed_tags = Array(tags).filter_map { |tag| parse(tag) }
 
-  # Splits a tag into [language, region, canonical], normalising case since
+  # Splits a tag into [language, script, region, canonical], normalising case since
   # Accept-Language isn't case-stable (language lowercased, region upcased so
   # "pt-br" and "419" both canonicalise correctly). Returns nil for a blank or
   # language-less tag.
@@ -67,9 +72,11 @@ class User::NormalizeLocaleTags
     language = parts.first.to_s.downcase
     return if language.blank?
 
-    region = parts.drop(1).find { |part| part.match?(/\A([A-Za-z]{2}|\d{3})\z/) }&.upcase
+    subtags = parts.drop(1)
+    script = subtags.find { |part| part.match?(/\A[A-Za-z]{4}\z/) }&.capitalize
+    region = subtags.find { |part| part.match?(/\A([A-Za-z]{2}|\d{3})\z/) }&.upcase
     canonical = [language, region].compact.join("-")
-    [language, region, canonical]
+    [language, script, region, canonical]
   end
 
   def supported?(locale) = locale_set.include?(locale)

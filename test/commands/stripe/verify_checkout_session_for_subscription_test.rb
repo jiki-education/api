@@ -1,7 +1,9 @@
 require "test_helper"
 
-class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
+class Stripe::VerifyCheckoutSessionForSubscriptionTest < ActiveSupport::TestCase
   test "verifies checkout session for monthly subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
     session_id = "cs_test_123"
@@ -12,7 +14,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:retrieve).with(session_id).returns(stripe_session)
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
 
-    result = Stripe::VerifyCheckoutSession.(user, session_id)
+    result = Stripe::VerifyCheckoutSessionForSubscription.(user, session_id)
 
     assert result[:success]
     assert_equal "monthly", result[:interval]
@@ -31,6 +33,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "verifies checkout session for annual subscription" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
     session_id = "cs_test_123"
@@ -41,7 +45,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:retrieve).with(session_id).returns(stripe_session)
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
 
-    result = Stripe::VerifyCheckoutSession.(user, session_id)
+    result = Stripe::VerifyCheckoutSessionForSubscription.(user, session_id)
 
     assert result[:success]
     assert_equal "annual", result[:interval]
@@ -62,7 +66,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
     assert_raises(SecurityError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
   end
 
@@ -84,7 +88,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       returns(detailed)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_equal "insufficient_funds", error.decline_code
     assert_equal "monthly", error.interval
@@ -109,7 +113,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       returns(detailed)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_equal "card_declined", error.decline_code
   end
@@ -136,7 +140,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(payment_intent)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_equal "generic_decline", error.decline_code
   end
@@ -158,7 +162,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       returns(detailed)
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_nil error.decline_code
   end
@@ -178,7 +182,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       raises(::Stripe::InvalidRequestError.new("bad expand", "expand"))
 
     error = assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_nil error.decline_code
   end
@@ -201,7 +205,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
       returns(detailed)
 
     assert_raises(StripeCheckoutSessionIncompleteError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
 
     assert_nil user.data.reload.stripe_customer_id
@@ -220,7 +224,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
     error = assert_raises(ArgumentError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_equal "Checkout session has no subscription", error.message
   end
@@ -249,12 +253,14 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
 
     error = assert_raises(ArgumentError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
     assert_match(/Unknown Stripe price ID/, error.message)
   end
 
   test "verifies via metadata user_id and persists stripe_customer_id when user has none" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     assert_nil user.data.stripe_customer_id
 
@@ -264,7 +270,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
 
-    result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    result = Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
 
     assert result[:success]
     user.data.reload
@@ -282,11 +288,13 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Checkout::Session.expects(:retrieve).with("cs_test_123").returns(stripe_session)
 
     assert_raises(SecurityError) do
-      Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+      Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
     end
   end
 
   test "handles incomplete subscription for async payments and reports payment_state processing" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -304,7 +312,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Invoice.expects(:retrieve).with(id: "in_1", expand: ["payments"]).returns(invoice)
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(stub(status: "processing"))
 
-    result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    result = Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
 
     assert result[:success]
     assert_equal "monthly", result[:interval]
@@ -319,6 +327,8 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
   end
 
   test "degrades payment_state to processing when the payment intent lookup fails" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -333,13 +343,15 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     ::Stripe::Subscription.expects(:retrieve).with("sub_123").returns(stripe_subscription)
     ::Stripe::Invoice.expects(:retrieve).with(id: "in_1", expand: ["payments"]).raises(::Stripe::APIError.new("boom"))
 
-    result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    result = Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
 
     assert_equal "processing", result[:payment_state]
     assert_nil result[:decline_code]
   end
 
   test "reports payment_state failed with the decline reason when the first payment is declined" do
+    Stripe::SyncSubscriptionPrice.stubs(:call)
+
     user = create(:user)
     user.data.update!(stripe_customer_id: "cus_123")
 
@@ -361,7 +373,7 @@ class Stripe::VerifyCheckoutSessionTest < ActiveSupport::TestCase
     )
     ::Stripe::PaymentIntent.expects(:retrieve).with("pi_1").returns(payment_intent)
 
-    result = Stripe::VerifyCheckoutSession.(user, "cs_test_123")
+    result = Stripe::VerifyCheckoutSessionForSubscription.(user, "cs_test_123")
 
     assert_equal "failed", result[:payment_state]
     assert_equal "insufficient_funds", result[:decline_code]

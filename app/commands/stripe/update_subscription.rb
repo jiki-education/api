@@ -37,6 +37,7 @@ class Stripe::UpdateSubscription
       subscription_interval: interval,
       subscription_valid_until: Time.zone.at(updated_subscription_item.current_period_end)
     )
+    Stripe::SyncSubscriptionPrice.(user, updated_subscription)
 
     Rails.logger.info("User #{user.id} changed to #{interval} billing")
 

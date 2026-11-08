@@ -22,6 +22,10 @@ class Level::CreateAllFromJson
         level_data["lessons"]&.each_with_index do |lesson_data, lesson_index|
           create_or_update_lesson!(level, lesson_data, lesson_index + 1)
         end
+
+        # The JSON ordering is authoritative, so a sync can silently reorder a
+        # level's lessons and strand users parked on one that moved backwards.
+        Curriculum::ReleaseStrandedLessonPointers.(level)
       end
     end
 

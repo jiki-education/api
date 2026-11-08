@@ -3,276 +3,84 @@ require "test_helper"
 class Internal::ExerciseSubmissionsControllerTest < ApplicationControllerTest
   setup do
     setup_user
-    @level = create(:level)
-    @lesson = create(:lesson, :exercise, level: @level)
-    @user_level = create(:user_level, user: @current_user, level: @level)
+    @scores = { "v" => 1, "score" => 15, "metrics" => { "scenarios" => 10, "distance" => 5 } }
   end
 
-  guard_incorrect_token! :internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :post
-  guard_incorrect_token! :latest_internal_lesson_exercise_submissions_path, args: ["test-slug"], method: :get
+  guard_incorrect_token! :internal_exercise_submission_path, args: ["test-uuid"], method: :patch
 
-  # GET /internal/lessons/:slug/exercise_submissions/latest tests
-  test "GET latest returns most recent submission" do
-    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    create(:exercise_submission, context: user_lesson)
-    latest_submission = create(:exercise_submission, context: user_lesson)
-    serialized = { uuid: "test", files: [] }
+  test "PATCH update calls UpdateProgressionScores and returns 200" do
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
-    SerializeExerciseSubmission.expects(:call).with(latest_submission).returns(serialized)
-
-    get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      as: :json
-
-    assert_response :success
-    assert_json_response({ submission: serialized })
-  end
-
-  test "GET latest returns 404 when user has no user_lesson" do
-    get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      as: :json
-
-    assert_json_error(:not_found)
-  end
-
-  test "GET latest returns 404 when user has no submissions" do
-    create(:user_lesson, user: @current_user, lesson: @lesson)
-
-    get latest_internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      as: :json
-
-    assert_json_error(:not_found)
-  end
-
-  test "GET latest returns 404 for non-existent lesson" do
-    get latest_internal_lesson_exercise_submissions_path(lesson_slug: "nonexistent"),
-      as: :json
-
-    assert_json_error(:not_found, error_type: :lesson_not_found)
-  end
-
-  # POST /internal/lessons/:slug/exercise_submissions tests
-  test "POST create successfully creates submission" do
-    files = [
-      { filename: "main.rb", code: "puts 'hello'" },
-      { filename: "helper.rb", code: "def help\nend" }
-    ]
-
-    Prosopite.pause do
-      post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-        params: { submission: { files: } },
-        as: :json
+    ExerciseSubmission::UpdateProgressionScores.expects(:call).with do |sub, progression_scores|
+      sub == submission && progression_scores.to_unsafe_h == @scores
     end
 
-    assert_response :created
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { progression_scores: @scores },
+      as: :json
+
+    assert_response :ok
     assert_json_response({})
   end
 
-  test "POST create starts UserLesson" do
-    files = [{ filename: "solution.rb", code: "# code" }]
+  test "PATCH update persists progression_scores for a lesson submission" do
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
-    UserLesson::Start.expects(:call).with(
-      @current_user,
-      @lesson
-    ).returns(create(:user_lesson))
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { progression_scores: @scores },
       as: :json
 
-    assert_response :created
+    assert_response :ok
+    assert_equal @scores, submission.reload.progression_scores
   end
 
-  test "POST create calls ExerciseSubmission::Create" do
-    user_lesson = create(:user_lesson, user: @current_user, lesson: @lesson)
-    files = [{ filename: "test.rb", code: "puts 'test'" }]
+  test "PATCH update persists progression_scores for a challenge submission" do
+    submission = create(:exercise_submission, context: create(:user_challenge, user: @current_user))
 
-    UserLesson::Start.stubs(:call).returns(user_lesson)
-
-    ExerciseSubmission::Create.expects(:call).with do |ul, file_params|
-      ul == user_lesson &&
-        file_params.length == 1 &&
-        file_params[0]["filename"] == "test.rb" &&
-        file_params[0]["code"] == "puts 'test'"
-    end.returns(create(:exercise_submission))
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { progression_scores: @scores },
       as: :json
 
-    assert_response :created
+    assert_response :ok
+    assert_equal @scores, submission.reload.progression_scores
   end
 
-  test "POST create handles invalid lesson slug" do
-    files = [{ filename: "test.rb", code: "code" }]
+  test "PATCH update with malformed progression_scores still returns 200" do
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
-    post internal_lesson_exercise_submissions_path(lesson_slug: "nonexistent"),
-      params: { submission: { files: } },
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { progression_scores: "1:5,10,0" },
       as: :json
 
-    assert_json_error(:not_found, error_type: :lesson_not_found)
+    assert_response :ok
+    assert_nil submission.reload.progression_scores
   end
 
-  test "POST create with multiple files" do
-    files = [
-      { filename: "file1.rb", code: "code1" },
-      { filename: "file2.rb", code: "code2" },
-      { filename: "file3.rb", code: "code3" }
-    ]
+  test "PATCH update with no progression_scores still returns 200" do
+    submission = create(:exercise_submission, context: create(:user_lesson, user: @current_user))
 
-    Prosopite.pause do
-      post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-        params: { submission: { files: } },
-        as: :json
-    end
+    patch internal_exercise_submission_path(submission.uuid), params: {}, as: :json
 
-    assert_response :created
+    assert_response :ok
+    assert_nil submission.reload.progression_scores
   end
 
-  test "POST create returns 422 for duplicate filenames" do
-    files = [
-      { filename: "main.rb", code: "code1" },
-      { filename: "main.rb", code: "code2" }
-    ]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
+  test "PATCH update returns 404 for an unknown uuid" do
+    patch internal_exercise_submission_path("nonexistent"),
+      params: { progression_scores: @scores },
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "duplicate_filename",
-        filenames: ["main.rb"]
-      }
-    })
+    assert_json_error(:not_found, error_type: :exercise_submission_not_found)
   end
 
-  test "POST create returns 422 for too many files" do
-    files = Array.new(21) { |i| { filename: "file#{i}.rb", code: "code#{i}" } }
+  test "PATCH update returns 404 for another user's submission" do
+    submission = create(:exercise_submission, context: create(:user_lesson))
 
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
+    patch internal_exercise_submission_path(submission.uuid),
+      params: { progression_scores: @scores },
       as: :json
 
-    assert_response :unprocessable_entity
-    assert_json_response({
-      error: {
-        type: "too_many_files",
-        count: 21,
-        max: 20
-      }
-    })
-  end
-
-  test "POST create returns 422 for file too large" do
-    files = [
-      { filename: "large.rb", code: "a" * 100_001 }
-    ]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
-      as: :json
-
-    assert_response :unprocessable_entity
-
-    json_response = response.parsed_body
-    assert_equal "file_too_large", json_response["error"]["type"]
-    assert_equal "large.rb", json_response["error"]["filename"]
-    assert_equal 100_000, json_response["error"]["max_bytes"]
-  end
-
-  test "POST create reports 422 to Sentry" do
-    Sentry.expects(:capture_message).with(
-      "API 422: invalid_submission (internal/exercise_submissions#create)",
-      level: :warning,
-      fingerprint: %w[internal/exercise_submissions create invalid_submission],
-      extra: instance_of(Hash)
-    )
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: [{ filename: "main.rb" }] } },
-      as: :json
-
-    assert_response :unprocessable_entity
-  end
-
-  test "POST create returns 422 for empty files array" do
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: [] } },
-      as: :json
-
-    assert_response :unprocessable_entity
-
-    json_response = response.parsed_body
-    assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_equal "no_files", json_response["error"]["reason"]
-  end
-
-  test "POST create returns 422 for missing filename" do
-    files = [{ code: "puts 'hello'" }]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
-      as: :json
-
-    assert_response :unprocessable_entity
-
-    json_response = response.parsed_body
-    assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_equal "filename_required", json_response["error"]["reason"]
-  end
-
-  test "POST create returns 422 for null filename" do
-    files = [{ filename: nil, code: "puts 'hello'" }]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
-      as: :json
-
-    assert_response :unprocessable_entity
-
-    json_response = response.parsed_body
-    assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_equal "filename_required", json_response["error"]["reason"]
-  end
-
-  test "POST create returns 422 for missing code" do
-    files = [{ filename: "main.rb" }]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
-      as: :json
-
-    assert_response :unprocessable_entity
-
-    json_response = response.parsed_body
-    assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_equal "code_required", json_response["error"]["reason"]
-  end
-
-  test "POST create returns 422 for null code" do
-    files = [{ filename: "main.rb", code: nil }]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: @lesson.slug),
-      params: { submission: { files: } },
-      as: :json
-
-    assert_response :unprocessable_entity
-
-    json_response = response.parsed_body
-    assert_equal "invalid_submission", json_response["error"]["type"]
-    assert_equal "code_required", json_response["error"]["reason"]
-  end
-
-  test "POST create returns 403 when the lesson is not unlocked" do
-    lesson2 = create(:lesson, :exercise, level: @level)
-    files = [{ filename: "main.rb", code: "puts 'hello'" }]
-
-    post internal_lesson_exercise_submissions_path(lesson_slug: lesson2.slug),
-      params: { submission: { files: } },
-      as: :json
-
-    assert_response :forbidden
-    assert_equal "lesson_not_unlocked", response.parsed_body["error"]["type"]
+    assert_json_error(:not_found, error_type: :exercise_submission_not_found)
+    assert_nil submission.reload.progression_scores
   end
 end

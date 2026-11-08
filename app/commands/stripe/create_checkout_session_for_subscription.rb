@@ -1,4 +1,4 @@
-class Stripe::CreateCheckoutSession
+class Stripe::CreateCheckoutSessionForSubscription
   include Mandate
 
   initialize_with :user, :price_id, :return_url, :currency

@@ -53,6 +53,7 @@ copy included as a starting point for the front-end catalogue.
 - `badge_not_found` - "Badge not found"
 - `user_challenge_not_found` - "User challenge not found"
 - `user_video_not_found` - "User video not found"
+- `exercise_submission_not_found` - "Exercise submission not found"
 - `mailshot_not_found` - "Mailshot not found"
 - `unknown_segment` - "Unknown audience segment"
 - `mailshot_body_blank` - "Add content before sending this mailshot"
@@ -119,6 +120,11 @@ copy included as a starting point for the front-end catalogue.
 - `reactivate_failed` - "Reactivation failed"
 - `checkout_payment_incomplete` - was "Your payment wasn't completed. Please try again." (extra: `decline_code`, `interval`, `currency`). `decline_code` is a stable key (e.g. `insufficient_funds`, `expired_card`, `card_declined`), not free text - map it to your own localized copy rather than displaying it directly, same pattern as `error.type` elsewhere in the API.
 - `unauthorized` (subscriptions-specific) - was "Checkout session does not belong to current user"
+
+### Premium purchases
+These come from `/internal/premium_purchases/*`. The endpoints also return `invalid_return_url`, `checkout_failed`, `missing_session_id`, `invalid_session`, `verification_failed`, `unauthorized` and `checkout_payment_incomplete` from the Subscriptions list above. On a purchase, `checkout_payment_incomplete` carries `decline_code` and `currency`, but no `interval`.
+- `already_premium` - The user already has Premium (an entitlement or a live subscription), so can't buy it
+- `purchase_pending` - The user's earlier purchase is still clearing (e.g. a bank debit). `/me` returns `premium_purchase_pending: true` until it clears or fails.
 
 ### External services
 - `stripe_error` - "Payment processing error"

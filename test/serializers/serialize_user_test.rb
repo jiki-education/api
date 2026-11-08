@@ -18,12 +18,16 @@ class SerializeUserTest < ActiveSupport::TestCase
         uses_oauth: false,
         email_confirmed: user.confirmed?,
         admin: false,
+        lifetime_premium: false,
+        can_purchase_premium: true,
+        premium_purchase_pending: false,
         subscription_status: "never_subscribed",
         subscription: nil,
         premium_prices: {
           currency: :usd,
           monthly: 999,
           annual: 9900,
+          lifetime: 2999,
           country_code: nil
         }
       },
@@ -52,7 +56,9 @@ class SerializeUserTest < ActiveSupport::TestCase
       membership_type: "premium",
       subscription_status: "active",
       subscription_interval: "monthly",
-      subscription_valid_until: valid_until
+      subscription_valid_until: valid_until,
+      subscription_amount_in_cents: 799,
+      subscription_currency: "gbp"
     )
 
     result = SerializeUser.(user)
@@ -61,6 +67,8 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal "active", result[:subscription_status]
     refute_nil result[:subscription]
     assert_equal "monthly", result[:subscription][:interval]
+    assert_equal 799, result[:subscription][:amount_in_cents]
+    assert_equal "gbp", result[:subscription][:currency]
     assert_equal valid_until.iso8601(3), result[:subscription][:subscription_valid_until].iso8601(3)
     refute result[:subscription][:in_grace_period]
     # grace_period_ends_at is present whenever subscription_valid_until is present
@@ -244,5 +252,25 @@ class SerializeUserTest < ActiveSupport::TestCase
     assert_equal 999, result[:premium_prices][:monthly]
     assert_equal 9900, result[:premium_prices][:annual]
     assert_nil result[:premium_prices][:country_code]
+  end
+
+  test "serializes the low USD lifetime price for a low-tier country" do
+    user = create(:user)
+    user.data.update_column(:country_code, "EC")
+
+    result = SerializeUser.(user)
+
+    assert_equal :usd, result[:premium_prices][:currency]
+    assert_equal LOW_USD_LIFETIME_PRICE, result[:premium_prices][:lifetime]
+  end
+
+  test "serializes lifetime premium for a user who bought premium" do
+    user = create(:user)
+    create(:premium_entitlement, :stripe_purchase, user:)
+
+    result = SerializeUser.(user)
+
+    assert result[:lifetime_premium]
+    refute result[:can_purchase_premium]
   end
 end

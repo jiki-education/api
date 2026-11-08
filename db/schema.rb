@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_08_140000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_08_120100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -419,6 +419,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_08_140000) do
     t.boolean "notifications_enabled", default: true, null: false
     t.datetime "otp_enabled_at"
     t.string "otp_secret"
+    t.datetime "pending_premium_purchase_at"
+    t.string "pending_premium_purchase_payment_intent_id"
     t.boolean "receive_activity_emails", default: true, null: false
     t.boolean "receive_event_emails", default: true, null: false
     t.boolean "receive_milestone_emails", default: true, null: false
@@ -429,6 +431,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_08_140000) do
     t.string "stripe_customer_id"
     t.string "stripe_subscription_id"
     t.string "stripe_subscription_status"
+    t.integer "subscription_amount_in_cents"
+    t.string "subscription_currency"
     t.string "subscription_interval", default: "monthly", null: false
     t.integer "subscription_status", default: 0, null: false
     t.datetime "subscription_valid_until"
