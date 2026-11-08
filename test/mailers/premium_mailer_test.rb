@@ -11,10 +11,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     assert_match "Hi there,", mail.html_part.body.to_s
-    assert_match "Thank you for subscribing to Jiki Premium", mail.html_part.body.to_s
+    assert_match "Thank you for upgrading to Jiki Premium", mail.html_part.body.to_s
 
     assert_match "Hi there,", mail.text_part.body.to_s
-    assert_match "Thank you for subscribing to Jiki Premium", mail.text_part.body.to_s
+    assert_match "Thank you for upgrading to Jiki Premium", mail.text_part.body.to_s
   end
 
   test "welcome_to_premium email renders with Hungarian locale" do
@@ -26,10 +26,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     assert_match "Szia,", mail.html_part.body.to_s
-    assert_match "Köszönjük, hogy előfizettél a Jiki Premiumra", mail.html_part.body.to_s
+    assert_match "Köszönjük, hogy a Jiki Premiumra váltottál", mail.html_part.body.to_s
 
     assert_match "Szia,", mail.text_part.body.to_s
-    assert_match "Köszönjük, hogy előfizettél a Jiki Premiumra", mail.text_part.body.to_s
+    assert_match "Köszönjük, hogy a Jiki Premiumra váltottál", mail.text_part.body.to_s
   end
 
   test "welcome_to_premium email includes both HTML and text parts" do
