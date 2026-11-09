@@ -10,6 +10,8 @@ class Internal::EventsController < Internal::BaseController
     "checkout_closed" => %w[trigger]
   }.freeze
 
+  ABANDONED_CHECKOUT_EMAIL_DELAY = 30.minutes
+
   CONTEXT_MODELS = {
     "lesson" => Lesson,
     "challenge" => Challenge
@@ -23,11 +25,16 @@ class Internal::EventsController < Internal::BaseController
       params[:event],
       properties: enriched_properties
     )
+    schedule_abandoned_checkout_email! if params[:event] == "checkout_closed"
 
     head :no_content
   end
 
   private
+  def schedule_abandoned_checkout_email!
+    User::SendAbandonedCheckoutEmail.defer(current_user, wait: ABANDONED_CHECKOUT_EMAIL_DELAY)
+  end
+
   def enriched_properties
     props = permitted_properties
     type = props["context_type"]

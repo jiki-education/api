@@ -24,4 +24,14 @@ class User::SendAbandonedCheckoutEmailTest < ActiveSupport::TestCase
 
     User::SendAbandonedCheckoutEmail.(user)
   end
+
+  test "does nothing for premium users" do
+    user = make_premium(create(:user))
+
+    PremiumMailer.expects(:abandoned_checkout).never
+
+    User::SendAbandonedCheckoutEmail.(user)
+
+    assert user.data.reload.abandoned_checkout_email_pending?
+  end
 end

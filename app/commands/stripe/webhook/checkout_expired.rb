@@ -8,13 +8,8 @@ class Stripe::Webhook::CheckoutExpired
   # 24 hours by default.
   def call
     return unless session.mode == "payment"
-
-    unless user
-      Rails.logger.error("Premium checkout #{session.id} expired but user not found")
-      return
-    end
-
-    return unless user.data.can_purchase_premium?
+    return unless user
+    return if user.premium?
 
     User::SendAbandonedCheckoutEmail.(user)
   end
