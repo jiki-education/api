@@ -16,6 +16,7 @@ class UserLesson::Complete
 
       unlock_next_thing!
       handle_side_effects!
+      append_upsell!
       track_event!
     end
   end
@@ -60,6 +61,18 @@ class UserLesson::Complete
   def emit_challenge_unlocked_event!
     Current.add_event(:challenge_unlocked, { challenge: SerializeChallenge.(lesson.unlocked_challenge) })
   end
+
+  def append_upsell!
+    Current.add_event(upsell) if upsell
+  end
+
+  # We only ever show one upsell, so this returns the first that applies.
+  memoize
+  def upsell
+    :ask_jiki_upsell if used_free_ask_jiki?
+  end
+
+  def used_free_ask_jiki? = !user.premium? && AssistantConversation.exists?(user:, context: lesson)
 
   def track_event!
     properties = {

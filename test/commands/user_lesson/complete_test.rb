@@ -552,4 +552,64 @@ class UserLesson::CompleteTest < ActiveSupport::TestCase
 
     UserLesson::Complete.(user, lesson)
   end
+
+  # Upsell tests
+  test "emits ask_jiki_upsell last when a standard user used Ask Jiki on the lesson" do
+    user = create(:user)
+    level = create(:level)
+    concept = create(:concept)
+    lesson = create(:lesson, :exercise, level:, position: 1, unlocked_concepts: [concept])
+    create(:lesson, :exercise, level:, position: 2)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+    create(:assistant_conversation, user:, context: lesson)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson)
+
+    assert_equal(%w[lesson_unlocked concept_unlocked ask_jiki_upsell], Current.events.map { |e| e[:type] })
+    assert_equal({ type: "ask_jiki_upsell", data: {} }, Current.events.last)
+  end
+
+  test "does not emit ask_jiki_upsell when the user has not used Ask Jiki on the lesson" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+    create(:assistant_conversation, user:)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson)
+
+    assert_nil((Current.events || []).find { |e| e[:type] == "ask_jiki_upsell" })
+  end
+
+  test "does not emit ask_jiki_upsell for premium users" do
+    user = make_premium(create(:user))
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:)
+    create(:assistant_conversation, user:, context: lesson)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson)
+
+    assert_nil((Current.events || []).find { |e| e[:type] == "ask_jiki_upsell" })
+  end
+
+  test "does not emit ask_jiki_upsell on replay" do
+    user = create(:user)
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:)
+    create(:user_level, user:, level:)
+    create(:user_lesson, user:, lesson:, completed_at: 1.day.ago)
+    create(:assistant_conversation, user:, context: lesson)
+
+    Current.reset
+    UserLesson::Complete.(user, lesson)
+
+    assert_nil((Current.events || []).find { |e| e[:type] == "ask_jiki_upsell" })
+  end
 end
