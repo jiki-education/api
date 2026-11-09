@@ -1,7 +1,13 @@
 class Internal::EventsController < Internal::BaseController
   ALLOWED_EVENTS = {
     "premium_feature_blocked" => %w[feature context_type context_id context_slug context_uuid],
-    "premium_modal_shown" => %w[trigger context_type context_id context_slug context_uuid]
+    "premium_modal_shown" => %w[trigger context_type context_id context_slug context_uuid],
+
+    # The checkout funnel after `checkout_started`, which the API tracks itself
+    # when it creates the session. A purchase ends in `upgraded_to_premium`.
+    "checkout_submitted" => %w[trigger],
+    "checkout_failed" => %w[trigger error_code decline_code],
+    "checkout_closed" => %w[trigger]
   }.freeze
 
   CONTEXT_MODELS = {
