@@ -282,6 +282,28 @@ class Internal::UserLessonsControllerTest < ApplicationControllerTest
     })
   end
 
+  test "PATCH complete appends ask_jiki_upsell after the other events" do
+    level = create(:level)
+    lesson = create(:lesson, :exercise, level:, slug: "first-lesson", position: 1)
+    create(:lesson, :exercise, level:, slug: "second-lesson", position: 2)
+    create(:user_level, user: @current_user, level:)
+    create(:user_lesson, user: @current_user, lesson:)
+    create(:assistant_conversation, user: @current_user, context: lesson)
+
+    patch complete_internal_user_lesson_path(lesson_slug: lesson.slug),
+      as: :json
+
+    assert_response :success
+    assert_json_response({
+      meta: {
+        events: [
+          { type: "lesson_unlocked", data: { lesson_slug: "second-lesson" } },
+          { type: "ask_jiki_upsell", data: {} }
+        ]
+      }
+    })
+  end
+
   # PATCH /v1/user_lessons/:slug/rate tests
   test "PATCH rate successfully sets ratings" do
     create(:user_lesson, user: @current_user, lesson: @lesson)
