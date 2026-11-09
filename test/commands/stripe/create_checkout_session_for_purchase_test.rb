@@ -8,7 +8,7 @@ class Stripe::CreateCheckoutSessionForPurchaseTest < ActiveSupport::TestCase
     price_id = Jiki.config.stripe_premium_lifetime_price_id
     session = mock
 
-    Stripe::GetOrCreateCustomer.expects(:call).with(user).returns(stub(id: "cus_123"))
+    Stripe::GetOrCreateCustomer.expects(:call).never
     ::Stripe::Checkout::Session.expects(:create).with(
       ui_mode: 'elements',
       mode: 'payment',

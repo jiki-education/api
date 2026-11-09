@@ -30,7 +30,7 @@ class Stripe::CreateCheckoutSessionForPurchase
   def customer_args
     if user.data.stripe_customer_id.present?
       {
-        customer: Stripe::GetOrCreateCustomer.(user).id,
+        customer: user.data.stripe_customer_id,
         customer_update: { address: 'auto', name: 'auto' }
       }
     else
