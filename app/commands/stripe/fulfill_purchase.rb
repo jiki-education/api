@@ -8,12 +8,28 @@ class Stripe::FulfillPurchase
   def call
     revoked = payment.data["revoked_at"].present?
     Stripe::ClearPendingPurchase.(user, payment_intent_id)
+    link_customer!
     return if revoked
 
     grant!
   end
 
   private
+  # Checkout creates the Customer when a first-time buyer pays, so this is the
+  # first point where the user can be linked to it.
+  def link_customer!
+    customer_id = payment.data["stripe_customer_id"]
+    return if customer_id.blank?
+    return if user.data.stripe_customer_id.present?
+
+    user.data.update!(stripe_customer_id: customer_id)
+    ::Stripe::Customer.update(customer_id, metadata: { user_id: user.id, handle: user.handle })
+  rescue ::Stripe::StripeError => e
+    # The metadata only helps when browsing Stripe, so a failure here must not
+    # stop the user getting Premium.
+    Rails.logger.warn("Could not set metadata on Stripe customer #{customer_id} for user #{user.id}: #{e.message}")
+  end
+
   def grant!
     User::PremiumEntitlement::Grant.(user, PremiumEntitlement::STRIPE_PURCHASE)
   rescue ActiveRecord::RecordNotUnique

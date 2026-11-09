@@ -50,7 +50,7 @@ class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
   test "keeps the pending purchase when the payment intent has not succeeded" do
     user = create(:user)
     user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: 1.day.ago)
-    stub_payment_intent(status: "processing")
+    stub_payment_intent(status: "processing", stub_customer_update: false)
 
     assert_raises(ArgumentError) { Stripe::FulfillPurchase.(user, "pi_123") }
     assert user.data.reload.premium_purchase_pending?
@@ -80,6 +80,7 @@ class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
   test "does not refetch the payment intent once the payment is recorded" do
     user = create(:user)
     create(:payment, :lifetime, user:, payment_processor_id: "pi_123")
+    ::Stripe::Customer.stubs(:update)
 
     ::Stripe::PaymentIntent.expects(:retrieve).never
     User::PremiumEntitlement::Grant.expects(:call).with(user, PremiumEntitlement::STRIPE_PURCHASE)
@@ -91,6 +92,7 @@ class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
     user = create(:user)
     payment = create(:payment, :lifetime, user:, payment_processor_id: "pi_123")
     payment.update!(data: payment.data.merge("revoked_at" => Time.current.iso8601))
+    ::Stripe::Customer.stubs(:update)
 
     User::PremiumEntitlement::Grant.expects(:call).never
 
@@ -123,7 +125,7 @@ class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
 
   test "raises when the payment intent has not succeeded" do
     user = create(:user)
-    stub_payment_intent(status: "processing")
+    stub_payment_intent(status: "processing", stub_customer_update: false)
 
     assert_raises(ArgumentError) { Stripe::FulfillPurchase.(user, "pi_123") }
     assert_empty user.payments
@@ -138,12 +140,57 @@ class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
     Stripe::FulfillPurchase.(user, "pi_123")
   end
 
+  test "links the customer created by checkout to a first-time buyer" do
+    user = create(:user)
+    stub_payment_intent(stub_customer_update: false)
+
+    ::Stripe::Customer.expects(:update).with("cus_123", metadata: { user_id: user.id, handle: user.handle })
+
+    Stripe::FulfillPurchase.(user, "pi_123")
+
+    assert_equal "cus_123", user.data.reload.stripe_customer_id
+  end
+
+  test "links the customer even when the charge was already refunded" do
+    user = create(:user)
+    stub_payment_intent(refunded: true)
+
+    Stripe::FulfillPurchase.(user, "pi_123")
+
+    assert_equal "cus_123", user.data.reload.stripe_customer_id
+  end
+
+  test "keeps an existing customer" do
+    user = create(:user)
+    user.data.update!(stripe_customer_id: "cus_existing")
+    stub_payment_intent(stub_customer_update: false)
+
+    ::Stripe::Customer.expects(:update).never
+
+    Stripe::FulfillPurchase.(user, "pi_123")
+
+    assert_equal "cus_existing", user.data.reload.stripe_customer_id
+  end
+
+  test "still grants premium when setting the customer metadata fails" do
+    user = create(:user)
+    stub_payment_intent(stub_customer_update: false)
+
+    ::Stripe::Customer.expects(:update).raises(::Stripe::APIConnectionError.new("down"))
+
+    Stripe::FulfillPurchase.(user, "pi_123")
+
+    assert_equal "cus_123", user.data.reload.stripe_customer_id
+    assert user.reload.premium?
+  end
+
   private
-  def stub_payment_intent(status: "succeeded", refunded: false, disputed: false)
+  def stub_payment_intent(status: "succeeded", refunded: false, disputed: false, stub_customer_update: true)
     charge = OpenStruct.new(id: "ch_123", receipt_url: "https://pay.stripe.com/receipts/abc", refunded:, disputed:)
     payment_intent = OpenStruct.new(
       id: "pi_123", status:, amount_received: 2399, currency: "gbp", customer: "cus_123", latest_charge: charge
     )
     ::Stripe::PaymentIntent.stubs(:retrieve).with(id: "pi_123", expand: ["latest_charge"]).returns(payment_intent)
+    ::Stripe::Customer.stubs(:update) if stub_customer_update
   end
 end

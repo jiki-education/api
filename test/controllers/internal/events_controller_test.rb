@@ -160,4 +160,25 @@ class Internal::EventsControllerTest < ApplicationControllerTest
 
     assert_response :no_content
   end
+  test "POST create accepts the checkout funnel events" do
+    Analytics::TrackEvent.expects(:defer).with(@current_user, "checkout_submitted", properties: { "trigger" => "upgrade_cta_nav" })
+    Analytics::TrackEvent.expects(:defer).with(@current_user, "checkout_closed", properties: { "trigger" => "upgrade_cta_nav" })
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "checkout_failed",
+      properties: { "trigger" => "upgrade_cta_nav", "error_code" => "paymentFailed", "decline_code" => "insufficient_funds" }
+    )
+
+    post internal_events_path, params: { event: "checkout_submitted", properties: { trigger: "upgrade_cta_nav" } }, as: :json
+    assert_response :no_content
+
+    post internal_events_path, params: { event: "checkout_closed", properties: { trigger: "upgrade_cta_nav" } }, as: :json
+    assert_response :no_content
+
+    post internal_events_path, params: {
+      event: "checkout_failed",
+      properties: { trigger: "upgrade_cta_nav", error_code: "paymentFailed", decline_code: "insufficient_funds", message: "dropped" }
+    }, as: :json
+    assert_response :no_content
+  end
 end

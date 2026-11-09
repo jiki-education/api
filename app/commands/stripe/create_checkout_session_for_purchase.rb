@@ -8,8 +8,6 @@ class Stripe::CreateCheckoutSessionForPurchase
       ui_mode: 'elements',
       mode: 'payment',
       currency: currency,
-      customer: customer.id,
-      customer_update: { address: 'auto', name: 'auto' },
       line_items: [{ price: price_id, quantity: 1 }],
       return_url: return_url,
       metadata: {
@@ -18,15 +16,27 @@ class Stripe::CreateCheckoutSessionForPurchase
       },
       payment_intent_data: {
         metadata: { user_id: user.id }
-      }
+      },
+      **customer_args
     )
   end
 
   private
-  # The Customer is created up front (rather than leaving Checkout to create a
-  # guest one) so every purchase is tied to a Customer that maps back to the user.
-  memoize
-  def customer = Stripe::GetOrCreateCustomer.(user)
+  # A user who has paid before keeps their existing Customer. Anyone else gets a
+  # real Customer created by Checkout when the payment completes, which
+  # Stripe::FulfillPurchase then links to the user. Creating it on completion
+  # keeps the Stripe Customer list to people who actually paid. Opening checkout
+  # and walking away leaves nothing behind.
+  def customer_args
+    if user.data.stripe_customer_id.present?
+      {
+        customer: Stripe::GetOrCreateCustomer.(user).id,
+        customer_update: { address: 'auto', name: 'auto' }
+      }
+    else
+      { customer_email: user.email, customer_creation: 'always' }
+    end
+  end
 
   memoize
   def price_id = Pricing::DeterminePrices.(user.data.country_code)[:lifetime_price_id]
