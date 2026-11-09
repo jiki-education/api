@@ -2,6 +2,7 @@ class User::Data < ApplicationRecord
   include Emailable
   has_email_status :welcome
   has_email_status :welcome_to_premium
+  has_email_status :abandoned_checkout
 
   # Stripe's async_payment_failed webhook clears a pending purchase whose
   # payment fails. The cutoff is a backstop so a lost webhook can't block the
@@ -14,7 +15,8 @@ class User::Data < ApplicationRecord
   before_create :generate_unsubscribe_token!
   before_create :set_default_timezone!
 
-  # Welcome emails are transactional — no preference check.
+  # Welcome and abandoned-checkout emails are transactional, so there's no
+  # preference check.
   def email_communication_preferences_key(_kind = nil) = nil
 
   # Draft locales are selectable: a user can commit to one before it ships,

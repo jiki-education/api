@@ -7,6 +7,10 @@ class PremiumMailerPreview < ActionMailer::Preview
     PremiumMailer.subscription_ended(preview_user)
   end
 
+  def abandoned_checkout
+    PremiumMailer.abandoned_checkout(preview_user)
+  end
+
   private
   def preview_user = FactoryBot.build(:user)
 end
