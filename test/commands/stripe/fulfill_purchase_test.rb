@@ -144,7 +144,9 @@ class Stripe::FulfillPurchaseTest < ActiveSupport::TestCase
     user = create(:user)
     stub_payment_intent(stub_customer_update: false)
 
-    ::Stripe::Customer.expects(:update).with("cus_123", metadata: { user_id: user.id, handle: user.handle })
+    ::Stripe::Customer.expects(:update).with(
+      "cus_123", name: user.handle, metadata: { user_id: user.id, handle: user.handle }
+    )
 
     Stripe::FulfillPurchase.(user, "pi_123")
 

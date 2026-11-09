@@ -23,10 +23,11 @@ class Stripe::FulfillPurchase
     return if user.data.stripe_customer_id.present?
 
     user.data.update!(stripe_customer_id: customer_id)
-    ::Stripe::Customer.update(customer_id, metadata: { user_id: user.id, handle: user.handle })
+    # Matches the name and metadata given by Stripe::GetOrCreateCustomer
+    ::Stripe::Customer.update(customer_id, name: user.handle, metadata: { user_id: user.id, handle: user.handle })
   rescue ::Stripe::StripeError => e
-    # The metadata only helps when browsing Stripe, so a failure here must not
-    # stop the user getting Premium.
+    # The name and metadata only help when browsing Stripe, so a failure here
+    # must not stop the user getting Premium.
     Rails.logger.warn("Could not set metadata on Stripe customer #{customer_id} for user #{user.id}: #{e.message}")
   end
 
