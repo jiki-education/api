@@ -9,7 +9,6 @@ class Stripe::Webhook::CheckoutExpired
   def call
     return unless session.mode == "payment"
     return unless user
-    return if user.premium?
 
     User::SendAbandonedCheckoutEmail.(user)
   end

@@ -15,14 +15,6 @@ class Stripe::Webhook::CheckoutExpiredTest < ActiveSupport::TestCase
     Stripe::Webhook::CheckoutExpired.(event_for(user: create(:user), mode: "subscription"))
   end
 
-  test "skips premium users" do
-    user = make_premium(create(:user))
-
-    User::SendAbandonedCheckoutEmail.expects(:call).never
-
-    Stripe::Webhook::CheckoutExpired.(event_for(user:))
-  end
-
   test "does nothing when the user is not found" do
     User::SendAbandonedCheckoutEmail.expects(:call).never
 

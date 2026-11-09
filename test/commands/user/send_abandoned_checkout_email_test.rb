@@ -34,4 +34,15 @@ class User::SendAbandonedCheckoutEmailTest < ActiveSupport::TestCase
 
     assert user.data.reload.abandoned_checkout_email_pending?
   end
+
+  test "does nothing while a purchase payment is pending" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: Time.current)
+
+    PremiumMailer.expects(:abandoned_checkout).never
+
+    User::SendAbandonedCheckoutEmail.(user)
+
+    assert user.data.reload.abandoned_checkout_email_pending?
+  end
 end
