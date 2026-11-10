@@ -9,7 +9,8 @@ class SerializeAdminUser
       name: user.name,
       email: user.email,
       locale: user.locale,
-      admin: user.admin
+      admin: user.admin,
+      internal: user.internal?
     }
   end
 end

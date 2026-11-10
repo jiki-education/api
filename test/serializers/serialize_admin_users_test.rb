@@ -11,14 +11,16 @@ class SerializeAdminUsersTest < ActiveSupport::TestCase
         name: "User 1",
         email: "user1@example.com",
         locale: user_1.locale,
-        admin: user_1.admin
+        admin: user_1.admin,
+        internal: false
       },
       {
         id: user_2.id,
         name: "User 2",
         email: "user2@example.com",
         locale: user_2.locale,
-        admin: user_2.admin
+        admin: user_2.admin,
+        internal: false
       }
     ]
 

@@ -79,4 +79,39 @@ class User::UpdateTest < ActiveSupport::TestCase
 
     assert_equal "same@example.com", user.reload.email
   end
+
+  test "marks user as internal" do
+    user = create(:user)
+
+    User::Update.(user, { internal: true })
+
+    assert user.reload.internal?
+  end
+
+  test "unmarks user as internal" do
+    user = create(:user)
+    user.data.update_column(:internal, true)
+
+    User::Update.(user.reload, { internal: false })
+
+    refute user.reload.internal?
+  end
+
+  test "identifies the user without an IP when internal changes" do
+    user = create(:user)
+    Current.user_ip = "9.9.9.9"
+    User::Identify.expects(:defer).with(user, user_ip: nil)
+
+    User::Update.(user, { internal: true })
+  ensure
+    Current.reset
+  end
+
+  test "does not identify the user when internal is unchanged" do
+    user = create(:user)
+    User::Identify.expects(:defer).never
+
+    User::Update.(user, { internal: false })
+    User::Update.(user, { email: "new@example.com" })
+  end
 end

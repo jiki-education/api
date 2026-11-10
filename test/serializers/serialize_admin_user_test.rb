@@ -9,7 +9,8 @@ class SerializeAdminUserTest < ActiveSupport::TestCase
       name: "Test User",
       email: "test@example.com",
       locale: "en",
-      admin: false
+      admin: false,
+      internal: false
     }
 
     assert_equal expected, SerializeAdminUser.(user)
@@ -30,5 +31,12 @@ class SerializeAdminUserTest < ActiveSupport::TestCase
     result = SerializeAdminUser.(user)
 
     assert_equal "hu", result[:locale]
+  end
+
+  test "serializes internal user" do
+    user = create(:user)
+    user.data.update_column(:internal, true)
+
+    assert SerializeAdminUser.(user.reload)[:internal]
   end
 end
