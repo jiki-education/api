@@ -24,3 +24,11 @@ ja:
 
         それでは、  
         ジェレミーとチーム
+    abandoned_checkout:
+      subject: "Jiki Premiumについてお手伝いしましょうか？"
+      greeting: "こんにちは。"
+      body_markdown: |
+        Jiki Premiumへのアップグレードを始められたようですが、お手続きが完了していないことに気づきました。何かお手伝いできることはありますか？🙂
+
+        ありがとうございます。  
+        ジェレミー

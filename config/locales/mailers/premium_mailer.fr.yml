@@ -24,3 +24,11 @@ fr:
 
         À bientôt,  
         Jeremy et l'équipe
+    abandoned_checkout:
+      subject: "Je peux t'aider pour Jiki Premium ?"
+      greeting: "Salut,"
+      body_markdown: |
+        J'ai remarqué que tu avais commencé à passer à Jiki Premium, mais que tu n'avais pas finalisé le paiement. Est-ce que tu as besoin d'aide sur quelque chose ? 🙂
+
+        Merci,  
+        Jeremy

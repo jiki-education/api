@@ -24,3 +24,11 @@
 
         Abraços,  
         Jeremy e equipe
+    abandoned_checkout:
+      subject: "Posso ajudar com o Jiki Premium?"
+      greeting: "Olá,"
+      body_markdown: |
+        Notei que você começou a fazer o upgrade para o Jiki Premium, mas não concluiu o checkout. Precisa de ajuda com alguma coisa? 🙂
+
+        Obrigado,  
+        Jeremy

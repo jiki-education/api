@@ -24,3 +24,11 @@ hi:
 
         शुभकामनाएँ,  
         Jeremy और टीम
+    abandoned_checkout:
+      subject: "Jiki Premium में कोई मदद चाहिए?"
+      greeting: "नमस्ते,"
+      body_markdown: |
+        मैंने देखा कि आपने Jiki Premium में अपग्रेड करना शुरू किया था, लेकिन चेकआउट पूरा नहीं किया। क्या आपको किसी चीज़ में मदद चाहिए? 🙂
+
+        धन्यवाद,  
+        Jeremy
