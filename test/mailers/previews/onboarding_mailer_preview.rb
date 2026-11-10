@@ -1,7 +1,6 @@
 class OnboardingMailerPreview < ActionMailer::Preview
   def overview  = OnboardingMailer.overview(preview_user)
   def coding    = OnboardingMailer.coding(preview_user)
-  def building  = OnboardingMailer.building(preview_user)
   def premium   = OnboardingMailer.premium(preview_user)
   def community = OnboardingMailer.community(preview_user)
 

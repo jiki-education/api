@@ -10,7 +10,6 @@ class User::Onboarding::CreateDueNotifications
   EMAILS = {
     1 => :onboarding_overview,
     2 => :onboarding_coding,
-    3 => :onboarding_building,
     4 => PREMIUM_KIND,
     5 => :onboarding_community
   }.freeze
