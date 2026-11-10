@@ -24,7 +24,8 @@ class User::Identify
         membership_type: user.membership_type,
         locale: user.locale,
         locales: user.locales,
-        signup_date: user.created_at.to_date.iso8601
+        signup_date: user.created_at.to_date.iso8601,
+        is_internal: user.internal?
       }.merge(geoip_properties)
     )
   end

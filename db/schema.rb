@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_071634) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_10_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -412,6 +412,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_071634) do
     t.string "email_complaint_type"
     t.string "email_verification_token"
     t.string "explicit_locale"
+    t.boolean "internal", default: false, null: false
     t.date "last_active_on"
     t.datetime "last_email_opened_at"
     t.string "locales", default: [], null: false, array: true

@@ -277,6 +277,20 @@ class Admin::UsersControllerTest < ApplicationControllerTest
     refute_equal "fr", user.locale
   end
 
+  test "PATCH update marks user as internal" do
+    user = create(:user)
+
+    patch admin_user_path(user),
+      params: { user: { internal: true } },
+      as: :json
+
+    assert_response :success
+    assert user.reload.internal?
+    assert_json_response({
+      user: SerializeAdminUser.(user)
+    })
+  end
+
   # DELETE tests
 
   test "DELETE destroy calls User::Destroy command" do

@@ -22,6 +22,7 @@ class User::IdentifyTest < ActiveSupport::TestCase
         locale: "en",
         locales: %w[en-GB fr de],
         signup_date: "2026-01-15",
+        is_internal: false,
         "$geoip_disable": true
       }
     )
@@ -41,6 +42,7 @@ class User::IdentifyTest < ActiveSupport::TestCase
         locale: "en",
         locales: [],
         signup_date: "2026-01-15",
+        is_internal: false,
         "$ip": "86.41.10.20"
       }
     )
@@ -61,6 +63,7 @@ class User::IdentifyTest < ActiveSupport::TestCase
         locale: "en",
         locales: [],
         signup_date: "2026-01-15",
+        is_internal: false,
         "$ip": "86.41.10.20"
       }
     )
@@ -82,6 +85,7 @@ class User::IdentifyTest < ActiveSupport::TestCase
         locale: "en",
         locales: [],
         signup_date: "2026-01-15",
+        is_internal: false,
         "$geoip_disable": true
       }
     )
@@ -104,6 +108,7 @@ class User::IdentifyTest < ActiveSupport::TestCase
         locale: "en",
         locales: [],
         signup_date: "2026-01-15",
+        is_internal: false,
         "$ip": "86.41.10.20"
       }
     )
@@ -122,5 +127,17 @@ class User::IdentifyTest < ActiveSupport::TestCase
 
   test "uses :analytics queue" do
     assert_equal :analytics, User::Identify.active_job_queue
+  end
+
+  test "sends is_internal true for internal users" do
+    user = create(:user)
+    user.data.update_column(:internal, true)
+
+    PostHog.stubs(:initialized?).returns(true)
+    PostHog.expects(:identify).with do |args|
+      args[:properties][:is_internal] == true
+    end
+
+    User::Identify.(user)
   end
 end
