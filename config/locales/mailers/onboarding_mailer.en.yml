@@ -1,63 +1,35 @@
 en:
   onboarding_mailer:
     overview:
-      subject: "The Two Halves of Becoming a Developer in 2026"
-      preview: "For the last few years I've been slowly learning Japanese."
+      subject: "Ever watched Karate Kid?"
+      preview: "One of the questions I get asked the most is who Jiki is for."
       greeting: "Hi there,"
       body_markdown: |
-        For the last few years I've been **slowly learning Japanese**. I visit Japan regularly and try and immerse myself in the language, but it's hard, because nowadays, with the help of Google Translate, it's pretty easy to spend time in Japan and not speak a word of Japanese. **So my brain can be lazy**, but I can get along fine.
+        The phrase **"Wax on, wax off"** has become synonymous with learning hard things. It comes from _The Karate Kid_, where Daniel (our karate kid) asks a teacher (Mr. Miyagi) to teach him karate. Rather than teaching him how to kick and punch, Mr. Miyagi has him do chores, most famously waxing cars. The focus is on doing the exact movements correctly, and it turns out (spoiler) that this discipline builds skills that are transferable to karate, and that the process of training your body repeatedly is what makes you good.
 
-        Coding has recently started to take that same journey. For the last 30 years, if you wanted to do anything with tech, **you had to learn to code**. It was the only way for you to communicate with a computer. But over the last two years, with the rise of agentic coding, that's changed. You can now use your native language and tell an AI agent what you want it to do, and **it'll write the code for you** - translating your instructions to the computer.
+        Coding is a bit similar, but for the mind, not the body. We all want to be able to make interesting stuff from day one, but more than anything we need to build really solid fundamentals. We need to **train our brains** in the right way and develop the right ways of thinking.
 
-        Just like I don't have to wait to be fluent in Japanese before I can explore Japan, **it no longer makes any sense to spend years getting good at coding** before you start building things.
+        - **If you're new to coding**, Jiki is going to take you through these mental exercises (hopefully in a more interesting way than waxing cars!) and teach you everything you need to know.
+        - **If you've been coding for a while**, you might feel like you're traipsing over the same basics, not moving forward. But just like Daniel waxing cars, there's massive value in doing these early stages right. Stick with Jiki and we'll help you develop **a deep coding mindset and solid fundamental skills**.
 
-        But if I want to really get into Japanese culture and make Japanese friends, I need to learn Japanese. And, if you want to get into tech, you still need to learn to code. Code is no longer the gatekeeper, but it's **the difference between "getting by" and actually thriving**.
-
-        To get good fast, split your learning time into two chunks:
-        1. **Learn to code.** Work through Jiki's Coding Fundamentals course and you'll have great foundations.
-        2. **Make stuff.** Work through "Learn to Build", getting into the weeds, creating products that people can actually use!
-
-        If you want to learn more about my thoughts on **how to get into tech in 2026**, read [this blog post](https://jiki.io/blog/how-to-get-into-tech-in-2026).
-
-        Over the next few days, I'll tell you a little more about both the coding and the building sides, and how you can make the most of [Jiki](https://jiki.io). Until then, **get stuck in and have fun!**
+        I'm excited to have you on board! Any questions - just reply to this email. I'm a human and happy to help 🙂
 
         Thanks for reading!
         Jeremy
     coding:
-      subject: "Build Rock-Solid Coding Fundamentals"
+      subject: "What programming language should I learn?"
       preview: "Learning to code has a reputation for being technical and hard."
       greeting: "Hi again,"
       body_markdown: |
         Learning to code has a reputation for being technical and hard. When I started to learn to code, I was an 8-year-old kid who knew nothing about programming other than that **I could suddenly make cool stuff**. I didn't know it was supposed to be hard. I just knew I suddenly had a new outlet for my creativity.
 
-        As you learn to code, **I don't want you to see it as some technical discipline to master**, I want you to see it as somewhere you can unleash **your** creativity - where you can **have fun making things** and solving puzzles. Because that's what coding really is - problem solving.
-
-        It doesn't matter [what programming language you learn](https://jiki.io/blog/just-learn-to-code), what matters is that you build a really good understanding of **how coding works**.
+        Most beginners spend ages trying to make decisions about what programming language to learn. [It doesn't matter](https://jiki.io/blog/just-learn-to-code). What matters is that you build a really good understanding of **how coding works**, and that's what Jiki teaches.
 
         As you progress, there will be times when coding does feel hard and frustrating. But this isn't because _coding_ is hard, it's because **learning is hard**. If you want to get good at anything, you have to go through phases where the challenge feels too much, but you have to persevere.
 
-        If you're not sure if the coding part is worth the effort, take a read of [this blog post](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) that explains why you should still learn to code in 2026.
+        Jiki will get you to a point where you understand code, and then you can use our sister website, Exercism, to learn any of **85 different programming languages**!
 
-        Thanks for reading!
-        Jeremy
-    building:
-      subject: "The Best Way to Learn is to Make Stuff!"
-      preview: "I really believe that now is the best possible time to get into tech."
-      greeting: "Hi there,"
-      body_markdown: |
-        I really believe that **now is the best possible time to get into tech**. There's never been an easier time to learn the fundamentals and to quickly be able to make things.
-
-        But (and this is a big but!) where a lot of people are going wrong is that they're handing over the reins entirely to an AI agent and not actually learning. And that feels great for a little bit - you can magically make all this stuff appear - but if all you're doing is telling Claude or ChatGPT what to do, you're not actually learning anything!
-
-        So I'm putting together **step-by-step projects** that you can work with, where I _WANT_ you to use AI agents to do a lot of the work for you. But where I want you to make sure **you actually understand what's happening** at each stage.
-
-        The point of these projects is to be able to learn **all the different parts of building software**. You can join me as I build things, and I'll explain exactly what I'm doing and why, then you can work with an AI agent to apply those same ideas to your projects.
-
-        Just **don't get addicted to the dopamine hits** of the AI agent doing your work for you. Make sure you take the time to understand what's going on!
-
-        Hopefully I'll see you [on a livestream](https://youtube.com/@jiki-coding) soon!
-
-        Thanks for reading!
+        You've got this!
         Jeremy
     premium:
       subject: "Get More Out of Jiki (and help us out)"
@@ -67,10 +39,14 @@ en:
         We made Jiki free because we want it to be **accessible to everyone** regardless of their financial situation. Everyone gets hundreds of hours of exercises and videos, all available with nothing asked in return.
 
         But **Jiki costs money to run**, and we need to be able to pay our rents and afford food (🍜) and caffeine (☕), so we've added a Premium tier that adds some extra benefits that I think will really help you:
-        - **Ask Jiki**: Our AI chat to help you quickly get unstuck or explore your questions.
-        - **Premium Projects**: Harder exercises, where you can combine the skills you're learning.
-        - **Learn to Build**: Tons more content where you can learn alongside me.
-        - **Badges**: Showcase your support on the site and in community spaces with Premium badges.
+        - **Never get stuck** with unlimited Ask Jiki support.
+        - **Push yourself further** with Premium challenges.
+        - **Be part of the community** with regular livestreams.
+        - **Dig deeper** with our full walkthroughs catalog.
+        - **Showcase your skills** with an official certificate.
+        - **Stay focussed** with an ad-free learning experience.
+        - **Get early access** to new features.
+        - **Show your support** with Premium badges on the site and in community spaces.
 
         We've made it super-affordable using **Purchasing Power Parity**. That means that Premium costs about the same as two takeaway drinks in your country, so it should feel like a reasonable price wherever you are in the world.
 

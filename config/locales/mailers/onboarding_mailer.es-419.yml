@@ -1,80 +1,56 @@
 es-419:
   onboarding_mailer:
     overview:
-      subject: "Las dos mitades para convertirte en desarrollador en 2026"
-      preview: "Desde hace unos años he estado aprendiendo japonés poco a poco."
+      subject: "¿Alguna vez viste Karate Kid?"
+      preview: "Una de las preguntas que más me hacen es para quién es Jiki."
       greeting: "Hola,"
       body_markdown: |
-        Desde hace unos años he estado **aprendiendo japonés poco a poco**. Visito Japón con regularidad e intento sumergirme en el idioma, pero es difícil, porque hoy en día, con la ayuda de Google Translate, es bastante fácil pasar tiempo en Japón y no hablar ni una palabra de japonés. **Así que mi cerebro puede volverse perezoso**, pero me las arreglo bien.
+        La frase **«Dar cera, pulir cera»** se ha vuelto sinónimo de aprender cosas difíciles. Viene de _Karate Kid_, donde Daniel (nuestro niño karateca) le pide a un maestro (el señor Miyagi) que le enseñe kárate. En lugar de enseñarle a patear y golpear, el señor Miyagi le hace hacer tareas de la casa, y la más famosa es encerar autos. La idea es hacer los movimientos exactos correctamente, y resulta (spoiler) que esa disciplina desarrolla habilidades que se pueden transferir al kárate, y que el proceso de entrenar el cuerpo una y otra vez es lo que te hace bueno.
 
-        La programación ha empezado recientemente a recorrer ese mismo camino. Durante los últimos 30 años, si querías hacer algo con tecnología, **tenías que aprender a programar**. Era la única forma de comunicarte con una computadora. Pero en los últimos dos años, con el auge de la programación con agentes, eso cambió. Ahora puedes usar tu idioma nativo y decirle a un agente de IA lo que quieres que haga, y escribirá el código por ti, traduciendo tus instrucciones a la computadora.
+        La programación se parece un poco a eso, pero para la mente, no para el cuerpo. Todos queremos poder crear cosas interesantes desde el primer día, pero más que nada necesitamos construir bases realmente sólidas. Necesitamos **entrenar nuestro cerebro** de la forma correcta y desarrollar las formas correctas de pensar.
 
-        Al igual que no tengo que esperar a dominar el japonés antes de poder explorar Japón, **ya no tiene ningún sentido pasar años volviéndote bueno en programación** antes de empezar a construir cosas.
+        - **Si recién empiezas a programar**, Jiki te va a llevar por estos ejercicios mentales (ojalá de una forma más interesante que encerar autos) y te va a enseñar todo lo que necesitas saber.
+        - **Si ya llevas un tiempo programando**, puede que sientas que estás repasando lo mismo de siempre, sin avanzar. Pero igual que Daniel encerando autos, hay un valor enorme en hacer bien estas primeras etapas. Quédate con Jiki y te ayudaremos a desarrollar **una mentalidad de programación profunda y habilidades fundamentales sólidas**.
 
-        Pero si quiero adentrarme de verdad en la cultura japonesa y hacer amigos japoneses, necesito aprender japonés. Y si tú quieres entrar en el mundo tech, todavía necesitas aprender a programar. El código ya no es el guardián de la puerta, pero es **la diferencia entre «ir tirando» y prosperar de verdad**.
-
-        Para mejorar rápido, divide tu tiempo de aprendizaje en dos partes:
-        1. **Aprende a programar.** Sigue el curso Fundamentos de Programación de Jiki y tendrás bases excelentes.
-        2. **Crea cosas.** Sigue «Aprende a Construir», metiéndote de lleno en los detalles, creando productos que la gente realmente pueda usar.
-
-        Si quieres saber más sobre mi opinión acerca de **cómo entrar en el mundo tech en 2026**, lee [este artículo del blog](https://jiki.io/blog/how-to-get-into-tech-in-2026).
-
-        Durante los próximos días, te contaré un poco más sobre los dos lados, el de la programación y el de la construcción, y sobre cómo sacar el máximo provecho de [Jiki](https://jiki.io). Hasta entonces, **¡manos a la obra y diviértete!**
+        ¡Me alegra mucho que estés aquí! Si tienes preguntas, solo responde a este correo. Soy una persona real y con gusto te ayudo 🙂
 
         ¡Gracias por leer!
         Jeremy
     coding:
-      subject: "Construye fundamentos sólidos de programación"
+      subject: "¿Qué lenguaje de programación debería aprender?"
       preview: "Aprender a programar tiene fama de ser técnico y difícil."
       greeting: "Hola de nuevo,"
       body_markdown: |
-        Aprender a programar tiene fama de ser técnico y difícil. Cuando empecé a aprender a programar, era un niño de 8 años que no sabía nada de programación, excepto que **de repente podía hacer cosas geniales**. No sabía que se suponía que era difícil. Solo sabía que de repente tenía una nueva salida para mi creatividad.
+        Aprender a programar tiene fama de ser técnico y difícil. Cuando empecé a programar, era un niño de 8 años que no sabía nada de programación, salvo que **de pronto podía hacer cosas geniales**. No sabía que se suponía que era difícil. Solo sabía que de repente tenía una nueva salida para mi creatividad.
 
-        Mientras aprendes a programar, **no quiero que lo veas como una disciplina técnica que dominar**, quiero que lo veas como un lugar donde puedes liberar **tu** creatividad, donde puedes **divertirte creando cosas** y resolviendo acertijos. Porque eso es realmente programar: resolver problemas.
+        La mayoría de los principiantes pasan muchísimo tiempo tratando de decidir qué lenguaje de programación aprender. [No importa](https://jiki.io/blog/just-learn-to-code). Lo que importa es que construyas una comprensión realmente buena de **cómo funciona la programación**, y eso es lo que enseña Jiki.
 
-        No importa [qué lenguaje de programación aprendas](https://jiki.io/blog/just-learn-to-code), lo que importa es que construyas una comprensión realmente buena de **cómo funciona la programación**.
+        A medida que avances, habrá momentos en los que programar sí se sienta difícil y frustrante. Pero no es porque _programar_ sea difícil, sino porque **aprender es difícil**. Si quieres ser bueno en algo, tienes que pasar por etapas en las que el desafío se sienta demasiado, pero tienes que persistir.
 
-        A medida que avances, habrá momentos en los que programar se sienta difícil y frustrante. Pero esto no se debe a que _programar_ sea difícil, sino a que **aprender es difícil**. Si quieres volverte bueno en cualquier cosa, tienes que pasar por fases en las que el reto parece demasiado, pero tienes que perseverar.
+        Jiki te va a llevar a un punto en el que entiendas el código, y después puedes usar nuestro sitio hermano, Exercism, para aprender cualquiera de **85 lenguajes de programación**.
 
-        Si no estás seguro de si la parte de programación vale la pena el esfuerzo, lee [este artículo del blog](https://jiki.io/blog/should-i-still-learn-to-code-in-2026) que explica por qué deberías aprender a programar en 2026.
-
-        ¡Gracias por leer!
-        Jeremy
-    building:
-      subject: "¡La mejor manera de aprender es crear cosas!"
-      preview: "De verdad creo que ahora es el mejor momento posible para entrar en el mundo tech."
-      greeting: "Hola,"
-      body_markdown: |
-        De verdad creo que **ahora es el mejor momento posible para entrar en el mundo tech**. Nunca ha habido un momento más fácil para aprender los fundamentos y poder crear cosas rápidamente.
-
-        Pero (¡y este es un gran pero!) donde mucha gente se equivoca es que están entregando las riendas por completo a un agente de IA y no están aprendiendo realmente. Y eso se siente genial por un momento: puedes hacer que aparezca todo esto mágicamente, pero si lo único que haces es decirle a Claude o ChatGPT qué hacer, ¡no estás aprendiendo nada!
-
-        Así que estoy preparando **proyectos paso a paso** con los que puedes trabajar, donde _QUIERO_ que uses agentes de IA para hacer gran parte del trabajo por ti. Pero donde quiero que te asegures de **entender realmente lo que está pasando** en cada etapa.
-
-        El objetivo de estos proyectos es poder aprender **todas las diferentes partes de construir software**. Puedes acompañarme mientras construyo cosas, y te explicaré exactamente qué estoy haciendo y por qué; luego puedes trabajar con un agente de IA para aplicar esas mismas ideas a tus proyectos.
-
-        Simplemente **no te vuelvas adicto a los golpes de dopamina** de que el agente de IA haga tu trabajo por ti. ¡Asegúrate de tomarte el tiempo para entender qué está pasando!
-
-        ¡Espero verte [en una transmisión en vivo](https://youtube.com/@jiki-coding) pronto!
-
-        ¡Gracias por leer!
+        ¡Vas a lograrlo!
         Jeremy
     premium:
-      subject: "Sácale más provecho a Jiki (y ayúdanos)"
-      preview: "Hicimos Jiki gratis porque queremos que sea accesible para todos, sin importar"
+      subject: "Saca más provecho de Jiki (y ayúdanos)"
+      preview: "Hicimos Jiki gratis porque queremos que sea accesible para todos."
       greeting: "Hola,"
       body_markdown: |
-        Hicimos Jiki gratis porque queremos que sea **accesible para todos** sin importar su situación financiera. Todos reciben cientos de horas de ejercicios y videos, todo disponible sin pedir nada a cambio.
+        Hicimos Jiki gratis porque queremos que sea **accesible para todos**, sin importar su situación económica. Todos tienen acceso a cientos de horas de ejercicios y videos, disponibles sin pedir nada a cambio.
 
-        Pero **Jiki cuesta dinero mantenerlo**, y necesitamos poder pagar nuestros alquileres y permitirnos comida (🍜) y cafeína (☕), así que añadimos un nivel Premium con algunos beneficios extra que creo que realmente te ayudarán:
-        - **Pregúntale a Jiki**: Nuestro chat de IA para ayudarte a desbloquearte rápidamente o explorar tus preguntas.
-        - **Proyectos Premium**: Ejercicios más difíciles, donde puedes combinar las habilidades que estás aprendiendo.
-        - **Aprende a Construir**: Muchísimo más contenido donde puedes aprender a mi lado.
-        - **Insignias**: Muestra tu apoyo en el sitio y en los espacios comunitarios con insignias Premium.
+        Pero **mantener Jiki cuesta dinero**, y necesitamos poder pagar el alquiler, la comida (🍜) y el café (☕), así que agregamos un plan Premium con algunos beneficios extra que creo que te van a ayudar mucho:
+        - **No te quedes atascado nunca** con soporte ilimitado para preguntarle a Jiki.
+        - **Ve más lejos** con los desafíos Premium.
+        - **Sé parte de la comunidad** con transmisiones en vivo periódicas.
+        - **Profundiza más** con nuestro catálogo completo de explicaciones paso a paso.
+        - **Muestra tus habilidades** con un certificado oficial.
+        - **Mantén el enfoque** con una experiencia de aprendizaje sin anuncios.
+        - **Ten acceso anticipado** a las nuevas funcionalidades.
+        - **Demuestra tu apoyo** con insignias Premium en el sitio y en los espacios de la comunidad.
 
-        Lo hicimos súper asequible usando **Paridad de Poder Adquisitivo**. Eso significa que Premium cuesta más o menos lo mismo que dos bebidas para llevar en tu país, así que debería sentirse como un precio razonable estés donde estés en el mundo.
+        Lo hicimos súper accesible con **precios ajustados al poder adquisitivo local**. Eso significa que Premium cuesta más o menos lo mismo que dos bebidas para llevar en tu país, así que debería sentirse como un precio razonable estés donde estés en el mundo.
 
-        Si estás disfrutando de Jiki, quieres **acelerar tu aprendizaje** y quieres apoyarnos a mí y al equipo de Jiki, por favor [mejora a Premium](https://jiki.io/premium).
+        Si estás disfrutando Jiki, quieres **acelerar tu aprendizaje** y quieres apoyarme a mí y al equipo de Jiki, entonces por favor [cambia a Premium](https://jiki.io/premium).
 
         Gracias,
         Jeremy

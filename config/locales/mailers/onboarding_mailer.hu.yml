@@ -1,65 +1,72 @@
 hu:
   onboarding_mailer:
     overview:
-      subject: "Üdv a Jikin — itt egy gyors körkép"
-      preview: "Egy rövid bemutató arról, mi vár rád a következő héten."
+      subject: "Láttad már a Karate kölyköt?"
+      preview: "Az egyik leggyakoribb kérdés, amit kapok, hogy kinek szól a Jiki."
       greeting: "Szia,"
       body_markdown: |
-        Üdv a Jikin! A következő hét során néhány rövid emailt küldök neked a platform különböző részeiről.
+        A **„Wax on, wax off”** kifejezés mára egybeforrt a nehéz dolgok megtanulásával. A _Karate kölyök_ című filmből származik, amelyben Daniel (a mi karatekölykünk) megkér egy mestert (Mr. Miyagi), hogy tanítsa meg karatézni. Ahelyett, hogy rúgásokat és ütéseket tanítana neki, Mr. Miyagi házimunkát végeztet vele, a leghíresebbet: autóviaszolást. A hangsúly azon van, hogy a mozdulatokat pontosan, helyesen hajtsa végre, és kiderül (spoiler), hogy ez a fegyelem átvihető készségeket épít a karatéhoz, és hogy a tested ismételt edzése az, ami jóvá tesz.
 
-        A Jikit azért építettük, hogy abszolút kezdőtől magabiztos, képzett programozóvá válj. Ezt apró lépéseken, valódi projekteken és személyre szabott tanulási stílusunkkal érjük el.
+        A programozás valamennyire hasonló, csak nem a testet, hanem az elmét edzi. Mindannyian szeretnénk már az első naptól érdekes dolgokat alkotni, de mindennél jobban valóban szilárd alapokra van szükségünk. **Edzeni kell az agyunkat** a megfelelő módon, és ki kell alakítanunk a megfelelő gondolkodásmódot.
 
-        Holnap megmutatom, hogyan működik a kódolási oldal. Addig is [nyisd meg a Jikit](https://jiki.io), és próbáld ki az első feladatot.
+        - **Ha most ismerkedsz a programozással**, a Jiki végigvezet ezeken a gondolkodási gyakorlatokon (remélhetőleg sokkal érdekesebb módon, mint az autóviaszolás!), és megtanít mindent, amit tudnod kell.
+        - **Ha már egy ideje programozol**, lehet, hogy úgy érzed, ugyanazokon az alapokon lépkedsz, és nem haladsz előre. De ahogy Daniel az autóviaszolásnál, úgy itt is hatalmas értéke van annak, ha ezt a korai szakaszt rendesen végigcsinálod. Maradj a Jikivel, és segítünk kifejleszteni **egy mély programozói szemléletet és szilárd alapkészségeket**.
 
-        Üdv,
+        Örülök, hogy itt vagy! Ha bármi kérdésed van, csak válaszolj erre az e-mailre. Ember vagyok, és szívesen segítek 🙂
+
+        Köszönöm, hogy elolvastad!
         Jeremy
     coding:
-      subject: "Hogyan működik a kódolás a Jikin"
-      preview: "Az interaktív vázlatfüzet és hogyan használd ki a legjobban."
-      greeting: "Szia,"
+      subject: "Milyen programozási nyelvet tanuljak?"
+      preview: "A programozás tanulásáról azt tartják, hogy technikai és nehéz."
+      greeting: "Szia újra,"
       body_markdown: |
-        A legtöbb platform olvasással és memorizálással tanít kódolni. A Jiki gyakorlattal — minden feladat futtatható környezetben él, azonnali visszajelzéssel.
+        A programozás tanulásáról azt tartják, hogy technikai és nehéz. Amikor elkezdtem programozni tanulni, egy 8 éves kölyök voltam, aki semmit nem tudott a programozásról azon kívül, hogy **hirtelen menő dolgokat tud csinálni**. Nem tudtam, hogy elvileg nehéznek kellene lennie. Csak azt tudtam, hogy hirtelen új kifejezési formát kaptam a kreativitásomnak.
 
-        Ha elakadsz, a vázlatfüzetben szabadon kísérletezhetsz. Nincs büntetés a próbálkozásért — így dolgoznak a valódi fejlesztők is.
+        A legtöbb kezdő órákat tölt azzal, hogy eldöntse, milyen programozási nyelvet tanuljon. [Nem ez a lényeg](https://jiki.io/blog/just-learn-to-code). Az számít, hogy igazán jól megértsd, **hogyan működik a programozás**, és erre tanít meg a Jiki.
 
-        Próbáld meg a következő leckét: [tovább tanulni](https://jiki.io).
+        Ahogy haladsz előre, lesznek olyan időszakok, amikor a programozás tényleg nehéznek és frusztrálónak tűnik. De ez nem azért van, mert a _programozás_ nehéz, hanem azért, mert **a tanulás nehéz**. Ha bármiben jó akarsz lenni, át kell esned olyan szakaszokon, amikor a kihívás túl nagynak tűnik, de kitartónak kell maradnod.
 
-        Üdv,
-        Jeremy
-    building:
-      subject: "Valódi dolgok építése a Jikin"
-      preview: "Miért fontosak a projektek és mit fogsz építeni."
-      greeting: "Szia,"
-      body_markdown: |
-        A leckék koncepciókat tanítanak, a projektek elmélyítik őket. A Jiki minden tanfolyamába be vannak fonva projektek — kis, befejezhető dolgok, amikre büszke lehetsz.
+        A Jiki eljuttat odáig, hogy érted a kódot, utána pedig a testvérweboldalunkon, az Exercismen, akár **85 különböző programozási nyelvet** is megtanulhatsz!
 
-        Az első projekt a második szinten érkezik. A tanfolyam végére fél tucatot is kiadtál belőlük.
-
-        Csak így tovább — [következő lecke](https://jiki.io).
-
-        Üdv,
+        Menni fog!
         Jeremy
     premium:
-      subject: "Hozd ki többet a Jikiből Premiummal"
-      preview: "Mit ad a Premium, és miért létezik."
+      subject: "Hozz ki többet a Jikiből (és segíts nekünk)"
+      preview: "Ingyenessé tettük a Jikit, hogy mindenki számára elérhető legyen, anyagi helyzettől függetlenül."
       greeting: "Szia,"
       body_markdown: |
-        A Jiki ingyenes változata messzire elvisz. A Premium még tovább: minden tanfolyam feloldva, AI-támogatás amikor elakadsz, és közvetlen segítség tőlünk.
+        Azért tettük ingyenessé a Jikit, mert szeretnénk, hogy **mindenki számára elérhető legyen**, anyagi helyzettől függetlenül. Mindenki több száz órányi feladatot és videót kap, mindezt anélkül, hogy bármit is kérnénk cserébe.
 
-        A Premium a Jiki fenntarthatóságát is biztosítja. Egy kis csapat vagyunk, gondosan építjük ezt — az előfizetésed teszi lehetővé.
+        De **a Jiki működtetése pénzbe kerül**, és ki kell tudnunk fizetni a lakbért, meg engedni magunknak egy kis kaját (🍜) és koffeint (☕), ezért bevezettünk egy Prémium csomagot, ami néhány olyan extra előnyt kínál, amiről szerintem tényleg hasznos lesz neked:
+        - **Soha ne akadj el**: korlátlanul kérdezheted Jikit.
+        - **Feszegetd a határaidat** a Prémium kihívásokkal.
+        - **Légy része a közösségnek** rendszeres élő közvetítésekkel.
+        - **Áss mélyebbre** a végigvezetések teljes katalógusával.
+        - **Mutasd meg a tudásodat** egy hivatalos tanúsítvánnyal.
+        - **Maradj fókuszban** a reklámmentes tanulási élménnyel.
+        - **Kapj korai hozzáférést** az új funkciókhoz.
+        - **Mutasd meg a támogatásodat** Prémium jelvényekkel az oldalon és a közösségi felületeken.
 
-        [Nézd meg a Premiumot](https://jiki.io/premium) — nincs nyomás, csak egy lehetőség, ha készen állsz.
+        A **vásárlóerő-paritás** segítségével szuper megfizethetővé tettük. Ez azt jelenti, hogy a Prémium nagyjából annyiba kerül, mint két elviteles ital az országodban, így bárhol is élsz a világon, méltányos árnak fog tűnni.
 
-        Üdv,
+        Ha élvezed a Jikit, szeretnéd **felgyorsítani a tanulásodat**, és támogatnál engem meg a Jiki csapatát, akkor kérlek [válts Prémiumra](https://jiki.io/premium).
+
+        Köszönöm,
         Jeremy
     community:
-      subject: "Gyere és köszönj"
-      preview: "A Jiki közösség — hol találsz minket."
+      subject: "Ne küszködj egyedül: csatlakozz a Jiki közösségéhez"
+      preview: "Bármit sokkal nagyobb eséllyel tanulsz meg, ha egy csoport része vagy."
       greeting: "Szia,"
       body_markdown: |
-        Egyedül tanulni kódolni nehéz. Másokkal együtt tanulni — akár csak megkérdezni, hogy „ez normális?" — óriási különbséget jelent.
+        Bármit sokkal nagyobb eséllyel tanulsz meg, ha **egy csoport része vagy**. A programozás sem kivétel.
 
-        Gyere és köszönj a [Discordunkon](https://jiki.io/discord). Mutatkozz be, oszd meg mivel foglalkozol, kérdezz bármit. Barátságos társaság vagyunk.
+        Ha segítséget szeretnél kérni, beszélgetnél a programozási utadról, vagy csak lógnál egy kicsit másokkal, van rá néhány hely:
+        - [A fórumunk](https://jiki.io/r/forum): Ide gyere a lassabb, hosszabb beszélgetésekért. Itt tudsz **mélyebbre ásni**.
+        - [Az Exercism Discordja](https://jiki.io/r/discord): Ide gyere, ha **valós idejű beszélgetésre** vágysz azokkal, akik éppen online vannak. Keresd a #jiki-chat és a #jiki-get-help csatornákat.
+        - [YouTube](https://jiki.io/r/youtube): Csatlakozz az AMA-khoz (Ask Me Anything, azaz „kérdezz bármit”) és a többi **élő közvetítéshez**, és tedd fel nekem a kérdéseidet!
 
-        Üdv,
+        Ne feledd, hogy ezeken a helyeken sok különböző kultúrából érkeznek emberek, ezért kérlek, **légy tiszteletteljes** mindenkivel, amikor beszélgetsz.
+
+        Ott találkozunk!
         Jeremy
