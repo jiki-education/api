@@ -113,10 +113,10 @@ class PremiumMailerTest < ActionMailer::TestCase
     assert_equal [user.email], mail.to
 
     assert_match "Hi there,", mail.html_part.body.to_s
-    assert_match "didn't complete the payment", mail.html_part.body.to_s
+    assert_match "didn't complete the checkout", mail.html_part.body.to_s
 
     assert_match "Hi there,", mail.text_part.body.to_s
-    assert_match "didn't complete the payment", mail.text_part.body.to_s
+    assert_match "didn't complete the checkout", mail.text_part.body.to_s
   end
 
   test "abandoned_checkout email compiles MJML to responsive HTML" do

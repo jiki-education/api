@@ -24,11 +24,3 @@ pt-PT:
 
         Um abraço,  
         Jeremy e a equipa
-    abandoned_checkout:
-      subject: "Can I help with Jiki Premium?"
-      greeting: "Hi there,"
-      body_markdown: |
-        I noticed that you started upgrading to Jiki Premium but didn't complete the payment. Is there anything you need help with?
-
-        Thanks,  
-        Jeremy
