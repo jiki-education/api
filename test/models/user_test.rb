@@ -144,6 +144,22 @@ class UserTest < ActiveSupport::TestCase
     refute UserLesson.exists?(user_lesson_id)
   end
 
+  test "deleting user deletes notifications whose class no longer exists" do
+    user = create(:user)
+    User::Notification.insert_all!([{
+      user_id: user.id,
+      type: "User::Notifications::RemovedNotification",
+      uniqueness_key: "User::Notifications::RemovedNotification|",
+      status: User::Notification.statuses[:email_only],
+      created_at: Time.current,
+      updated_at: Time.current
+    }])
+
+    user.destroy!
+
+    refute User::Notification.where(user_id: user.id).exists?
+  end
+
   test "automatically creates data record on user creation" do
     user = create(:user)
 
