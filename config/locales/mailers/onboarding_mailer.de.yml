@@ -40,25 +40,6 @@ de:
 
         Danke fürs Lesen!
         Jeremy
-    building:
-      subject: "Am besten lernt man, indem man Dinge baut!"
-      preview: "Ich bin überzeugt: Jetzt ist der beste Zeitpunkt für den Einstieg in die Tech-Welt."
-      greeting: "Hallo,"
-      body_markdown: |
-        Ich bin wirklich überzeugt: **Jetzt ist der beste Zeitpunkt, um in die Tech-Welt einzusteigen**. Es war noch nie so einfach, die Grundlagen zu lernen und schnell Dinge zu bauen.
-
-        Aber (und das ist ein großes Aber!) viele machen den Fehler, dass sie die Zügel komplett an einen KI-Agenten abgeben und dabei nicht wirklich lernen. Für kurze Zeit fühlt sich das großartig an, du kannst all diese Dinge wie von Zauberhand entstehen lassen. Aber wenn du nur Claude oder ChatGPT sagst, was zu tun ist, lernst du nichts!
-
-        Deshalb stelle ich **Schritt-für-Schritt-Projekte** zusammen, an denen du arbeiten kannst. Dabei _SOLLST_ du KI-Agenten einsetzen, die einen großen Teil der Arbeit für dich erledigen. Aber ich will, dass du sicherstellst, dass **du wirklich verstehst, was in jeder Phase passiert**.
-
-        Der Sinn dieser Projekte ist, dass du **alle verschiedenen Teile des Softwarebaus** kennenlernst. Du kannst dabei sein, wenn ich Dinge baue, und ich erkläre genau, was ich tue und warum. Danach arbeitest du mit einem KI-Agenten und überträgst dieselben Ideen auf deine Projekte.
-
-        Werde nur **nicht süchtig nach den Dopamin-Kicks**, die es gibt, wenn der KI-Agent deine Arbeit erledigt. Nimm dir die Zeit, wirklich zu verstehen, was passiert!
-
-        Hoffentlich sehen wir uns bald [in einem Livestream](https://youtube.com/@jiki-coding)!
-
-        Danke fürs Lesen!
-        Jeremy
     premium:
       subject: "Hol mehr aus Jiki heraus (und hilf uns dabei)"
       preview: "Wir haben Jiki kostenlos gemacht, damit es für wirklich alle zugänglich ist."

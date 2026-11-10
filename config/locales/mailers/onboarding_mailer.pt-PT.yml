@@ -40,25 +40,6 @@ pt-PT:
 
         Obrigado por leres!
         Jeremy
-    building:
-      subject: "A Melhor Forma de Aprender é Criar Coisas!"
-      preview: "Acredito mesmo que agora é a melhor altura para entrar no setor tecnológico."
-      greeting: "Olá,"
-      body_markdown: |
-        Acredito mesmo que **agora é a melhor altura para entrar no setor tecnológico**. Nunca houve uma altura mais fácil para aprender os fundamentos e conseguir rapidamente criar coisas.
-
-        Mas (e isto é um grande mas!) onde muitas pessoas estão a errar é que estão a entregar as rédeas completamente a um agente de IA e não estão realmente a aprender. E isso sabe bem por um bocado - podes magicamente fazer aparecer todas estas coisas - mas se tudo o que estás a fazer é dizer ao Claude ou ao ChatGPT o que fazer, não estás realmente a aprender nada!
-
-        Por isso, estou a criar **projetos passo a passo** com os quais podes trabalhar, onde eu _QUERO_ que uses agentes de IA para fazerem grande parte do trabalho por ti. Mas onde quero que te certifiques de que **realmente compreendes o que está a acontecer** em cada etapa.
-
-        O objetivo destes projetos é poderes aprender **todas as diferentes partes da construção de software**. Podes juntar-te a mim enquanto eu construo coisas, e vou explicar exatamente o que estou a fazer e porquê, e depois podes trabalhar com um agente de IA para aplicar essas mesmas ideias aos teus projetos.
-
-        Só **não te vicies nos picos de dopamina** do agente de IA a fazer o teu trabalho por ti. Certifica-te de que reservas tempo para compreender o que se está a passar!
-
-        Espero ver-te [numa transmissão em direto](https://youtube.com/@jiki-coding) em breve!
-
-        Obrigado por leres!
-        Jeremy
     premium:
       subject: "Tira Mais Partido da Jiki (e ajuda-nos)"
       preview: "Tornámos a Jiki gratuita porque queremos que seja acessível a todos, independentemente"

@@ -8,7 +8,6 @@ class User::Notification::SendEmail
   MAILERS = {
     "User::Notifications::OnboardingOverviewNotification" => [OnboardingMailer, :overview],
     "User::Notifications::OnboardingCodingNotification" => [OnboardingMailer, :coding],
-    "User::Notifications::OnboardingBuildingNotification" => [OnboardingMailer, :building],
     "User::Notifications::OnboardingPremiumNotification" => [OnboardingMailer, :premium],
     "User::Notifications::OnboardingCommunityNotification" => [OnboardingMailer, :community]
   }.freeze

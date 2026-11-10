@@ -16,14 +16,12 @@ class OnboardingMailer < ApplicationMailer
   HEADER_IMAGES = {
     overview: "onboarding-overview-489be.jpg",
     coding: "onboarding-coding-99fc8.jpg",
-    building: "onboarding-building-95d55.jpg",
     premium: "onboarding-premium-fd09d.jpg",
     community: "onboarding-community-c3423.jpg"
   }.freeze
 
   def overview(user)   = send_onboarding(user, :overview)
   def coding(user)     = send_onboarding(user, :coding)
-  def building(user)   = send_onboarding(user, :building)
   def premium(user)    = send_onboarding(user, :premium)
   def community(user)  = send_onboarding(user, :community)
 

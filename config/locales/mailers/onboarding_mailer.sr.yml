@@ -40,25 +40,6 @@ sr:
 
         Hvala što čitaš!
         Džeremi
-    building:
-      subject: "Najbolji način da naučiš jeste da praviš stvari!"
-      preview: "Zaista verujem da je sada najbolji trenutak da uđeš u IT."
-      greeting: "Zdravo,"
-      body_markdown: |
-        Zaista verujem da je **sada najbolji mogući trenutak da uđeš u IT**. Nikada nije bilo lakše naučiti osnove i brzo početi da praviš stvari.
-
-        Ali (i to je veliko „ali“!) mnogi greše jer potpuno prepuštaju uzde AI agentu i zapravo ne uče. To na kratko deluje odlično, sve te stvari mogu magično da se pojave, ali ako samo govoriš Claudeu ili ChatGPT-ju šta da radi, zapravo ne učiš ništa!
-
-        Zato pripremam **projekte korak po korak** na kojima možeš da radiš, gde _ŽELIM_ da koristiš AI agente da odrade veliki deo posla za tebe, ali gde želim i da se potrudiš da **zaista razumeš šta se dešava** u svakoj fazi.
-
-        Smisao ovih projekata je da naučiš **sve različite delove pravljenja softvera**. Možeš da mi se pridružiš dok gradim stvari, a ja ću tačno objasniti šta radim i zašto, pa možeš sa AI agentom da primeniš te iste ideje na svoje projekte.
-
-        Samo se **ne navuci na dopaminske udarce** koje daje AI agent koji radi tvoj posao umesto tebe. Nađi vremena da razumeš šta se stvarno dešava!
-
-        Nadam se da ćemo se uskoro videti [na lajv strimu](https://youtube.com/@jiki-coding)!
-
-        Hvala što čitaš!
-        Džeremi
     premium:
       subject: "Postigni više uz Jiki (i pomozi nam)"
       preview: "Jiki je besplatan jer želimo da bude dostupan svima, bez obzira"

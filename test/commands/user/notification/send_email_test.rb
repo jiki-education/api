@@ -22,7 +22,6 @@ class User::Notification::SendEmailTest < ActiveSupport::TestCase
       {
         User::Notifications::OnboardingOverviewNotification => "overview",
         User::Notifications::OnboardingCodingNotification => "coding",
-        User::Notifications::OnboardingBuildingNotification => "building",
         User::Notifications::OnboardingPremiumNotification => "premium",
         User::Notifications::OnboardingCommunityNotification => "community"
       }.each do |klass, expected_action|

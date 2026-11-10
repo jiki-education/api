@@ -26,19 +26,6 @@ hu:
 
         Üdv,
         Jeremy
-    building:
-      subject: "Valódi dolgok építése a Jikin"
-      preview: "Miért fontosak a projektek és mit fogsz építeni."
-      greeting: "Szia,"
-      body_markdown: |
-        A leckék koncepciókat tanítanak, a projektek elmélyítik őket. A Jiki minden tanfolyamába be vannak fonva projektek — kis, befejezhető dolgok, amikre büszke lehetsz.
-
-        Az első projekt a második szinten érkezik. A tanfolyam végére fél tucatot is kiadtál belőlük.
-
-        Csak így tovább — [következő lecke](https://jiki.io).
-
-        Üdv,
-        Jeremy
     premium:
       subject: "Hozd ki többet a Jikiből Premiummal"
       preview: "Mit ad a Premium, és miért létezik."
