@@ -404,6 +404,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_10_120000) do
   end
 
   create_table "user_data", force: :cascade do |t|
+    t.integer "abandoned_checkout_email_status", default: 0, null: false
     t.string "country_code", limit: 2
     t.datetime "created_at", null: false
     t.string "email_bounce_reason"

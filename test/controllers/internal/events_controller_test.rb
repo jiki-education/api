@@ -163,6 +163,7 @@ class Internal::EventsControllerTest < ApplicationControllerTest
   test "POST create accepts the checkout funnel events" do
     Analytics::TrackEvent.expects(:defer).with(@current_user, "checkout_submitted", properties: { "trigger" => "upgrade_cta_nav" })
     Analytics::TrackEvent.expects(:defer).with(@current_user, "checkout_closed", properties: { "trigger" => "upgrade_cta_nav" })
+    User::SendAbandonedCheckoutEmail.expects(:defer).with(@current_user, wait: 30.minutes).once
     Analytics::TrackEvent.expects(:defer).with(
       @current_user,
       "checkout_failed",
@@ -179,6 +180,14 @@ class Internal::EventsControllerTest < ApplicationControllerTest
       event: "checkout_failed",
       properties: { trigger: "upgrade_cta_nav", error_code: "paymentFailed", decline_code: "insufficient_funds", message: "dropped" }
     }, as: :json
+    assert_response :no_content
+  end
+
+  test "POST create does not schedule the abandoned checkout email for other events" do
+    Analytics::TrackEvent.stubs(:defer)
+    User::SendAbandonedCheckoutEmail.expects(:defer).never
+
+    post internal_events_path, params: { event: "checkout_submitted", properties: { trigger: "upgrade_cta_nav" } }, as: :json
     assert_response :no_content
   end
 end

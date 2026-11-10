@@ -24,3 +24,11 @@ el:
 
         Φιλικά,  
         Jeremy & η ομάδα
+    abandoned_checkout:
+      subject: "Μπορώ να σε βοηθήσω με το Jiki Premium;"
+      greeting: "Γεια σου,"
+      body_markdown: |
+        Πρόσεξα ότι ξεκίνησες να αναβαθμίζεσαι στο Jiki Premium αλλά δεν ολοκλήρωσες την πληρωμή. Χρειάζεσαι βοήθεια σε κάτι; 🙂
+
+        Ευχαριστώ,  
+        Jeremy

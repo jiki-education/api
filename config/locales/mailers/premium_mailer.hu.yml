@@ -24,3 +24,11 @@ hu:
 
         Üdv,  
         Jeremy és a csapat
+    abandoned_checkout:
+      subject: "Segíthetek a Jiki Premiummal?"
+      greeting: "Szia,"
+      body_markdown: |
+        Láttam, hogy elkezdtél átváltani a Jiki Premiumra, de a fizetést nem fejezted be. Van valami, amiben segíthetek? 🙂
+
+        Köszönöm,  
+        Jeremy

@@ -24,3 +24,11 @@ zh-CN:
 
         祝好，  
         Jeremy 和团队
+    abandoned_checkout:
+      subject: "Jiki Premium 需要帮忙吗？"
+      greeting: "你好，"
+      body_markdown: |
+        我注意到你开始升级 Jiki Premium，但还没有完成结账。有什么需要帮忙的吗？🙂
+
+        谢谢，  
+        Jeremy

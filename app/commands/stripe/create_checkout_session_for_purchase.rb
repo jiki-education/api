@@ -3,6 +3,11 @@ class Stripe::CreateCheckoutSessionForPurchase
 
   initialize_with :user, :return_url, :currency
 
+  # Every click on Upgrade creates a new session, so an abandoned one is never
+  # reused. Stripe's 24-hour default would only delay checkout.session.expired,
+  # and the abandoned checkout email it triggers, by a day.
+  EXPIRES_AFTER = 2.hours
+
   def call
     ::Stripe::Checkout::Session.create(
       ui_mode: 'elements',
@@ -17,6 +22,7 @@ class Stripe::CreateCheckoutSessionForPurchase
       payment_intent_data: {
         metadata: { user_id: user.id }
       },
+      expires_at: EXPIRES_AFTER.from_now.to_i,
       **customer_args
     )
   end

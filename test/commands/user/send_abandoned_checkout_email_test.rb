@@ -1,0 +1,48 @@
+require "test_helper"
+
+class User::SendAbandonedCheckoutEmailTest < ActiveSupport::TestCase
+  test "delivers the abandoned checkout email and marks status sent" do
+    user = create(:user)
+
+    assert_enqueued_with(
+      job: MailDeliveryJob,
+      args: ["PremiumMailer", "abandoned_checkout", "deliver_now", { args: [user] }]
+    ) do
+      User::SendAbandonedCheckoutEmail.(user)
+    end
+
+    assert user.data.reload.abandoned_checkout_email_sent?
+  end
+
+  test "sends at most once across several expired sessions" do
+    user = create(:user)
+
+    User::SendAbandonedCheckoutEmail.(user)
+    assert user.data.reload.abandoned_checkout_email_sent?
+
+    PremiumMailer.expects(:abandoned_checkout).never
+
+    User::SendAbandonedCheckoutEmail.(user)
+  end
+
+  test "does nothing for premium users" do
+    user = make_premium(create(:user))
+
+    PremiumMailer.expects(:abandoned_checkout).never
+
+    User::SendAbandonedCheckoutEmail.(user)
+
+    assert user.data.reload.abandoned_checkout_email_pending?
+  end
+
+  test "does nothing while a purchase payment is pending" do
+    user = create(:user)
+    user.data.update!(pending_premium_purchase_payment_intent_id: "pi_123", pending_premium_purchase_at: Time.current)
+
+    PremiumMailer.expects(:abandoned_checkout).never
+
+    User::SendAbandonedCheckoutEmail.(user)
+
+    assert user.data.reload.abandoned_checkout_email_pending?
+  end
+end

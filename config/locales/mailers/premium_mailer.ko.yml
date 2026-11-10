@@ -24,3 +24,11 @@ ko:
 
         좋은 하루 보내세요,  
         Jeremy와 팀
+    abandoned_checkout:
+      subject: "Jiki Premium, 도와드릴까요?"
+      greeting: "안녕하세요,"
+      body_markdown: |
+        Jiki Premium으로 업그레이드를 시작하셨는데 결제를 마무리하지 않으신 것 같아서 연락드려요. 혹시 도와드릴 부분이 있을까요? 🙂
+
+        감사해요,  
+        Jeremy

@@ -24,3 +24,11 @@ it:
 
         Un saluto,  
         Jeremy e il team
+    abandoned_checkout:
+      subject: "Posso aiutarti con Jiki Premium?"
+      greeting: "Ciao,"
+      body_markdown: |
+        Ho notato che hai iniziato ad abbonarti a Jiki Premium ma non hai completato l'acquisto. C'è qualcosa con cui posso aiutarti? 🙂
+
+        Grazie,  
+        Jeremy

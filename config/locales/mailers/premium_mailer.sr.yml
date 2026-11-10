@@ -24,3 +24,11 @@ sr:
 
         Pozdrav,  
         Džeremi i tim
+    abandoned_checkout:
+      subject: "Mogu li da ti pomognem oko Jiki Premiuma?"
+      greeting: "Zdravo,"
+      body_markdown: |
+        Primetio sam da radiš nadogradnju na Jiki Premium, ali kupovina nije završena. Ima li nešto oko čega mogu da ti pomognem? 🙂
+
+        Hvala,  
+        Džeremi

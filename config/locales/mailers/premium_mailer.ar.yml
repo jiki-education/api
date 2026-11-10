@@ -24,3 +24,11 @@ ar:
 
         تحياتنا،  
         Jeremy والفريق
+    abandoned_checkout:
+      subject: "هل يمكنني مساعدتك في Jiki Premium؟"
+      greeting: "مرحبًا،"
+      body_markdown: |
+        لاحظت أنك بدأت الترقية إلى Jiki Premium لكنك لم تُكمل إتمام الشراء. هل تحتاج إلى مساعدة في أي شيء؟ 🙂
+
+        شكرًا،  
+        Jeremy

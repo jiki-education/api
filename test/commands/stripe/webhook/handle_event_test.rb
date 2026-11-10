@@ -47,6 +47,15 @@ class Stripe::Webhook::HandleEventTest < ActiveSupport::TestCase
     Stripe::Webhook::HandleEvent.("{}", "sig_123")
   end
 
+  test "routes checkout.session.expired event" do
+    event = stub(type: 'checkout.session.expired')
+    ::Stripe::Webhook.expects(:construct_event).returns(event)
+
+    Stripe::Webhook::CheckoutExpired.expects(:call).with(event)
+
+    Stripe::Webhook::HandleEvent.("{}", "sig_123")
+  end
+
   test "routes charge.refunded event" do
     event = stub(type: 'charge.refunded')
     ::Stripe::Webhook.expects(:construct_event).returns(event)

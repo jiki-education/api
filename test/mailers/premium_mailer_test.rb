@@ -103,12 +103,37 @@ class PremiumMailerTest < ActionMailer::TestCase
     refute_match(/<mj-/, html_body)
   end
 
+  # abandoned_checkout tests
+  test "abandoned_checkout email renders correctly" do
+    user = create(:user)
+    mail = PremiumMailer.abandoned_checkout(user)
+
+    assert_equal "Can I help with Jiki Premium?", mail.subject
+    assert_equal ["hello@mail.jiki.io"], mail.from
+    assert_equal [user.email], mail.to
+
+    assert_match "Hi there,", mail.html_part.body.to_s
+    assert_match "didn't complete the checkout", mail.html_part.body.to_s
+
+    assert_match "Hi there,", mail.text_part.body.to_s
+    assert_match "didn't complete the checkout", mail.text_part.body.to_s
+  end
+
+  test "abandoned_checkout email compiles MJML to responsive HTML" do
+    user = create(:user)
+    html_body = PremiumMailer.abandoned_checkout(user).html_part.body.to_s
+
+    assert_match(/<table/, html_body)
+    refute_match(/<mj-/, html_body)
+  end
+
   test "emails do not include unsubscribe headers" do
     user = create(:user)
 
     [
       PremiumMailer.welcome_to_premium(user),
-      PremiumMailer.subscription_ended(user)
+      PremiumMailer.subscription_ended(user),
+      PremiumMailer.abandoned_checkout(user)
     ].each do |mail|
       assert_nil mail.header['List-Unsubscribe']
       assert_nil mail.header['List-Unsubscribe-Post']
