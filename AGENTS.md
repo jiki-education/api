@@ -2,6 +2,8 @@
 
 This file provides guidance to Agents (e.g. Claude Code) when working with code in this repository.
 
+Record new learnings about working in this repo in this file (public-safe rules) or in `CLAUDE.local.md` (private rules, never committed). Never record them in Claude's memory folder.
+
 ## Overview
 
 This is a Rails API project for Jiki, a Learn to Code platform. Jiki provides structured, linear learning pathways for coding beginners through problem-solving and interactive exercises.
@@ -14,6 +16,8 @@ This app integrates with a front end, which is a monorepo available for you to r
 
 This API is deployed onto ECS servers and a Postgres Aurora Serverless 2 database. It uses Terraform to deploy. You can read the full terraform config at `../terraform`.
 
+Migrations run automatically on deploy. `bin/docker-entrypoint` runs `lib/run_migrations_with_concurrent_guard.rb` before the web server boots, so any migration merged to `main` ships with the deploy. `.github/workflows/deploy.yml` has no migrate step, so don't conclude from it that migrations need a manual run. Never say a merged migration needs running by hand.
+
 ### Local Development
 
 The local server is started via `./bin/dev`. This is nearly always running - you should NOT run it yourself.
@@ -25,6 +29,7 @@ The local server is started via `./bin/dev`. This is nearly always running - you
 - **Subscriptions**: Stripe for payments. Status tracked in `User::Data` with webhooks handling state changes.
 - **Learning content**: Courses contain Levels, Levels contain Lessons. Lessons can unlock Concepts. Users progress linearly.
 - **i18n**: See `docs/i18n.md` for what's translated here, how (YAML catalogs vs DB-backed `*::Translation` models), and how it's validated - read it before doing any i18n work.
+- **New locale keys**: Add new copy to the `*.en.yml` file only. Never stub other locales with English and never hand-translate. The translator's `outdated` mode only fills keys missing from the target file, so a stub would hide the key from it and ship English. Generate translations with `../translator`'s `scripts/translate-api-emails <lang> <name> outdated` (set `JIKI_API_REPO=<worktree>` to target a worktree), one call per production locale. Don't use `all`, because it would create files for WIP locales. The parity test and the locale completeness check will fail until the translations land, so run the pipeline on the branch before merging. Follow this even if a brief says to stub.
 
 ### Nomenclature
 
@@ -43,6 +48,11 @@ This is a Rails 8, API-only project. JSON responses only. No views. It uses Soli
 The project is built around a command-pattern. All functionality is encapsulated in commands, including data serialization. The project values a strong separation of concerns.
 
 Testing happens with Rails Test Unit supported by FactoryBot.
+
+### Comments
+
+- Comments describe what the code does now. Never narrate the bug or incident that motivated it (dates, slugs, forum threads, PR numbers). Keep the rationale to one present-tense line and put the incident history in the commit message and PR.
+- Put a blank line above any comment that follows a line of code within a method body, so the comment groups with the code it describes.
 
 ### Commands
 
@@ -221,6 +231,16 @@ Editing the lessons on a level that existing users have progressed through can w
 
 `reopen_completed:` (default false) re-opens the level for users who already completed it so the new/moved lesson resurfaces — a completed level never advertises a next lesson, so it's otherwise invisible to them.
 
+Further rules for curriculum changes:
+
+- Only append lessons at the end of a level. Never insert mid-level or reorder a level anyone has reached, because ordering is position-based.
+- Never mutate a level users have completed without an explicit, tested migration. Prefer additive, forward-only changes that let ordering carry users through, with no backfill.
+- A user's frontier (`current_user_level`) only moves forwards. The front-end unlocks interpreter features for every level up to `current_level_slug`, so regressing the frontier re-locks features the user already earned. All repointing goes through `UserCourse::AdvanceFrontier`, which refuses to regress.
+- A curriculum change may never move a user backwards, and may never grant a level ahead of their frontier. `UserLesson::Start` only blocks forward cross-level jumps, so starting a lesson on an earlier level is always allowed.
+- Any migration that un-completes or repoints a level must account for downstream `UserLevel`s that already exist.
+- A `current_user_level` on a completed level is never valid. To find stuck users, query `UserCourse.joins(:current_user_level).where.not(user_levels: { completed_at: nil })`. Before repointing a user forward, check they completed every lesson on the level being left.
+- Re-completing a level won't re-send the completion email (de-duped via `email_status`), but it will re-fire `level_completed` analytics.
+
 ### Exceptions
 
 Any exceptions that are referenced outside of the file in which they're raised, should be defined in `config/initializers/exceptions.rb`. This allows exceptions to be shared across multiple commands and accessed throughout the application.
@@ -281,6 +301,14 @@ Always read `test/test_helper.rb` to understand available helpers and configurat
 - **Never** use slashes in branch names. Use hyphens instead (e.g., `add-login-page` not `add/login-page`).
 - **Never** reset, checkout, or discard content in files you haven't edited yourself.
 - **Never** amend commits unless explicitely instructed. Just add new commits to PRs.
+- **Never** run `git revert`, `git reset`, a checkout that discards content, or any other history-rewriting command without explicit permission, even to undo your own change from moments earlier. To undo something, edit the working tree into the desired state and make a new ordinary commit.
+- The Bash tool's working directory doesn't persist reliably between calls, especially around background commands. Start every location-dependent command (edits via scripts, git, test runs in a worktree) with an explicit `cd /absolute/path &&`, or use absolute paths. Check `git status` before staging, and stage specific files instead of using `git add -A`.
+- When asked to change a sibling repo that the user applies themselves (e.g. `../terraform`), edit it uncommitted in that repo's main checkout. Don't create a worktree, branch or commit there unless asked. Check its status first, and if it has unrelated uncommitted work, apply the change alongside it and say what else is uncommitted. The config gem PR described under Configuration is an exception.
+
+## Working Practices
+
+- Verify cause-and-effect technical claims empirically (a quick runner or test) before stating them as fact, especially when they drive a design decision. For example, ActiveRecord's `SchemaDumper` reads the database directly and ignores a model's `ignored_columns`, so an ignored column stays in `schema.rb`.
+- When consolidating results from several subagents, check off every item in the original source list against the summary before presenting it. Before claiming all items are handled, re-derive completeness from the source of truth (e.g. re-query the error tracker), not from the conversation's own tally.
 
 ---
 
