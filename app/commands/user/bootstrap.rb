@@ -87,7 +87,8 @@ class User::Bootstrap
         "$initial_current_url": landing_url,
         "$initial_utm_source": attribution["utm_source"],
         "$initial_utm_medium": attribution["utm_medium"],
-        "$initial_utm_campaign": attribution["utm_campaign"]
+        "$initial_utm_campaign": attribution["utm_campaign"],
+        "$initial_utm_content": attribution["utm_content"]
       }.compact
     }.compact
   end
