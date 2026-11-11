@@ -84,6 +84,38 @@ class Auth::RegistrationsControllerTest < ApplicationControllerTest
     assert_response :created
   end
 
+  test "POST signup forwards attribution including UTM params to User::Bootstrap" do
+    attribution = {
+      "referrer" => "https://exercism.org/",
+      "landing_path" => "/",
+      "utm_source" => "exercism",
+      "utm_medium" => "sign_up",
+      "utm_campaign" => "launch",
+      "utm_content" => "absolute_beginner",
+      "captured_at" => "2026-01-01T00:00:00.000Z"
+    }
+    User::Bootstrap.expects(:call).with(
+      instance_of(User),
+      "email",
+      has_entries(attribution:)
+    )
+
+    post user_registration_path,
+      params: with_turnstile(
+        user: {
+          email: "utm@example.com",
+          password: "password123",
+          password_confirmation: "password123",
+          name: "UTM User",
+          handle: "utmuser"
+        },
+        attribution: attribution.merge("unexpected" => "dropped")
+      ),
+      as: :json
+
+    assert_response :created
+  end
+
   test "POST signup forwards CF-IPCountry header to User::Bootstrap" do
     User::Bootstrap.expects(:call).with(
       instance_of(User),

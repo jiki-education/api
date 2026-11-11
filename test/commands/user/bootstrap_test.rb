@@ -78,6 +78,7 @@ class User::BootstrapTest < ActiveSupport::TestCase
       "utm_source" => "twitter",
       "utm_medium" => "social",
       "utm_campaign" => "launch",
+      "utm_content" => "hero_link",
       "referrer" => "https://t.co/foo",
       "landing_path" => "/blog/welcome"
     }
@@ -91,6 +92,7 @@ class User::BootstrapTest < ActiveSupport::TestCase
         "utm_source" => "twitter",
         "utm_medium" => "social",
         "utm_campaign" => "launch",
+        "utm_content" => "hero_link",
         "referrer" => "https://t.co/foo",
         "landing_path" => "/blog/welcome",
         "$referrer": "https://t.co/foo",
@@ -102,7 +104,8 @@ class User::BootstrapTest < ActiveSupport::TestCase
           "$initial_current_url": "#{Jiki.config.frontend_base_url}/blog/welcome",
           "$initial_utm_source": "twitter",
           "$initial_utm_medium": "social",
-          "$initial_utm_campaign": "launch"
+          "$initial_utm_campaign": "launch",
+          "$initial_utm_content": "hero_link"
         }
       }
     )
