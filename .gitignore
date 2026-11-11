@@ -40,5 +40,8 @@ node_modules/
 # Ignore Claude Code local settings
 /.claude/settings.local.json
 
+# Ignore private Claude instructions
+/CLAUDE.local.md
+
 # Ignore local scratch files
 /scratchpad/
