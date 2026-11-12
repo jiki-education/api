@@ -183,6 +183,81 @@ class Internal::EventsControllerTest < ApplicationControllerTest
     assert_response :no_content
   end
 
+  test "POST create accepts the checkout load events" do
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "checkout_loaded",
+      properties: { "trigger" => "upgrade_cta_nav", "load_ms" => 2250, "attempt" => 1 }
+    )
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "checkout_load_error",
+      properties: { "trigger" => "upgrade_cta_nav", "source" => "stripe_js", "attempt" => 1, "error_message" => "Failed to load Stripe.js" }
+    )
+    User::SendAbandonedCheckoutEmail.expects(:defer).never
+
+    post internal_events_path, params: {
+      event: "checkout_loaded",
+      properties: { trigger: "upgrade_cta_nav", load_ms: 2250, attempt: 1, email: "dropped" }
+    }, as: :json
+    assert_response :no_content
+
+    post internal_events_path, params: {
+      event: "checkout_load_error",
+      properties: { trigger: "upgrade_cta_nav", source: "stripe_js", attempt: 1, error_message: "Failed to load Stripe.js", email: "dropped" }
+    }, as: :json
+    assert_response :no_content
+  end
+
+  test "POST create accepts the payment method, error detail and close stage on checkout events" do
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "checkout_submitted",
+      properties: { "trigger" => "upgrade_cta_nav", "payment_method" => "wechat_pay" }
+    )
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "checkout_failed",
+      properties: {
+        "trigger" => "upgrade_cta_nav",
+        "payment_method" => "wechat_pay",
+        "error_code" => "other",
+        "error_type" => "invalid_request_error",
+        "error_message" => "The payment was cancelled."
+      }
+    )
+    Analytics::TrackEvent.expects(:defer).with(
+      @current_user,
+      "checkout_closed",
+      properties: { "trigger" => "upgrade_cta_nav", "payment_method" => "wechat_pay", "stage" => "after_failure", "seconds_open" => 14 }
+    )
+    User::SendAbandonedCheckoutEmail.expects(:defer).with(@current_user, wait: 30.minutes).once
+
+    post internal_events_path, params: {
+      event: "checkout_submitted",
+      properties: { trigger: "upgrade_cta_nav", payment_method: "wechat_pay" }
+    }, as: :json
+    assert_response :no_content
+
+    post internal_events_path, params: {
+      event: "checkout_failed",
+      properties: {
+        trigger: "upgrade_cta_nav",
+        payment_method: "wechat_pay",
+        error_code: "other",
+        error_type: "invalid_request_error",
+        error_message: "The payment was cancelled."
+      }
+    }, as: :json
+    assert_response :no_content
+
+    post internal_events_path, params: {
+      event: "checkout_closed",
+      properties: { trigger: "upgrade_cta_nav", payment_method: "wechat_pay", stage: "after_failure", seconds_open: 14 }
+    }, as: :json
+    assert_response :no_content
+  end
+
   test "POST create does not schedule the abandoned checkout email for other events" do
     Analytics::TrackEvent.stubs(:defer)
     User::SendAbandonedCheckoutEmail.expects(:defer).never

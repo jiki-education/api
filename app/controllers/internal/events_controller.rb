@@ -5,9 +5,12 @@ class Internal::EventsController < Internal::BaseController
 
     # The checkout funnel after `checkout_started`, which the API tracks itself
     # when it creates the session. A purchase ends in `upgraded_to_premium`.
-    "checkout_submitted" => %w[trigger],
-    "checkout_failed" => %w[trigger error_code decline_code],
-    "checkout_closed" => %w[trigger]
+    # `payment_method` is the payment method type selected in Stripe's form.
+    "checkout_loaded" => %w[trigger load_ms attempt],
+    "checkout_load_error" => %w[trigger source attempt error_message],
+    "checkout_submitted" => %w[trigger payment_method],
+    "checkout_failed" => %w[trigger payment_method error_code decline_code error_type error_message],
+    "checkout_closed" => %w[trigger payment_method stage seconds_open]
   }.freeze
 
   ABANDONED_CHECKOUT_EMAIL_DELAY = 30.minutes
