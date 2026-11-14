@@ -14,6 +14,16 @@ class Pricing::DeterminePricesTest < ActiveSupport::TestCase
     )
   end
 
+  test "prices every CFA franc country in its franc" do
+    %w[BF BJ CI GW ML NE SN TG].each do |country|
+      assert_equal :xof, Pricing::DeterminePrices.(country)[:currency], "#{country} should be priced in XOF"
+    end
+
+    %w[CF CG CM GA GQ TD].each do |country|
+      assert_equal :xaf, Pricing::DeterminePrices.(country)[:currency], "#{country} should be priced in XAF"
+    end
+  end
+
   test "falls back to USD without a country" do
     result = Pricing::DeterminePrices.(nil)
 
