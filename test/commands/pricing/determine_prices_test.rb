@@ -36,7 +36,7 @@ class Pricing::DeterminePricesTest < ActiveSupport::TestCase
   end
 
   test "returns the standard USD prices for a USD country outside the low tier" do
-    result = Pricing::DeterminePrices.("PA")
+    result = Pricing::DeterminePrices.("PR")
 
     assert_equal :usd, result[:currency]
     assert_equal PREMIUM_PRICES[:usd][:lifetime], result[:lifetime]

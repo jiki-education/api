@@ -1,5 +1,5 @@
 namespace :stripe do
-  desc "Set currency_options on Stripe Price objects from PREMIUM_PRICES constant (only adds missing currencies)"
+  desc "Sync currency_options on Stripe Price objects from PREMIUM_PRICES (adds missing currencies, and corrects changed lifetime amounts)"
   task set_currency_options: :environment do
     price_ids = {
       monthly: Jiki.config.stripe_premium_monthly_price_id,
@@ -9,22 +9,26 @@ namespace :stripe do
 
     price_ids.each do |key, price_id|
       price = ::Stripe::Price.retrieve({ id: price_id, expand: ["currency_options"] })
-      existing = price.currency_options.map(&:first).map(&:to_sym).to_set
+      existing = price.currency_options.to_h { |currency, option| [currency.to_sym, option.unit_amount] }
 
-      # Build currency_options for currencies not yet on the price
+      # Monthly and annual are legacy, so only lifetime amounts get corrected.
       options = {}
       PREMIUM_PRICES.each do |currency, amounts|
-        next if currency == :usd || existing.include?(currency)
+        next if currency == :usd
 
-        options[currency] = { unit_amount: amounts[key] }
+        amount = amounts[key]
+        next if existing[currency] == amount
+        next if existing.key?(currency) && key != :lifetime
+
+        puts "#{key} #{currency}: #{existing[currency] || 'missing'} -> #{amount}"
+        options[currency] = { unit_amount: amount }
       end
 
       if options.any?
-        puts "Adding #{options.size} new #{key} currency options: #{options.keys.join(', ')}"
         ::Stripe::Price.update(price_id, currency_options: options)
-        puts "#{key.to_s.capitalize} price updated."
+        puts "#{key.to_s.capitalize} price updated (#{options.size} currencies)."
       else
-        puts "No new #{key} currencies to add."
+        puts "No #{key} currencies to change."
       end
     end
 
