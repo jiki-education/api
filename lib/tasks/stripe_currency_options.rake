@@ -1,5 +1,5 @@
 namespace :stripe do
-  desc "Sync currency_options on Stripe Price objects from PREMIUM_PRICES (adds missing currencies, and corrects changed lifetime amounts)"
+  desc "Sync Stripe Price currency_options from PREMIUM_PRICES (adds missing currencies and corrects changed lifetime amounts)"
   task set_currency_options: :environment do
     price_ids = {
       monthly: Jiki.config.stripe_premium_monthly_price_id,
