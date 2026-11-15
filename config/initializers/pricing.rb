@@ -130,12 +130,11 @@ PREMIUM_PRICES = {
   zmw: { monthly: 3900, annual: 39_900, lifetime: 21_900 }
 }.freeze
 
-# Lower-income countries buy lifetime in USD through a separate, cheaper Stripe
-# Price, since one Price can't hold two USD amounts. This includes euro countries
-# whose PPP-fair price is well below EUR 19.99, which see the price in USD.
+# Lower-income countries priced in USD buy lifetime through a separate, cheaper
+# Stripe Price, since one Price can't hold two USD amounts.
 LOW_USD_LIFETIME_PRICE = 1299
 LOW_USD_COUNTRIES = %w[
-  BG BH BZ EC ER GH HR IQ JO KW LR LY ME MM MR OM PA PS SD SO SS ST SV TL TM TN VE XK YE ZW
+  BH BZ EC ER GH IQ JO KW LR LY MM MR OM PA PS SD SO SS ST SV TL TM TN VE YE ZW
 ].freeze
 
 COUNTRY_CURRENCIES = {
@@ -159,7 +158,7 @@ COUNTRY_CURRENCIES = {
   "BD" => "bdt",
   "BE" => "eur",
   "BF" => "xof",
-  "BG" => "usd",
+  "BG" => "eur",
   "BH" => "usd", # Stripe doesn't support BHD
   "BI" => "bif",
   "BJ" => "xof",
@@ -234,7 +233,7 @@ COUNTRY_CURRENCIES = {
   "HK" => "hkd",
   "HM" => "aud",
   "HN" => "hnl",
-  "HR" => "usd",
+  "HR" => "eur",
   "HT" => "htg",
   "HU" => "huf",
   "ID" => "idr",
@@ -274,7 +273,7 @@ COUNTRY_CURRENCIES = {
   "MA" => "mad",
   "MC" => "eur",
   "MD" => "mdl",
-  "ME" => "usd",
+  "ME" => "eur",
   "MF" => "eur",
   "MG" => "mga",
   "MH" => "usd",
@@ -377,7 +376,7 @@ COUNTRY_CURRENCIES = {
   "VU" => "usd",
   "WF" => "xpf",
   "WS" => "wst",
-  "XK" => "usd",
+  "XK" => "eur",
   "YE" => "usd",
   "YT" => "eur",
   "ZA" => "zar",

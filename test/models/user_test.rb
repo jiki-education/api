@@ -265,11 +265,11 @@ class UserTest < ActiveSupport::TestCase
     assert_equal :eur, user.currency
   end
 
-  test "currency returns usd for Bulgaria, which is in the low USD tier" do
+  test "currency returns eur for Bulgaria" do
     user = create(:user)
     user.data.update_column(:country_code, "BG")
 
-    assert_equal :usd, user.currency
+    assert_equal :eur, user.currency
   end
 
   {
